@@ -1,0 +1,100 @@
+
+QRadioButton::indicator::unchecked {
+    image: url(assets/radio-unchecked.png);
+}
+
+QRadioButton::indicator::unchecked:!active {
+    image: url(assets/radio-unchecked-insensitive.png);
+}
+
+QRadioButton::indicator:unchecked:hover {
+    image: url(assets/radio-unchecked-hover.png);
+}
+
+QRadioButton::indicator:unchecked:pressed {
+    image: url(assets/radio-unchecked-active.png);
+}
+
+QRadioButton::indicator::checked {
+    image: url(assets/radio-checked.png);
+}
+
+QRadioButton::indicator::checked:!active {
+    image: url(assets/radio-checked-insensitive.png);
+}
+
+QRadioButton::indicator:checked:hover {
+    image: url(assets/radio-checked-hover.png);
+}
+
+QRadioButton::indicator:checked:pressed {
+    image: url(assets/radio-checked-active.png);
+}
+
+
+
+QPushButton {
+    border-radius: 3px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #a1a1a1;
+    color: #2e3436;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop: 0 #fafafa, stop: 1 #e0e0e0);
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop: 0 #f7f7f7, stop: 1 #ededed);
+}
+
+QPushButton:pressed {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop: 0 #c7c7c7, stop: 1 lightgray);
+}
+
+QPushButton:!active {
+    color: #8d9091;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop: 0 #f7f7f7, stop: 1 #f4f4f4);
+}
+
+
+
+QMenuBar {
+    padding: 0px;
+    background-color: #ededed;
+}
+
+QMenuBar::item {
+    padding: 4px 8px;
+    background-color: transparent;
+}
+
+QMenuBar::item:selected {
+}
+
+QMenuBar::item:!active {
+}
+
+QMenuBar::item:pressed {
+    background-color: white;
+}
+
+
+QMenu {
+    padding: 0px;
+    background-color: white;
+}
+
+QMenu::item {
+}
+
+QMenu::item:selected {
+    color: white;
+    background-color: #4a90d9;
+}
+
+QMenu::item:!active {
+    color: #8d9091;
+}
