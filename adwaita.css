@@ -1,12 +1,10 @@
 
 /* basic elements */
 QWidget {
-    color: #2e3436;
     background-color: #ededed;
 }
 
 QWidget:!active {
-    color: #8d9091;
 }
 
 /* frames */
@@ -51,7 +49,7 @@ QListView {
 QColumnView {
     background-color: white;
 }
-
+e
 /* dialogs */
 QDialog {
     background-color: white;
@@ -62,8 +60,12 @@ QRadioButton::indicator::unchecked {
     image: url(assets/radio-unchecked.png);
 }
 
-QRadioButton::indicator::unchecked:!active {
+QRadioButton::indicator::unchecked:!enabled {
     image: url(assets/radio-unchecked-insensitive.png);
+}
+
+QRadioButton::indicator::unchecked:!active {
+    image: url(assets/radio-unchecked-backdrop.png);
 }
 
 QRadioButton::indicator:unchecked:hover {
@@ -78,8 +80,12 @@ QRadioButton::indicator::checked {
     image: url(assets/radio-checked.png);
 }
 
-QRadioButton::indicator::checked:!active {
+QRadioButton::indicator::checked:!enabled {
     image: url(assets/radio-checked-insensitive.png);
+}
+
+QRadioButton::indicator::checked:!active {
+    image: url(assets/radio-checked-backdrop.png);
 }
 
 QRadioButton::indicator:checked:hover {
@@ -131,9 +137,29 @@ QCheckBox::indicator:checked:pressed {
     image: url(assets/checkbox-checked-active.png);
 }
 
+QCheckBox::indicator::indeterminate {
+    image: url(assets/checkbox-mixed.png);
+}
+
+QCheckBox::indicator::indeterminate:!enabled {
+    image: url(assets/checkbox-mixed-insensitive.png);
+}
+
+QCheckBox::indicator::indeterminate:!active {
+    image: url(assets/checkbox-mixed-backdrop.png);
+}
+
+QCheckBox::indicator:indeterminate:hover {
+    image: url(assets/checkbox-mixed-hover.png);
+}
+
+QCheckBox::indicator:indeterminate:pressed {
+    image: url(assets/checkbox-mixed-active.png);
+}
+
 /* buttons */
 QPushButton {
-    padding: 4px 6px;
+    padding: 6px 4px;
     border-radius: 3px;
     border-width: 1px;
     border-style: solid;
@@ -147,23 +173,41 @@ QPushButton:hover {
                                 stop: 0 #f7f7f7, stop: 1 #ededed);
 }
 
-QPushButton:pressed {
+QPushButton:pressed, QPushButton:checked {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop: 0 #c7c7c7, stop: 1 lightgray);
 }
 
 QPushButton:!active {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop: 0 #f7f7f7, stop: 1 #f4f4f4);
+    background: #ededed;
+}
+
+QPushButton:!enabled {
+    background: #f4f4f4;
 }
 
 QComboBox {
-    padding: 0;
+    padding: 4px;
     border-radius: 3px;
     border: 1px solid #a1a1a1;
 }
 
-QComboBox:pressed {
+QComboBox:editable {
+    background: white;
+}
+
+QComboBox:read-only {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop: 0 #fafafa, stop: 1 #e0e0e0);
+}
+
+QComboBox::drop-down {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop: 0 #fafafa, stop: 1 #e0e0e0);
+    width: 28px;
+}
+
+QComboBox::drop-down:editable {
 }
 
 QComboBox:!enabled {
@@ -176,6 +220,27 @@ QComboBox:!active {
 
 QComboBox:!active:!enabled {
     color: #c7c7c7;
+}
+
+QAbstractItemView {
+    padding: 4px;
+    border: none;
+    background: white;
+    selection-background-color: #4a90d9;
+    show-decoration-selected: 0;
+}
+
+QComboBox QListView {
+    color: blue;
+    min-height: 0px;
+    max-height: 0px;
+}
+
+QAbstractItemView::item {
+    border: none;
+    padding: 10px;
+    spacing: 10px;
+    background: pink;
 }
 
 QLineEdit {
@@ -229,32 +294,117 @@ QTabWidget {
     background-color: pink;
 }
 
-QTabBar {
-    background-color: pink;
-}
-
 QTabWidget::tab-bar {
     alignment: center;
     padding: 0px;
 }
 
+QSpinBox {
+    padding: 4px;
+    padding-right: 27px;
+    border-radius: 3px;
+    border: 1px solid #a8a8a8;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 #f7f7f7, stop: 0.9 white);
+}
 
-QTabBar::tab {
-    border: 0px solid #a1a1a1;
-    color: #2e3436;
+QSpinBox::up-button {
+    subcontrol-origin: border;
+    subcontrol-position: right center;
+
+    border-left-width: 1px;
+    border-style: solid;
+    border-color: #a8a8a8;
+
+    height: 26px;
+    width: 28px;
+}
+
+QSpinBox::down-button {
+    subcontrol-origin: content;
+    subcontrol-position: right center;
+
+    border-width: 1px;
+    border-style: solid;
+    border-color: #a1a1a1;
+
+    height: 26px;
+    width: 28px;
+}
+
+QTabWidget {
+    background: pink;
+}
+
+QTabWidget::pane {
+    /*
+    border-top: 32px solid #c7c7c7;
+    background: pink;
+    position: absolute;
+    top: -32px;
+    */
+}
+
+QTabWidget::tab-bar {
+}
+
+QTabBar {
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 #c7c7c7, stop: 0.03 #d1d1d1, stop: 1 #d3d3d3);
+}
+
+QTabBar::tab:top {
+    padding: 8px 12px;
+    border: 0px solid #a1a1a1;
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 #c7c7c7, stop: 0.03 #d1d1d1, stop: 1 #d3d3d3);
+}
+
+QTabBar::tab:top:last {
+    padding-right: 100%;
+    border: 0px solid #a1a1a1;
 }
 
 /* menus */
 QMenuBar {
-    padding: 0px;
+    background-color: #e3e3e3;
 }
 
-QMenuBar::item:focus {
-    color: pink;
+QMenuBar:!active {
+    background-color:#ededed;
+}
+
+QMenuBar::item {
+    padding: 2px 8px;
+}
+
+QMenuBar::item:selected {
+    color: white;
+    background-color: #4a90d9;
 }
 
 QMenu {
+    background: white;
     padding: 0px;
 }
+QMenu::item {
+    padding: 4px;
+}
+QMenu::item:selected {
+    color: white;
+    background-color: #4a90d9;
+}
 
+QToolBar {
+    padding: 6px;
+    background: #ededed;
+    border-width: 0 0 1px;
+    border: solid #a1a1a1;
+    border-radius: 7px 7px 0 0;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 #f7f7f7, stop: 1 #ededed);
+}
+
+QToolBar:handle {
+    image: #a1a1a1;
+}
+
+QToolButton {
+    background: transparent;
+}

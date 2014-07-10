@@ -51,6 +51,7 @@ WidgetFactory::WidgetFactory(QWidget *parent)
     toolbar->addSeparator();
     toolbar->addAction(QIcon::fromTheme("edit-find"), "");
     QWidget *spacer = new QWidget;
+    spacer->setPalette(QPalette(Qt::transparent));
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     toolbar->addWidget(spacer);
     toolbar->addWidget(new QLineEdit("search..."));
