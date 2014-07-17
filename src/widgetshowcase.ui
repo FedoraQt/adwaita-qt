@@ -157,6 +157,9 @@
          </item>
          <item>
           <widget class="KIntSpinBox" name="kintspinbox">
+           <property name="enabled">
+             <bool>false</bool>
+           </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -618,18 +621,42 @@
          </item>
          <item>
           <widget class="QSlider" name="slider_2">
+           <property name="minimum">
+             <number>0</number>
+           </property>
+           <property name="maximum">
+             <number>7</number>
+           </property>
            <property name="orientation">
             <enum>Qt::Vertical</enum>
+           </property>
+           <property name="tickPosition">
+             <enum>QSlider::TicksLeft</enum>
+           </property>
+           <property name="tickInterval">
+             <number>1</number>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QSlider" name="slider_3">
+           <property name="minimum">
+             <number>0</number>
+           </property>
+           <property name="maximum">
+             <number>11</number>
+           </property>
            <property name="enabled">
             <bool>false</bool>
            </property>
            <property name="orientation">
             <enum>Qt::Vertical</enum>
+           </property>
+           <property name="tickPosition">
+             <enum>QSlider::TicksRight</enum>
+           </property>
+           <property name="tickInterval">
+             <number>1</number>
            </property>
           </widget>
          </item>
