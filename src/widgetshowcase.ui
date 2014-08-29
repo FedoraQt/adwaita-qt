@@ -773,6 +773,31 @@
           <string>page 3</string>
         </attribute>
        </widget>
+       <widget class="QLabel" name="tabs_N_4">
+        <attribute name="title">
+          <string>page 4</string>
+        </attribute>
+       </widget>
+       <widget class="QLabel" name="tabs_N_5">
+        <attribute name="title">
+          <string>page 5</string>
+        </attribute>
+       </widget>
+       <widget class="QLabel" name="tabs_N_6">
+        <attribute name="title">
+          <string>page 6</string>
+        </attribute>
+       </widget>
+       <widget class="QLabel" name="tabs_N_7">
+        <attribute name="title">
+          <string>page 7</string>
+        </attribute>
+       </widget>
+       <widget class="QLabel" name="tabs_N_8">
+        <attribute name="title">
+          <string>page 8</string>
+        </attribute>
+       </widget>
       </widget>
      </item>
      <item>
