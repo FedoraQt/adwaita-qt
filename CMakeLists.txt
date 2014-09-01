@@ -5,12 +5,12 @@ add_definitions(-std=c++11)
 
 find_package(Qt4 REQUIRED)
 
-if (NOT CMAKE_PREFIX_PATH)
-    set (CMAKE_PREFIX_PATH "/usr/local")
+if (NOT CMAKE_INSTALL_PREFIX)
+    set (CMAKE_INSTALL_PREFIX "/usr/local")
 endif()
 
 if (NOT QT_ROOT)
-    set(QT_ROOT "${CMAKE_PREFIX_PATH}/lib${LIB_SUFFIX}/qt4")
+    set(QT_ROOT "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/qt4")
 endif()
 if (NOT QT_PLUGIN_PATH)
     set(QT_PLUGIN_PATH "${QT_ROOT}/plugins")
@@ -20,13 +20,15 @@ if (NOT QT_STYLE_PATH)
 endif()
 
 if (NOT DATA_INSTALL_DIR)
-    set (DATA_INSTALL_DIR "${CMAKE_PREFIX_PATH}/share")
+    set (DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share")
 endif()
 if (NOT THEME_INSTALL_DIR)
     set (THEME_INSTALL_DIR "${DATA_INSTALL_DIR}/themes")
 endif()
 
+set(ADWAITA_CSS_FILE "${ADWAITA_THEME_DIR}/adwaita.css")
 set(ADWAITA_THEME_DIR "${THEME_INSTALL_DIR}/Adwaita/qt4")
+set(ADWAITA_ASSET_DIR "${ADWAITA_THEME_DIR}/assets")
 
 add_subdirectory(assets)
 add_subdirectory(src)

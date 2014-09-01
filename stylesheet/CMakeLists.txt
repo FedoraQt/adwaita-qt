@@ -1,6 +1,3 @@
-set(ADWAITA_CSS_FILE "${ADWAITA_THEME_DIR}/adwaita.css")
-mark_as_advanced(ADWAITA_CSS_FILE)
+configure_file(adwaita.css.in "${CMAKE_BINARY_DIR}/adwaita.css" @ONLY)
 
-configure_file(adwaita.css.in adwaita.css @ONLY)
-
-install(FILES "adwaita.css" DESTINATION "${ADWAITA_THEME_DIR}/")
+install(FILES "${CMAKE_BINARY_DIR}/adwaita.css" DESTINATION "${ADWAITA_THEME_DIR}/")

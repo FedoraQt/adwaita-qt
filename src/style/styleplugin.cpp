@@ -21,13 +21,13 @@
 #include "adwaita.h"
 
 QStyle* StylePlugin::create(const QString& key) {
-    if (key.toLower() == "adwaita-qt4")
+    if (key.toLower() == "adwaita")
         return new Adwaita;
     return nullptr;
 }
 
 QStringList StylePlugin::keys() const {
-    return QStringList() << "adwaita-qt4";
+    return QStringList() << "adwaita";
 }
 
-Q_EXPORT_PLUGIN2(adwaita-qt4, StylePlugin)
+Q_EXPORT_PLUGIN2(adwaita, StylePlugin)
