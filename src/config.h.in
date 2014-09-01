@@ -1,0 +1,6 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#define ADWAITA_CSS_FILE "@ADWAITA_CSS_FILE@"
+
+#endif

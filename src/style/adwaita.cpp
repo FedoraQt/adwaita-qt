@@ -21,7 +21,13 @@
 #include <QtGui>
 
 #include "adwaita.h"
+#include "config.h"
 
+Adwaita::Adwaita() : QCommonStyle() {
+    QFile stylesheet(ADWAITA_CSS_FILE);
+    stylesheet.open(QIODevice::ReadOnly);
+    qApp->setStyleSheet(stylesheet.readAll());
+}
 
 void Adwaita::polish(QPalette &palette)
 {

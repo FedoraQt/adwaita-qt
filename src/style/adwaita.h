@@ -24,15 +24,15 @@
 #include <QPalette>
 #include <QCommonStyle>
 #include <QApplication>
+#include <QFile>
+#include <QDebug>
 
 class Adwaita : public QCommonStyle
 {
     Q_OBJECT
 
 public:
-    Adwaita() : QCommonStyle() {
-//         qApp->setStyleSheet("/home/mbriza/upstream/adwaita-qt/adwaita.css");
-    }
+    Adwaita();
 
     void polish(QPalette &palette);
     void polish(QWidget *widget);
