@@ -24,9 +24,7 @@
 #include "config.h"
 
 Adwaita::Adwaita() : QCommonStyle() {
-    QFile stylesheet(ADWAITA_CSS_FILE);
-    stylesheet.open(QIODevice::ReadOnly);
-    qApp->setStyleSheet(stylesheet.readAll());
+    qApp->setStyleSheet(QString("file://%1").arg(ADWAITA_CSS_FILE));
 }
 
 void Adwaita::polish(QPalette &palette)

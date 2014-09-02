@@ -1,6 +1,8 @@
-include_directories(${KDE4_INCLUDES} ${QT_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${QT_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR})
 
 configure_file(config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h @ONLY)
 
-add_subdirectory(example)
+if (KDE4_FOUND)
+    add_subdirectory(example)
+endif()
 add_subdirectory(style)

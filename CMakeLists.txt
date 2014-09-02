@@ -3,7 +3,10 @@ cmake_minimum_required(VERSION 2.8.11)
 set(CMAKE_AUTOMOC ON)
 add_definitions(-std=c++11)
 
-find_package(Qt4 REQUIRED)
+find_package(KDE4)
+if (NOT KDE4_FOUND)
+    find_package(Qt4 REQUIRED)
+endif()
 
 if (NOT CMAKE_INSTALL_PREFIX)
     set (CMAKE_INSTALL_PREFIX "/usr/local")

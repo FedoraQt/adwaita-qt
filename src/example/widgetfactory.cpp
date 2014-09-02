@@ -21,7 +21,6 @@
 #include <QtGui>
 #include <QLayout>
 
-#include "adwaita.h"
 #include "widgetfactory.h"
 #include "widgetshowcase.h"
 
@@ -60,5 +59,5 @@ WidgetFactory::WidgetFactory(QWidget *parent)
     setCentralWidget(new WidgetShowcase(this));
 
     setWindowTitle(tr("Qt/GTK+ Widget Factory"));
-    QApplication::setStyle(new Adwaita);
+    QApplication::setStyle("adwaita");
 }
