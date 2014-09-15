@@ -3,10 +3,7 @@ cmake_minimum_required(VERSION 2.8.11)
 set(CMAKE_AUTOMOC ON)
 add_definitions(-std=c++11)
 
-find_package(KDE4)
-if (NOT KDE4_FOUND)
-    find_package(Qt4 REQUIRED)
-endif()
+find_package(Qt4 REQUIRED)
 
 if (NOT CMAKE_INSTALL_PREFIX)
     set (CMAKE_INSTALL_PREFIX "/usr/local")
@@ -24,13 +21,15 @@ endif()
 
 if (NOT DATA_INSTALL_DIR)
     set (DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share")
+else()
+    message("${DATA_INSTALL_DIR}")
 endif()
 if (NOT THEME_INSTALL_DIR)
     set (THEME_INSTALL_DIR "${DATA_INSTALL_DIR}/themes")
 endif()
 
-set(ADWAITA_CSS_FILE "${ADWAITA_THEME_DIR}/adwaita.css")
 set(ADWAITA_THEME_DIR "${THEME_INSTALL_DIR}/Adwaita/qt4")
+set(ADWAITA_CSS_FILE "${ADWAITA_THEME_DIR}/adwaita.css")
 set(ADWAITA_ASSET_DIR "${ADWAITA_THEME_DIR}/assets")
 
 add_subdirectory(assets)
