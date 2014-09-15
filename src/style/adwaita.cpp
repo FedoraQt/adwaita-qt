@@ -24,7 +24,7 @@
 #include "config.h"
 
 Adwaita::Adwaita() : QCommonStyle() {
-    qApp->setStyleSheet(QString("file://%1").arg(ADWAITA_CSS_FILE));
+    qApp->setStyleSheet(QString("file:///%1").arg(ADWAITA_CSS_FILE));
 }
 
 void Adwaita::polish(QPalette &palette)
