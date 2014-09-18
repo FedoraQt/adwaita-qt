@@ -23,6 +23,7 @@ QFrame:flat {
 
 QLabel {
     border: none;
+    border-color: green;
     background: #ededed;
 }
 
@@ -93,7 +94,10 @@ QColumnView {
 
 /* dialogs */
 QDialog {
-    background: white;
+    background: red;
+}
+KColorDialog {
+    background: red;
 }
 
 /* radios */
@@ -646,8 +650,7 @@ QMenuBar {
 /* } */
 
 QMenuBar::item {
-    margin: 0px 4px;
-    padding: 4px 6px;
+    padding: 4px 10px;
     background: #e3e3e3;
 }
 /* QMenuBar::item:!active { */
@@ -660,14 +663,12 @@ QMenuBar::item:selected {
 
 QMenu {
     margin-left: 4px;
+    padding-right: 8px;
     background: white;
-    padding: 0px;
 }
 QMenu::item {
     subcontrol-origin: content;
     subcontrol-position: left center;
-    margin-left: 16px;
-    padding: 2px;
 }
 QMenu::icon {
     subcontrol-origin: border;
@@ -703,9 +704,26 @@ QGroupBox {
     padding: 0px;
 }
 
+QGroupBox:title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 3px;
+}
+
 QGroupBox:!active {
     border-width: 1px;
     border-style: solid;
     border-color: #a8a8a8;
 }
 
+QStatusBar {
+    background: transparent;
+}
+
+QStatusBar::item {
+    border: none
+}
+
+QStatusBar QLabel {
+    border: none
+}

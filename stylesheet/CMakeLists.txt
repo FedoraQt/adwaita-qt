@@ -1,1 +1,1 @@
-install(FILES "${CMAKE_BINARY_DIR}/adwaita.css" DESTINATION "${ADWAITA_THEME_DIR}/")
+install(FILES "adwaita.css" DESTINATION "${ADWAITA_THEME_DIR}/")
