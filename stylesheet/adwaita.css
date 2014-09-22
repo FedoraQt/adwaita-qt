@@ -23,8 +23,7 @@ QFrame:flat {
 
 QLabel {
     border: none;
-    border-color: green;
-    background: #ededed;
+    background: transparent;
 }
 
 /* scrollbars */
@@ -66,6 +65,8 @@ QTableView {
 QHeaderView::section {
     text-align: left;
     color: #96999a;
+    padding-left: 4px;
+    padding-right: 4px;
     padding-top: 6px;
     padding-bottom: 6px;
     border-style: solid;
@@ -94,10 +95,7 @@ QColumnView {
 
 /* dialogs */
 QDialog {
-    background: red;
-}
-KColorDialog {
-    background: red;
+    background: #ededed;
 }
 
 /* radios */
@@ -662,20 +660,21 @@ QMenuBar::item:selected {
 }
 
 QMenu {
-    margin-left: 4px;
-    padding-right: 8px;
+    padding-right: 4px;
     background: white;
 }
+
 QMenu::item {
-    subcontrol-origin: content;
-    subcontrol-position: left center;
+}
+QMenu::right-arrow {
+    background-color: red;
+    color: black;
 }
 QMenu::icon {
     subcontrol-origin: border;
     subcontrol-position: left center;
-    margin: 0px;
 }
-QMenu::item:focus {
+QMenu::item:selected {
     color: white;
     background: #4a90d9;
 }
@@ -726,4 +725,8 @@ QStatusBar::item {
 
 QStatusBar QLabel {
     border: none
+}
+
+QStackedWidget QWidget {
+    background: #ededed;
 }

@@ -33,7 +33,7 @@ void Adwaita::polish(QPalette &palette)
     palette.setColor(QPalette::All,      QPalette::Window,          QColor("#ededed"));
     palette.setColor(QPalette::All,      QPalette::WindowText,      QColor("#2e3436"));
     palette.setColor(QPalette::All,      QPalette::Base,            QColor("white"));
-    palette.setColor(QPalette::All,      QPalette::AlternateBase,   QColor("#2e3436"));
+    palette.setColor(QPalette::All,      QPalette::AlternateBase,   QColor("#ededed"));
     palette.setColor(QPalette::All,      QPalette::ToolTipBase,     QColor("#060606"));
     palette.setColor(QPalette::All,      QPalette::ToolTipText,     QColor("white"));
     palette.setColor(QPalette::All,      QPalette::Text,            QColor("#2e3436"));
