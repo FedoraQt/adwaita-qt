@@ -55,6 +55,8 @@ public:
     void drawComplexControl(ComplexControl control,
                             const QStyleOptionComplex* option,
                             QPainter* painter, const QWidget* widget) const;
+private:
+    QString m_styleSheet;
 };
 
 #endif // ADWAITA_H

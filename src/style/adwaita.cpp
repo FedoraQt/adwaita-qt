@@ -24,7 +24,9 @@
 #include "config.h"
 
 Adwaita::Adwaita() : QCommonStyle() {
-    qApp->setStyleSheet(QString("file:///%1").arg(ADWAITA_CSS_FILE));
+    QFile f(ADWAITA_CSS_FILE);
+    f.open(QIODevice::ReadOnly);
+    m_styleSheet = f.readAll();
 }
 
 void Adwaita::polish(QPalette &palette)
@@ -106,10 +108,18 @@ void Adwaita::polish(QPalette &palette)
 
 void Adwaita::polish(QWidget *widget)
 {
+    static bool guard = false;
+    if (!guard) {
+        guard = true;
+        if (widget)
+            widget->setStyleSheet(m_styleSheet);
+        guard = false;
+    }
 }
 
 void Adwaita::polish(QApplication* app)
 {
+    app->setStyleSheet(m_styleSheet);
 }
 
 

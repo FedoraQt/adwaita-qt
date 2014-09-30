@@ -84,8 +84,12 @@ QHeaderView::section:middle, QHeaderView::section:last:horizontal, QHeaderView::
 }
 
 /* lists */
-QListView {
-    background: white;
+
+QListView::item:alternate {
+    background: green;
+}
+QListView::item:alternate {
+    background: red;
 }
 
 /* columns */
@@ -296,10 +300,11 @@ QComboBox {
 
 QComboBox:editable {
     background: qlineargradient(x1:0, y1:0, x2:0.05, y2:1, stop: 0 #c7c7c7, stop: 0.15 white);
+    padding: 4px;
+    margin: 0;
 }
-QComboBox QWidget {
-    background: red;
-    border: none;
+QComboBox > QLineEdit {
+    margin: -4px;
 }
 QComboBox:!editable:on {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -751,7 +756,7 @@ QStackedWidget QWidget {
     background: #ededed;
 }
 
-
+/*
 QTreeView::branch {
         background: palette(base);
 }
@@ -783,3 +788,4 @@ QTreeView::branch:open:has-children:has-siblings {
 QTreeView::branch:open:has-children:!has-siblings {
         background: green;
 }
+*/
