@@ -104,124 +104,124 @@ QDialog {
 
 /* radios */
 QRadioButton::indicator::unchecked {
-    image: url(assets/upstream/radio-unchecked.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/radio-unchecked.png);
 }
 
 QRadioButton::indicator::unchecked:!enabled {
-    image: url(assets/upstream/radio-unchecked-insensitive.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/radio-unchecked-insensitive.png);
 }
 
 QRadioButton::indicator::unchecked:!active {
-    image: url(assets/upstream/radio-unchecked-backdrop.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/radio-unchecked-backdrop.png);
 }
 
 QRadioButton::indicator::unchecked:!active:!enabled {
-    image: url(assets/upstream/radio-unchecked-backdrop-insensitive.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/radio-unchecked-backdrop-insensitive.png);
 }
 
 QRadioButton::indicator:unchecked:hover {
-    image: url(assets/upstream/radio-unchecked-hover.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/radio-unchecked-hover.png);
 }
 
 QRadioButton::indicator:unchecked:pressed {
-    image: url(assets/upstream/radio-unchecked-active.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/radio-unchecked-active.png);
 }
 
 QRadioButton::indicator::checked {
-    image: url(assets/upstream/radio-checked.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/radio-checked.png);
 }
 
 QRadioButton::indicator::checked:!enabled {
-    image: url(assets/upstream/radio-checked-insensitive.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/radio-checked-insensitive.png);
 }
 
 QRadioButton::indicator::checked:!active {
-    image: url(assets/upstream/radio-checked-backdrop.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/radio-checked-backdrop.png);
 }
 
 QRadioButton::indicator::checked:!active:!enabled {
-    image: url(assets/upstream/radio-checked-backdrop-insensitive.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/radio-checked-backdrop-insensitive.png);
 }
 
 QRadioButton::indicator:checked:hover {
-    image: url(assets/upstream/radio-checked-hover.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/radio-checked-hover.png);
 }
 
 QRadioButton::indicator:checked:pressed {
-    image: url(assets/upstream/radio-checked-active.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/radio-checked-active.png);
 }
 
 /* checkboxes */
 QCheckBox::indicator::unchecked {
-    image: url(assets/upstream/checkbox-unchecked.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-unchecked.png);
 }
 
 QCheckBox::indicator::unchecked:!enabled {
-    image: url(assets/upstream/checkbox-unchecked-insensitive.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-unchecked-insensitive.png);
 }
 
 QCheckBox::indicator::unchecked:!active {
-    image: url(assets/upstream/checkbox-unchecked-backdrop.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-unchecked-backdrop.png);
 }
 
 QCheckBox::indicator::unchecked:!active:!enabled {
-    image: url(assets/upstream/checkbox-unchecked-backdrop-insensitive.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-unchecked-backdrop-insensitive.png);
 }
 
 QCheckBox::indicator:unchecked:hover {
-    image: url(assets/upstream/checkbox-unchecked-hover.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-unchecked-hover.png);
 }
 
 QCheckBox::indicator:unchecked:pressed {
-    image: url(assets/upstream/checkbox-unchecked-active.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-unchecked-active.png);
 }
 
 QCheckBox::indicator::checked {
-    image: url(assets/upstream/checkbox-checked.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-checked.png);
 }
 
 QCheckBox::indicator::checked:!enabled {
-    image: url(assets/upstream/checkbox-checked-insensitive.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-checked-insensitive.png);
 }
 
 QCheckBox::indicator::checked:!active {
-    image: url(assets/upstream/checkbox-checked-backdrop.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-checked-backdrop.png);
 }
 
 QCheckBox::indicator::checked:!active:!enabled {
-    image: url(assets/upstream/checkbox-checked-backdrop-insensitive.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-checked-backdrop-insensitive.png);
 }
 
 QCheckBox::indicator:checked:hover {
-    image: url(assets/upstream/checkbox-checked-hover.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-checked-hover.png);
 }
 
 QCheckBox::indicator:checked:pressed {
-    image: url(assets/upstream/checkbox-checked-active.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-checked-active.png);
 }
 
 QCheckBox::indicator::indeterminate {
-    image: url(assets/upstream/checkbox-mixed.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-mixed.png);
 }
 
 QCheckBox::indicator::indeterminate:!enabled {
-    image: url(assets/upstream/checkbox-mixed-insensitive.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-mixed-insensitive.png);
 }
 
 QCheckBox::indicator::indeterminate:!active {
-    image: url(assets/upstream/checkbox-mixed-backdrop.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-mixed-backdrop.png);
 }
 
 QCheckBox::indicator::indeterminate:!active:!enabled {
-    image: url(assets/upstream/checkbox-mixed-backdrop-insensitive.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-mixed-backdrop-insensitive.png);
 }
 
 QCheckBox::indicator:indeterminate:hover {
-    image: url(assets/upstream/checkbox-mixed-hover.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-mixed-hover.png);
 }
 
 QCheckBox::indicator:indeterminate:pressed {
-    image: url(assets/upstream/checkbox-mixed-active.png);
+    image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-mixed-active.png);
 }
 
 /* buttons */
@@ -327,12 +327,12 @@ QComboBox::drop-down:on {
     width: 28px;
 }
 QComboBox::down-arrow {
-    image: url(assets/custom/arrow-large-down.png);
+    image: url(@ADWAITA_ASSET_DIR@/custom/arrow-large-down.png);
     top: 1px;
     right: 1px;
 }
 QComboBox::down-arrow:on {
-    image: url(assets/custom/arrow-large-down-active.png);
+    image: url(@ADWAITA_ASSET_DIR@/custom/arrow-large-down-active.png);
 }
 
 QComboBox::drop-down:editable {
@@ -491,6 +491,9 @@ QAbstractSpinBox:!enabled {
     color: #c7c7c7;
     background: #f4f4f4;
 }
+QAbstractSpinBox > QLineEdit {
+    margin: -4px;
+}
 
 QAbstractSpinBox::up-button {
     subcontrol-origin: border;
@@ -499,14 +502,14 @@ QAbstractSpinBox::up-button {
     border-left-width: 1px;
     border-style: solid;
     border-color: #a8a8a8;
-    image: url(assets/custom/plus-active.png);
+    image: url(@ADWAITA_ASSET_DIR@/custom/plus-active.png);
     image-position: center;
 
     height: 26px;
     width: 28px;
 }
 QAbstractSpinBox::up-button:!enabled {
-    image: url(assets/custom/plus-insensitive.png);
+    image: url(@ADWAITA_ASSET_DIR@/custom/plus-insensitive.png);
 }
 
 
@@ -517,13 +520,13 @@ QAbstractSpinBox::down-button {
     border-width: 1px;
     border-style: solid;
     border-color: #a1a1a1;
-    image: url(assets/custom/minus-active.png);
+    image: url(@ADWAITA_ASSET_DIR@/custom/minus-active.png);
 
     height: 26px;
     width: 28px;
 }
 QAbstractSpinBox::down-button:!enabled {
-    image: url(assets/custom/minus-insensitive.png);
+    image: url(@ADWAITA_ASSET_DIR@/custom/minus-insensitive.png);
 }
 
 
@@ -691,7 +694,7 @@ QMenu {
 QMenu::item {
 }
 QMenu::right-arrow {
-    background: url(assets/custom/arrow-small-right.png);
+    background: url(@ADWAITA_ASSET_DIR@/custom/arrow-small-right.png);
     right: 40;
 }
 QMenu::icon {
