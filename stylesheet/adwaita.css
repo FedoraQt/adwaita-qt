@@ -225,7 +225,7 @@ QCheckBox::indicator:indeterminate:pressed {
 }
 
 /* buttons */
-QPushButton {
+QPushButton, QTabBar QToolButton {
     padding: 6px 4px;
     border-radius: 3px;
     border-width: 1px;
@@ -234,25 +234,22 @@ QPushButton {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop: 0 #fafafa, stop: 1 #e0e0e0);
 }
-QPushButton::item {
-    border: 3px solid pink;
-}
-QPushButton:hover {
+QPushButton:hover, QTabBar QToolButton:hover {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop: 0 #f7f7f7, stop: 1 #ededed);
 }
 
-QPushButton:pressed, QPushButton:checked {
+QPushButton:pressed, QPushButton:checked, QTabBar QToolButton:pressed {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop: 0 #a8a8a8, stop: 0.05 #c0c0c0, stop: 0.15 #d6d6d6);
 }
 
-QPushButton:!active {
+QPushButton:!active, QTabBar QToolButton:!active {
     color: #54595a;
     background: #ededed;
 }
 
-QPushButton:!enabled {
+QPushButton:!enabled, QTabBar QToolButton:!enabled {
     background: #f4f4f4;
 }
 
@@ -303,8 +300,12 @@ QComboBox:editable {
     padding: 4px;
     margin: 0;
 }
+QComboBox:editable:!enabled {
+    background: #f4f4f4;
+}
 QComboBox > QLineEdit {
     margin: -4px;
+    background: transparent;
 }
 QComboBox:!editable:on {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -336,6 +337,9 @@ QComboBox::down-arrow:on {
 }
 
 QComboBox::drop-down:editable {
+}
+QComboBox::drop-down:editable:!enabled {
+    background: #f4f4f4;
 }
 
 QComboBox:!enabled {
@@ -662,6 +666,13 @@ QTabBar QToolButton { /* the scroll buttons are tool buttons */
     border-radius: 3px;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop: 0 #fafafa, stop: 1 #e0e0e0);
+}
+
+QTabBar QToolButton::right-arrow {
+    image: url(@ADWAITA_ASSET_DIR@/custom/arrow-small-right.png);
+}
+QTabBar QToolButton::left-arrow {
+    image: url(@ADWAITA_ASSET_DIR@/custom/arrow-small-left.png);
 }
 
 /* menus */
