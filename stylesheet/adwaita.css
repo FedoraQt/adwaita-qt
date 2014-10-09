@@ -543,123 +543,67 @@ QTabWidget {
 }
 
 QTabWidget::tab-bar {
-    alignment: center;
+    alignment: left;
     padding: 0px;
 }
 
 QTabWidget::pane {
-    /*
-    border-top: 32px solid #c7c7c7;
     background: pink;
-    position: absolute;
-    top: -32px;
-    */
+    border: 30px solid #d1d1d1;
+    margin: -30px;
 }
 
-QTabWidget::tab-bar {
-    alignment: left;
-}
 QTabWidget::right-corner {
     background: black;
 }
 
 QTabBar {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 #c7c7c7, stop: 0.03 #d1d1d1, stop: 1 #d3d3d3);
-}
-
-QTabWidget::pane { /* The tab widget frame */
+    background: #d1d1d1;
 }
 
 QTabBar::tab {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop: 0 #fafafa, stop: 1 #e0e0e0);
-    padding: 4px;
-    border-style: solid;
-    border-color: #a1a1a1;
+    border: none;
 }
-QTabBar::tab:selected {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop: 0 #a8a8a8, stop: 0.05 #c0c0c0, stop: 0.15 #d6d6d6);
-}
-
 QTabBar::tab:top, QTabBar::tab:bottom {
-    border-right: 1px;
-    border-style: solid;
-    border-color: #a1a1a1;
+    padding: 6px 12px;
+    margin: 0px 4px;
+}
+QTabBar::tab:left, QTabBar::tab:right{
+    padding: 12px 6px;
+    margin: 4px 0px;
 }
 
 QTabBar::tab:top {
-    border-top: 1px;
+    border-bottom: 2px;
     border-style: solid;
-    border-color: #a1a1a1;
 }
-QTabBar::tab:top:first {
-    border-left: 1px;
-    border-top-left-radius: 3px;
-    border-style: solid;
-    border-color: #a1a1a1;
-}
-QTabBar::tab:top:last {
-    border-top-right-radius: 3px;
-}
-
 QTabBar::tab:bottom {
-    border-bottom: 1px;
+    border-top: 2px;
     border-style: solid;
-    border-color: #a1a1a1;
 }
-QTabBar::tab:bottom:first {
-    border-left: 1px;
-    border-bottom-left-radius: 3px;
-    border-style: solid;
-    border-color: #a1a1a1;
-}
-QTabBar::tab:bottom:last {
-    border-bottom-right-radius: 3px;
-}
-
-QTabBar::tab:left, QTabBar::tab:right {
-    border-bottom: 1px;
-    border-style: solid;
-    border-color: #a1a1a1;
-}
-
 QTabBar::tab:left {
-    border-right: 1px;
+    border-left: 2px;
     border-style: solid;
-    border-color: #a1a1a1;
 }
-QTabBar::tab:left:first {
-    border-top: 1px;
-    border-top-right-radius: 3px;
+QTabBar::tab:right{
+    border-right: 2px;
     border-style: solid;
-    border-color: #a1a1a1;
-}
-QTabBar::tab:left:last {
-    border-bottom-right-radius: 3px;
 }
 
-QTabBar::tab:right {
-    border-left: 1px;
-    border-style: solid;
-    border-color: #a1a1a1;
+
+QTabBar::tab:!selected {
+    border-color: transparent;
 }
-QTabBar::tab:right:first {
-    border-top: 1px;
-    border-top-left-radius: 3px;
-    border-style: solid;
-    border-color: #a1a1a1;
+QTabBar::tab:selected {
+    border-color: #4a90d9;
 }
-QTabBar::tab:right:last {
-    border-bottom-left-radius: 3px;
+QTabBar::tab:hover:!selected {
+    border-color: #a1a1a1;
 }
 
-QTabBar::tear {
-    width: 0px;
-    height: 0px
-}
 
 QTabBar QToolButton { /* the scroll buttons are tool buttons */
+    padding: 2px;
     border-width: 1px;
     border-style: solid;
     border-color: #a1a1a1;
