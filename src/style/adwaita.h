@@ -55,6 +55,10 @@ public:
     void drawComplexControl(ComplexControl control,
                             const QStyleOptionComplex* option,
                             QPainter* painter, const QWidget* widget) const;
+    QRect subElementRect(SubElement r, const QStyleOption* opt,
+                         const QWidget* widget = 0) const;
+    QRect subControlRect(ComplexControl cc, const QStyleOptionComplex* opt,
+                         SubControl sc, const QWidget* w = 0) const;
 private:
     QString m_styleSheet;
 };

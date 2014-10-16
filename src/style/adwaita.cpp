@@ -19,6 +19,7 @@
  */
 
 #include <QtGui>
+#include <QtGui/QPainter>
 
 #include "adwaita.h"
 #include "config.h"
@@ -39,7 +40,14 @@ void Adwaita::polish(QPalette &palette)
     palette.setColor(QPalette::All,      QPalette::ToolTipBase,     QColor("#060606"));
     palette.setColor(QPalette::All,      QPalette::ToolTipText,     QColor("white"));
     palette.setColor(QPalette::All,      QPalette::Text,            QColor("#2e3436"));
-    palette.setColor(QPalette::All,      QPalette::Button,          QColor("#2e3436"));
+
+    QLinearGradient buttonGradient(0.0, 0.0, 0.0, 20.0);
+    buttonGradient.setColorAt(0.0, QColor("#fafafa"));
+    buttonGradient.setColorAt(1.0, QColor("#e0e0e0"));
+    QBrush buttonBrush(buttonGradient);
+
+    palette.setBrush(QPalette::All,      QPalette::Button,          QBrush(buttonGradient));
+
     palette.setColor(QPalette::All,      QPalette::ButtonText,      QColor("#2e3436"));
     palette.setColor(QPalette::All,      QPalette::BrightText,      QColor("white"));
 
@@ -58,8 +66,8 @@ void Adwaita::polish(QPalette &palette)
     // Exceptions for disabled elements in a focused window
     palette.setColor(QPalette::Disabled, QPalette::Window,          QColor("#f4f4f4"));
     palette.setColor(QPalette::Disabled, QPalette::WindowText,      QColor("#8d9091"));
-    palette.setColor(QPalette::Disabled, QPalette::Base,            QColor("#ff1234"));
-    palette.setColor(QPalette::Disabled, QPalette::AlternateBase,   QColor("#ff1234"));
+    palette.setColor(QPalette::Disabled, QPalette::Base,            QColor("white"));
+    palette.setColor(QPalette::Disabled, QPalette::AlternateBase,   QColor("#ededed"));
 //     palette.setColor(QPalette::Disabled, QPalette::ToolTipBase,     QColor("#ff1234"));
 //     palette.setColor(QPalette::Disabled, QPalette::ToolTipText,     QColor("#ff1234"));
     palette.setColor(QPalette::Disabled, QPalette::Text,            QColor("#8d9091"));
@@ -140,7 +148,14 @@ int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *option, const Q
 int Adwaita::styleHint(StyleHint hint, const QStyleOption *option, const QWidget *widget,
                        QStyleHintReturn *returnData) const
 {
-    return QCommonStyle::styleHint(hint, option, widget, returnData);
+    switch (hint) {
+        case QStyle::SH_Menu_SloppySubMenus:
+        case QStyle::SH_Menu_MouseTracking:
+        case QStyle::SH_MenuBar_MouseTracking:
+            return 1;
+        default:
+            return QCommonStyle::styleHint(hint, option, widget, returnData);
+    }
 }
 
 void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter,
@@ -151,16 +166,38 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *option
 
 
 
-void Adwaita::drawControl(ControlElement element, const QStyleOption *option, QPainter *painter,
+void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPainter *p,
                           const QWidget *widget) const
 {
-    QCommonStyle::drawControl(element, option, painter, widget);
+    switch(element) {
+        case CE_ProgressBar: {
+            p->setBrush(opt->palette.mid());
+            QRect troughRect = opt->rect.translated(0, opt->rect.height() / 2 - 3);
+            troughRect.setHeight(6);
+            troughRect.setWidth(opt->rect.width() - 3);
+            p->drawRoundedRect(troughRect, 2, 2);
+
+            p->setBrush(opt->palette.highlight());
+            QRect stateRect = opt->rect.translated(1, opt->rect.height() / 2 - 2);
+            stateRect.setHeight(4);
+            stateRect.setWidth(opt->rect.width() - 5);
+            p->drawRoundedRect(stateRect, 1, 1);
+            break;
+        }
+        default:
+            QCommonStyle::drawControl(element, opt, p, widget);
+            break;
+    }
 }
 
-void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOptionComplex* option,
-                                 QPainter* painter, const QWidget* widget) const
+void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOptionComplex* opt,
+                                 QPainter* p, const QWidget* widget) const
 {
-    QCommonStyle::drawComplexControl(control, option, painter, widget);
+    switch(control) {
+        default:
+            QCommonStyle::drawComplexControl(control, opt, p, widget);
+            break;
+    }
 }
 
 void Adwaita::drawItemPixmap(QPainter* painter, const QRect& rect, int alignment, const QPixmap& pixmap) const
@@ -173,4 +210,15 @@ void Adwaita::drawItemText(QPainter* painter, const QRect& rect, int alignment, 
 {
     QCommonStyle::drawItemText(painter, rect, alignment, pal, enabled, text, textRole);
 }
+
+QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionComplex* opt, QStyle::SubControl sc, const QWidget* w) const
+{
+    return QCommonStyle::subControlRect(cc, opt, sc, w);
+}
+
+QRect Adwaita::subElementRect(QStyle::SubElement r, const QStyleOption* opt, const QWidget* widget) const
+{
+    return QCommonStyle::subElementRect(r, opt, widget);
+}
+
 
