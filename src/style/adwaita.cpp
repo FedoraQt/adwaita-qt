@@ -40,14 +40,7 @@ void Adwaita::polish(QPalette &palette)
     palette.setColor(QPalette::All,      QPalette::ToolTipBase,     QColor("#060606"));
     palette.setColor(QPalette::All,      QPalette::ToolTipText,     QColor("white"));
     palette.setColor(QPalette::All,      QPalette::Text,            QColor("#2e3436"));
-
-    QLinearGradient buttonGradient(0.0, 0.0, 0.0, 20.0);
-    buttonGradient.setColorAt(0.0, QColor("#fafafa"));
-    buttonGradient.setColorAt(1.0, QColor("#e0e0e0"));
-    QBrush buttonBrush(buttonGradient);
-
-    palette.setBrush(QPalette::All,      QPalette::Button,          QBrush(buttonGradient));
-
+    palette.setColor(QPalette::All,      QPalette::Button,          QColor("#e0e0e0"));
     palette.setColor(QPalette::All,      QPalette::ButtonText,      QColor("#2e3436"));
     palette.setColor(QPalette::All,      QPalette::BrightText,      QColor("white"));
 
@@ -140,12 +133,22 @@ void Adwaita::unpolish(QApplication* app)
 }
 
 
-int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
+int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *opt, const QWidget *widget) const
 {
-    return QCommonStyle::pixelMetric(metric, option, widget);
+    switch(metric) {
+        case PM_ButtonShiftVertical:
+        case PM_ButtonShiftHorizontal:
+        case PM_ButtonDefaultIndicator:
+            return 0;
+//         case PM_LayoutHorizontalSpacing:
+        case PM_LayoutVerticalSpacing:
+            return QCommonStyle::pixelMetric(metric, opt, widget) - 1;
+        default:
+            return QCommonStyle::pixelMetric(metric, opt, widget);
+    }
 }
 
-int Adwaita::styleHint(StyleHint hint, const QStyleOption *option, const QWidget *widget,
+int Adwaita::styleHint(StyleHint hint, const QStyleOption *opt, const QWidget *widget,
                        QStyleHintReturn *returnData) const
 {
     switch (hint) {
@@ -154,14 +157,44 @@ int Adwaita::styleHint(StyleHint hint, const QStyleOption *option, const QWidget
         case QStyle::SH_MenuBar_MouseTracking:
             return 1;
         default:
-            return QCommonStyle::styleHint(hint, option, widget, returnData);
+            return QCommonStyle::styleHint(hint, opt, widget, returnData);
     }
 }
 
-void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter,
+void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, QPainter *p,
                             const QWidget *widget) const
 {
-    QCommonStyle::drawPrimitive(element, option, painter, widget);
+    switch(element) {
+        case PE_PanelButtonBevel: {
+            p->setPen(Qt::red);
+            p->setBrush(Qt::blue);
+            p->drawRect(opt->rect);
+        }
+        case PE_PanelButtonCommand: {
+            QRect rect = opt->rect.adjusted(0, 3, -1, -1);
+            QLinearGradient buttonGradient(0.0, rect.top(), 0.0, rect.bottom());
+            if (opt->state & State_Enabled && !(opt->state & State_On)) {
+                buttonGradient.setColorAt(0.0, QColor("#fafafa"));
+                buttonGradient.setColorAt(1.0, QColor("#e0e0e0"));
+            }
+            else if (opt->state & State_Enabled && opt->state & State_On) {
+                buttonGradient.setColorAt(0.0, QColor("#a8a8a8"));
+                buttonGradient.setColorAt(0.05, QColor("#c0c0c0"));
+                buttonGradient.setColorAt(0.15, QColor("#d6d6d6"));
+            }
+            else {
+                buttonGradient.setColorAt(0.0, opt->palette.button().color());
+            }
+            QBrush buttonBrush(buttonGradient);
+            p->setBrush(buttonBrush);
+            p->setPen(QColor("#a1a1a1"));
+            p->drawRoundedRect(rect, 3, 3);
+            break;
+        }
+        default:
+            QCommonStyle::drawPrimitive(element, opt, p, widget);
+            break;
+    }
 }
 
 
@@ -213,12 +246,34 @@ void Adwaita::drawItemText(QPainter* painter, const QRect& rect, int alignment, 
 
 QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionComplex* opt, QStyle::SubControl sc, const QWidget* w) const
 {
-    return QCommonStyle::subControlRect(cc, opt, sc, w);
+    switch(cc) {
+        default:
+            return QCommonStyle::subControlRect(cc, opt, sc, w);
+    }
 }
 
 QRect Adwaita::subElementRect(QStyle::SubElement r, const QStyleOption* opt, const QWidget* widget) const
 {
-    return QCommonStyle::subElementRect(r, opt, widget);
+    switch(r) {
+        case SE_PushButtonContents:
+            return QCommonStyle::subElementRect(r, opt, widget).adjusted(0, 2, 0, 2);
+        case SE_PushButtonLayoutItem:
+        case SE_PushButtonFocusRect:
+        case SE_ToolButtonLayoutItem:
+//             return QCommonStyle::subElementRect(r, opt, widget).adjusted(0, 0, -10, -10);
+        default:
+            return QCommonStyle::subElementRect(r, opt, widget);
+    }
+}
+
+QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt, const QSize& contentsSize, const QWidget* widget) const
+{
+    switch(ct) {
+        case CT_PushButton:
+            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 5);
+        default:
+            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget);
+    }
 }
 
 

@@ -59,6 +59,9 @@ public:
                          const QWidget* widget = 0) const;
     QRect subControlRect(ComplexControl cc, const QStyleOptionComplex* opt,
                          SubControl sc, const QWidget* w = 0) const;
+    QSize sizeFromContents(ContentsType ct, const QStyleOption* opt,
+                           const QSize& contentsSize,
+                           const QWidget* widget = 0) const;
 private:
     QString m_styleSheet;
 };

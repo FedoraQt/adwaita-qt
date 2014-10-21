@@ -224,15 +224,16 @@ QCheckBox::indicator:indeterminate:pressed {
     image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-mixed-active.png);
 }
 
-/* buttons */
+/* buttons
 QPushButton, QTabBar QToolButton {
-    padding: 6px 4px;
+    padding: 5px 4px;
+    margin-bottom: 4px;
     border-radius: 3px;
     border-width: 1px;
     border-style: solid;
     border-color: #a1a1a1;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop: 0 palette(light), stop: 1 palette(dark));
+                                stop: 0 #fafafa, stop: 1 #e0e0e0);
 }
 QPushButton:hover, QTabBar QToolButton:hover {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -252,7 +253,7 @@ QPushButton:!active, QTabBar QToolButton:!active {
 QPushButton:!enabled, QTabBar QToolButton:!enabled {
     background: palette(light);
 }
-
+*/
 QAbstractItemView {
     margin: 0;
     padding: 0;
