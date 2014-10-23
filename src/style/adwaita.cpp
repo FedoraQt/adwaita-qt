@@ -156,6 +156,8 @@ int Adwaita::styleHint(StyleHint hint, const QStyleOption *opt, const QWidget *w
         case QStyle::SH_Menu_MouseTracking:
         case QStyle::SH_MenuBar_MouseTracking:
             return 1;
+        case QStyle::PM_ProgressBarChunkWidth:
+            return 0;
         default:
             return QCommonStyle::styleHint(hint, opt, widget, returnData);
     }
@@ -165,32 +167,34 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
                             const QWidget *widget) const
 {
     switch(element) {
-        case PE_PanelButtonBevel: {
-            p->setPen(Qt::red);
-            p->setBrush(Qt::blue);
-            p->drawRect(opt->rect);
-        }
         case PE_PanelButtonCommand: {
             QRect rect = opt->rect.adjusted(0, 3, -1, -1);
             QLinearGradient buttonGradient(0.0, rect.top(), 0.0, rect.bottom());
-            if (opt->state & State_Enabled && !(opt->state & State_On)) {
-                buttonGradient.setColorAt(0.0, QColor("#fafafa"));
-                buttonGradient.setColorAt(1.0, QColor("#e0e0e0"));
-            }
-            else if (opt->state & State_Enabled && opt->state & State_On) {
-                buttonGradient.setColorAt(0.0, QColor("#a8a8a8"));
-                buttonGradient.setColorAt(0.05, QColor("#c0c0c0"));
-                buttonGradient.setColorAt(0.15, QColor("#d6d6d6"));
+            if (opt->state & State_Active && opt->state & State_Enabled) {
+                if (opt->state & State_On) {
+                    buttonGradient.setColorAt(0.0, QColor("#a8a8a8"));
+                    buttonGradient.setColorAt(0.05, QColor("#c0c0c0"));
+                    buttonGradient.setColorAt(0.15, QColor("#d6d6d6"));
+                }
+                else {
+                    buttonGradient.setColorAt(0.0, QColor("#fafafa"));
+                    buttonGradient.setColorAt(1.0, QColor("#e0e0e0"));
+                }
             }
             else {
                 buttonGradient.setColorAt(0.0, opt->palette.button().color());
             }
             QBrush buttonBrush(buttonGradient);
+            p->save();
             p->setBrush(buttonBrush);
             p->setPen(QColor("#a1a1a1"));
             p->drawRoundedRect(rect, 3, 3);
+            p->restore();
             break;
         }
+        case PE_FrameFocusRect:
+        case PE_IndicatorProgressChunk:
+            break;
         default:
             QCommonStyle::drawPrimitive(element, opt, p, widget);
             break;
@@ -203,18 +207,76 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                           const QWidget *widget) const
 {
     switch(element) {
-        case CE_ProgressBar: {
-            p->setBrush(opt->palette.mid());
-            QRect troughRect = opt->rect.translated(0, opt->rect.height() / 2 - 3);
-            troughRect.setHeight(6);
-            troughRect.setWidth(opt->rect.width() - 3);
-            p->drawRoundedRect(troughRect, 2, 2);
-
-            p->setBrush(opt->palette.highlight());
-            QRect stateRect = opt->rect.translated(1, opt->rect.height() / 2 - 2);
-            stateRect.setHeight(4);
-            stateRect.setWidth(opt->rect.width() - 5);
-            p->drawRoundedRect(stateRect, 1, 1);
+        case CE_ProgressBarGroove: {
+            const QStyleOptionProgressBarV2 *pbopt = qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt);
+            QRect rect = pbopt->rect.adjusted(0, 0, -1, -1);
+            p->save();
+            QLinearGradient bgGrad;
+            if (pbopt->orientation == Qt::Horizontal)
+                bgGrad = QLinearGradient(0.0, rect.top()+1, 0.0, rect.bottom()+1);
+            else
+                bgGrad = QLinearGradient(rect.left()+1, 0.0, rect.right()+1, 0.0);
+            bgGrad.setColorAt(0.0, QColor("#b2b2b2"));
+            bgGrad.setColorAt(0.2, QColor("#d2d2d2"));
+            bgGrad.setColorAt(0.9, QColor("#d2d2d2"));
+            bgGrad.setColorAt(1.0, QColor("#b2b2b2"));
+            p->setBrush(QBrush(bgGrad));
+            p->setPen(QColor("#a1a1a1"));
+            p->drawRoundedRect(rect, 3, 3);
+            p->restore();
+            break;
+        }
+        case CE_ProgressBarContents: {
+            const QStyleOptionProgressBarV2 *pbopt = qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt);
+            QRect rect = pbopt->rect.adjusted(0, 0, -1, -1);
+            p->save();
+            QLinearGradient bgGrad;
+            if (pbopt->orientation == Qt::Horizontal) {
+                if (pbopt->progress >= 0) {
+                    qreal ratio = (((qreal) pbopt->progress) - pbopt->minimum) / (((qreal) pbopt->maximum) - pbopt->minimum);
+                    if (pbopt->invertedAppearance)
+                        rect.adjust(0, 0, -(rect.width() * ratio), 0);
+                    else
+                        rect.adjust(rect.width() * ratio, 0, 0, 0);
+                }
+                bgGrad = QLinearGradient(0.0, rect.top()+1, 0.0, rect.bottom()+1);
+            }
+            else {
+                if (pbopt->progress >= 0) {
+                    qreal ratio = (((qreal) pbopt->progress) - pbopt->minimum) / (((qreal) pbopt->maximum) - pbopt->minimum);
+                    if (pbopt->invertedAppearance)
+                        rect.adjust(0, rect.height() * ratio, 0, 0);
+                    else
+                        rect.adjust(0, 0, 0, -(rect.height() * ratio));
+                }
+                bgGrad = QLinearGradient(rect.left()+1, 0.0, rect.right()+1, 0.0);
+            }
+            bgGrad.setColorAt(0.0, QColor("#4081C5"));
+            if (pbopt->progress >= 0) {
+                bgGrad.setColorAt(0.1, QColor("#4C91D9"));
+                bgGrad.setColorAt(0.95, QColor("#4C91D9"));
+            }
+            else {
+                bgGrad.setColorAt(0.1, QColor("#94CAFF"));
+                bgGrad.setColorAt(0.95, QColor("#94CAFF"));
+            }
+            bgGrad.setColorAt(1.0, QColor("#4081C5"));
+            p->setBrush(QBrush(bgGrad));
+            p->setPen(QColor("black"));
+            p->drawRoundedRect(rect, 2, 2);
+            p->restore();
+            break;
+        }
+        case CE_ProgressBarLabel: {
+            const QStyleOptionProgressBarV2 *pbopt = qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt);
+            p->save();
+            QFont font = p->font();
+            font.setPointSize(8);
+            p->setFont(font);
+            p->setPen("#a8a8a8");
+            p->setBrush(Qt::transparent);
+            p->drawText(pbopt->rect, Qt::AlignHCenter | Qt::AlignBottom, pbopt->text);
+            p->restore();
             break;
         }
         default:
@@ -255,6 +317,39 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
 QRect Adwaita::subElementRect(QStyle::SubElement r, const QStyleOption* opt, const QWidget* widget) const
 {
     switch(r) {
+        case SE_ProgressBarGroove:
+        case SE_ProgressBarContents: {
+            const QStyleOptionProgressBarV2 *pbopt = qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt);
+            if (!pbopt) {
+                qDebug() << "QStyleOptionProgressBarV2 cast failed!";
+                return QCommonStyle::subElementRect(r, opt, widget).adjusted(0, 8, 0, -8);
+            }
+            if (pbopt->textVisible) {
+                if (pbopt->orientation == Qt::Horizontal)
+                    return opt->rect.adjusted(0, 13, 0, 0);
+                else
+                    return opt->rect.adjusted(13, 0, 0, 0);
+            }
+            else {
+                if (pbopt->orientation == Qt::Horizontal)
+                    return opt->rect.adjusted(0, 2, 0, -9);
+                else
+                    return opt->rect.adjusted(2, 0, -9, 0);
+            }
+        }
+        case SE_ProgressBarLabel: {
+            const QStyleOptionProgressBarV2 *pbopt = qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt);
+            if (!pbopt) {
+                qDebug() << "QStyleOptionProgressBarV2 cast failed!";
+                return QCommonStyle::subElementRect(r, opt, widget).adjusted(0, 8, 0, -8);
+            }
+            if (!pbopt->textVisible)
+                return QRect(0, 0, 0, 0);
+            if (pbopt->orientation == Qt::Horizontal)
+                return opt->rect.adjusted(0, 0, 0, -5);
+            else
+                return opt->rect.adjusted(0, 0, -5, 0);
+        }
         case SE_PushButtonContents:
             return QCommonStyle::subElementRect(r, opt, widget).adjusted(0, 2, 0, 2);
         case SE_PushButtonLayoutItem:
@@ -269,6 +364,12 @@ QRect Adwaita::subElementRect(QStyle::SubElement r, const QStyleOption* opt, con
 QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt, const QSize& contentsSize, const QWidget* widget) const
 {
     switch(ct) {
+        case CT_ProgressBar: {
+            if (qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt)->textVisible)
+                return QSize(19, 19);
+            else
+                return QSize(17, 17);
+        }
         case CT_PushButton:
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 5);
         default:
