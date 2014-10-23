@@ -235,9 +235,9 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                 if (pbopt->progress >= 0) {
                     qreal ratio = (((qreal) pbopt->progress) - pbopt->minimum) / (((qreal) pbopt->maximum) - pbopt->minimum);
                     if (pbopt->invertedAppearance)
-                        rect.adjust(0, 0, -(rect.width() * ratio), 0);
-                    else
                         rect.adjust(rect.width() * ratio, 0, 0, 0);
+                    else
+                        rect.adjust(0, 0, -(rect.width() * ratio), 0);
                 }
                 bgGrad = QLinearGradient(0.0, rect.top()+1, 0.0, rect.bottom()+1);
             }
@@ -289,6 +289,19 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
                                  QPainter* p, const QWidget* widget) const
 {
     switch(control) {
+        case CC_Slider: {
+            const QStyleOptionSlider *slOpt = qstyleoption_cast<const QStyleOptionSlider*>(opt);
+            QRect handle = subControlRect(control, slOpt, SC_SliderHandle, widget);
+            p->save();
+            p->setPen("red");
+            p->setBrush(Qt::blue);
+            p->drawRect(slOpt->rect);
+            p->setPen("green");
+            p->setBrush(Qt::green);
+            p->drawRect(handle);
+            p->restore();
+            break;
+        }
         default:
             QCommonStyle::drawComplexControl(control, opt, p, widget);
             break;
@@ -309,9 +322,35 @@ void Adwaita::drawItemText(QPainter* painter, const QRect& rect, int alignment, 
 QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionComplex* opt, QStyle::SubControl sc, const QWidget* w) const
 {
     switch(cc) {
-        default:
-            return QCommonStyle::subControlRect(cc, opt, sc, w);
+        case CC_Slider: {
+            switch (sc) {
+                case SC_SliderHandle: {
+                    const QStyleOptionSlider *slOpt = qstyleoption_cast<const QStyleOptionSlider*>(opt);
+                    QRect rect(0, 0, 0, 0);
+                    if (slOpt->orientation == Qt::Horizontal) {
+                        qreal ratio = (((qreal) slOpt->sliderPosition) - slOpt->minimum) / (((qreal) slOpt->maximum) - slOpt->minimum);
+                        rect.setWidth(slOpt->rect.height());
+                        rect.setHeight(slOpt->rect.height());
+                        if (!slOpt->upsideDown)
+                            rect.translate((slOpt->rect.width() - rect.width()) * ratio, 0);
+                        else
+                            rect.translate((slOpt->rect.width() - rect.width())- (slOpt->rect.width() - rect.width()) * ratio, 0);
+                    }
+                    else {
+                        qreal ratio = (((qreal) slOpt->sliderPosition) - slOpt->minimum) / (((qreal) slOpt->maximum) - slOpt->minimum);
+                        rect.setWidth(slOpt->rect.width());
+                        rect.setHeight(slOpt->rect.width());
+                        if (!slOpt->upsideDown)
+                            rect.translate(0, (slOpt->rect.height() - rect.height()) * ratio);
+                        else
+                            rect.translate(0, (slOpt->rect.height() - rect.height()) - (slOpt->rect.height() - rect.height()) * ratio);
+                    }
+                    return rect;
+                }
+            }
+        }
     }
+    return QCommonStyle::subControlRect(cc, opt, sc, w);
 }
 
 QRect Adwaita::subElementRect(QStyle::SubElement r, const QStyleOption* opt, const QWidget* widget) const
