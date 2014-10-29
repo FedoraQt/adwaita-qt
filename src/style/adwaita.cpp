@@ -112,15 +112,15 @@ void Adwaita::polish(QWidget *widget)
     static bool guard = false;
     if (!guard) {
         guard = true;
-        if (widget)
-            widget->setStyleSheet(m_styleSheet);
+        if (widget->parentWidget() && widget->inherits("QLineEdit") && widget->parentWidget()->inherits("QComboBox"))
+            widget->setStyleSheet(widget->styleSheet().append("QLineEdit { background: transparent; }"));
         guard = false;
     }
 }
 
 void Adwaita::polish(QApplication* app)
 {
-    app->setStyleSheet(m_styleSheet);
+     app->setStyleSheet(m_styleSheet);
 }
 
 

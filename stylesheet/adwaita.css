@@ -1,6 +1,10 @@
 /* basic elements */
 QWidget {
     outline: none;
+    background: transparent;
+}
+
+QMainWindow {
     background: palette(window);
 }
 
