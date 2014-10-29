@@ -83,15 +83,6 @@ QHeaderView::section:middle, QHeaderView::section:last:horizontal, QHeaderView::
     border-width: 0px 0px 1px 1px;
 }
 
-/* lists */
-
-QListView::item:alternate {
-    background: green;
-}
-QListView::item:alternate {
-    background: red;
-}
-
 /* columns */
 QColumnView {
     background: white;
@@ -224,36 +215,6 @@ QCheckBox::indicator:indeterminate:pressed {
     image: url(@ADWAITA_ASSET_DIR@/upstream/checkbox-mixed-active.png);
 }
 
-/* buttons
-QPushButton, QTabBar QToolButton {
-    padding: 5px 4px;
-    margin-bottom: 4px;
-    border-radius: 3px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #a1a1a1;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop: 0 #fafafa, stop: 1 #e0e0e0);
-}
-QPushButton:hover, QTabBar QToolButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop: 0 #f7f7f7, stop: 1 #ededed);
-}
-
-QPushButton:pressed, QPushButton:checked, QTabBar QToolButton:pressed {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop: 0 #a8a8a8, stop: 0.05 #c0c0c0, stop: 0.15 #d6d6d6);
-}
-
-QPushButton:!active, QTabBar QToolButton:!active {
-    color: palette(button-text);
-    background: palette(button);
-}
-
-QPushButton:!enabled, QTabBar QToolButton:!enabled {
-    background: palette(light);
-}
-*/
 QAbstractItemView {
     margin: 0;
     padding: 0;
@@ -361,109 +322,6 @@ QComboBox QListView::item {
     margin-top: 30px;
 }
 
-/*
-QSlider {
-    margin: 5px;
-}
-QSlider::groove {
-    border-width: 1px;
-    border-style: solid;
-    border-color: #a1a1a1;
-    border-radius: 3px;
-    background: #cecece;
-}
-QSlider::groove:horizontal {
-    padding-left: -6px;
-    padding-right: -6px;
-    height: 2px;
-}
-QSlider::groove:vertical {
-    padding-top: -6px;
-    padding-bottom: -6px;
-    width: 2px;
-}
-QSlider::groove:!enabled {
-    background: #f4f4f4;
-}
-QSlider::add-page, QSlider::sub-page {
-    border-width: 1px;
-    border-style: solid;
-    border-color: #a1a1a1;
-    border-radius: 3px;
-}
-QSlider::add-page:vertical, QSlider::sub-page:horizontal {
-    background: #4a90d9;
-}
-QSlider::add-page:horizontal, QSlider::sub-page:vertical {
-    background: #cecece;
-}
-QSlider::add-page:!enabled, QSlider::sub-page:!enabled {
-    background: #f4f4f4;
-}
-QSlider::handle {
-    width: 18px;
-    height: 18px;
-    border-radius: 10px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #999999;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 #fafafa, stop: 0.4 #ededed, stop: 1 #e0e0e0);
-}
-QSlider::handle:horizontal{
-    margin-top: -9px;
-    margin-bottom: -9px;
-}
-QSlider::handle:vertical {
-    margin-left: -9px;
-    margin-right: -9px;
-}
-QSlider::handle:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 white, stop: 0.4 #f7f7f7, stop: 1 #ededed);
-}
-QSlider::handle:pressed {
-    border-width: 1px;
-    border-style: solid;
-    border-color: #153d65;
-}
-QSlider::handle:!enabled {
-    border-width: 1px;
-    border-style: solid;
-    border-color: #c7c7c7;
-    background: #ededed;
-}
-*/
-/*
-QProgressBar {
-    color: #ededed;
-    text-align: center;
-    padding: 1px;
-    border-radius: 3px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #a1a1a1;
-}
-QProgressBar:horizontal {
-    height: 1px;
-    background: qradialgradient(cx:0, cy:0, radius: 5, fx:0.5, fy:1, stop:0 #d4d4d4, stop:1 black);
-}
-QProgressBar:vertical {
-    width: 1px;
-    background: qradialgradient(cx:0, cy:0, radius: 5, fx:1, fy:0.5, stop:0 #d4d4d4, stop:1 black);
-}
-
-QProgressBar::chunk {
-    border-radius: 3px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #184472;
-}
-QProgressBar::chunk:horizontal {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 #3583d5, stop: 0.1 #4a90d9, stop: 0.5 #5f9ddd, stop: 0.9 #4a90d9, stop: 1 #3583d5);
-}
-QProgressBar::chunk:vertical {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 #3583d5, stop: 0.1 #4a90d9, stop: 0.5 #5f9ddd, stop: 0.9 #4a90d9, stop: 1 #3583d5);
-}
-*/
 
 QAbstractSpinBox {
     margin-right: 4px;
@@ -651,7 +509,6 @@ QMenu::item:selected {
 
 QToolBar {
     padding: 6px;
-    background: #ededed;
     border-width: 0 0 1px;
     border: solid #a1a1a1;
     border-radius: 7px 7px 0 0;

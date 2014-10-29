@@ -294,7 +294,7 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
     switch(control) {
         case CC_Slider: {
             const QStyleOptionSlider *slOpt = qstyleoption_cast<const QStyleOptionSlider*>(opt);
-            QRect handle = subControlRect(control, slOpt, SC_SliderHandle, widget).adjusted(0, 0, -1, -1);
+            QRect handle = subControlRect(control, slOpt, SC_SliderHandle, widget).adjusted(1, 1, -1, -1);
             QRect groove = subControlRect(control, slOpt, SC_SliderGroove, widget).adjusted(0, 0, 0, 0);
             QRect grooveFill(groove);
             QRect tick = subControlRect(control, slOpt, SC_SliderTickmarks, widget);
