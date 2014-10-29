@@ -140,6 +140,9 @@ int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *opt, const QWid
         case PM_ButtonShiftHorizontal:
         case PM_ButtonDefaultIndicator:
             return 0;
+        case PM_SliderThickness:
+        case PM_SliderControlThickness:
+            return 20;
 //         case PM_LayoutHorizontalSpacing:
         case PM_LayoutVerticalSpacing:
             return QCommonStyle::pixelMetric(metric, opt, widget) - 1;
@@ -291,14 +294,97 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
     switch(control) {
         case CC_Slider: {
             const QStyleOptionSlider *slOpt = qstyleoption_cast<const QStyleOptionSlider*>(opt);
-            QRect handle = subControlRect(control, slOpt, SC_SliderHandle, widget);
+            QRect handle = subControlRect(control, slOpt, SC_SliderHandle, widget).adjusted(0, 0, -1, -1);
+            QRect groove = subControlRect(control, slOpt, SC_SliderGroove, widget).adjusted(0, 0, 0, 0);
+            QRect grooveFill(groove);
+            QRect tick = subControlRect(control, slOpt, SC_SliderTickmarks, widget);
             p->save();
-            p->setPen("red");
-            p->setBrush(Qt::blue);
-            p->drawRect(slOpt->rect);
-            p->setPen("green");
-            p->setBrush(Qt::green);
-            p->drawRect(handle);
+
+            // groove
+            QLinearGradient bgGrad;
+            if (slOpt->orientation == Qt::Horizontal)
+                bgGrad = QLinearGradient(0.0, groove.top()+1, 0.0, groove.bottom()+1);
+            else
+                bgGrad = QLinearGradient(groove.left()+1, 0.0, groove.right()+1, 0.0);
+            bgGrad.setColorAt(0.0, QColor("#b2b2b2"));
+            bgGrad.setColorAt(0.2, QColor("#d2d2d2"));
+            bgGrad.setColorAt(0.9, QColor("#d2d2d2"));
+            bgGrad.setColorAt(1.0, QColor("#b2b2b2"));
+            p->setBrush(QBrush(bgGrad));
+            p->setPen(QColor("#a1a1a1"));
+            p->drawRoundedRect(groove, 2, 2);
+
+            QLinearGradient fgGrad;
+            if (slOpt->orientation == Qt::Horizontal)
+                fgGrad = QLinearGradient(0.0, grooveFill.top()+1, 0.0, grooveFill.bottom()+1);
+            else
+                fgGrad = QLinearGradient(grooveFill.left()+1, 0.0, grooveFill.right()+1, 0.0);
+            fgGrad.setColorAt(0.0, QColor("#4081C5"));
+            fgGrad.setColorAt(0.1, QColor("#4C91D9"));
+            fgGrad.setColorAt(0.6, QColor("#4C91D9"));
+            fgGrad.setColorAt(0.8, QColor("#4081C5"));
+            if (slOpt->orientation == Qt::Horizontal)
+                if (!slOpt->upsideDown)
+                    grooveFill.setWidth(grooveFill.width() * ((qreal) slOpt->sliderPosition - slOpt->minimum) / (slOpt->maximum - slOpt->minimum));
+                else
+                    grooveFill.adjust(grooveFill.width() - grooveFill.width() * ((qreal) slOpt->sliderPosition - slOpt->minimum) / (slOpt->maximum - slOpt->minimum), 0, 0, 0);
+            else
+                if (!slOpt->upsideDown)
+                    grooveFill.setHeight(grooveFill.height() * ((qreal) slOpt->sliderPosition - slOpt->minimum) / (slOpt->maximum - slOpt->minimum));
+                else
+                    grooveFill.adjust(0, grooveFill.height() - grooveFill.height() * ((qreal) slOpt->sliderPosition - slOpt->minimum) / (slOpt->maximum - slOpt->minimum), 0, 0);
+            p->setBrush(QBrush(fgGrad));
+            p->drawRoundedRect(grooveFill, 2, 2);
+
+            // tickmarks
+            if (slOpt->tickInterval > 0) {
+                p->setPen(Qt::transparent);
+                p->setBrush(QColor("#a1a1a1"));
+                qreal tickStep = 0.0;
+                qreal offset = 0.0;
+                if (slOpt->maximum > 0 && slOpt->maximum > slOpt->minimum) {
+                    if (slOpt->orientation == Qt::Horizontal) {
+                        tickStep = (((qreal) groove.width() - groove.height() + 1) / ((qreal) slOpt->maximum - slOpt->minimum));
+                        offset = tick.x();
+                    }
+                    else {
+                        tickStep = (((qreal) groove.height() - groove.width() + 1) / ((qreal) slOpt->maximum - slOpt->minimum));
+                        offset = tick.y();
+                    }
+                }
+                while (tickStep > 0.0 && tick.right() < (slOpt->rect.right() - handle.width() / 2) && tick.bottom() < (slOpt->rect.bottom() - handle.height() / 2)) {
+                    if (slOpt->orientation == Qt::Horizontal)
+                        tick.moveLeft(offset);
+                    else
+                        tick.moveTop(offset);
+                    p->drawRect(tick);
+                    offset += tickStep;
+                }
+            }
+
+            // handle
+            QLinearGradient buttonGradient(0.0, handle.top(), 0.0, handle.bottom());
+            if (opt->state & State_Active && opt->state & State_Enabled) {
+                if (opt->state & State_On) {
+                    buttonGradient.setColorAt(0.0, QColor("#a8a8a8"));
+                    buttonGradient.setColorAt(0.05, QColor("#c0c0c0"));
+                    buttonGradient.setColorAt(0.15, QColor("#d6d6d6"));
+                }
+                else {
+                    buttonGradient.setColorAt(0.0, QColor("#fafafa"));
+                    buttonGradient.setColorAt(1.0, QColor("#e0e0e0"));
+                }
+            }
+            else {
+                buttonGradient.setColorAt(0.0, opt->palette.button().color());
+            }
+            QBrush buttonBrush(buttonGradient);
+            p->setPen(QColor("#a1a1a1"));
+            p->setBrush(buttonBrush);
+            p->setRenderHint(QPainter::Antialiasing, true);
+            p->drawEllipse(handle);
+            p->setRenderHint(QPainter::Antialiasing, false);
+
             p->restore();
             break;
         }
@@ -323,29 +409,57 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
 {
     switch(cc) {
         case CC_Slider: {
+            const QStyleOptionSlider *slOpt = qstyleoption_cast<const QStyleOptionSlider*>(opt);
             switch (sc) {
                 case SC_SliderHandle: {
-                    const QStyleOptionSlider *slOpt = qstyleoption_cast<const QStyleOptionSlider*>(opt);
-                    QRect rect(0, 0, 0, 0);
+                    QRect handle(0, 0, 0, 0);
                     if (slOpt->orientation == Qt::Horizontal) {
-                        qreal ratio = (((qreal) slOpt->sliderPosition) - slOpt->minimum) / (((qreal) slOpt->maximum) - slOpt->minimum);
-                        rect.setWidth(slOpt->rect.height());
-                        rect.setHeight(slOpt->rect.height());
+                        qreal ratio = ((qreal) slOpt->sliderPosition - slOpt->minimum) / ((qreal) slOpt->maximum - slOpt->minimum);
+                        handle.setWidth(slOpt->rect.height());
+                        handle.setHeight(slOpt->rect.height());
                         if (!slOpt->upsideDown)
-                            rect.translate((slOpt->rect.width() - rect.width()) * ratio, 0);
+                            handle.translate((slOpt->rect.width() - handle.width()) * ratio, 0);
                         else
-                            rect.translate((slOpt->rect.width() - rect.width())- (slOpt->rect.width() - rect.width()) * ratio, 0);
+                            handle.translate((slOpt->rect.width() - handle.width()) - (slOpt->rect.width() - handle.width()) * ratio, 0);
                     }
                     else {
-                        qreal ratio = (((qreal) slOpt->sliderPosition) - slOpt->minimum) / (((qreal) slOpt->maximum) - slOpt->minimum);
-                        rect.setWidth(slOpt->rect.width());
-                        rect.setHeight(slOpt->rect.width());
+                        qreal ratio = ((qreal) slOpt->sliderPosition - slOpt->minimum) / ((qreal) slOpt->maximum - slOpt->minimum);
+                        handle.setWidth(slOpt->rect.width());
+                        handle.setHeight(slOpt->rect.width());
                         if (!slOpt->upsideDown)
-                            rect.translate(0, (slOpt->rect.height() - rect.height()) * ratio);
+                            handle.translate(0, (slOpt->rect.height() - handle.height()) * ratio);
                         else
-                            rect.translate(0, (slOpt->rect.height() - rect.height()) - (slOpt->rect.height() - rect.height()) * ratio);
+                            handle.translate(0, (slOpt->rect.height() - handle.height()) - (slOpt->rect.height() - handle.height()) * ratio);
                     }
-                    return rect;
+                    return handle;
+                }
+                case SC_SliderGroove: {
+                    QRect groove(0, 0, 0, 0);
+                    if (slOpt->orientation == Qt::Horizontal) {
+                        groove.setHeight(3);
+                        groove.setWidth(slOpt->rect.width() - slOpt->rect.height() + 4);
+                        groove.translate(slOpt->rect.height() / 2 - 2, (slOpt->rect.height() - groove.height()) / 2);
+                    }
+                    else {
+                        groove.setWidth(3);
+                        groove.setHeight(slOpt->rect.height() - slOpt->rect.width() + 4);
+                        groove.translate((slOpt->rect.width() - groove.width()) / 2, slOpt->rect.width() / 2 - 2);
+                    }
+                    return groove;
+                }
+                case SC_SliderTickmarks: {
+                    QRect tick(0, 0, 0, 0);
+                    if (slOpt->orientation == Qt::Horizontal) {
+                        tick.setHeight(4);
+                        tick.setWidth(1);
+                        tick.translate((slOpt->rect.height() - tick.width()) / 2, 0);
+                    }
+                    else {
+                        tick.setHeight(1);
+                        tick.setWidth(4);
+                        tick.translate(0, (slOpt->rect.width() - tick.height()) / 2);
+                    }
+                    return tick;
                 }
             }
         }
@@ -371,9 +485,9 @@ QRect Adwaita::subElementRect(QStyle::SubElement r, const QStyleOption* opt, con
             }
             else {
                 if (pbopt->orientation == Qt::Horizontal)
-                    return opt->rect.adjusted(0, 2, 0, -9);
+                    return opt->rect.adjusted(0, 5, 0, -6);
                 else
-                    return opt->rect.adjusted(2, 0, -9, 0);
+                    return opt->rect.adjusted(5, 0, -6, 0);
             }
         }
         case SE_ProgressBarLabel: {
@@ -407,7 +521,10 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
             if (qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt)->textVisible)
                 return QSize(19, 19);
             else
-                return QSize(17, 17);
+                return QSize(1, 1);
+        }
+        case CT_Slider: {
+            return QSize(20, 20);
         }
         case CT_PushButton:
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 5);
