@@ -1,7 +1,7 @@
 /* basic elements */
 QWidget {
     outline: none;
-    background: transparent;
+    background: none;
 }
 
 QMainWindow {
@@ -17,17 +17,17 @@ QFrame {
     border-style: solid;
     border-color: #a1a1a1;
     padding: 0;
-    background: white;
+    background: none;
 }
 
 QFrame:flat {
     border: none;
-    background: transparent;
+    background: none;
 }
 
 QLabel {
     border: none;
-    background: transparent;
+    background: none;
 }
 
 /* scrollbars */
@@ -42,7 +42,7 @@ QScrollBar {
     width: 11px;
 }
 QScrollBar::add-line, QScrollBar::sub-line {
-    background: transparent;
+    background: none;
     border: none;
     width: 0px;
     height: 0px;
@@ -68,7 +68,7 @@ QTableView {
 
 QTableView QTableCornerButton::section {
     border: none;
-    background: transparent;
+    background: none;
     height: 0px;
     width: 0px;
     padding: 0px;
@@ -278,7 +278,7 @@ QComboBox:editable:!enabled {
 }
 QComboBox > QLineEdit {
     margin: -4px;
-    background: transparent;
+    background: none;
 }
 QComboBox:!editable:on {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -534,7 +534,7 @@ QToolBar:handle {
 }
 
 QToolButton {
-    background: transparent;
+    background: none;
 }
 
 QGroupBox {
@@ -557,7 +557,7 @@ QGroupBox:!active {
 }
 
 QStatusBar {
-    background: transparent;
+    background: none;
 }
 
 QStatusBar::item {
@@ -569,12 +569,12 @@ QStatusBar QLabel {
 }
 
 QStackedWidget QWidget {
-    background: #ededed;
+    background: none;
 }
 
 QSplitter {
     border: none;
-    background: transparent;
+    background: none;
 }
 
 QTreeView {
