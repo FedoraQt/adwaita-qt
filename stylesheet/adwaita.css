@@ -396,7 +396,6 @@ QTabWidget {
     border-width: 0px;
     border-style: solid;
     border-color: #a8a8a8;
-    background: pink;
 }
 
 QTabWidget::tab-bar {
@@ -405,9 +404,8 @@ QTabWidget::tab-bar {
 }
 
 QTabWidget::pane {
-    background: pink;
-    border: 30px solid #d1d1d1;
-    margin: -30px;
+    border: 64px solid #d1d1d1;
+    margin: -64px;
 }
 
 QTabWidget::right-corner {
@@ -450,7 +448,7 @@ QTabBar::tab:right{
 
 QTabBar::tab:!selected {
     border-color: transparent;
-    color: #5d6263;
+    color: #8d9091;
 }
 QTabBar::tab:selected {
     border-color: #4a90d9;
