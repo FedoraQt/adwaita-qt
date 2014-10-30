@@ -59,5 +59,4 @@ WidgetFactory::WidgetFactory(QWidget *parent)
     setCentralWidget(new WidgetShowcase(this));
 
     setWindowTitle(tr("Qt/GTK+ Widget Factory"));
-    QApplication::setStyle("adwaita");
 }
