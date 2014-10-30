@@ -174,7 +174,7 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             QRect rect = opt->rect.adjusted(0, 3, -1, -1);
             QLinearGradient buttonGradient(0.0, rect.top(), 0.0, rect.bottom());
             if (opt->state & State_Active && opt->state & State_Enabled) {
-                if (opt->state & State_On) {
+                if (opt->state & State_On || opt->state & State_Sunken) {
                     buttonGradient.setColorAt(0.0, QColor("#a8a8a8"));
                     buttonGradient.setColorAt(0.05, QColor("#c0c0c0"));
                     buttonGradient.setColorAt(0.15, QColor("#d6d6d6"));
