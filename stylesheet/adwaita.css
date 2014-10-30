@@ -480,8 +480,8 @@ QTabBar QToolButton::left-arrow {
 
 /* menus */
 QMenuBar {
+    background: palette(window);
     margin: 0;
-    background: #e3e3e3;
 }
 
 /* QMenuBar:!active { */
@@ -489,8 +489,8 @@ QMenuBar {
 /* } */
 
 QMenuBar::item {
+    background: palette(window);
     padding: 4px 10px;
-    background: #e3e3e3;
 }
 /* QMenuBar::item:!active { */
 /*     background: #ededed; */
