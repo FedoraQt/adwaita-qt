@@ -113,7 +113,7 @@ void Adwaita::polish(QWidget *widget)
 
 void Adwaita::polish(QApplication* app)
 {
-     app->setStyleSheet(m_styleSheet);
+    app->setStyleSheet(m_styleSheet);
 }
 
 
@@ -188,7 +188,7 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             break;
         }
         case PE_PanelLineEdit: {
-            if (widget->parentWidget()->inherits("QComboBox")) {
+            if (widget && widget->parentWidget() && (widget->parentWidget()->inherits("QComboBox") || widget->parentWidget()->inherits("QAbstractSpinBox"))) {
                 break;
             }
             QRect rect = opt->rect.adjusted(0, 0, -1, -1);
@@ -296,6 +296,27 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
                                  QPainter* p, const QWidget* widget) const
 {
     switch(control) {
+        case CC_SpinBox: {
+            const QStyleOptionSpinBox *sbOpt = qstyleoption_cast<const QStyleOptionSpinBox*>(opt);
+            QRect frame = subControlRect(control, sbOpt, SC_SpinBoxFrame).adjusted(0, 0, -1, -1);
+            QRect up = subControlRect(control, sbOpt, SC_SpinBoxUp).adjusted(0, 0, -1, -1);
+            QRect down = subControlRect(control, sbOpt, SC_SpinBoxDown).adjusted(0, 0, -1, -1);
+            QRect edit = subControlRect(control, sbOpt, SC_SpinBoxEditField).adjusted(0, 0, -1, -1);
+            p->save();
+            p->setPen("#a8a8a8");
+            p->setBrush(Qt::white);
+            p->drawRoundedRect(frame, 3, 3);
+            p->setPen("#d6d6d6");
+            p->drawLine(up.topLeft() + QPoint(0, 1), up.bottomLeft());
+            p->drawLine(down.topLeft() + QPoint(0, 1), down.bottomLeft());
+            p->setPen(QColor("#383e40"));
+            p->setBrush(QColor("#383e40"));
+            p->drawRect(QRect(down.center() - QPoint(3, -1), down.center() + QPoint(5, 1)));
+            p->drawRect(QRect(up.center() - QPoint(3, -1), up.center() + QPoint(5, 1)));
+            p->drawRect(QRect(up.center() - QPoint(-1, 3), up.center() + QPoint(1, 5)));
+            p->restore();
+            break;
+        }
         case CC_ComboBox: {
             const QStyleOptionComboBox *cbOpt = qstyleoption_cast<const QStyleOptionComboBox*>(opt);
             QRect frame = subControlRect(control, cbOpt, SC_ComboBoxFrame).adjusted(0, 0, -1, -1);
@@ -468,6 +489,21 @@ void Adwaita::drawItemText(QPainter* painter, const QRect& rect, int alignment, 
 QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionComplex* opt, QStyle::SubControl sc, const QWidget* w) const
 {
     switch(cc) {
+        case CC_SpinBox: {
+            const QStyleOptionSpinBox *cbOpt = qstyleoption_cast<const QStyleOptionSpinBox*>(opt);
+            switch (sc) {
+                case SC_SpinBoxUp: {
+                    return QRect(opt->rect.right() - opt->rect.height() * 1.2 - 1, opt->rect.top(), opt->rect.height() * 1.2 + 1, opt->rect.height());
+                }
+                case SC_SpinBoxDown: {
+                    return QRect(opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), opt->rect.height() * 1.2 + 1, opt->rect.height());
+                }
+                case SC_SpinBoxEditField: {
+                    return QRect(opt->rect.left(), opt->rect.top(), opt->rect.width() - 2 * (opt->rect.height() * 1.2) + 1, opt->rect.height());
+                }
+            }
+            break;
+        }
         case CC_ComboBox: {
             const QStyleOptionComboBox *cbOpt = qstyleoption_cast<const QStyleOptionComboBox*>(opt);
             switch (sc) {
@@ -602,6 +638,9 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
         }
         case CT_Slider: {
             return QSize(20, 20);
+        }
+        case CT_SpinBox: {
+            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 2);
         }
         case CT_PushButton:
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 2);

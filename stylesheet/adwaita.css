@@ -349,7 +349,7 @@ QComboBox > QLineEdit:!enabled {
     padding: 0;
 }
 */
-
+/*
 QAbstractSpinBox {
     margin-right: 4px;
     padding: 4px;
@@ -365,11 +365,11 @@ QAbstractSpinBox:!enabled {
     color: #c7c7c7;
     background: #f4f4f4;
 }
+*/
 /*
 QAbstractSpinBox > QLineEdit {
     margin: -4px;
 }
-*/
 
 QAbstractSpinBox::up-button {
     subcontrol-origin: border;
@@ -404,6 +404,7 @@ QAbstractSpinBox::down-button {
 QAbstractSpinBox::down-button:!enabled {
     image: url(@ADWAITA_ASSET_DIR@/custom/minus-insensitive.png);
 }
+*/
 
 
 
