@@ -194,6 +194,15 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             p->restore();
             break;
         }
+        case PE_PanelLineEdit: {
+            QRect rect = opt->rect.adjusted(0, 0, -1, -1);
+            p->save();
+            p->setBrush(Qt::white);
+            p->setPen(QColor("#a1a1a1"));
+            p->drawRoundedRect(rect, 3, 3);
+            p->restore();
+            break;
+        }
         case PE_FrameFocusRect:
         case PE_IndicatorProgressChunk:
             break;
@@ -338,8 +347,8 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
             if (cbOpt->editable) {
                 p->setBrush(Qt::white);
                 p->setPen(Qt::transparent);
-                p->drawRect(editField.adjusted(-6, 1, 0, -1));
-                p->drawRect(editField.adjusted(-7, 2, 0, -2));
+                p->drawRect(editField.adjusted(-4, 1, 0, -1));
+                p->drawRect(editField.adjusted(-5, 2, 0, -2));
             }
             p->restore();
             break;
@@ -472,7 +481,10 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
                 case SC_ComboBoxEditField: {
                     QRect full = opt->rect;
                     full.setRight(cbOpt->rect.right() - cbOpt->rect.height() * 1.2);
-                    full.setLeft(8);
+                    if (cbOpt->editable)
+                        full.setLeft(6);
+                    else
+                        full.setLeft(10);
                     return full;
                 }
             }
@@ -574,6 +586,9 @@ QRect Adwaita::subElementRect(QStyle::SubElement r, const QStyleOption* opt, con
             else
                 return opt->rect.adjusted(0, 0, -5, 0);
         }
+        case SE_LineEditContents: {
+            return opt->rect.adjusted(6, 1, -6, -1);
+        }
         default:
             return QCommonStyle::subElementRect(r, opt, widget);
     }
@@ -596,6 +611,8 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
         }
         case CT_PushButton:
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 2);
+        case CT_LineEdit:
+            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 6);
         default:
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget);
     }

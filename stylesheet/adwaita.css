@@ -234,7 +234,7 @@ QAbstractItemView {
     selection-background-color: #4a90d9;
     show-decoration-selected: 0;
 }
-
+/*
 QLineEdit {
     padding: 4px;
     border-radius: 3px;
@@ -242,7 +242,6 @@ QLineEdit {
     border-style: solid;
     border-color: #a1a1a1;
     background: qlineargradient(x1:0, y1:0, x2:0.05, y2:1, stop: 0 #c7c7c7, stop: 0.15 white);
-/*     background: qradialgradient(cx:0.5, cy:4, radius: 4, fx:0.5, fy:4, stop:0.96 white stop:0.961 #fafafa, stop:1 #c7c7c7); */
 }
 
 QLineEdit:!enabled {
@@ -257,8 +256,8 @@ QLineEdit:focus {
     border-width: 1px;
     border-style: solid;
     border-color: #4a90d9;
-/*     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 #f7f7f7, stop: 0.9 white); */
 }
+*/
 
 /*
 QComboBox {
@@ -333,6 +332,7 @@ QComboBox QListView::item {
     margin-top: 30px;
 }
 */
+/*
 QComboBox > QLineEdit {
     border: none;
     background: none;
@@ -348,6 +348,7 @@ QComboBox > QLineEdit:!enabled {
     background: none;
     padding: 0;
 }
+*/
 
 QAbstractSpinBox {
     margin-right: 4px;
@@ -364,9 +365,11 @@ QAbstractSpinBox:!enabled {
     color: #c7c7c7;
     background: #f4f4f4;
 }
+/*
 QAbstractSpinBox > QLineEdit {
     margin: -4px;
 }
+*/
 
 QAbstractSpinBox::up-button {
     subcontrol-origin: border;
