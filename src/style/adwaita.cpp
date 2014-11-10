@@ -295,7 +295,7 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
             const QStyleOptionComboBox *cbOpt = qstyleoption_cast<const QStyleOptionComboBox*>(opt);
             QRect frame = subControlRect(control, cbOpt, SC_ComboBoxFrame).adjusted(0, 0, -1, -1);
             QRect arrow = subControlRect(control, cbOpt, SC_ComboBoxArrow).adjusted(-1, 0, -1, -1);
-            QRect editField = subControlRect(control, cbOpt, SC_ComboBoxEditField).adjusted(0, 0, -1, -1);
+            QRect editField = subControlRect(control, cbOpt, SC_ComboBoxEditField).adjusted(0, 0, -1, 0);
             QRect popup = subControlRect(control, cbOpt, SC_ComboBoxListBoxPopup).adjusted(0, 0, -1, -1);
 
             QLinearGradient buttonGradient(0.0, frame.top(), 0.0, frame.bottom());
