@@ -109,13 +109,6 @@ void Adwaita::polish(QPalette &palette)
 
 void Adwaita::polish(QWidget *widget)
 {
-    static bool guard = false;
-    if (!guard) {
-        guard = true;
-        if (widget->parentWidget() && widget->inherits("QLineEdit") && widget->parentWidget()->inherits("QComboBox"))
-            widget->setStyleSheet(widget->styleSheet().append("QLineEdit { background: transparent; }"));
-        guard = false;
-    }
 }
 
 void Adwaita::polish(QApplication* app)
@@ -195,6 +188,9 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             break;
         }
         case PE_PanelLineEdit: {
+            if (widget->parentWidget()->inherits("QComboBox")) {
+                break;
+            }
             QRect rect = opt->rect.adjusted(0, 0, -1, -1);
             p->save();
             p->setBrush(Qt::white);
@@ -347,8 +343,8 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
             if (cbOpt->editable) {
                 p->setBrush(Qt::white);
                 p->setPen(Qt::transparent);
-                p->drawRect(editField.adjusted(-4, 1, 0, -1));
-                p->drawRect(editField.adjusted(-5, 2, 0, -2));
+                p->drawRect(editField.adjusted(2, 1, 0, -1));
+                p->drawRect(editField.adjusted(1, 2, 0, -2));
             }
             p->restore();
             break;
@@ -481,9 +477,7 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
                 case SC_ComboBoxEditField: {
                     QRect full = opt->rect;
                     full.setRight(cbOpt->rect.right() - cbOpt->rect.height() * 1.2);
-                    if (cbOpt->editable)
-                        full.setLeft(6);
-                    else
+                    if (!cbOpt->editable)
                         full.setLeft(10);
                     return full;
                 }
