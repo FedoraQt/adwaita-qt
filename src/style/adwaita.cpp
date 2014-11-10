@@ -328,9 +328,9 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
             p->setBrush(QColor("2e3436"));
             p->setPen(QColor("#2e3436"));
             QPolygon triangle;
-            triangle.append(arrow.center() + QPoint(-3, -1));
-            triangle.append(arrow.center() + QPoint( 5, -1));
-            triangle.append(arrow.center() + QPoint( 1,  3));
+            triangle.append(arrow.center() + QPoint(-4, -1));
+            triangle.append(arrow.center() + QPoint( 4, -1));
+            triangle.append(arrow.center() + QPoint( 0,  3));
 //             triangle.append(arrow.center() + QPoint( 1,  2));
             p->setRenderHint(QPainter::Antialiasing, false);
             p->drawPolygon(triangle, Qt::WindingFill);
@@ -467,11 +467,11 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
             const QStyleOptionComboBox *cbOpt = qstyleoption_cast<const QStyleOptionComboBox*>(opt);
             switch (sc) {
                 case SC_ComboBoxArrow: {
-                    return QRect(cbOpt->rect.right() - cbOpt->rect.height() * 1.2, cbOpt->rect.top(), cbOpt->rect.height() * 1.2, cbOpt->rect.height());
+                    return QRect(cbOpt->rect.right() - cbOpt->rect.height() * 1.2 + 1, cbOpt->rect.top(), cbOpt->rect.height() * 1.2 + 1, cbOpt->rect.height());
                 }
                 case SC_ComboBoxEditField: {
                     QRect full = opt->rect;
-                    full.setRight(cbOpt->rect.right() - cbOpt->rect.height() * 1.2 - 1);
+                    full.setRight(cbOpt->rect.right() - cbOpt->rect.height() * 1.2);
                     full.setLeft(8);
                     return full;
                 }
