@@ -260,6 +260,7 @@ QLineEdit:focus {
 /*     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 #f7f7f7, stop: 0.9 white); */
 }
 
+/*
 QComboBox {
     padding: 4px;
     border-radius: 3px;
@@ -275,10 +276,6 @@ QComboBox:editable {
 }
 QComboBox:editable:!enabled {
     background: #f4f4f4;
-}
-QComboBox > QLineEdit {
-    margin: -4px;
-    background: none;
 }
 QComboBox:!editable:on {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -335,7 +332,22 @@ QComboBox QAbstractItemView::item {min-height:40px;}
 QComboBox QListView::item {
     margin-top: 30px;
 }
-
+*/
+QComboBox > QLineEdit {
+    border: none;
+    background: none;
+    padding: 0;
+}
+QComboBox > QLineEdit:focus {
+    border: none;
+    background: none;
+    padding: 0;
+}
+QComboBox > QLineEdit:!enabled {
+    border: none;
+    background: none;
+    padding: 0;
+}
 
 QAbstractSpinBox {
     margin-right: 4px;

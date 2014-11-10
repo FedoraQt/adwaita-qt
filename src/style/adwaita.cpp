@@ -145,7 +145,6 @@ int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *opt, const QWid
             return 20;
 //         case PM_LayoutHorizontalSpacing:
         case PM_LayoutVerticalSpacing:
-            return QCommonStyle::pixelMetric(metric, opt, widget) - 1;
         default:
             return QCommonStyle::pixelMetric(metric, opt, widget);
     }
@@ -171,7 +170,7 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
 {
     switch(element) {
         case PE_PanelButtonCommand: {
-            QRect rect = opt->rect.adjusted(0, 3, -1, -1);
+            QRect rect = opt->rect.adjusted(0, 0, -1, -1);
             QLinearGradient buttonGradient(0.0, rect.top(), 0.0, rect.bottom());
             if (opt->state & State_Active && opt->state & State_Enabled) {
                 if (opt->state & State_On || opt->state & State_Sunken) {
@@ -292,6 +291,59 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
                                  QPainter* p, const QWidget* widget) const
 {
     switch(control) {
+        case CC_ComboBox: {
+            const QStyleOptionComboBox *cbOpt = qstyleoption_cast<const QStyleOptionComboBox*>(opt);
+            QRect frame = subControlRect(control, cbOpt, SC_ComboBoxFrame).adjusted(0, 0, -1, -1);
+            QRect arrow = subControlRect(control, cbOpt, SC_ComboBoxArrow).adjusted(-1, 0, -1, -1);
+            QRect editField = subControlRect(control, cbOpt, SC_ComboBoxEditField).adjusted(0, 0, -1, -1);
+            QRect popup = subControlRect(control, cbOpt, SC_ComboBoxListBoxPopup).adjusted(0, 0, -1, -1);
+
+            QLinearGradient buttonGradient(0.0, frame.top(), 0.0, frame.bottom());
+            if (opt->state & State_Active && opt->state & State_Enabled) {
+                if (opt->state & State_On || opt->state & State_Sunken) {
+                    buttonGradient.setColorAt(0.0, QColor("#a8a8a8"));
+                    buttonGradient.setColorAt(0.05, QColor("#c0c0c0"));
+                    buttonGradient.setColorAt(0.15, QColor("#d6d6d6"));
+                }
+                else {
+                    buttonGradient.setColorAt(0.0, QColor("#fafafa"));
+                    buttonGradient.setColorAt(1.0, QColor("#e0e0e0"));
+                }
+            }
+            else {
+                buttonGradient.setColorAt(0.0, opt->palette.button().color());
+            }
+            QBrush buttonBrush(buttonGradient);
+
+            p->save();/*
+            p->setBrush(Qt::yellow);
+            p->drawRect(popup);*/
+            p->setPen(QColor("#a1a1a1"));
+            p->setBrush(buttonBrush);
+            p->drawRoundedRect(frame, 3, 3);
+            if (cbOpt->editable) {
+                p->drawLine(arrow.topLeft(), arrow.bottomLeft());
+            }
+            //p->drawRoundedRect(arrow, 3, 3);
+            p->setBrush(QColor("2e3436"));
+            p->setPen(QColor("#2e3436"));
+            QPolygon triangle;
+            triangle.append(arrow.center() + QPoint(-3, -1));
+            triangle.append(arrow.center() + QPoint( 5, -1));
+            triangle.append(arrow.center() + QPoint( 1,  3));
+//             triangle.append(arrow.center() + QPoint( 1,  2));
+            p->setRenderHint(QPainter::Antialiasing, false);
+            p->drawPolygon(triangle, Qt::WindingFill);
+            p->setRenderHint(QPainter::Antialiasing, false);
+            if (cbOpt->editable) {
+                p->setBrush(Qt::white);
+                p->setPen(Qt::transparent);
+                p->drawRect(editField.adjusted(-6, 1, 0, -1));
+                p->drawRect(editField.adjusted(-7, 2, 0, -2));
+            }
+            p->restore();
+            break;
+        }
         case CC_Slider: {
             const QStyleOptionSlider *slOpt = qstyleoption_cast<const QStyleOptionSlider*>(opt);
             QRect handle = subControlRect(control, slOpt, SC_SliderHandle, widget).adjusted(1, 1, -1, -1);
@@ -379,7 +431,10 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
                 buttonGradient.setColorAt(0.0, opt->palette.button().color());
             }
             QBrush buttonBrush(buttonGradient);
-            p->setPen(QColor("#a1a1a1"));
+            if (slOpt->state & State_Selected)
+                p->setPen(QColor("#4a90d9"));
+            else
+                p->setPen(QColor("#a1a1a1"));
             p->setBrush(buttonBrush);
             p->setRenderHint(QPainter::Antialiasing, true);
             p->drawEllipse(handle);
@@ -408,6 +463,21 @@ void Adwaita::drawItemText(QPainter* painter, const QRect& rect, int alignment, 
 QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionComplex* opt, QStyle::SubControl sc, const QWidget* w) const
 {
     switch(cc) {
+        case CC_ComboBox: {
+            const QStyleOptionComboBox *cbOpt = qstyleoption_cast<const QStyleOptionComboBox*>(opt);
+            switch (sc) {
+                case SC_ComboBoxArrow: {
+                    return QRect(cbOpt->rect.right() - cbOpt->rect.height() * 1.2, cbOpt->rect.top(), cbOpt->rect.height() * 1.2, cbOpt->rect.height());
+                }
+                case SC_ComboBoxEditField: {
+                    QRect full = opt->rect;
+                    full.setRight(cbOpt->rect.right() - cbOpt->rect.height() * 1.2 - 1);
+                    full.setLeft(8);
+                    return full;
+                }
+            }
+            break;
+        }
         case CC_Slider: {
             const QStyleOptionSlider *slOpt = qstyleoption_cast<const QStyleOptionSlider*>(opt);
             switch (sc) {
@@ -462,6 +532,7 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
                     return tick;
                 }
             }
+            break;
         }
     }
     return QCommonStyle::subControlRect(cc, opt, sc, w);
@@ -503,12 +574,6 @@ QRect Adwaita::subElementRect(QStyle::SubElement r, const QStyleOption* opt, con
             else
                 return opt->rect.adjusted(0, 0, -5, 0);
         }
-        case SE_PushButtonContents:
-            return QCommonStyle::subElementRect(r, opt, widget).adjusted(0, 2, 0, 2);
-        case SE_PushButtonLayoutItem:
-        case SE_PushButtonFocusRect:
-        case SE_ToolButtonLayoutItem:
-//             return QCommonStyle::subElementRect(r, opt, widget).adjusted(0, 0, -10, -10);
         default:
             return QCommonStyle::subElementRect(r, opt, widget);
     }
@@ -517,6 +582,9 @@ QRect Adwaita::subElementRect(QStyle::SubElement r, const QStyleOption* opt, con
 QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt, const QSize& contentsSize, const QWidget* widget) const
 {
     switch(ct) {
+        case CT_ComboBox: {
+            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 6);
+        }
         case CT_ProgressBar: {
             if (qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt)->textVisible)
                 return QSize(19, 19);
@@ -527,7 +595,7 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
             return QSize(20, 20);
         }
         case CT_PushButton:
-            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 5);
+            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 2);
         default:
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget);
     }
