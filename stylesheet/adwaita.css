@@ -235,6 +235,7 @@ QAbstractItemView {
     show-decoration-selected: 0;
 }
 
+
 QTabWidget {
     border-width: 0px;
     border-style: solid;
@@ -302,7 +303,7 @@ QTabBar::tab:hover:!selected {
 }
 
 
-QTabBar QToolButton { /* the scroll buttons are tool buttons */
+QTabBar QToolButton {
     padding: 2px;
     border-width: 1px;
     border-style: solid;
@@ -318,6 +319,7 @@ QTabBar QToolButton::right-arrow {
 QTabBar QToolButton::left-arrow {
     image: url(@ADWAITA_ASSET_DIR@/custom/arrow-small-left.png);
 }
+
 
 /* menus */
 QMenuBar {

@@ -129,6 +129,9 @@ void Adwaita::unpolish(QApplication* app)
 int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *opt, const QWidget *widget) const
 {
     switch(metric) {
+        case PM_TabBarTabHSpace:
+        case PM_TabBarTabVSpace:
+            return 20;
         case PM_ButtonShiftVertical:
         case PM_ButtonShiftHorizontal:
         case PM_ButtonDefaultIndicator:
@@ -162,6 +165,38 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
                             const QWidget *widget) const
 {
     switch(element) {
+        case PE_IndicatorBranch: {
+            p->save();
+            if (opt->state & State_Children) {
+                p->setBrush(QColor("#a1a1a1"));
+                QPolygon triangle;
+                if (opt->state & State_Open) {
+                    triangle.append(opt->rect.center() + QPoint(-4, -1));
+                    triangle.append(opt->rect.center() + QPoint( 4, -1));
+                    triangle.append(opt->rect.center() + QPoint( 0,  3));
+                }
+                else {
+                    triangle.append(opt->rect.center() + QPoint(-1, -4));
+                    triangle.append(opt->rect.center() + QPoint(-1,  4));
+                    triangle.append(opt->rect.center() + QPoint( 3,  0));
+                }
+                p->setRenderHint(QPainter::Antialiasing, false);
+                p->drawPolygon(triangle, Qt::WindingFill);
+                p->setRenderHint(QPainter::Antialiasing, false);
+            }
+            else {
+                p->setPen(QColor("#d6d6d6"));
+                if (opt->state & State_Item) {
+                    p->drawLine(opt->rect.center().x(), opt->rect.top(), opt->rect.center().x(), opt->rect.center().y());
+                    p->drawLine(opt->rect.center().x(), opt->rect.center().y(), opt->rect.right(), opt->rect.center().y());
+                }
+                if (opt->state & State_Sibling) {
+                    p->drawLine(opt->rect.center().x(), opt->rect.top(), opt->rect.center().x(), opt->rect.bottom());
+                }
+            }
+            p->restore();
+            break;
+        }
         case PE_PanelButtonCommand: {
             QRect rect = opt->rect.adjusted(0, 0, -1, -1);
             QLinearGradient buttonGradient(0.0, rect.top(), 0.0, rect.bottom());
