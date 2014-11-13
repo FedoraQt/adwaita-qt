@@ -129,6 +129,15 @@ void Adwaita::unpolish(QApplication* app)
 int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *opt, const QWidget *widget) const
 {
     switch(metric) {
+        case PM_DefaultFrameWidth:
+            return 0;
+        case PM_MenuBarHMargin:
+        case PM_MenuBarVMargin:
+        case PM_MenuHMargin:
+        case PM_MenuVMargin:
+        case PM_MenuDesktopFrameWidth:
+        case PM_MenuBarPanelWidth:
+            return 0;
         case PM_TabBarTabHSpace:
         case PM_TabBarTabVSpace:
             return 20;
@@ -139,8 +148,6 @@ int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *opt, const QWid
         case PM_SliderThickness:
         case PM_SliderControlThickness:
             return 20;
-//         case PM_LayoutHorizontalSpacing:
-        case PM_LayoutVerticalSpacing:
         default:
             return QCommonStyle::pixelMetric(metric, opt, widget);
     }
@@ -150,6 +157,7 @@ int Adwaita::styleHint(StyleHint hint, const QStyleOption *opt, const QWidget *w
                        QStyleHintReturn *returnData) const
 {
     switch (hint) {
+        case QStyle::SH_EtchDisabledText:
         case QStyle::SH_Menu_SloppySubMenus:
         case QStyle::SH_Menu_MouseTracking:
         case QStyle::SH_MenuBar_MouseTracking:
@@ -165,6 +173,22 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
                             const QWidget *widget) const
 {
     switch(element) {
+        case PE_FrameMenu: {
+            p->save();
+            p->setPen(Qt::transparent);
+            p->setBrush(Qt::transparent);
+            p->drawRect(opt->rect);
+            p->restore();
+            break;
+        }
+        case PE_PanelMenuBar: {
+            p->save();
+            p->setPen(Qt::transparent);
+            p->setBrush(opt->palette.window());
+            p->drawRect(opt->rect);
+            p->restore();
+            break;
+        }
         case PE_IndicatorBranch: {
             p->save();
             if (opt->state & State_Children) {
@@ -250,6 +274,69 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                           const QWidget *widget) const
 {
     switch(element) {
+        case CE_MenuBarEmptyArea: {
+            p->setPen(QColor("#d6d6d6"));
+            p->drawLine(opt->rect.bottomLeft(), opt->rect.bottomRight());
+            break;
+        }
+        case CE_MenuBarItem: {
+            const QStyleOptionMenuItem *miopt = qstyleoption_cast<const QStyleOptionMenuItem*>(opt);
+
+            p->save();
+            p->setPen(Qt::NoPen);
+            p->setBrush(opt->palette.window());
+            p->drawRect(opt->rect);
+
+            if (miopt->state & State_Sunken) {
+                p->setPen(QColor("#4a90d9"));
+                p->setBrush(QColor("#4a90d9"));
+            }
+            else
+                p->setPen(opt->palette.windowText().color());
+            drawItemText(p,
+                         miopt->rect,
+                         Qt::AlignCenter | Qt::AlignVCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine,
+                         miopt->palette,
+                         miopt->state & State_Enabled,
+                         miopt->text,
+                         QPalette::NoRole);
+            p->setPen(Qt::NoPen);
+            p->drawRect(miopt->rect.left(), miopt->rect.bottom() - 2, miopt->rect.right(), miopt->rect.bottom());
+            p->setPen(QColor("#d6d6d6"));
+            p->drawLine(opt->rect.bottomLeft(), opt->rect.bottomRight());
+            p->restore();
+            break;
+        }
+        case CE_MenuEmptyArea: {
+            const QStyleOptionMenuItem *miopt = qstyleoption_cast<const QStyleOptionMenuItem*>(opt);
+            p->save();
+            p->setPen(Qt::transparent);
+            p->setBrush(Qt::white);
+            p->drawRect(opt->rect);
+            p->restore();
+            break;
+        }
+        case CE_MenuItem: {
+            const QStyleOptionMenuItem *miopt = qstyleoption_cast<const QStyleOptionMenuItem*>(opt);
+            QRect rect = miopt->rect;
+            p->save();
+            p->setPen(Qt::transparent);
+            if (miopt->state & State_Selected)
+                p->setBrush(QColor("#4a90d9"));
+            else
+                p->setBrush(Qt::white);
+            p->drawRect(rect);
+            p->setPen(opt->palette.windowText().color());
+            drawItemText(p,
+                         rect.adjusted(16,0,-8,0),
+                         Qt::AlignLeft | Qt::AlignVCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine,
+                         miopt->palette,
+                         miopt->state & State_Enabled,
+                         miopt->text,
+                         QPalette::ButtonText);
+            p->restore();
+            break;
+        }
         case CE_ProgressBarGroove: {
             const QStyleOptionProgressBarV2 *pbopt = qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt);
             QRect rect = pbopt->rect.adjusted(0, 0, -1, -1);
@@ -663,8 +750,18 @@ QRect Adwaita::subElementRect(QStyle::SubElement r, const QStyleOption* opt, con
 QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt, const QSize& contentsSize, const QWidget* widget) const
 {
     switch(ct) {
+        case CT_MenuBarItem: {
+            //const QStyleOptionMenuItem *miopt = qstyleoption_cast<const QStyleOptionMenuItem*>(opt);
+            return QSize(QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget).width() + 16, 23);
+        }
+        case CT_MenuItem: {
+            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(24, 0);
+        }
+        case CT_MenuBar: {
+            return QSize(23, 23);
+        }
         case CT_ComboBox: {
-            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 6);
+            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(8, 10);
         }
         case CT_ProgressBar: {
             if (qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt)->textVisible)
@@ -676,12 +773,12 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
             return QSize(20, 20);
         }
         case CT_SpinBox: {
-            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 2);
+            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(8, 0);
         }
         case CT_PushButton:
-            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 2);
+            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(8, 6);
         case CT_LineEdit:
-            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 6);
+            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(8, 10);
         default:
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget);
     }

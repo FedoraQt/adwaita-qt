@@ -321,23 +321,16 @@ QTabBar QToolButton::left-arrow {
 }
 
 
-/* menus */
+/*
 QMenuBar {
     background: palette(window);
     margin: 0;
 }
 
-/* QMenuBar:!active { */
-/*     background: #ededed; */
-/* } */
-
 QMenuBar::item {
     background: palette(window);
     padding: 4px 10px;
 }
-/* QMenuBar::item:!active { */
-/*     background: #ededed; */
-/* } */
 
 QMenuBar::item:selected {
     background: white;
@@ -350,6 +343,7 @@ QMenu {
 
 QMenu::item {
 }
+
 QMenu::right-arrow {
     background: url(@ADWAITA_ASSET_DIR@/custom/arrow-small-right.png);
     right: 40;
@@ -363,6 +357,7 @@ QMenu::item:selected {
     color: white;
     background: #4a90d9;
 }
+*/
 
 QToolBar {
     padding: 6px;
@@ -436,36 +431,3 @@ QSplitter {
 QTreeView {
     background: white;
 }
-/*
-QTreeView::branch {
-        background: palette(base);
-}
-
-QTreeView::branch:has-siblings:!adjoins-item {
-        background: cyan;
-}
-
-QTreeView::branch:has-siblings:adjoins-item {
-        background: red;
-}
-
-QTreeView::branch:!has-children:!has-siblings:adjoins-item {
-        background: blue;
-}
-
-QTreeView::branch:closed:has-children:has-siblings {
-        background: pink;
-}
-
-QTreeView::branch:has-children:!has-siblings:closed {
-        background: gray;
-}
-
-QTreeView::branch:open:has-children:has-siblings {
-        background: magenta;
-}
-
-QTreeView::branch:open:has-children:!has-siblings {
-        background: green;
-}
-*/
