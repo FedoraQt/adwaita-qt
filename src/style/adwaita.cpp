@@ -168,6 +168,7 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
         case PE_IndicatorBranch: {
             p->save();
             if (opt->state & State_Children) {
+                p->setPen(QColor("#a1a1a1"));
                 p->setBrush(QColor("#a1a1a1"));
                 QPolygon triangle;
                 if (opt->state & State_Open) {
