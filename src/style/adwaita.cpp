@@ -287,12 +287,17 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
             p->setBrush(opt->palette.window());
             p->drawRect(opt->rect);
 
+            p->setPen(QColor("#d6d6d6"));
+            p->drawLine(opt->rect.bottomLeft(), opt->rect.bottomRight());
+
             if (miopt->state & State_Sunken) {
-                p->setPen(QColor("#4a90d9"));
                 p->setBrush(QColor("#4a90d9"));
+                p->drawRect(miopt->rect.left(), miopt->rect.bottom() - 2, miopt->rect.right(), miopt->rect.bottom());
+                p->setPen(QColor("#4a90d9"));
             }
             else
                 p->setPen(opt->palette.windowText().color());
+
             drawItemText(p,
                          miopt->rect,
                          Qt::AlignCenter | Qt::AlignVCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine,
@@ -300,10 +305,6 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                          miopt->state & State_Enabled,
                          miopt->text,
                          QPalette::NoRole);
-            p->setPen(Qt::NoPen);
-            p->drawRect(miopt->rect.left(), miopt->rect.bottom() - 2, miopt->rect.right(), miopt->rect.bottom());
-            p->setPen(QColor("#d6d6d6"));
-            p->drawLine(opt->rect.bottomLeft(), opt->rect.bottomRight());
             p->restore();
             break;
         }
@@ -320,20 +321,46 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
             const QStyleOptionMenuItem *miopt = qstyleoption_cast<const QStyleOptionMenuItem*>(opt);
             QRect rect = miopt->rect;
             p->save();
-            p->setPen(Qt::transparent);
             if (miopt->state & State_Selected)
-                p->setBrush(QColor("#4a90d9"));
+                p->setBrush(opt->palette.highlight());
             else
                 p->setBrush(Qt::white);
+            p->setPen(Qt::transparent);
             p->drawRect(rect);
-            p->setPen(opt->palette.windowText().color());
-            drawItemText(p,
-                         rect.adjusted(16,0,-8,0),
-                         Qt::AlignLeft | Qt::AlignVCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine,
-                         miopt->palette,
-                         miopt->state & State_Enabled,
-                         miopt->text,
-                         QPalette::ButtonText);
+            if (miopt->state & State_Selected)
+                p->setPen(Qt::white);
+            else
+                p->setPen(opt->palette.windowText().color());
+            if (miopt->maxIconWidth) {
+                drawItemPixmap(p, QRect(4, opt->rect.center().y() - 8, 16, 16), Qt::AlignCenter, miopt->icon.pixmap(16, 16));
+                QStringList split = miopt->text.split('\t');
+                drawItemText(p,
+                            rect.adjusted(24,0,-8,0),
+                            Qt::AlignLeft | Qt::AlignVCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine,
+                            miopt->palette,
+                            miopt->state & State_Enabled,
+                            split[0],
+                            QPalette::NoRole);
+                if (split.count() > 1) {
+                    p->setPen(Qt::gray);
+                    drawItemText(p,
+                                 rect.adjusted(24,0,-8,0),
+                                 Qt::AlignRight | Qt::AlignVCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine,
+                                 miopt->palette,
+                                 miopt->state & State_Enabled,
+                                 split[1],
+                                 QPalette::NoRole);
+                }
+            }
+            else {
+                drawItemText(p,
+                            rect.adjusted(16,0,-8,0),
+                            Qt::AlignLeft | Qt::AlignVCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine,
+                            miopt->palette,
+                            miopt->state & State_Enabled,
+                            miopt->text,
+                            QPalette::NoRole);
+            }
             p->restore();
             break;
         }
