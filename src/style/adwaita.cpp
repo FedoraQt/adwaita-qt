@@ -20,6 +20,7 @@
 
 #include <QtGui>
 #include <QtGui/QPainter>
+#include <QtGui/QRgb>
 
 #include "adwaita.h"
 #include "config.h"
@@ -359,7 +360,59 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                 p->setRenderHint(QPainter::Antialiasing, false);
             }
             if (miopt->maxIconWidth) {
-                drawItemPixmap(p, QRect(4, opt->rect.center().y() - 8, 16, 16), Qt::AlignCenter, miopt->icon.pixmap(16, 16));
+                QPixmap icon;
+                // TODO: improve performance - change colors only once
+                if (miopt->checkType == QStyleOptionMenuItem::QStyleOptionMenuItem::NonExclusive) {
+                    if (miopt->checked)
+                        icon = QIcon::fromTheme("checkbox-checked-symbolic", QIcon(":/checkbox-checked-symbolic")).pixmap(16, 16);
+                    else
+                        icon = QIcon::fromTheme("checkbox-symbolic", QIcon(":/checkbox-symbolic")).pixmap(16, 16);
+
+                    if (miopt->state & State_Enabled) {
+                        QImage iconImage = icon.toImage();
+                        for (int i = 0; i < icon.height(); i++) {
+                            for (int j = 0; j < icon.width(); j++) {
+                                uint8_t red = qRed(iconImage.pixel(j, i));
+                                uint8_t green = qGreen(iconImage.pixel(j, i));
+                                uint8_t blue = qBlue(iconImage.pixel(j, i));
+                                uint8_t alpha = qAlpha(iconImage.pixel(j, i));
+                                red = red < 200 ? red >> 1 : red;
+                                green = green < 200 ? green >> 1 : green;
+                                blue = blue < 200 ? blue >> 1 : blue;
+                                iconImage.setPixel(j, i, qRgba(red, green, blue, alpha));
+                            }
+                        }
+                        icon = QPixmap::fromImage(iconImage);
+                    }
+                }
+                else if (miopt->checkType == QStyleOptionMenuItem::QStyleOptionMenuItem::Exclusive) {
+                    if (miopt->checked)
+                        icon = QIcon::fromTheme("radio-checked-symbolic", QIcon(":/radio-checked-symbolic")).pixmap(16, 16);
+                    else
+                        icon = QIcon::fromTheme("radio-symbolic", QIcon(":/radio-symbolic")).pixmap(16, 16);
+
+                    if (miopt->state & State_Enabled) {
+                        QImage iconImage = icon.toImage();
+                        for (int i = 0; i < icon.height(); i++) {
+                            for (int j = 0; j < icon.width(); j++) {
+                                uint8_t red = qRed(iconImage.pixel(j, i));
+                                uint8_t green = qGreen(iconImage.pixel(j, i));
+                                uint8_t blue = qBlue(iconImage.pixel(j, i));
+                                uint8_t alpha = qAlpha(iconImage.pixel(j, i));
+                                red = red < 200 ? red >> 1 : red;
+                                green = green < 200 ? green >> 1 : green;
+                                blue = blue < 200 ? blue >> 1 : blue;
+                                iconImage.setPixel(j, i, qRgba(red, green, blue, alpha));
+                            }
+                        }
+                        icon = QPixmap::fromImage(iconImage);
+                    }
+                }
+                else {
+                    icon = miopt->icon.pixmap(16, 16);
+                }
+                drawItemPixmap(p, QRect(4, opt->rect.center().y() - 8, 16, 16), Qt::AlignCenter, icon);
+
                 QStringList split = miopt->text.split('\t');
                 drawItemText(p,
                             rect.adjusted(24,0,-8,0),
