@@ -320,65 +320,6 @@ QTabBar QToolButton::left-arrow {
     image: url(@ADWAITA_ASSET_DIR@/custom/arrow-small-left.png);
 }
 
-
-/*
-QMenuBar {
-    background: palette(window);
-    margin: 0;
-}
-
-QMenuBar::item {
-    background: palette(window);
-    padding: 4px 10px;
-}
-
-QMenuBar::item:selected {
-    background: white;
-}
-
-QMenu {
-    padding-right: 4px;
-    background: white;
-}
-
-QMenu::item {
-}
-
-QMenu::right-arrow {
-    background: url(@ADWAITA_ASSET_DIR@/custom/arrow-small-right.png);
-    right: 40;
-}
-QMenu::icon {
-    border: none;
-    subcontrol-origin: border;
-    subcontrol-position: left center;
-}
-QMenu::item:selected {
-    color: white;
-    background: #4a90d9;
-}
-*/
-
-QToolBar {
-    padding: 6px;
-    border-width: 0 0 1px;
-    border: solid #a1a1a1;
-    border-radius: 7px 7px 0 0;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 #f7f7f7, stop: 1 #ededed);
-}
-
-QToolBar:handle {
-    image: #a1a1a1;
-}
-
-QToolButton {
-  color: #2e3436;
-  border-color: #a1a1a1;
-  border-width: 1;
-  border-radius: 3;
-  background: qlineargradient(x1:0, y1=0, x2:0, y2:1, stop: 0 #fafafa, stop: 0.4 #ededed, stop: 1 #e0e0e0);
-}
-
 QGroupBox {
     border-width: 1px;
     border-style: solid;

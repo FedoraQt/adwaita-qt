@@ -131,7 +131,10 @@ int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *opt, const QWid
 {
     switch(metric) {
         case PM_DefaultFrameWidth:
+        case PM_ToolBarFrameWidth:
             return 0;
+        case PM_ToolBarItemSpacing:
+            return 2;
         case PM_MenuBarHMargin:
         case PM_MenuBarVMargin:
         case PM_MenuHMargin:
@@ -174,12 +177,11 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
                             const QWidget *widget) const
 {
     switch(element) {
+        case PE_Frame:
+        case PE_FrameDefaultButton:
+        case PE_PanelButtonTool:
+        case PE_FrameButtonTool:
         case PE_FrameMenu: {
-            p->save();
-            p->setPen(Qt::transparent);
-            p->setBrush(Qt::transparent);
-            p->drawRect(opt->rect);
-            p->restore();
             break;
         }
         case PE_PanelMenuBar: {
@@ -275,9 +277,21 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                           const QWidget *widget) const
 {
     switch(element) {
+        case CE_ToolButtonLabel:
+            break;
+        case CE_ToolBar: {
+            p->save();
+            p->setPen(Qt::NoPen);
+            p->setBrush(opt->palette.window());
+            p->drawRect(opt->rect);
+            p->restore();
+            break;
+        }
         case CE_MenuBarEmptyArea: {
+            p->save();
             p->setPen(QColor("#d6d6d6"));
             p->drawLine(opt->rect.bottomLeft(), opt->rect.bottomRight());
+            p->restore();
             break;
         }
         case CE_MenuBarItem: {
@@ -526,6 +540,16 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
                                  QPainter* p, const QWidget* widget) const
 {
     switch(control) {
+        case CC_ToolButton: {
+            const QStyleOptionToolButton *tbOpt = qstyleoption_cast<const QStyleOptionToolButton*>(opt);
+            QRect button = subControlRect(control, opt, SC_ToolButton, widget);
+            p->save();
+            p->drawPixmap(button.topLeft() + QPoint(button.width() < tbOpt->iconSize.width() + 20 ? ((button.width() - tbOpt->iconSize.width()) / 2) : 12, (button.height() - tbOpt->iconSize.height()) / 2), tbOpt->icon.pixmap(tbOpt->iconSize));
+            p->setPen(opt->palette.windowText().color());
+            p->drawText(button.adjusted(tbOpt->iconSize.width() + 16, 0, 0, 0), Qt::AlignVCenter, tbOpt->text);
+            p->restore();
+            break;
+        }
         case CC_SpinBox: {
             const QStyleOptionSpinBox *sbOpt = qstyleoption_cast<const QStyleOptionSpinBox*>(opt);
             QRect frame = subControlRect(control, sbOpt, SC_SpinBoxFrame).adjusted(0, 0, -1, -1);
@@ -719,6 +743,15 @@ void Adwaita::drawItemText(QPainter* painter, const QRect& rect, int alignment, 
 QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionComplex* opt, QStyle::SubControl sc, const QWidget* w) const
 {
     switch(cc) {
+        case CC_ToolButton: {
+            const QStyleOptionToolButton *tbOpt = qstyleoption_cast<const QStyleOptionToolButton*>(opt);
+            switch (sc) {
+                case SC_ToolButton:
+                case SC_ToolButtonMenu:
+                    break;
+            }
+            break;
+        }
         case CC_SpinBox: {
             const QStyleOptionSpinBox *cbOpt = qstyleoption_cast<const QStyleOptionSpinBox*>(opt);
             switch (sc) {
@@ -857,6 +890,9 @@ QRect Adwaita::subElementRect(QStyle::SubElement r, const QStyleOption* opt, con
 QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt, const QSize& contentsSize, const QWidget* widget) const
 {
     switch(ct) {
+        case CT_ToolButton: {
+            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(10, 12);
+        }
         case CT_MenuBarItem: {
             //const QStyleOptionMenuItem *miopt = qstyleoption_cast<const QStyleOptionMenuItem*>(opt);
             return QSize(QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget).width() + 16, 23);
