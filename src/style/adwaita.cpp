@@ -114,7 +114,7 @@ void Adwaita::polish(QWidget *widget)
 
 void Adwaita::polish(QApplication* app)
 {
-    app->setStyleSheet(m_styleSheet);
+//     app->setStyleSheet(m_styleSheet);
 }
 
 
@@ -136,6 +136,8 @@ int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *opt, const QWid
         case PM_ToolBarItemMargin:
         case PM_ToolBarItemSpacing:
             return 0;
+        case PM_TabBarBaseOverlap:
+            return 70;
         case PM_MenuBarHMargin:
         case PM_MenuBarVMargin:
         case PM_MenuHMargin:
@@ -178,6 +180,22 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
                             const QWidget *widget) const
 {
     switch(element) {
+        case PE_FrameTabWidget: {
+            const QStyleOptionTabWidgetFrameV2 *twOpt = qstyleoption_cast<const QStyleOptionTabWidgetFrameV2 *>(opt);
+            const int stripWidth = 32;
+            QRect north(twOpt->rect.left(), twOpt->rect.top() - stripWidth, twOpt->rect.right(), twOpt->rect.top() - 1);
+            QRect south(twOpt->rect.left(), twOpt->rect.bottom() + 1, twOpt->rect.right(), twOpt->rect.bottom() + stripWidth);
+            QRect east(twOpt->rect.left() - stripWidth, twOpt->rect.top(), twOpt->rect.left() - 1, twOpt->rect.bottom());
+            QRect west(twOpt->rect.right() + 1, twOpt->rect.top(), twOpt->rect.right() + stripWidth, twOpt->rect.bottom());
+            p->save();
+            p->setBrush(Qt::red);
+            p->drawRect(north);
+            p->drawRect(south);
+            p->drawRect(east);
+            p->drawRect(west);
+            p->restore();
+            break;
+        }
         case PE_Frame:
         case PE_FrameDefaultButton:
         case PE_PanelButtonTool:
