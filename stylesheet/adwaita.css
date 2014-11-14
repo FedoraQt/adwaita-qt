@@ -1,4 +1,3 @@
-/* basic elements */
 QWidget {
     outline: none;
     background: none;
@@ -11,7 +10,6 @@ QMainWindow {
 QWidget:!active {
 }
 
-/* frames */
 QFrame {
     border-width: 1px;
     border-style: solid;
@@ -29,6 +27,8 @@ QLabel {
     border: none;
     background: none;
 }
+
+
 
 /* scrollbars */
 QScrollBar {

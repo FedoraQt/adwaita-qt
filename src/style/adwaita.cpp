@@ -319,6 +319,16 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
         }
         case CE_MenuItem: {
             const QStyleOptionMenuItem *miopt = qstyleoption_cast<const QStyleOptionMenuItem*>(opt);
+            if (miopt->menuItemType == QStyleOptionMenuItem::Separator) {
+                p->save();
+                p->setPen(Qt::NoPen);
+                p->setBrush(Qt::white);
+                p->drawRect(miopt->rect);
+                p->setPen(QColor("#d6d6d6"));
+                p->drawLine(miopt->rect.left() + 8, miopt->rect.center().y(), miopt->rect.right() - 8, miopt->rect.center().y());
+                p->restore();
+                break;
+            }
             QRect rect = miopt->rect;
             p->save();
             if (miopt->state & State_Selected)
