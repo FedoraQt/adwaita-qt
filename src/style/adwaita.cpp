@@ -133,8 +133,9 @@ int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *opt, const QWid
         case PM_DefaultFrameWidth:
         case PM_ToolBarFrameWidth:
             return 0;
+        case PM_ToolBarItemMargin:
         case PM_ToolBarItemSpacing:
-            return 2;
+            return 0;
         case PM_MenuBarHMargin:
         case PM_MenuBarVMargin:
         case PM_MenuHMargin:
@@ -544,6 +545,22 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
             const QStyleOptionToolButton *tbOpt = qstyleoption_cast<const QStyleOptionToolButton*>(opt);
             QRect button = subControlRect(control, opt, SC_ToolButton, widget);
             p->save();
+            if (opt->state & (State_MouseOver)) {
+                p->setPen(Qt::NoPen);
+                QLinearGradient buttonGradient(0.0, button.top(), 0.0, button.bottom());
+                if (opt->state & State_On || opt->state & State_Sunken) {
+                    buttonGradient.setColorAt(0.0, QColor("#a8a8a8"));
+                    buttonGradient.setColorAt(0.05, QColor("#c0c0c0"));
+                    buttonGradient.setColorAt(0.15, QColor("#d6d6d6"));
+                }
+                else {
+                    buttonGradient.setColorAt(0.0, QColor("#fafafa"));
+                    buttonGradient.setColorAt(1.0, QColor("#e0e0e0"));
+                }
+                p->setBrush(QBrush(buttonGradient));
+                p->drawRect(button);
+            }
+
             p->drawPixmap(button.topLeft() + QPoint(button.width() < tbOpt->iconSize.width() + 20 ? ((button.width() - tbOpt->iconSize.width()) / 2) : 12, (button.height() - tbOpt->iconSize.height()) / 2), tbOpt->icon.pixmap(tbOpt->iconSize));
             p->setPen(opt->palette.windowText().color());
             p->drawText(button.adjusted(tbOpt->iconSize.width() + 16, 0, 0, 0), Qt::AlignVCenter, tbOpt->text);
