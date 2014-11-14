@@ -331,6 +331,23 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                 p->setPen(Qt::white);
             else
                 p->setPen(opt->palette.windowText().color());
+            if (miopt->menuItemType & QStyleOptionMenuItem::SubMenu) {
+                if (miopt->state & State_Selected) {
+                    p->setPen(Qt::white);
+                    p->setBrush(Qt::white);
+                }
+                else {
+                    p->setBrush(QColor("2e3436"));
+                    p->setPen(QColor("#2e3436"));
+                }
+                QPolygon triangle;
+                triangle.append(QPoint(rect.right() - 7, rect.center().y() - 3));
+                triangle.append(QPoint(rect.right() - 7, rect.center().y() + 3));
+                triangle.append(QPoint(rect.right() - 4, rect.center().y()));
+                p->setRenderHint(QPainter::Antialiasing, false);
+                p->drawPolygon(triangle, Qt::WindingFill);
+                p->setRenderHint(QPainter::Antialiasing, false);
+            }
             if (miopt->maxIconWidth) {
                 drawItemPixmap(p, QRect(4, opt->rect.center().y() - 8, 16, 16), Qt::AlignCenter, miopt->icon.pixmap(16, 16));
                 QStringList split = miopt->text.split('\t');
