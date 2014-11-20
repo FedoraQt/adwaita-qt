@@ -181,7 +181,7 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
     switch(element) {
         case PE_FrameTabBarBase: {
             p->save();
-            p->setBrush(Qt::yellow);
+            p->setBrush(QColor("#d6d6d6"));
             p->drawRect(opt->rect.adjusted(0,0,-1,-1));
             p->restore();
             break;
@@ -194,13 +194,26 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             QRect east(twOpt->rect.left() - stripWidth + 1, twOpt->rect.top(), stripWidth - 1, twOpt->rect.height() - 1);
             QRect west(twOpt->rect.right(), twOpt->rect.top(), stripWidth - 1, twOpt->rect.height() - 1);
             p->save();
-            p->setBrush(Qt::green);
+            p->setPen(QColor("#a1a1a1"));
+            p->setBrush(Qt::transparent);
             p->drawRect(twOpt->rect.adjusted(0,0,-1,-1));
-            p->setBrush(Qt::yellow);
+            p->setBrush(QColor("#d6d6d6"));
             p->drawRect(north);
             p->drawRect(south);
             p->drawRect(west);
             p->drawRect(east);
+            QLinearGradient shadowGradient(0.0, 0.0, 0.0, 1.0);
+            shadowGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+            shadowGradient.setColorAt(0.0, QColor("#b0b0b0"));
+            shadowGradient.setColorAt(1.0/(north.height()+1)*4, Qt::transparent);
+            p->setBrush(QBrush(shadowGradient));
+            p->drawRect(north);
+            p->drawRect(south);
+            shadowGradient.setColorAt(0.0, QColor("#b0b0b0"));
+            shadowGradient.setColorAt(1.0/(east.height()+1)*4, Qt::transparent);
+            p->setBrush(QBrush(shadowGradient));
+            p->drawRect(east);
+            p->drawRect(west);
             p->restore();
             break;
         }
