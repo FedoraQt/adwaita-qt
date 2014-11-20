@@ -20,6 +20,7 @@
 
 #include <QtGui>
 #include <QtGui/QPainter>
+#include <QtGui/QTransform>
 #include <QtGui/QRgb>
 
 #include "adwaita.h"
@@ -181,8 +182,44 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
     switch(element) {
         case PE_FrameTabBarBase: {
             p->save();
+            const QStyleOptionTabBarBaseV2 *tbOpt = qstyleoption_cast<const QStyleOptionTabBarBaseV2 *>(opt);
+            QLinearGradient shadowGradient(0.0, 0.0, 0.0, 1.0);
+            shadowGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+            shadowGradient.setColorAt(0.0, QColor("#b0b0b0"));
+            shadowGradient.setColorAt(1.0/(opt->rect.height()+1)*4, Qt::transparent);
+            p->setPen(QColor("#a1a1a1"));
             p->setBrush(QColor("#d6d6d6"));
             p->drawRect(opt->rect.adjusted(0,0,-1,-1));
+            p->setBrush(QBrush(shadowGradient));
+            p->drawRect(opt->rect.adjusted(0,0,-1,-1));
+
+            QPen underline;
+            underline.setWidth(4);
+            underline.setColor(QColor("#4a90d9"));
+            p->setPen(underline);
+
+            if (tbOpt) {
+                switch (tbOpt->shape) {
+                    case QTabBar::RoundedNorth:
+                    case QTabBar::TriangularNorth:
+                        p->drawLine(tbOpt->selectedTabRect.bottomLeft(), tbOpt->selectedTabRect.bottomRight());
+                        break;
+                    case QTabBar::RoundedEast:
+                    case QTabBar::TriangularEast:
+                        p->drawLine(tbOpt->selectedTabRect.topLeft(), tbOpt->selectedTabRect.bottomLeft());
+                        break;
+                    case QTabBar::RoundedWest:
+                    case QTabBar::TriangularWest:
+                        p->drawLine(tbOpt->selectedTabRect.topRight(), tbOpt->selectedTabRect.bottomRight());
+                        break;
+                    case QTabBar::RoundedSouth:
+                    case QTabBar::TriangularSouth:
+                        p->drawLine(tbOpt->selectedTabRect.topLeft(), tbOpt->selectedTabRect.topRight());
+                        break;
+                    default:
+                        break;
+                }
+            }
             p->restore();
             break;
         }
@@ -214,6 +251,32 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             p->setBrush(QBrush(shadowGradient));
             p->drawRect(east);
             p->drawRect(west);
+
+            QPen underline;
+            underline.setWidth(3);
+            underline.setColor(QColor("#4a90d9"));
+            p->setPen(underline);
+
+            switch (twOpt->shape) {
+                case QTabBar::RoundedNorth:
+                case QTabBar::TriangularNorth:
+                    p->drawLine(twOpt->selectedTabRect.bottomLeft(), twOpt->selectedTabRect.bottomRight());
+                    break;
+                case QTabBar::RoundedEast:
+                case QTabBar::TriangularEast:
+                    p->drawLine(twOpt->selectedTabRect.topLeft(), twOpt->selectedTabRect.bottomLeft());
+                    break;
+                case QTabBar::RoundedWest:
+                case QTabBar::TriangularWest:
+                    p->drawLine(twOpt->selectedTabRect.topRight(), twOpt->selectedTabRect.bottomRight());
+                    break;
+                case QTabBar::RoundedSouth:
+                case QTabBar::TriangularSouth:
+                    p->drawLine(twOpt->selectedTabRect.topLeft(), twOpt->selectedTabRect.topRight());
+                    break;
+                default:
+                    break;
+            }
             p->restore();
             break;
         }
@@ -317,6 +380,135 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                           const QWidget *widget) const
 {
     switch(element) {
+        case CE_TabBarTabLabel:
+        case CE_TabBarTabShape: {
+            p->save();
+            p->setBrush(Qt::red);
+            p->drawRect(opt->rect);
+            p->restore();
+            break;
+        }
+        case CE_TabBarTab: {
+            const QStyleOptionTabV3 *tabOpt = qstyleoption_cast<const QStyleOptionTabV3 *>(opt);
+            p->save();
+
+            QRect icon;
+            QRect text = tabOpt->rect.adjusted(-1, 0, 1, 1);
+            p->setClipRect(text);
+
+            enum {
+                L2R = 0,
+                T2B = 90,
+                B2T = 270
+            } direction = L2R;
+
+            switch (tabOpt->shape) {
+                case QTabBar::RoundedEast:
+                case QTabBar::TriangularEast: {
+                    direction = T2B;
+                    QTransform transform = QTransform::fromTranslate(text.right(), 0);
+                    transform.rotate(direction);
+                    p->setTransform(transform);
+                    text = QRect(QPoint(text.y(), text.x()), QSize(text.height(), text.width()));
+                    break;
+                }
+                case QTabBar::RoundedWest:
+                case QTabBar::TriangularWest: {
+                    direction = B2T;
+                    QTransform transform = QTransform::fromTranslate(0, 0);
+                    transform.rotate(direction);
+                    p->setTransform(transform);
+                    text = QRect(QPoint(-text.bottom(), text.x()), QSize(text.height(), text.width()));
+                    break;
+                }
+                case QTabBar::RoundedSouth:
+                case QTabBar::TriangularSouth:
+                    text.adjust(0, 0, 0, -1);
+                    break;
+                default:
+                    break;
+            }
+
+            if (!tabOpt->leftButtonSize.isEmpty())
+                text.adjust(tabOpt->leftButtonSize.width(), 0, 0, 0);
+
+            if (!tabOpt->leftButtonSize.isEmpty())
+                text.adjust(0, 0, -(tabOpt->rightButtonSize.width()), 0);
+
+            if (!tabOpt->iconSize.isEmpty()) {
+                p->drawPixmap(text, tabOpt->icon.pixmap(tabOpt->iconSize));
+                text.adjust(tabOpt->leftButtonSize.width(), 0, 0, 0);
+            }
+
+            p->drawText(text, Qt::AlignCenter | Qt::TextShowMnemonic, tabOpt->text);
+
+#if 0
+            if (!tabOpt->leftButtonSize.isEmpty()) {
+                text.adjust();
+            }
+            
+            
+            QRect tr = tabOpt->rect;
+            bool verticalTabs = tabOpt->shape == QTabBar::RoundedEast
+                                || tabOpt->shape == QTabBar::RoundedWest
+                                || tabOpt->shape == QTabBar::TriangularEast
+                                || tabOpt->shape == QTabBar::TriangularWest;
+
+            int alignment = Qt::AlignCenter | Qt::TextShowMnemonic;
+            if (!proxy()->styleHint(SH_UnderlineShortcut, opt, widget))
+                alignment |= Qt::TextHideMnemonic;
+
+            if (verticalTabs) {
+                p->save();
+                int newX, newY, newRot;
+                if (tabOpt->shape == QTabBar::RoundedEast || tabOpt->shape == QTabBar::TriangularEast) {
+                    newX = tr.width() + tr.x();
+                    newY = tr.y();
+                    newRot = 90;
+                } else {
+                    newX = tr.x();
+                    newY = tr.y() + tr.height();
+                    newRot = -90;
+                }
+                QTransform m = QTransform::fromTranslate(newX, newY);
+                m.rotate(newRot);
+                p->setTransform(m, true);
+            }
+            QRect iconRect;
+            tabOpt->
+            tr = subElementRect(SE_TabBarTabText, opt, widget); //we compute tr twice because the style may override subElementRect
+
+            if (!tabOpt->icon.isNull()) {
+                QPixmap tabIcon = tabOpt->icon.pixmap(tabOpt->iconSize,
+                                                    (tabOpt->state & State_Enabled) ? QIcon::Normal
+                                                                                  : QIcon::Disabled,
+                                                    (tabOpt->state & State_Selected) ? QIcon::On
+                                                                                   : QIcon::Off);
+                p->drawPixmap(iconRect.x(), iconRect.y(), tabIcon);
+            }
+
+            p->drawText(tr, alignment, tabOpt->text);
+            //proxy()->drawItemText(p, tr, alignment, tabOpt->palette, tabOpt->state & State_Enabled, tabOpt->text, QPalette::WindowText);
+            if (verticalTabs)
+                p->restore();
+
+            if (tabOpt->state & State_HasFocus) {
+                const int OFFSET = 1 + pixelMetric(PM_DefaultFrameWidth, tabOpt, widget);
+
+                int x1, x2;
+                x1 = tabOpt->rect.left();
+                x2 = tabOpt->rect.right() - 1;
+
+                QStyleOptionFocusRect fropt;
+                fropt.QStyleOption::operator=(*tabOpt);
+                fropt.rect.setRect(x1 + 1 + OFFSET, tabOpt->rect.y() + OFFSET,
+                                   x2 - x1 - 2*OFFSET, tabOpt->rect.height() - 2*OFFSET);
+                drawPrimitive(PE_FrameFocusRect, &fropt, p, widget);
+            }
+#endif
+            p->restore();
+            break;
+        }
         case CE_ToolButtonLabel:
             break;
         case CE_ToolBar: {
