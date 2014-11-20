@@ -382,21 +382,17 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                           const QWidget *widget) const
 {
     switch(element) {
-        case CE_TabBarTabLabel:
         case CE_TabBarTabShape: {
             p->save();
-            p->setBrush(Qt::red);
-            p->drawRect(opt->rect);
             p->restore();
             break;
         }
+        case CE_TabBarTabLabel:
         case CE_TabBarTab: {
             const QStyleOptionTabV3 *tabOpt = qstyleoption_cast<const QStyleOptionTabV3 *>(opt);
             p->save();
 
-            QRect icon;
             QRect text = tabOpt->rect.adjusted(-1, 0, 1, 1);
-            p->setClipRect(text);
 
             enum {
                 L2R = 0,
@@ -432,82 +428,18 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
             }
 
             if (!tabOpt->leftButtonSize.isEmpty())
-                text.adjust(tabOpt->leftButtonSize.width(), 0, 0, 0);
+                text.adjust(4 + tabOpt->leftButtonSize.width(), 0, 0, 0);
 
             if (!tabOpt->leftButtonSize.isEmpty())
-                text.adjust(0, 0, -(tabOpt->rightButtonSize.width()), 0);
+                text.adjust(0, 0, -(4 + tabOpt->rightButtonSize.width()), 0);
 
             if (!tabOpt->iconSize.isEmpty()) {
-                p->drawPixmap(text, tabOpt->icon.pixmap(tabOpt->iconSize));
+                p->drawPixmap(QRect(4 + text.left(), text.center().y() - tabOpt->iconSize.height() / 2, tabOpt->iconSize.width(), tabOpt->iconSize.height()), tabOpt->icon.pixmap(tabOpt->iconSize));
                 text.adjust(tabOpt->leftButtonSize.width(), 0, 0, 0);
             }
 
             p->drawText(text, Qt::AlignCenter | Qt::TextShowMnemonic, tabOpt->text);
 
-#if 0
-            if (!tabOpt->leftButtonSize.isEmpty()) {
-                text.adjust();
-            }
-            
-            
-            QRect tr = tabOpt->rect;
-            bool verticalTabs = tabOpt->shape == QTabBar::RoundedEast
-                                || tabOpt->shape == QTabBar::RoundedWest
-                                || tabOpt->shape == QTabBar::TriangularEast
-                                || tabOpt->shape == QTabBar::TriangularWest;
-
-            int alignment = Qt::AlignCenter | Qt::TextShowMnemonic;
-            if (!proxy()->styleHint(SH_UnderlineShortcut, opt, widget))
-                alignment |= Qt::TextHideMnemonic;
-
-            if (verticalTabs) {
-                p->save();
-                int newX, newY, newRot;
-                if (tabOpt->shape == QTabBar::RoundedEast || tabOpt->shape == QTabBar::TriangularEast) {
-                    newX = tr.width() + tr.x();
-                    newY = tr.y();
-                    newRot = 90;
-                } else {
-                    newX = tr.x();
-                    newY = tr.y() + tr.height();
-                    newRot = -90;
-                }
-                QTransform m = QTransform::fromTranslate(newX, newY);
-                m.rotate(newRot);
-                p->setTransform(m, true);
-            }
-            QRect iconRect;
-            tabOpt->
-            tr = subElementRect(SE_TabBarTabText, opt, widget); //we compute tr twice because the style may override subElementRect
-
-            if (!tabOpt->icon.isNull()) {
-                QPixmap tabIcon = tabOpt->icon.pixmap(tabOpt->iconSize,
-                                                    (tabOpt->state & State_Enabled) ? QIcon::Normal
-                                                                                  : QIcon::Disabled,
-                                                    (tabOpt->state & State_Selected) ? QIcon::On
-                                                                                   : QIcon::Off);
-                p->drawPixmap(iconRect.x(), iconRect.y(), tabIcon);
-            }
-
-            p->drawText(tr, alignment, tabOpt->text);
-            //proxy()->drawItemText(p, tr, alignment, tabOpt->palette, tabOpt->state & State_Enabled, tabOpt->text, QPalette::WindowText);
-            if (verticalTabs)
-                p->restore();
-
-            if (tabOpt->state & State_HasFocus) {
-                const int OFFSET = 1 + pixelMetric(PM_DefaultFrameWidth, tabOpt, widget);
-
-                int x1, x2;
-                x1 = tabOpt->rect.left();
-                x2 = tabOpt->rect.right() - 1;
-
-                QStyleOptionFocusRect fropt;
-                fropt.QStyleOption::operator=(*tabOpt);
-                fropt.rect.setRect(x1 + 1 + OFFSET, tabOpt->rect.y() + OFFSET,
-                                   x2 - x1 - 2*OFFSET, tabOpt->rect.height() - 2*OFFSET);
-                drawPrimitive(PE_FrameFocusRect, &fropt, p, widget);
-            }
-#endif
             p->restore();
             break;
         }
