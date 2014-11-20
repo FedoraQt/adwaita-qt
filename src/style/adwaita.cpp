@@ -155,6 +155,8 @@ int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *opt, const QWid
         case PM_SliderThickness:
         case PM_SliderControlThickness:
             return 20;
+        case PM_ScrollBarExtent:
+            return 11;
         default:
             return QCommonStyle::pixelMetric(metric, opt, widget);
     }
@@ -772,6 +774,20 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
                                  QPainter* p, const QWidget* widget) const
 {
     switch(control) {
+        case CC_ScrollBar: {
+            const QStyleOptionSlider *slOpt = qstyleoption_cast<const QStyleOptionSlider *>(opt);
+            QRect slider = subControlRect(CC_ScrollBar, slOpt, SC_ScrollBarSlider).adjusted(2, 2, -2, -2);
+            p->save();
+            p->setPen(Qt::NoPen);
+            p->setBrush(slOpt->palette.dark());
+            p->drawRect(slOpt->rect);
+            p->setBrush(QColor("#b3b5b6"));
+            p->setRenderHint(QPainter::Antialiasing, true);
+            p->drawRoundedRect(slider, 3, 3);
+            p->setRenderHint(QPainter::Antialiasing, false);
+            p->restore();
+            break;
+        }
         case CC_ToolButton: {
             const QStyleOptionToolButton *tbOpt = qstyleoption_cast<const QStyleOptionToolButton*>(opt);
             QRect button = subControlRect(control, opt, SC_ToolButton, widget);
@@ -991,6 +1007,67 @@ void Adwaita::drawItemText(QPainter* painter, const QRect& rect, int alignment, 
 QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionComplex* opt, QStyle::SubControl sc, const QWidget* w) const
 {
     switch(cc) {
+        case CC_ScrollBar: {
+            const QStyleOptionSlider *slOpt = qstyleoption_cast<const QStyleOptionSlider *>(opt);
+            const QRect scrollBarRect = slOpt->rect;
+            int maxlen = ((slOpt->orientation == Qt::Horizontal) ?
+                          scrollBarRect.width() : scrollBarRect.height());
+            int sliderlen;
+
+            // calculate slider length
+            if (slOpt->maximum != slOpt->minimum) {
+                uint range = slOpt->maximum - slOpt->minimum;
+                sliderlen = (qint64(slOpt->pageStep) * maxlen) / (range + slOpt->pageStep);
+
+                int slidermin = proxy()->pixelMetric(PM_ScrollBarSliderMin, slOpt, w);
+                if (sliderlen < slidermin || range > INT_MAX / 2)
+                    sliderlen = slidermin;
+                if (sliderlen > maxlen)
+                    sliderlen = maxlen;
+            } else {
+                sliderlen = maxlen;
+            }
+
+            int sliderstart = sliderPositionFromValue(slOpt->minimum,
+                                                                 slOpt->maximum,
+                                                                 slOpt->sliderPosition,
+                                                                 maxlen - sliderlen,
+                                                                 slOpt->upsideDown);
+
+            switch (sc) {
+            case SC_ScrollBarSubLine:            // top/left button
+                return QRect(0, 0, 0, 0);
+            case SC_ScrollBarAddLine:            // bottom/right button
+                return QRect(0, 0, 0, 0);
+            case SC_ScrollBarSubPage:            // between top/left button and slider
+                if (slOpt->orientation == Qt::Horizontal)
+                    return QRect(0, 0, sliderstart, scrollBarRect.height());
+                else
+                    return QRect(0, 0, scrollBarRect.width(), sliderstart );
+            case SC_ScrollBarAddPage:            // between bottom/right button and slider
+                if (slOpt->orientation == Qt::Horizontal)
+                    return QRect(sliderstart + sliderlen, 0,
+                                maxlen - sliderstart - sliderlen + 0, scrollBarRect.height());
+                else
+                    return QRect(0, sliderstart + sliderlen, scrollBarRect.width(),
+                                maxlen - sliderstart - sliderlen + 0);
+            case SC_ScrollBarGroove:
+                if (slOpt->orientation == Qt::Horizontal)
+                    return QRect(0, 0, scrollBarRect.width(),
+                                scrollBarRect.height());
+                else
+                    return QRect(0, 0, scrollBarRect.width(),
+                                scrollBarRect.height() );
+            case SC_ScrollBarSlider:
+                if (slOpt->orientation == Qt::Horizontal)
+                    return QRect(sliderstart, 0, sliderlen, scrollBarRect.height());
+                else
+                    return QRect(0, sliderstart, scrollBarRect.width(), sliderlen);
+            default:
+                break;
+            }
+            break;
+        }
         case CC_ToolButton: {
             const QStyleOptionToolButton *tbOpt = qstyleoption_cast<const QStyleOptionToolButton*>(opt);
             switch (sc) {
