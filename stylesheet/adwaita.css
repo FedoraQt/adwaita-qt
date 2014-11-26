@@ -1,60 +1,3 @@
-QWidget {
-    outline: none;
-    background: none;
-}
-
-QMainWindow {
-    background: palette(window);
-}
-
-QWidget:!active {
-}
-
-QFrame {
-    border-width: 1px;
-    border-style: solid;
-    border-color: #a1a1a1;
-    padding: 0;
-    background: none;
-}
-
-QFrame:flat {
-    border: none;
-    background: none;
-}
-
-QLabel {
-    border: none;
-    background: none;
-}
-
-
-
-/* scrollbars */
-QScrollBar {
-    margin: 0px;
-    padding: 0px;
-    border-style: solid;
-    border-width: 2px;
-    border-color: palette(dark);
-    background: palette(dark);
-    height: 11px;
-    width: 11px;
-}
-QScrollBar::add-line, QScrollBar::sub-line {
-    background: none;
-    border: none;
-    width: 0px;
-    height: 0px;
-}
-QScrollBar::handle {
-    min-width: 1px;
-    background: #b3b5b6;
-    border-radius: 3px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #b3b5b6;
-}
 
 /* tables */
 QTableView {
@@ -97,11 +40,6 @@ QHeaderView::section:middle, QHeaderView::section:last:horizontal, QHeaderView::
 /* columns */
 QColumnView {
     background: white;
-}
-
-/* dialogs */
-QDialog {
-    background: palette(window);
 }
 
 /* radios */
@@ -233,91 +171,6 @@ QAbstractItemView {
     background: white;
     selection-background-color: #4a90d9;
     show-decoration-selected: 0;
-}
-
-
-QTabWidget {
-    border-width: 0px;
-    border-style: solid;
-    border-color: #a8a8a8;
-}
-
-QTabWidget::tab-bar {
-    alignment: left;
-    padding: 0px;
-}
-
-QTabWidget::pane {
-    border: 64px solid #d1d1d1;
-    margin: -64px;
-}
-
-QTabWidget::right-corner {
-    background: black;
-}
-
-QTabBar {
-    background: #d1d1d1;
-}
-
-QTabBar::tab {
-    border: none;
-}
-QTabBar::tab:top, QTabBar::tab:bottom {
-    padding: 6px 12px;
-    margin: 0px 4px;
-}
-QTabBar::tab:left, QTabBar::tab:right{
-    padding: 12px 6px;
-    margin: 4px 0px;
-}
-
-QTabBar::tab:top {
-    border-bottom: 2px;
-    border-style: solid;
-}
-QTabBar::tab:bottom {
-    border-top: 2px;
-    border-style: solid;
-}
-QTabBar::tab:left {
-    border-left: 2px;
-    border-style: solid;
-}
-QTabBar::tab:right{
-    border-right: 2px;
-    border-style: solid;
-}
-
-
-QTabBar::tab:!selected {
-    border-color: transparent;
-    color: #8d9091;
-}
-QTabBar::tab:selected {
-    border-color: #4a90d9;
-    color: #2e3436;
-}
-QTabBar::tab:hover:!selected {
-    border-color: #54595a;
-}
-
-
-QTabBar QToolButton {
-    padding: 2px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #a1a1a1;
-    border-radius: 3px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop: 0 #fafafa, stop: 1 #e0e0e0);
-}
-
-QTabBar QToolButton::right-arrow {
-    image: url(@ADWAITA_ASSET_DIR@/custom/arrow-small-right.png);
-}
-QTabBar QToolButton::left-arrow {
-    image: url(@ADWAITA_ASSET_DIR@/custom/arrow-small-left.png);
 }
 
 QGroupBox {

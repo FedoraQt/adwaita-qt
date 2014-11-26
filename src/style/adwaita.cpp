@@ -228,14 +228,14 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
         case PE_FrameTabWidget: {
             const QStyleOptionTabWidgetFrameV2 *twOpt = qstyleoption_cast<const QStyleOptionTabWidgetFrameV2 *>(opt);
             const int stripWidth = 32;
-            QRect north(twOpt->rect.left(), twOpt->rect.top() - stripWidth + 1, twOpt->rect.width() - 1, stripWidth - 1);
-            QRect south(twOpt->rect.left(), twOpt->rect.bottom(), twOpt->rect.width() - 1, stripWidth - 1);
-            QRect east(twOpt->rect.left() - stripWidth + 1, twOpt->rect.top(), stripWidth - 1, twOpt->rect.height() - 1);
-            QRect west(twOpt->rect.right(), twOpt->rect.top(), stripWidth - 1, twOpt->rect.height() - 1);
+            QRect north(opt->rect.left(), opt->rect.top() - stripWidth + 1, opt->rect.width() - 1, stripWidth - 1);
+            QRect south(opt->rect.left(), opt->rect.bottom(), opt->rect.width() - 1, stripWidth - 1);
+            QRect east(opt->rect.left() - stripWidth + 1, opt->rect.top(), stripWidth - 1, opt->rect.height() - 1);
+            QRect west(opt->rect.right(), opt->rect.top(), stripWidth - 1, opt->rect.height() - 1);
             p->save();
             p->setPen(QColor("#a1a1a1"));
             p->setBrush(Qt::transparent);
-            p->drawRect(twOpt->rect.adjusted(0,0,-1,-1));
+            p->drawRect(opt->rect.adjusted(0,0,-1,-1));
             p->setBrush(QColor("#d6d6d6"));
             p->drawRect(north);
             p->drawRect(south);
@@ -259,25 +259,27 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             underline.setColor(QColor("#4a90d9"));
             p->setPen(underline);
 
-            switch (twOpt->shape) {
-                case QTabBar::RoundedNorth:
-                case QTabBar::TriangularNorth:
-                    p->drawLine(twOpt->selectedTabRect.bottomLeft(), twOpt->selectedTabRect.bottomRight());
-                    break;
-                case QTabBar::RoundedEast:
-                case QTabBar::TriangularEast:
-                    p->drawLine(twOpt->selectedTabRect.topLeft(), twOpt->selectedTabRect.bottomLeft());
-                    break;
-                case QTabBar::RoundedWest:
-                case QTabBar::TriangularWest:
-                    p->drawLine(twOpt->selectedTabRect.topRight(), twOpt->selectedTabRect.bottomRight());
-                    break;
-                case QTabBar::RoundedSouth:
-                case QTabBar::TriangularSouth:
-                    p->drawLine(twOpt->selectedTabRect.topLeft(), twOpt->selectedTabRect.topRight());
-                    break;
-                default:
-                    break;
+            if (twOpt) {
+                switch (twOpt->shape) {
+                    case QTabBar::RoundedNorth:
+                    case QTabBar::TriangularNorth:
+                        p->drawLine(twOpt->selectedTabRect.bottomLeft(), twOpt->selectedTabRect.bottomRight());
+                        break;
+                    case QTabBar::RoundedEast:
+                    case QTabBar::TriangularEast:
+                        p->drawLine(twOpt->selectedTabRect.topLeft(), twOpt->selectedTabRect.bottomLeft());
+                        break;
+                    case QTabBar::RoundedWest:
+                    case QTabBar::TriangularWest:
+                        p->drawLine(twOpt->selectedTabRect.topRight(), twOpt->selectedTabRect.bottomRight());
+                        break;
+                    case QTabBar::RoundedSouth:
+                    case QTabBar::TriangularSouth:
+                        p->drawLine(twOpt->selectedTabRect.topLeft(), twOpt->selectedTabRect.topRight());
+                        break;
+                    default:
+                        break;
+                }
             }
             p->restore();
             break;
