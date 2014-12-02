@@ -132,6 +132,7 @@ int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *opt, const QWid
 {
     switch(metric) {
         case PM_DefaultFrameWidth:
+            return 2;
         case PM_ToolBarFrameWidth:
             return 0;
         case PM_ToolBarItemMargin:
@@ -384,6 +385,42 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                           const QWidget *widget) const
 {
     switch(element) {
+        case CE_Splitter: {
+            p->save();
+            p->setBrush(Qt::red);
+            p->setPen(Qt::green);
+            p->drawRect(opt->rect);
+            p->restore();
+            break;
+        }
+        case CE_HeaderLabel:
+        case CE_HeaderSection: {
+            p->save();
+            p->setBrush(Qt::red);
+            p->setPen(Qt::NoPen);
+            p->drawRect(opt->rect);
+            p->restore();
+            break;
+        }
+        case CE_Header: {
+            p->save();
+            const QStyleOptionHeader *hopt = qstyleoption_cast<const QStyleOptionHeader *>(opt);
+            p->setBrush(opt->palette.base());
+            p->setPen(QColor("#ededed"));
+            p->drawRect(opt->rect.adjusted(-1, -1, -1, -1));
+            p->setPen(QColor("#c3c3c3"));
+            p->drawText(opt->rect, Qt::AlignCenter | Qt::TextShowMnemonic, hopt->text);
+            p->restore();
+            break;
+        }
+        case CE_HeaderEmptyArea: {
+            p->save();
+            p->setBrush(Qt::white);
+            p->setPen(Qt::NoPen);
+            p->drawRect(opt->rect);
+            p->restore();
+            break;
+        }
         case CE_TabBarTabShape: {
             p->save();
             p->restore();
@@ -1149,6 +1186,13 @@ QRect Adwaita::subElementRect(QStyle::SubElement r, const QStyleOption* opt, con
 QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt, const QSize& contentsSize, const QWidget* widget) const
 {
     switch(ct) {
+        case CT_HeaderSection: {
+            const QStyleOptionHeader *hopt = qstyleoption_cast<const QStyleOptionHeader *>(opt);
+            if (hopt->text.isEmpty())
+                return QSize(0, 0);
+            else
+                return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget);
+        }
         case CT_ToolButton: {
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(10, 12);
         }
@@ -1163,7 +1207,7 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
             return QSize(23, 23);
         }
         case CT_ComboBox: {
-            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(8, 10);
+            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 6);
         }
         case CT_ProgressBar: {
             if (qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt)->textVisible)
@@ -1178,9 +1222,9 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(8, 0);
         }
         case CT_PushButton:
-            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(8, 6);
+            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 2);
         case CT_LineEdit:
-            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(8, 10);
+            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(6, 8);
         default:
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget);
     }
