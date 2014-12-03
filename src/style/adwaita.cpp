@@ -1221,7 +1221,7 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
             return QSize(20, 20);
         }
         case CT_SpinBox: {
-            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(8, 0);
+            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(10, 2);
         }
         case CT_PushButton:
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 2);
