@@ -2,5 +2,6 @@
 #define CONFIG_H
 
 #define ADWAITA_CSS_FILE "@ADWAITA_CSS_FILE@"
+#define ADWAITA_ASSET_DIR "@ADWAITA_ASSET_DIR"
 
 #endif

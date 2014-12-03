@@ -21,6 +21,7 @@
 #ifndef ADWAITA_H
 #define ADWAITA_H
 
+#include <QMap>
 #include <QPalette>
 #include <QCommonStyle>
 #include <QApplication>
@@ -63,7 +64,22 @@ public:
                            const QSize& contentsSize,
                            const QWidget* widget = 0) const;
 private:
-    QString m_styleSheet;
+    enum IconType {
+        IT_None = 0,
+        IT_CheckBox,
+        IT_RadioButton,
+    };
+    enum IconState {
+        IS_Plain   = 0,
+        IS_Enabled = 1 << 0,
+        IS_Active  = 1 << 1,
+        IS_Checked = 1 << 2,
+        IS_Mixed   = 1 << 3,
+        IS_Hover   = 1 << 4,
+        IS_Above   = 1 << 5,
+        IS_Below   = 1 << 6,
+    };
+    QMap<IconType,QMap<IconState,QIcon>> m_iconMap;
 };
 
 #endif // ADWAITA_H

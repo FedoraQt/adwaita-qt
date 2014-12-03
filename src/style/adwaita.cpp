@@ -27,9 +27,7 @@
 #include "config.h"
 
 Adwaita::Adwaita() : QCommonStyle() {
-    QFile f(ADWAITA_CSS_FILE);
-    f.open(QIODevice::ReadOnly);
-    m_styleSheet = f.readAll();
+    m_iconMap[IT_CheckBox][IS_Active] = QIcon(QString("%1.%2").arg(ADWAITA_ASSET_DIR).arg("checkbox-unchecked-active.png"));
 }
 
 void Adwaita::polish(QPalette &palette)
@@ -115,7 +113,6 @@ void Adwaita::polish(QWidget *widget)
 
 void Adwaita::polish(QApplication* app)
 {
-//     app->setStyleSheet(m_styleSheet);
 }
 
 
