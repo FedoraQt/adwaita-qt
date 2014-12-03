@@ -149,6 +149,8 @@ int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *opt, const QWid
         case PM_TabBarTabVSpace:
         case PM_TabBarBaseHeight:
             return 16;
+        case PM_TabBarBaseOverlap:
+            return 0;
         case PM_ButtonShiftVertical:
         case PM_ButtonShiftHorizontal:
         case PM_ButtonDefaultIndicator:
@@ -192,7 +194,7 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             shadowGradient.setColorAt(1.0/(opt->rect.height()+1)*4, Qt::transparent);
             p->setPen(QColor("#a1a1a1"));
             p->setBrush(QColor("#d6d6d6"));
-            p->drawRect(opt->rect.adjusted(0,0,-1,-1));
+            p->drawRect(opt->rect.adjusted(-5,-5,-1,-1));
             p->setBrush(QBrush(shadowGradient));
             p->drawRect(opt->rect.adjusted(0,0,-1,-1));
 
@@ -228,7 +230,7 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
         }
         case PE_FrameTabWidget: {
             const QStyleOptionTabWidgetFrameV2 *twOpt = qstyleoption_cast<const QStyleOptionTabWidgetFrameV2 *>(opt);
-            const int stripWidth = 32;
+            const int stripWidth = 30;
             QRect north(opt->rect.left(), opt->rect.top() - stripWidth + 1, opt->rect.width() - 1, stripWidth - 1);
             QRect south(opt->rect.left(), opt->rect.bottom(), opt->rect.width() - 1, stripWidth - 1);
             QRect east(opt->rect.left() - stripWidth + 1, opt->rect.top(), stripWidth - 1, opt->rect.height() - 1);
@@ -285,8 +287,8 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             p->restore();
             break;
         }
-        case PE_Frame:
         case PE_FrameDefaultButton:
+        case PE_Frame:
         case PE_PanelButtonTool:
         case PE_FrameButtonTool:
         case PE_FrameMenu: {
