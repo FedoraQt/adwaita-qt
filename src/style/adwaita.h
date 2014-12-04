@@ -69,17 +69,7 @@ private:
         IT_CheckBox,
         IT_RadioButton,
     };
-    enum IconState {
-        IS_Plain   = 0,
-        IS_Enabled = 1 << 0,
-        IS_Active  = 1 << 1,
-        IS_Checked = 1 << 2,
-        IS_Mixed   = 1 << 3,
-        IS_Hover   = 1 << 4,
-        IS_Above   = 1 << 5,
-        IS_Below   = 1 << 6,
-    };
-    QMap<IconType,QMap<IconState,QIcon>> m_iconMap;
+    QMap<uint64_t,QMap<uint64_t,QPixmap>> m_iconMap;
 };
 
 #endif // ADWAITA_H
