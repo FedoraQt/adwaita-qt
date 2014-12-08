@@ -931,8 +931,13 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
 
             QStyleOptionSpinBox optCopy(*sbOpt);
             optCopy.rect = up;
+            if (!(sbOpt->stepEnabled & QAbstractSpinBox::StepUpEnabled))
+                optCopy.palette.setCurrentColorGroup(QPalette::Disabled);
             drawPrimitive(PE_IndicatorSpinUp, &optCopy, p, widget);
             optCopy.rect = down;
+            optCopy.palette.setCurrentColorGroup(opt->palette.currentColorGroup());
+            if (!(sbOpt->stepEnabled & QAbstractSpinBox::StepDownEnabled))
+                optCopy.palette.setCurrentColorGroup(QPalette::Disabled);
             drawPrimitive(PE_IndicatorSpinDown, &optCopy, p, widget);
             p->restore();
             break;
