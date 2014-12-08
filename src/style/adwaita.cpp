@@ -243,6 +243,14 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
                             const QWidget *widget) const
 {
     switch(element) {
+        case PE_FrameGroupBox: {
+            p->save();
+            p->setPen(QColor("#a1a1a1"));
+            p->setBrush(Qt::transparent);
+            p->drawRect(opt->rect.adjusted(0, 0, -1, -1));
+            p->restore();
+            break;
+        }
         case PE_IndicatorSpinMinus:
         case PE_IndicatorSpinDown:
         case PE_IndicatorSpinPlus:
@@ -371,11 +379,17 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
         }
         case PE_FrameDefaultButton:
         case PE_Frame:
-        case PE_PanelButtonTool:
-        case PE_FrameButtonTool:
-        case PE_FrameMenu: {
+        case PE_FrameButtonTool: {
+            p->save();
+            p->setPen(QColor("#a1a1a1"));
+            p->setBrush(Qt::transparent);
+            p->drawRect(opt->rect.adjusted(0, 0, -1, -1));
+            p->restore();
             break;
         }
+        case PE_PanelButtonTool:
+        case PE_FrameMenu:
+            break;
         case PE_PanelMenuBar: {
             p->save();
             p->setPen(Qt::transparent);
