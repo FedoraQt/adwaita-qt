@@ -169,6 +169,7 @@ void Adwaita::polish(QPalette &palette)
 
 void Adwaita::polish(QWidget *widget)
 {
+    widget->setAttribute( Qt::WA_Hover );
 }
 
 void Adwaita::polish(QApplication* app)
@@ -242,10 +243,16 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
                             const QWidget *widget) const
 {
     switch(element) {
+        case PE_IndicatorSpinMinus:
+        case PE_IndicatorSpinDown:
+        case PE_IndicatorSpinPlus:
         case PE_IndicatorSpinUp: {
             p->save();
-            p->setBrush(Qt::red);
-            p->drawRect(opt->rect);
+            p->setPen(QColor("#383e40"));
+            p->setBrush(QColor("#383e40"));
+            p->drawRect(QRect(opt->rect.center() - QPoint(3, -1), opt->rect.center() + QPoint(5, 1)));
+            if (element == PE_IndicatorSpinPlus || element == PE_IndicatorSpinUp)
+                p->drawRect(QRect(opt->rect.center() - QPoint(-1, 3), opt->rect.center() + QPoint(1, 5)));
             p->restore();
             break;
         }
@@ -896,11 +903,28 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
             p->setPen("#d6d6d6");
             p->drawLine(up.topLeft() + QPoint(0, 1), up.bottomLeft());
             p->drawLine(down.topLeft() + QPoint(0, 1), down.bottomLeft());
-            p->setPen(QColor("#383e40"));
-            p->setBrush(QColor("#383e40"));
-            p->drawRect(QRect(down.center() - QPoint(3, -1), down.center() + QPoint(5, 1)));
-            p->drawRect(QRect(up.center() - QPoint(3, -1), up.center() + QPoint(5, 1)));
-            p->drawRect(QRect(up.center() - QPoint(-1, 3), up.center() + QPoint(1, 5)));
+
+            p->setPen(Qt::NoPen);
+            if (opt->state & State_MouseOver)
+                p->setBrush(QColor("#f0f0f0"));
+            if (opt->state & State_Sunken)
+                p->setBrush(QColor("#e1e1e1"));
+            if (opt->state & State_Enabled && opt->activeSubControls == SC_SpinBoxDown && sbOpt->stepEnabled & QAbstractSpinBox::StepDownEnabled) {
+                p->drawRect(down.adjusted(1, 1, 1, 0));
+            }
+            if (opt->state & State_Enabled && opt->activeSubControls == SC_SpinBoxUp && sbOpt->stepEnabled & QAbstractSpinBox::StepUpEnabled) {
+                QPainterPath path;
+                path.setFillRule(Qt::WindingFill);
+                path.addRoundedRect(up.adjusted(1, 1, 2, 0), 3, 3);
+                path.addRect(up.adjusted(1, 1, -1, -1));
+                p->drawPath(path);
+            }
+
+            QStyleOptionSpinBox optCopy(*sbOpt);
+            optCopy.rect = up;
+            drawPrimitive(PE_IndicatorSpinUp, &optCopy, p, widget);
+            optCopy.rect = down;
+            drawPrimitive(PE_IndicatorSpinDown, &optCopy, p, widget);
             p->restore();
             break;
         }
@@ -1344,7 +1368,7 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
             return QSize(20, 20);
         }
         case CT_SpinBox: {
-            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(10, 2);
+            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(12, 2);
         }
         case CT_PushButton:
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 2);
