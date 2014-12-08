@@ -242,6 +242,13 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
                             const QWidget *widget) const
 {
     switch(element) {
+        case PE_IndicatorSpinUp: {
+            p->save();
+            p->setBrush(Qt::red);
+            p->drawRect(opt->rect);
+            p->restore();
+            break;
+        }
         case PE_IndicatorCheckBox: {
             p->save();
             p->drawPixmap(opt->rect, m_iconMap[IT_CheckBox][opt->state & (State_Active | State_Enabled | State_Sunken | State_NoChange | State_On)]);
@@ -874,7 +881,17 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
             QRect edit = subControlRect(control, sbOpt, SC_SpinBoxEditField).adjusted(0, 0, -1, -1);
             p->save();
             p->setPen("#a8a8a8");
-            p->setBrush(Qt::white);
+            QLinearGradient shadowGradient(0.0, 0.0, 0.0, 1.0);
+            shadowGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+            shadowGradient.setColorAt(0.0, QColor("#d4d4d4"));
+            shadowGradient.setColorAt(1.0/(frame.height()+1)*4, Qt::transparent);
+            QLinearGradient backgroundGradient(0.0, 0.0, 0.0, 1.0);
+            backgroundGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+            backgroundGradient.setColorAt(0.0, QColor("#f3f3f3"));
+            backgroundGradient.setColorAt(1.0/(frame.height()+1)*16, Qt::white);
+            p->setBrush(QBrush(backgroundGradient));
+            p->drawRoundedRect(frame, 3, 3);
+            p->setBrush(QBrush(shadowGradient));
             p->drawRoundedRect(frame, 3, 3);
             p->setPen("#d6d6d6");
             p->drawLine(up.topLeft() + QPoint(0, 1), up.bottomLeft());
