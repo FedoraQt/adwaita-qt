@@ -248,8 +248,7 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
         case PE_IndicatorSpinPlus:
         case PE_IndicatorSpinUp: {
             p->save();
-            p->setPen(QColor("#383e40"));
-            p->setBrush(QColor("#383e40"));
+            p->setPen(opt->palette.windowText().color());
             p->drawRect(QRect(opt->rect.center() - QPoint(3, -1), opt->rect.center() + QPoint(5, 1)));
             if (element == PE_IndicatorSpinPlus || element == PE_IndicatorSpinUp)
                 p->drawRect(QRect(opt->rect.center() - QPoint(-1, 3), opt->rect.center() + QPoint(1, 5)));
