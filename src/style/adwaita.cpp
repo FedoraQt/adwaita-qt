@@ -427,6 +427,11 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
                     buttonGradient.setColorAt(0.05, QColor("#c0c0c0"));
                     buttonGradient.setColorAt(0.15, QColor("#d6d6d6"));
                 }
+                else if (opt->state & State_MouseOver) {
+                    buttonGradient.setColorAt(0.0, QColor("white"));
+                    buttonGradient.setColorAt(0.4, QColor("#f7f7f7"));
+                    buttonGradient.setColorAt(1.0, QColor("#ededed"));
+                }
                 else {
                     buttonGradient.setColorAt(0.0, QColor("#fafafa"));
                     buttonGradient.setColorAt(1.0, QColor("#e0e0e0"));
@@ -866,6 +871,11 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
                     buttonGradient.setColorAt(0.05, QColor("#c0c0c0"));
                     buttonGradient.setColorAt(0.15, QColor("#d6d6d6"));
                 }
+                else if (opt->state & State_MouseOver) {
+                    buttonGradient.setColorAt(0.0, QColor("white"));
+                    buttonGradient.setColorAt(0.4, QColor("#f7f7f7"));
+                    buttonGradient.setColorAt(1.0, QColor("#ededed"));
+                }
                 else {
                     buttonGradient.setColorAt(0.0, QColor("#fafafa"));
                     buttonGradient.setColorAt(1.0, QColor("#e0e0e0"));
@@ -941,6 +951,11 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
                     buttonGradient.setColorAt(0.0, QColor("#a8a8a8"));
                     buttonGradient.setColorAt(0.05, QColor("#c0c0c0"));
                     buttonGradient.setColorAt(0.15, QColor("#d6d6d6"));
+                }
+                else if (opt->state & State_MouseOver) {
+                    buttonGradient.setColorAt(0.0, QColor("white"));
+                    buttonGradient.setColorAt(0.4, QColor("#f7f7f7"));
+                    buttonGradient.setColorAt(1.0, QColor("#ededed"));
                 }
                 else {
                     buttonGradient.setColorAt(0.0, QColor("#fafafa"));
@@ -1077,6 +1092,11 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
                     buttonGradient.setColorAt(0.0, QColor("#a8a8a8"));
                     buttonGradient.setColorAt(0.05, QColor("#c0c0c0"));
                     buttonGradient.setColorAt(0.15, QColor("#d6d6d6"));
+                }
+                else if (opt->state & State_MouseOver) {
+                    buttonGradient.setColorAt(0.0, QColor("white"));
+                    buttonGradient.setColorAt(0.4, QColor("#f7f7f7"));
+                    buttonGradient.setColorAt(1.0, QColor("#ededed"));
                 }
                 else {
                     buttonGradient.setColorAt(0.0, QColor("#fafafa"));
