@@ -435,8 +435,18 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             }
             QRect rect = opt->rect.adjusted(0, 0, -1, -1);
             p->save();
-            p->setBrush(Qt::white);
+            QLinearGradient shadowGradient(0.0, 0.0, 0.0, 1.0);
+            shadowGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+            shadowGradient.setColorAt(0.0, QColor("#d4d4d4"));
+            shadowGradient.setColorAt(1.0/(rect.height()+1)*4, Qt::transparent);
+            QLinearGradient backgroundGradient(0.0, 0.0, 0.0, 1.0);
+            backgroundGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+            backgroundGradient.setColorAt(0.0, QColor("#f3f3f3"));
+            backgroundGradient.setColorAt(1.0/(rect.height()+1)*16, Qt::white);
+            p->setBrush(QBrush(backgroundGradient));
             p->setPen(QColor("#a1a1a1"));
+            p->drawRoundedRect(rect, 3, 3);
+            p->setBrush(QBrush(shadowGradient));
             p->drawRoundedRect(rect, 3, 3);
             p->restore();
             break;
@@ -922,10 +932,29 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
             p->drawPolygon(triangle, Qt::WindingFill);
             p->setRenderHint(QPainter::Antialiasing, false);
             if (cbOpt->editable) {
+                QLinearGradient shadowGradient(0.0, 0.0, 0.0, 1.0);
+                shadowGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+                shadowGradient.setColorAt(0.0, QColor("#d4d4d4"));
+                shadowGradient.setColorAt(1.0/(editField.height()+1)*4, Qt::transparent);
+                QLinearGradient backgroundGradient(0.0, 0.0, 0.0, 1.0);
+                backgroundGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+                backgroundGradient.setColorAt(0.0, QColor("#f3f3f3"));
+                backgroundGradient.setColorAt(1.0/(editField.height()+1)*16, Qt::white);
+                QPainterPath path;
+                path.setFillRule(Qt::WindingFill);
+                path.addRoundedRect(editField.adjusted(0, 0, 0, -1), 3, 3);
+                path.addRect(editField.adjusted(3, 0, 0, -1));
+                p->setBrush(QBrush(backgroundGradient));
+                p->setPen(QColor("#a1a1a1"));
+                p->drawPath(path.simplified());
+                p->setBrush(QBrush(shadowGradient));
+                p->drawPath(path.simplified());
+                /*
                 p->setBrush(Qt::white);
                 p->setPen(Qt::transparent);
                 p->drawRect(editField.adjusted(2, 1, 0, -1));
                 p->drawRect(editField.adjusted(1, 2, 0, -2));
+                */
             }
             p->restore();
             break;
