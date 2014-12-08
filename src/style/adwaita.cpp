@@ -832,10 +832,10 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
         }
         case CC_ToolButton: {
             const QStyleOptionToolButton *tbOpt = qstyleoption_cast<const QStyleOptionToolButton*>(opt);
-            QRect button = subControlRect(control, opt, SC_ToolButton, widget);
+            QRect button = subControlRect(control, opt, SC_ToolButton, widget).adjusted(0, 0, -1, -1);
             p->save();
             if (opt->state & (State_MouseOver)) {
-                p->setPen(Qt::NoPen);
+                p->setPen("#a8a8a8");
                 QLinearGradient buttonGradient(0.0, button.top(), 0.0, button.bottom());
                 if (opt->state & State_On || opt->state & State_Sunken) {
                     buttonGradient.setColorAt(0.0, QColor("#a8a8a8"));
@@ -847,7 +847,7 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
                     buttonGradient.setColorAt(1.0, QColor("#e0e0e0"));
                 }
                 p->setBrush(QBrush(buttonGradient));
-                p->drawRect(button);
+                p->drawRoundedRect(button.adjusted(1, 1, -1, -1), 3, 3);
             }
 
             p->drawPixmap(button.topLeft() + QPoint(button.width() < tbOpt->iconSize.width() + 20 ? ((button.width() - tbOpt->iconSize.width()) / 2) : 12, (button.height() - tbOpt->iconSize.height()) / 2), tbOpt->icon.pixmap(tbOpt->iconSize));
@@ -1213,9 +1213,13 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
 QRect Adwaita::subElementRect(QStyle::SubElement r, const QStyleOption* opt, const QWidget* widget) const
 {
     switch(r) {
+        case SE_CheckBoxContents:
+        case SE_RadioButtonContents: {
+            return opt->rect.translated(22, -1);
+        }
         case SE_RadioButtonIndicator:
         case SE_CheckBoxIndicator: {
-            return QRect(opt->rect.center().y()-8, 0, opt->rect.center().y()+8, 16);
+            return QRect(opt->rect.left() + 2, opt->rect.center().y() - 8, 16, 16);
         }
         case SE_ProgressBarGroove:
         case SE_ProgressBarContents: {
