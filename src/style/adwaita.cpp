@@ -388,6 +388,25 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             p->restore();
             break;
         }
+        case PE_IndicatorButtonDropDown: {
+            p->save();
+            p->setPen(Qt::black);
+            p->setBrush(Qt::black);
+            QPolygon triangle;
+            triangle.append(opt->rect.center() + QPoint(-4, -1));
+            triangle.append(opt->rect.center() + QPoint( 4, -1));
+            triangle.append(opt->rect.center() + QPoint( 0,  3));
+            p->drawPolygon(triangle, Qt::WindingFill);
+            p->restore();
+            break;
+        }
+        case PE_IndicatorToolBarSeparator: {
+            p->save();
+            p->setPen("#d6d6d6");
+            p->drawLine(opt->rect.center().x(), opt->rect.top() + 4, opt->rect.center().x(), opt->rect.bottom() - 4);
+            p->restore();
+            break;
+        }
         case PE_PanelButtonTool: {
             p->save();
             p->setPen("#a8a8a8");
@@ -397,14 +416,14 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
                 buttonGradient.setColorAt(0.05, QColor("#c0c0c0"));
                 buttonGradient.setColorAt(0.15, QColor("#d6d6d6"));
                 p->setBrush(QBrush(buttonGradient));
-                p->drawRoundedRect(opt->rect.adjusted(1, 1, -1, -1), 3, 3);
+                p->drawRoundedRect(opt->rect.adjusted(1, 1, -2, -2), 3, 3);
             }
             else if (opt->state & State_MouseOver) {
                 buttonGradient.setColorAt(0.0, QColor("white"));
                 buttonGradient.setColorAt(0.4, QColor("#f7f7f7"));
                 buttonGradient.setColorAt(1.0, QColor("#ededed"));
                 p->setBrush(QBrush(buttonGradient));
-                p->drawRoundedRect(opt->rect.adjusted(1, 1, -1, -1), 3, 3);
+                p->drawRoundedRect(opt->rect.adjusted(1, 1, -2, -2), 3, 3);
             }
             p->restore();
             break;
@@ -618,7 +637,7 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
         }
         case CE_ToolButtonLabel: {
             QStyleOptionToolButton tbOpt(*qstyleoption_cast<const QStyleOptionToolButton*>(opt));
-            tbOpt.rect.adjust(5, 6, -5, -6);
+            tbOpt.rect.adjust(5, 0, -5, 0);
             QCommonStyle::drawControl(element, &tbOpt, p, widget);
             break;
         }
