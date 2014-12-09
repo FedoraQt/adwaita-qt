@@ -637,7 +637,10 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
         }
         case CE_ToolButtonLabel: {
             QStyleOptionToolButton tbOpt(*qstyleoption_cast<const QStyleOptionToolButton*>(opt));
-            tbOpt.rect.adjust(5, 0, -5, 0);
+            if (tbOpt.rect.height() > tbOpt.rect.width())
+                tbOpt.rect.adjust(0, 5, 0, -5);
+            else
+                tbOpt.rect.adjust(5, 0, -5, 0);
             QCommonStyle::drawControl(element, &tbOpt, p, widget);
             break;
         }
@@ -941,7 +944,9 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
             p->setBrush(QBrush(shadowGradient));
             p->drawRoundedRect(frame, 3, 3);
             p->setPen("#d6d6d6");
-            p->drawLine(up.topLeft() + QPoint(0, 1), up.bottomLeft());
+            if (sbOpt->subControls & (SC_SpinBoxEditField | SC_SpinBoxDown )&& sbOpt->subControls & SC_SpinBoxUp)
+                p->drawLine(up.topLeft() + QPoint(0, 1), up.bottomLeft());
+            if (sbOpt->subControls & (SC_SpinBoxEditField) && sbOpt->subControls & SC_SpinBoxDown)
             p->drawLine(down.topLeft() + QPoint(0, 1), down.bottomLeft());
 
             p->setPen(Qt::NoPen);
@@ -1239,13 +1244,25 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
             const QStyleOptionSpinBox *cbOpt = qstyleoption_cast<const QStyleOptionSpinBox*>(opt);
             switch (sc) {
                 case SC_SpinBoxUp: {
-                    return QRect(opt->rect.right() - opt->rect.height() * 1.2 - 1, opt->rect.top(), opt->rect.height() * 1.2 + 1, opt->rect.height());
+                    if (cbOpt->subControls & SC_SpinBoxEditField)
+                        return QRect(opt->rect.right() - opt->rect.height() * 1.2 - 1, opt->rect.top(), opt->rect.height() * 1.2 + 1, opt->rect.height());
+                    else
+                        return QRect(opt->rect.right() - opt->rect.height() * 1.2 - 1, opt->rect.top(), opt->rect.height() * 1.2 - 4, opt->rect.height());
                 }
                 case SC_SpinBoxDown: {
-                    return QRect(opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), opt->rect.height() * 1.2 + 1, opt->rect.height());
+                    if (cbOpt->subControls & SC_SpinBoxEditField)
+                        return QRect(opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), opt->rect.height() * 1.2 + 1, opt->rect.height());
+                    else
+                        return QRect(4 + opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), opt->rect.height() * 1.2 - 4, opt->rect.height());
                 }
                 case SC_SpinBoxEditField: {
                     return QRect(opt->rect.left(), opt->rect.top(), opt->rect.width() - 2 * (opt->rect.height() * 1.2) + 1, opt->rect.height());
+                }
+                case SC_SpinBoxFrame: {
+                    if (cbOpt->subControls & SC_SpinBoxEditField)
+                        return opt->rect;
+                    else
+                        return QRect(4 + opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), 2 * (opt->rect.height() * 1.2 - 2), opt->rect.height());
                 }
             }
             break;
