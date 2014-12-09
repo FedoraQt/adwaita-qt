@@ -26,6 +26,7 @@
 #include "adwaita.h"
 #include "config.h"
 
+
 Adwaita::Adwaita() : QCommonStyle() {
     m_iconMap[IT_CheckBox][0]
             = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("checkbox-unchecked-backdrop-insensitive.png"));
@@ -387,7 +388,27 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             p->restore();
             break;
         }
-        case PE_PanelButtonTool:
+        case PE_PanelButtonTool: {
+            p->save();
+            p->setPen("#a8a8a8");
+            QLinearGradient buttonGradient(0.0, opt->rect.top(), 0.0, opt->rect.bottom());
+            if (opt->state & State_On || opt->state & State_Sunken) {
+                buttonGradient.setColorAt(0.0, QColor("#a8a8a8"));
+                buttonGradient.setColorAt(0.05, QColor("#c0c0c0"));
+                buttonGradient.setColorAt(0.15, QColor("#d6d6d6"));
+                p->setBrush(QBrush(buttonGradient));
+                p->drawRoundedRect(opt->rect.adjusted(1, 1, -1, -1), 3, 3);
+            }
+            else if (opt->state & State_MouseOver) {
+                buttonGradient.setColorAt(0.0, QColor("white"));
+                buttonGradient.setColorAt(0.4, QColor("#f7f7f7"));
+                buttonGradient.setColorAt(1.0, QColor("#ededed"));
+                p->setBrush(QBrush(buttonGradient));
+                p->drawRoundedRect(opt->rect.adjusted(1, 1, -1, -1), 3, 3);
+            }
+            p->restore();
+            break;
+        }
         case PE_FrameMenu:
             break;
         case PE_PanelMenuBar: {
@@ -595,8 +616,12 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
             p->restore();
             break;
         }
-        case CE_ToolButtonLabel:
+        case CE_ToolButtonLabel: {
+            QStyleOptionToolButton tbOpt(*qstyleoption_cast<const QStyleOptionToolButton*>(opt));
+            tbOpt.rect.adjust(5, 6, -5, -6);
+            QCommonStyle::drawControl(element, &tbOpt, p, widget);
             break;
+        }
         case CE_ToolBar: {
             p->save();
             p->setPen(Qt::NoPen);
@@ -873,34 +898,7 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
             break;
         }
         case CC_ToolButton: {
-            const QStyleOptionToolButton *tbOpt = qstyleoption_cast<const QStyleOptionToolButton*>(opt);
-            QRect button = subControlRect(control, opt, SC_ToolButton, widget).adjusted(0, 0, -1, -1);
-            p->save();
-            if (opt->state & (State_MouseOver)) {
-                p->setPen("#a8a8a8");
-                QLinearGradient buttonGradient(0.0, button.top(), 0.0, button.bottom());
-                if (opt->state & State_On || opt->state & State_Sunken) {
-                    buttonGradient.setColorAt(0.0, QColor("#a8a8a8"));
-                    buttonGradient.setColorAt(0.05, QColor("#c0c0c0"));
-                    buttonGradient.setColorAt(0.15, QColor("#d6d6d6"));
-                }
-                else if (opt->state & State_MouseOver) {
-                    buttonGradient.setColorAt(0.0, QColor("white"));
-                    buttonGradient.setColorAt(0.4, QColor("#f7f7f7"));
-                    buttonGradient.setColorAt(1.0, QColor("#ededed"));
-                }
-                else {
-                    buttonGradient.setColorAt(0.0, QColor("#fafafa"));
-                    buttonGradient.setColorAt(1.0, QColor("#e0e0e0"));
-                }
-                p->setBrush(QBrush(buttonGradient));
-                p->drawRoundedRect(button.adjusted(1, 1, -1, -1), 3, 3);
-            }
-
-            p->drawPixmap(button.topLeft() + QPoint(button.width() < tbOpt->iconSize.width() + 20 ? ((button.width() - tbOpt->iconSize.width()) / 2) : 12, (button.height() - tbOpt->iconSize.height()) / 2), tbOpt->icon.pixmap(tbOpt->iconSize));
-            p->setPen(opt->palette.windowText().color());
-            p->drawText(button.adjusted(tbOpt->iconSize.width() + 16, 0, 0, 0), Qt::AlignVCenter, tbOpt->text);
-            p->restore();
+            QCommonStyle::drawComplexControl(control, opt, p, widget);
             break;
         }
         case CC_SpinBox: {
@@ -1218,15 +1216,6 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
             }
             break;
         }
-        case CC_ToolButton: {
-            const QStyleOptionToolButton *tbOpt = qstyleoption_cast<const QStyleOptionToolButton*>(opt);
-            switch (sc) {
-                case SC_ToolButton:
-                case SC_ToolButtonMenu:
-                    break;
-            }
-            break;
-        }
         case CC_SpinBox: {
             const QStyleOptionSpinBox *cbOpt = qstyleoption_cast<const QStyleOptionSpinBox*>(opt);
             switch (sc) {
@@ -1416,5 +1405,4 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget);
     }
 }
-
 
