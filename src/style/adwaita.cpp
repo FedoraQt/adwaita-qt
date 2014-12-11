@@ -516,14 +516,27 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             backgroundGradient.setColorAt(0.0, QColor("#f3f3f3"));
             backgroundGradient.setColorAt(1.0/(rect.height()+1)*16, Qt::white);
             p->setBrush(QBrush(backgroundGradient));
-            p->setPen(QColor("#a1a1a1"));
+            if (opt->state & State_HasFocus) {
+                p->setPen(opt->palette.highlight().color());
+            }
+            else {
+                p->setPen(QColor("#a1a1a1"));
+            }
             p->drawRoundedRect(rect, 3, 3);
             p->setBrush(QBrush(shadowGradient));
             p->drawRoundedRect(rect, 3, 3);
             p->restore();
             break;
         }
-        case PE_FrameFocusRect:
+        case PE_FrameFocusRect: {
+            p->save();
+            p->setBrush(Qt::transparent);
+            QPen dotPen(QBrush(QColor("#a1a1a1")), 1, Qt::DotLine);
+            p->setPen(dotPen);
+            p->drawRoundedRect(opt->rect.adjusted(0, 0, -1, -1), 2, 2);
+            p->restore();
+            break;
+        }
         case PE_IndicatorProgressChunk:
             break;
         default:
@@ -930,7 +943,10 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
             QRect down = subControlRect(control, sbOpt, SC_SpinBoxDown).adjusted(0, 0, -1, -1);
             QRect edit = subControlRect(control, sbOpt, SC_SpinBoxEditField).adjusted(0, 0, -1, -1);
             p->save();
-            p->setPen("#a8a8a8");
+            if (sbOpt->state & State_HasFocus)
+                p->setPen(sbOpt->palette.highlight().color());
+            else
+                p->setPen("#a8a8a8");
             QLinearGradient shadowGradient(0.0, 0.0, 0.0, 1.0);
             shadowGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
             shadowGradient.setColorAt(0.0, QColor("#d4d4d4"));
@@ -1007,26 +1023,25 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
             }
             QBrush buttonBrush(buttonGradient);
 
-            p->save();/*
-            p->setBrush(Qt::yellow);
-            p->drawRect(popup);*/
+            p->save();
             p->setPen(QColor("#a1a1a1"));
             p->setBrush(buttonBrush);
             p->drawRoundedRect(frame, 3, 3);
             if (cbOpt->editable) {
                 p->drawLine(arrow.topLeft(), arrow.bottomLeft());
             }
-            //p->drawRoundedRect(arrow, 3, 3);
+            else if (cbOpt->state & State_HasFocus) {
+                QStyleOption copyOpt(*cbOpt);
+                copyOpt.rect = cbOpt->rect.adjusted(3, 3, -3, -3);
+                drawPrimitive(QStyle::PE_FrameFocusRect, &copyOpt, p, widget);
+            }
             p->setBrush(QColor("2e3436"));
             p->setPen(QColor("#2e3436"));
             QPolygon triangle;
             triangle.append(arrow.center() + QPoint(-4, -1));
             triangle.append(arrow.center() + QPoint( 4, -1));
             triangle.append(arrow.center() + QPoint( 0,  3));
-//             triangle.append(arrow.center() + QPoint( 1,  2));
-            p->setRenderHint(QPainter::Antialiasing, false);
             p->drawPolygon(triangle, Qt::WindingFill);
-            p->setRenderHint(QPainter::Antialiasing, false);
             if (cbOpt->editable) {
                 QLinearGradient shadowGradient(0.0, 0.0, 0.0, 1.0);
                 shadowGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
@@ -1041,16 +1056,15 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
                 path.addRoundedRect(editField.adjusted(0, 0, 0, -1), 3, 3);
                 path.addRect(editField.adjusted(3, 0, 0, -1));
                 p->setBrush(QBrush(backgroundGradient));
-                p->setPen(QColor("#a1a1a1"));
+                if (opt->state & State_HasFocus) {
+                    p->setPen(opt->palette.highlight().color());
+                }
+                else {
+                    p->setPen(QColor("#a1a1a1"));
+                }
                 p->drawPath(path.simplified());
                 p->setBrush(QBrush(shadowGradient));
                 p->drawPath(path.simplified());
-                /*
-                p->setBrush(Qt::white);
-                p->setPen(Qt::transparent);
-                p->drawRect(editField.adjusted(2, 1, 0, -1));
-                p->drawRect(editField.adjusted(1, 2, 0, -2));
-                */
             }
             p->restore();
             break;
@@ -1069,10 +1083,16 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
                 bgGrad = QLinearGradient(0.0, groove.top()+1, 0.0, groove.bottom()+1);
             else
                 bgGrad = QLinearGradient(groove.left()+1, 0.0, groove.right()+1, 0.0);
-            bgGrad.setColorAt(0.0, QColor("#b2b2b2"));
-            bgGrad.setColorAt(0.2, QColor("#d2d2d2"));
-            bgGrad.setColorAt(0.9, QColor("#d2d2d2"));
-            bgGrad.setColorAt(1.0, QColor("#b2b2b2"));
+            if (slOpt->state & State_Enabled) {
+                bgGrad.setColorAt(0.0, QColor("#b2b2b2"));
+                bgGrad.setColorAt(0.2, QColor("#d2d2d2"));
+                bgGrad.setColorAt(0.9, QColor("#d2d2d2"));
+                bgGrad.setColorAt(1.0, QColor("#b2b2b2"));
+            }
+            else {
+                bgGrad.setColorAt(0.0, slOpt->palette.window().color());
+                bgGrad.setColorAt(0.0, slOpt->palette.window().color());
+            }
             p->setBrush(QBrush(bgGrad));
             p->setPen(QColor("#a1a1a1"));
             p->drawRoundedRect(groove, 2, 2);
@@ -1123,6 +1143,12 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
                     p->drawRect(tick);
                     offset += tickStep;
                 }
+            }
+
+            if (slOpt->state & State_HasFocus) {
+                QStyleOption copyOpt(*slOpt);
+                copyOpt.rect = groove.adjusted(-2, -2, 3, 3);
+                drawPrimitive(QStyle::PE_FrameFocusRect, &copyOpt, p, widget);
             }
 
             // handle
