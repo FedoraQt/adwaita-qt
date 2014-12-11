@@ -221,6 +221,8 @@ int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *opt, const QWid
             return 20;
         case PM_ScrollBarExtent:
             return 11;
+        case PM_SplitterWidth:
+            return 6;
         default:
             return QCommonStyle::pixelMetric(metric, opt, widget);
     }
@@ -246,6 +248,16 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
                             const QWidget *widget) const
 {
     switch(element) {
+        case PE_IndicatorDockWidgetResizeHandle: {
+            QStyleOption optCopy(*opt);
+            if (opt->rect.height() > opt->rect.width())
+                optCopy.state |= State_Horizontal;
+            else
+                optCopy.state &= ~State_Horizontal;
+            drawControl(CE_Splitter, &optCopy, p, widget);
+            break;
+        }
+        case PE_FrameDockWidget:
         case PE_FrameGroupBox: {
             p->save();
             p->setPen(QColor("#a1a1a1"));
@@ -495,6 +507,23 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                           const QWidget *widget) const
 {
     switch(element) {
+        case CE_DockWidgetTitle: {
+            // cast option and check
+            const QStyleOptionDockWidget* dwOpt = ::qstyleoption_cast<const QStyleOptionDockWidget*>( opt );
+            p->save();
+            QLinearGradient shadowGradient(0.0, 0.0, 0.0, 1.0);
+            shadowGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+            shadowGradient.setColorAt(0.0, QColor("#b0b0b0"));
+            shadowGradient.setColorAt(1.0/(opt->rect.height()+1)*4, Qt::transparent);
+            p->setPen(QColor("#a1a1a1"));
+            p->setBrush(QColor("#d6d6d6"));
+            p->drawRect(opt->rect.adjusted(-5,-5,-1,-1));
+            p->setBrush(QBrush(shadowGradient));
+            p->drawRect(opt->rect.adjusted(0,0,-1,-1));
+            drawItemText(p, opt->rect, Qt::AlignCenter | Qt::AlignVCenter | Qt::TextShowMnemonic, opt->palette, opt->state & State_Enabled, dwOpt->title, QPalette::WindowText);
+            p->restore();
+            break;
+        }
         case CE_TabBarTabShape: {
             const QStyleOptionTab *tbOpt = qstyleoption_cast<const QStyleOptionTab *>(opt);
             p->save();
@@ -534,9 +563,17 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
         }
         case CE_Splitter: {
             p->save();
-            p->setBrush(Qt::red);
-            p->setPen(Qt::green);
-            p->drawRect(opt->rect);
+            p->setPen(QColor("#a1a1a1"));
+            if (opt->state & State_Horizontal) {
+                p->drawLine(opt->rect.left() + 1, opt->rect.center().y() + 2, opt->rect.right() - 1, opt->rect.center().y() + 2);
+                p->drawLine(opt->rect.left() + 1, opt->rect.center().y() - 2, opt->rect.right() - 1, opt->rect.center().y() - 2);
+                p->drawLine(opt->rect.left() + 1, opt->rect.center().y(), opt->rect.right() - 1, opt->rect.center().y());
+            }
+            else {
+                p->drawLine(opt->rect.center().x() + 2, opt->rect.top() + 1, opt->rect.center().x() + 2, opt->rect.bottom() - 1);
+                p->drawLine(opt->rect.center().x() - 2, opt->rect.top() + 1, opt->rect.center().x() - 2, opt->rect.bottom() - 1);
+                p->drawLine(opt->rect.center().x(), opt->rect.top() + 1, opt->rect.center().x(), opt->rect.bottom() - 1);
+            }
             p->restore();
             break;
         }
