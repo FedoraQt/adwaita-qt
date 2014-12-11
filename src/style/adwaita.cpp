@@ -509,18 +509,20 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
     switch(element) {
         case CE_DockWidgetTitle: {
             // cast option and check
-            const QStyleOptionDockWidget* dwOpt = ::qstyleoption_cast<const QStyleOptionDockWidget*>( opt );
+            const QStyleOptionDockWidgetV2* dwOpt = ::qstyleoption_cast<const QStyleOptionDockWidgetV2*>( opt );
+            QRect rect = opt->rect;
             p->save();
-            QLinearGradient shadowGradient(0.0, 0.0, 0.0, 1.0);
-            shadowGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
-            shadowGradient.setColorAt(0.0, QColor("#b0b0b0"));
-            shadowGradient.setColorAt(1.0/(opt->rect.height()+1)*4, Qt::transparent);
-            p->setPen(QColor("#a1a1a1"));
-            p->setBrush(QColor("#d6d6d6"));
-            p->drawRect(opt->rect.adjusted(-5,-5,-1,-1));
-            p->setBrush(QBrush(shadowGradient));
-            p->drawRect(opt->rect.adjusted(0,0,-1,-1));
-            drawItemText(p, opt->rect, Qt::AlignCenter | Qt::AlignVCenter | Qt::TextShowMnemonic, opt->palette, opt->state & State_Enabled, dwOpt->title, QPalette::WindowText);
+            p->setPen(Qt::NoPen);
+            p->setBrush(QBrush(QColor("#a1a1a1"), Qt::Dense7Pattern));
+            p->drawRect(rect.adjusted(0,0,-1,-1));
+            if (dwOpt && dwOpt->verticalTitleBar) {
+                p->translate(-rect.left(), -rect.top()); // move the coordinate system to 0,0
+                p->rotate(270); // rotate by 270°
+                p->translate(-rect.height(), 0);
+                p->setBrush(Qt::red);
+                rect = QRect(rect.left(), rect.top(), rect.height(), rect.width());
+            }
+            drawItemText(p, rect, Qt::AlignCenter | Qt::AlignVCenter | Qt::TextShowMnemonic, opt->palette, opt->state & State_Enabled, dwOpt->title, QPalette::WindowText);
             p->restore();
             break;
         }
