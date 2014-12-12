@@ -465,18 +465,13 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             p->save();
             QLinearGradient shadowGradient(0.0, 0.0, 0.0, 1.0);
             QLinearGradient backgroundGradient(0.0, 0.0, 0.0, 1.0);
-            if (opt->state & State_Active && opt->state & State_Enabled) {
-                shadowGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
-                shadowGradient.setColorAt(0.0, QColor("#d4d4d4"));
-                shadowGradient.setColorAt(1.0/(rect.height()+1)*4, Qt::transparent);
-                backgroundGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
-                backgroundGradient.setColorAt(0.0, QColor("#f3f3f3"));
-                backgroundGradient.setColorAt(1.0/(rect.height()+1)*16, Qt::white);
-                p->setBrush(QBrush(backgroundGradient));
-            }
-            else {
-                p->setBrush(opt->palette.button());
-            }
+            shadowGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+            shadowGradient.setColorAt(0.0, QColor("#d4d4d4"));
+            shadowGradient.setColorAt(1.0/(rect.height()+1)*4, Qt::transparent);
+            backgroundGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+            backgroundGradient.setColorAt(0.0, QColor("#f3f3f3"));
+            backgroundGradient.setColorAt(1.0/(rect.height()+1)*16, Qt::white);
+            p->setBrush(QBrush(backgroundGradient));
             if (opt->state & State_HasFocus) {
                 p->setPen(opt->palette.highlight().color());
             }
@@ -484,11 +479,14 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
                 p->setPen(QColor("#a1a1a1"));
             }
             p->drawRoundedRect(rect, 3, 3);
-            if (opt->state & State_Active && opt->state & State_Enabled)
+            if (opt->state & State_Active && opt->state & State_Enabled) {
                 p->setBrush(QBrush(shadowGradient));
-            else
+                p->drawRoundedRect(rect, 3, 3);
+            }
+            else if (!(opt->state & State_Enabled)) {
                 p->setBrush(opt->palette.button());
-            p->drawRoundedRect(rect, 3, 3);
+                p->drawRoundedRect(rect, 3, 3);
+            }
             p->restore();
             break;
         }
@@ -914,18 +912,20 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
                 p->setPen(sbOpt->palette.highlight().color());
             else
                 p->setPen("#a8a8a8");
-            QLinearGradient shadowGradient(0.0, 0.0, 0.0, 1.0);
-            shadowGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
-            shadowGradient.setColorAt(0.0, QColor("#d4d4d4"));
-            shadowGradient.setColorAt(1.0/(frame.height()+1)*4, Qt::transparent);
             QLinearGradient backgroundGradient(0.0, 0.0, 0.0, 1.0);
             backgroundGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
             backgroundGradient.setColorAt(0.0, QColor("#f3f3f3"));
             backgroundGradient.setColorAt(1.0/(frame.height()+1)*16, Qt::white);
             p->setBrush(QBrush(backgroundGradient));
             p->drawRoundedRect(frame, 3, 3);
-            p->setBrush(QBrush(shadowGradient));
-            p->drawRoundedRect(frame, 3, 3);
+            if (opt->state & State_Enabled && opt->state & State_Active) {
+                QLinearGradient shadowGradient(0.0, 0.0, 0.0, 1.0);
+                shadowGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+                shadowGradient.setColorAt(0.0, QColor("#d4d4d4"));
+                shadowGradient.setColorAt(1.0/(frame.height()+1)*4, Qt::transparent);
+                p->setBrush(QBrush(shadowGradient));
+                p->drawRoundedRect(frame, 3, 3);
+            }
             p->setPen("#d6d6d6");
             if (sbOpt->subControls & (SC_SpinBoxEditField | SC_SpinBoxDown )&& sbOpt->subControls & SC_SpinBoxUp)
                 p->drawLine(up.topLeft() + QPoint(0, 1), up.bottomLeft());
@@ -1012,17 +1012,16 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
             if (cbOpt->editable) {
                 QLinearGradient shadowGradient(0.0, 0.0, 0.0, 1.0);
                 QLinearGradient backgroundGradient(0.0, 0.0, 0.0, 1.0);
-                if (opt->state & State_Active && opt->state & State_Enabled) {
-                    shadowGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
-                    shadowGradient.setColorAt(0.0, QColor("#d4d4d4"));
-                    shadowGradient.setColorAt(1.0/(editField.height()+1)*4, Qt::transparent);
-                    backgroundGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
-                    backgroundGradient.setColorAt(0.0, QColor("#f3f3f3"));
-                    backgroundGradient.setColorAt(1.0/(editField.height()+1)*16, Qt::white);
-                    p->setBrush(QBrush(backgroundGradient));
-                }
-                else
+                shadowGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+                shadowGradient.setColorAt(0.0, QColor("#d4d4d4"));
+                shadowGradient.setColorAt(1.0/(editField.height()+1)*4, Qt::transparent);
+                backgroundGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+                backgroundGradient.setColorAt(0.0, QColor("#f3f3f3"));
+                backgroundGradient.setColorAt(1.0/(editField.height()+1)*16, Qt::white);
+                if (!(opt->state & State_Enabled))
                     p->setBrush(opt->palette.button());
+                else
+                    p->setBrush(backgroundGradient);
                 QPainterPath path;
                 path.setFillRule(Qt::WindingFill);
                 path.addRoundedRect(editField.adjusted(0, 0, 0, -1), 3, 3);
@@ -1034,11 +1033,10 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
                     p->setPen(QColor("#a1a1a1"));
                 }
                 p->drawPath(path.simplified());
-                if (opt->state & State_Active && opt->state & State_Enabled)
+                if (opt->state & State_Active && opt->state & State_Enabled) {
                     p->setBrush(QBrush(shadowGradient));
-                else
-                    p->setBrush(opt->palette.button());
-                p->drawPath(path.simplified());
+                    p->drawPath(path.simplified());
+                }
             }
             p->restore();
             break;
