@@ -207,7 +207,7 @@ int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *opt, const QWid
         case PM_TabBarTabHSpace:
         case PM_TabBarTabVSpace:
         case PM_TabBarBaseHeight:
-            return 16;
+            return 19;
         case PM_TabBarTabShiftHorizontal:
         case PM_TabBarTabShiftVertical:
         case PM_TabBarBaseOverlap:
@@ -248,6 +248,8 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
                             const QWidget *widget) const
 {
     switch(element) {
+        case PE_FrameStatusBarItem:
+            break;
         case PE_IndicatorDockWidgetResizeHandle: {
             QStyleOption optCopy(*opt);
             if (opt->rect.height() > opt->rect.width())
@@ -291,21 +293,28 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             break;
         }
         case PE_FrameTabBarBase: {
+            const QStyleOptionTabBarBase *tbbOpt = qstyleoption_cast<const QStyleOptionTabBarBase *>(opt);
+            if (0 && widget && widget->parentWidget() && widget->parentWidget()->inherits("QTabWidget")) {
+                qDebug() << widget->parentWidget()->metaObject()->className();
+                return;
+            }
+            QRect rect = tbbOpt->tabBarRect.width() * tbbOpt->tabBarRect.height() > tbbOpt->rect.height() * tbbOpt->rect.width() ? tbbOpt->tabBarRect : tbbOpt->rect;
             p->save();
             QLinearGradient shadowGradient(0.0, 0.0, 0.0, 1.0);
             shadowGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
             shadowGradient.setColorAt(0.0, QColor("#b0b0b0"));
-            shadowGradient.setColorAt(1.0/(opt->rect.height()+1)*4, Qt::transparent);
+            shadowGradient.setColorAt(1.0/(rect.height()+1)*4, Qt::transparent);
             p->setPen(QColor("#a1a1a1"));
             p->setBrush(QColor("#d6d6d6"));
-            p->drawRect(opt->rect.adjusted(-5,-5,-1,-1));
+            p->drawRect(rect.adjusted(1,1,-1,-1));
             p->setBrush(QBrush(shadowGradient));
-            p->drawRect(opt->rect.adjusted(0,0,-1,-1));
+            p->drawRect(rect.adjusted(1,1,-1,-1));
             p->restore();
             break;
         }
         case PE_FrameTabWidget: {
-            const int stripWidth = 32;
+            const QStyleOptionTabWidgetFrame *twOpt = qstyleoption_cast<const QStyleOptionTabWidgetFrame*>(twOpt);
+            const int stripWidth = 35;
             QRect north(opt->rect.left(), opt->rect.top() - stripWidth + 1, opt->rect.width() - 1, stripWidth - 1);
             QRect south(opt->rect.left(), opt->rect.bottom(), opt->rect.width() - 1, stripWidth - 1);
             QRect east(opt->rect.left() - stripWidth + 1, opt->rect.top(), stripWidth - 1, opt->rect.height() - 1);
@@ -356,6 +365,13 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             p->restore();
             break;
         }
+        case PE_IndicatorToolBarHandle: {
+            p->save();
+            p->setPen(Qt::NoPen);
+            p->setBrush(QBrush(QColor("#a1a1a1"), Qt::Dense7Pattern));
+            p->drawRect(opt->rect.adjusted(0,0,-1,-1));
+            p->restore();
+        }
         case PE_IndicatorToolBarSeparator: {
             p->save();
             p->setPen("#d6d6d6");
@@ -366,8 +382,14 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
         case PE_PanelButtonTool: {
             p->save();
             p->setPen("#a8a8a8");
+            bool visible = widget && widget->parentWidget() && widget->parentWidget()->inherits("QTabBar");
             QLinearGradient buttonGradient(0.0, opt->rect.top(), 0.0, opt->rect.bottom());
-            if (opt->state & State_On || opt->state & State_Sunken) {
+            if (visible) {
+                buttonGradient.setColorAt(0.0, QColor("#fafafa"));
+                buttonGradient.setColorAt(1.0, QColor("#e0e0e0"));
+                p->setBrush(QBrush(buttonGradient));
+                p->drawRoundedRect(opt->rect.adjusted(1, 1, -2, -2), 3, 3);
+            } else if(opt->state & State_On || opt->state & State_Sunken) {
                 buttonGradient.setColorAt(0.0, QColor("#a8a8a8"));
                 buttonGradient.setColorAt(0.05, QColor("#c0c0c0"));
                 buttonGradient.setColorAt(0.15, QColor("#d6d6d6"));
@@ -571,6 +593,9 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
         }
         case CE_Splitter: {
             p->save();
+            p->setPen(Qt::NoPen);
+            p->setBrush(QColor("#c3c3c3"));
+            p->drawRect(opt->rect);
             p->setPen(QColor("#a1a1a1"));
             if (opt->state & State_Horizontal) {
                 p->drawLine(opt->rect.left() + 1, opt->rect.center().y() + 2, opt->rect.right() - 1, opt->rect.center().y() + 2);
