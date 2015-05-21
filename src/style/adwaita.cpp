@@ -567,8 +567,8 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                     break;
             }
             break;
-*/
         }
+*/
         case CE_DockWidgetTitle: {
             // cast option and check
             const QStyleOptionDockWidgetV2* dwOpt = ::qstyleoption_cast<const QStyleOptionDockWidgetV2*>( opt );
