@@ -22,6 +22,7 @@
 #include <QtGui/QPainter>
 #include <QtGui/QTransform>
 #include <QtGui/QRgb>
+#include <QtGui/QSizePolicy>
 
 #include "adwaita.h"
 #include "config.h"
@@ -171,6 +172,9 @@ void Adwaita::polish(QPalette &palette)
 void Adwaita::polish(QWidget *widget)
 {
     widget->setAttribute( Qt::WA_Hover );
+    if (widget->inherits("QTabBar")) {
+        qobject_cast<QTabBar*>(widget)->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    }
 }
 
 void Adwaita::polish(QApplication* app)
@@ -535,9 +539,43 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                           const QWidget *widget) const
 {
     switch(element) {
+/*
+        case CE_ShapedFrame: {
+            const QStyleOptionFrameV3* frameOpt = qstyleoption_cast<const QStyleOptionFrameV3*>(opt);
+            if(!frameOpt) {
+                break;
+            }
+            switch(frameOpt->frameShape) {
+                case QFrame::Box:
+                case QFrame::Panel:
+                case QFrame::StyledPanel:
+                case QFrame::WinPanel: {
+                    p->setPen(QPen(QColor("#a1a1a1"), frameOpt->lineWidth));
+                    p->setBrush(Qt::transparent);
+                    p->drawRect(opt->rect.adjusted(0, 0, -1, -1));
+                    break;
+                }
+                case QFrame::HLine:
+                    p->setPen(QPen(QColor("#a1a1a1"), frameOpt->lineWidth));
+                    p->drawLine(opt->rect.topLeft(), opt->rect.topRight());
+                    break;
+                case QFrame::VLine:
+                    p->setPen(QPen(QColor("#a1a1a1"), frameOpt->lineWidth));
+                    p->drawLine(opt->rect.topLeft(), opt->rect.bottomLeft());
+                    break;
+                default:
+                    break;
+            }
+            break;
+*/
+        }
         case CE_DockWidgetTitle: {
             // cast option and check
             const QStyleOptionDockWidgetV2* dwOpt = ::qstyleoption_cast<const QStyleOptionDockWidgetV2*>( opt );
+            if (!dwOpt) {
+                QCommonStyle::drawControl(element, opt, p, widget);
+                return;
+            }
             QRect rect = opt->rect;
             p->save();
             p->setPen(Qt::NoPen);
@@ -556,6 +594,10 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
         }
         case CE_TabBarTabShape: {
             const QStyleOptionTab *tbOpt = qstyleoption_cast<const QStyleOptionTab *>(opt);
+            if (!tbOpt) {
+                QCommonStyle::drawControl(element, opt, p, widget);
+                return;
+            }
             p->save();
 
             QPen underline;
@@ -622,6 +664,10 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
         case CE_Header: {
             p->save();
             const QStyleOptionHeader *hopt = qstyleoption_cast<const QStyleOptionHeader *>(opt);
+            if (!hopt) {
+                QCommonStyle::drawControl(element, opt, p, widget);
+                return;
+            }
             p->setBrush(opt->palette.base());
             p->setPen(QColor("#ededed"));
             p->drawRect(opt->rect.adjusted(-1, -1, -1, -1));
@@ -639,12 +685,17 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
             break;
         }
         case CE_ToolButtonLabel: {
-            QStyleOptionToolButton tbOpt(*qstyleoption_cast<const QStyleOptionToolButton*>(opt));
-            if (tbOpt.rect.height() > tbOpt.rect.width())
-                tbOpt.rect.adjust(0, 5, 0, -5);
+            const QStyleOptionToolButton *tbOpt = qstyleoption_cast<const QStyleOptionToolButton*>(opt);
+            if (!tbOpt) {
+                QCommonStyle::drawControl(element, opt, p, widget);
+                return;
+            }
+            QStyleOptionToolButton tbOptTmp(*tbOpt);
+            if (tbOptTmp.rect.height() > tbOptTmp.rect.width())
+                tbOptTmp.rect.adjust(0, 5, 0, -5);
             else
-                tbOpt.rect.adjust(5, 0, -5, 0);
-            QCommonStyle::drawControl(element, &tbOpt, p, widget);
+                tbOptTmp.rect.adjust(5, 0, -5, 0);
+            QCommonStyle::drawControl(element, &tbOptTmp, p, widget);
             break;
         }
         case CE_ToolBar: {
@@ -664,6 +715,10 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
         }
         case CE_MenuBarItem: {
             const QStyleOptionMenuItem *miopt = qstyleoption_cast<const QStyleOptionMenuItem*>(opt);
+            if (!miopt) {
+                QCommonStyle::drawControl(element, opt, p, widget);
+                return;
+            }
 
             p->save();
             p->setPen(Qt::NoPen);
@@ -693,6 +748,10 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
         }
         case CE_MenuEmptyArea: {
             const QStyleOptionMenuItem *miopt = qstyleoption_cast<const QStyleOptionMenuItem*>(opt);
+            if (!miopt) {
+                QCommonStyle::drawControl(element, opt, p, widget);
+                return;
+            }
             p->save();
             p->setPen(Qt::transparent);
             p->setBrush(Qt::white);
@@ -702,6 +761,10 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
         }
         case CE_MenuItem: {
             const QStyleOptionMenuItem *miopt = qstyleoption_cast<const QStyleOptionMenuItem*>(opt);
+            if (!miopt) {
+                QCommonStyle::drawControl(element, opt, p, widget);
+                return;
+            }
             if (miopt->menuItemType == QStyleOptionMenuItem::Separator) {
                 p->save();
                 p->setPen(Qt::NoPen);
@@ -828,6 +891,10 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
         }
         case CE_ProgressBarGroove: {
             const QStyleOptionProgressBarV2 *pbopt = qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt);
+            if (!pbopt) {
+                QCommonStyle::drawControl(element, opt, p, widget);
+                return;
+            }
             QRect rect = pbopt->rect.adjusted(0, 0, -1, -1);
             p->save();
             QLinearGradient bgGrad;
@@ -847,6 +914,10 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
         }
         case CE_ProgressBarContents: {
             const QStyleOptionProgressBarV2 *pbopt = qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt);
+            if (!pbopt) {
+                QCommonStyle::drawControl(element, opt, p, widget);
+                return;
+            }
             QRect rect = pbopt->rect.adjusted(0, 0, -1, -1);
             p->save();
             QLinearGradient bgGrad;
@@ -888,6 +959,10 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
         }
         case CE_ProgressBarLabel: {
             const QStyleOptionProgressBarV2 *pbopt = qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt);
+            if (!pbopt) {
+                QCommonStyle::drawControl(element, opt, p, widget);
+                return;
+            }
             p->save();
             QFont font = p->font();
             font.setPointSize(8);
@@ -1204,6 +1279,9 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
     switch(cc) {
         case CC_ScrollBar: {
             const QStyleOptionSlider *slOpt = qstyleoption_cast<const QStyleOptionSlider *>(opt);
+            if (!slOpt) {
+                return QCommonStyle::subControlRect(cc, opt, sc, w);
+            }
             const QRect scrollBarRect = slOpt->rect;
             int maxlen = ((slOpt->orientation == Qt::Horizontal) ?
                           scrollBarRect.width() : scrollBarRect.height());
@@ -1265,6 +1343,9 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
         }
         case CC_SpinBox: {
             const QStyleOptionSpinBox *cbOpt = qstyleoption_cast<const QStyleOptionSpinBox*>(opt);
+            if (!cbOpt) {
+                return QCommonStyle::subControlRect(cc, opt, sc, w);
+            }
             switch (sc) {
                 case SC_SpinBoxUp: {
                     if (cbOpt->subControls & SC_SpinBoxEditField)
@@ -1292,6 +1373,9 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
         }
         case CC_ComboBox: {
             const QStyleOptionComboBox *cbOpt = qstyleoption_cast<const QStyleOptionComboBox*>(opt);
+            if (!cbOpt) {
+                return QCommonStyle::subControlRect(cc, opt, sc, w);
+            }
             switch (sc) {
                 case SC_ComboBoxArrow: {
                     return QRect(cbOpt->rect.right() - cbOpt->rect.height() * 1.2 + 1, cbOpt->rect.top(), cbOpt->rect.height() * 1.2 + 1, cbOpt->rect.height());
@@ -1308,6 +1392,9 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
         }
         case CC_Slider: {
             const QStyleOptionSlider *slOpt = qstyleoption_cast<const QStyleOptionSlider*>(opt);
+            if (!slOpt) {
+                return QCommonStyle::subControlRect(cc, opt, sc, w);
+            }
             switch (sc) {
                 case SC_SliderHandle: {
                     QRect handle(0, 0, 0, 0);
@@ -1423,7 +1510,7 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
     switch(ct) {
         case CT_HeaderSection: {
             const QStyleOptionHeader *hopt = qstyleoption_cast<const QStyleOptionHeader *>(opt);
-            if (hopt->text.isEmpty())
+            if (hopt && hopt->text.isEmpty())
                 return QSize(0, 0);
             else
                 return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget);
