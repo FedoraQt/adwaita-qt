@@ -20,6 +20,10 @@
 #include "styleplugin.h"
 #include "adwaita.h"
 
+StylePlugin::StylePlugin(QObject* parent)
+        : QStylePlugin(parent) {
+}
+
 QStyle* StylePlugin::create(const QString& key) {
     if (key.toLower() == "adwaita")
         return new Adwaita;
@@ -30,4 +34,6 @@ QStringList StylePlugin::keys() const {
     return QStringList() << "adwaita";
 }
 
-Q_EXPORT_PLUGIN2(adwaita, StylePlugin)
+#if QT_VERSION < 0x050000
+    Q_EXPORT_PLUGIN2(adwaita, StylePlugin);
+#endif

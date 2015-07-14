@@ -20,11 +20,17 @@
 #ifndef STYLEPLUGIN_H
 #define STYLEPLUGIN_H
 
-#include <QtGui/qstyleplugin.h>
+#include <QtPlugin>
+#include <QStylePlugin>
 
 class StylePlugin : public QStylePlugin
 {
+    Q_OBJECT
+#if QT_VERSION >= 0x050000
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QStyleFactoryInterface" FILE "adwaita.json");
+#endif
 public:
+    StylePlugin(QObject* parent = 0);
     QStringList keys() const;
     QStyle* create(const QString& key);
 };

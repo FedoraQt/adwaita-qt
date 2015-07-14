@@ -23,10 +23,11 @@
 
 #include <QMap>
 #include <QPalette>
-#include <QCommonStyle>
 #include <QApplication>
 #include <QFile>
 #include <QDebug>
+#include <QStyleOption>
+#include <QCommonStyle>
 
 class Adwaita : public QCommonStyle
 {
