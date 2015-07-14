@@ -1532,7 +1532,7 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 6);
         }
         case CT_ProgressBar: {
-            if (qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt)->textVisible)
+            if (qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt) && qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt)->textVisible)
                 return QSize(19, 19);
             else
                 return QSize(1, 1);
