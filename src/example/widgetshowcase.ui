@@ -593,7 +593,7 @@
             <number>1</number>
            </property>
            <property name="textVisible">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="orientation">
             <enum>Qt::Vertical</enum>

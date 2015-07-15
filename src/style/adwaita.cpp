@@ -908,12 +908,13 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
             bgGrad.setColorAt(1.0, QColor("#b2b2b2"));
             p->setBrush(QBrush(bgGrad));
             p->setPen(QColor("#a1a1a1"));
-            p->drawRoundedRect(rect, 3, 3);
+            p->drawRoundedRect(rect, 2, 2);
             p->restore();
             break;
         }
         case CE_ProgressBarContents: {
-            const QStyleOptionProgressBarV2 *pbopt = qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt);
+            const QStyleOptionProgressBarV2 *pbopt2 = qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt);
+            const QStyleOptionProgressBar *pbopt = qstyleoption_cast<const QStyleOptionProgressBar*>(opt);
             if (!pbopt) {
                 QCommonStyle::drawControl(element, opt, p, widget);
                 return;
@@ -921,23 +922,23 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
             QRect rect = pbopt->rect.adjusted(0, 0, -1, -1);
             p->save();
             QLinearGradient bgGrad;
-            if (pbopt->orientation == Qt::Horizontal) {
+            if (!pbopt2 || pbopt2->orientation == Qt::Horizontal) {
                 if (pbopt->progress >= 0) {
                     qreal ratio = (((qreal) pbopt->progress) - pbopt->minimum) / (((qreal) pbopt->maximum) - pbopt->minimum);
-                    if (pbopt->invertedAppearance)
+                    if (opt->version == 2 && pbopt2->invertedAppearance)
                         rect.adjust(rect.width() * ratio, 0, 0, 0);
                     else
-                        rect.adjust(0, 0, -(rect.width() * ratio), 0);
+                        rect.setWidth(rect.width() * ratio);
                 }
                 bgGrad = QLinearGradient(0.0, rect.top()+1, 0.0, rect.bottom()+1);
             }
             else {
                 if (pbopt->progress >= 0) {
                     qreal ratio = (((qreal) pbopt->progress) - pbopt->minimum) / (((qreal) pbopt->maximum) - pbopt->minimum);
-                    if (pbopt->invertedAppearance)
+                    if (pbopt2->invertedAppearance)
                         rect.adjust(0, rect.height() * ratio, 0, 0);
                     else
-                        rect.adjust(0, 0, 0, -(rect.height() * ratio));
+                        rect.setHeight(rect.height() * ratio);
                 }
                 bgGrad = QLinearGradient(rect.left()+1, 0.0, rect.right()+1, 0.0);
             }
@@ -967,9 +968,9 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
             QFont font = p->font();
             font.setPointSize(8);
             p->setFont(font);
-            p->setPen("#a8a8a8");
+            p->setPen("#1a1a1a");
             p->setBrush(Qt::transparent);
-            p->drawText(pbopt->rect, Qt::AlignHCenter | Qt::AlignBottom, pbopt->text);
+            p->drawText(pbopt->rect.adjusted(0, 0, 0, 0), Qt::AlignHCenter | Qt::AlignVCenter, pbopt->text);
             p->restore();
             break;
         }
@@ -1464,38 +1465,44 @@ QRect Adwaita::subElementRect(QStyle::SubElement r, const QStyleOption* opt, con
         case SE_CheckBoxIndicator: {
             return QRect(opt->rect.left() + 2, opt->rect.center().y() - 8, 16, 16);
         }
-        case SE_ProgressBarGroove:
-        case SE_ProgressBarContents: {
+        case SE_ProgressBarContents:
+        case SE_ProgressBarGroove: {
             const QStyleOptionProgressBarV2 *pbopt = qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt);
             if (!pbopt) {
-                qDebug() << "QStyleOptionProgressBarV2 cast failed!";
-                return QCommonStyle::subElementRect(r, opt, widget).adjusted(0, 8, 0, -8);
+                return opt->rect;
             }
             if (pbopt->textVisible) {
-                if (pbopt->orientation == Qt::Horizontal)
-                    return opt->rect.adjusted(0, 13, 0, 0);
+                if (pbopt->orientation == Qt::Horizontal) {
+                    if (opt->rect.height() > 14 + 6)
+                        return QRect(opt->rect.left(), opt->rect.bottom() - 6, opt->rect.width(), 6);
+                    else
+                        return QRect(opt->rect.left() + 32, opt->rect.bottom() - 6, opt->rect.width(), 6);
+                }
                 else
-                    return opt->rect.adjusted(13, 0, 0, 0);
+                    return QRect(opt->rect.center().x() - 3, opt->rect.top() + 14, 6, opt->rect.height() - 14);
             }
             else {
                 if (pbopt->orientation == Qt::Horizontal)
-                    return opt->rect.adjusted(0, 5, 0, -6);
+                    return QRect(opt->rect.left(), opt->rect.center().y() - 3, opt->rect.width(), 6);
                 else
-                    return opt->rect.adjusted(5, 0, -6, 0);
+                    return QRect(opt->rect.center().x() - 3, opt->rect.top(), 6, opt->rect.height());
             }
         }
         case SE_ProgressBarLabel: {
             const QStyleOptionProgressBarV2 *pbopt = qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt);
             if (!pbopt) {
-                qDebug() << "QStyleOptionProgressBarV2 cast failed!";
-                return QCommonStyle::subElementRect(r, opt, widget).adjusted(0, 8, 0, -8);
+                return opt->rect;
             }
             if (!pbopt->textVisible)
                 return QRect(0, 0, 0, 0);
-            if (pbopt->orientation == Qt::Horizontal)
-                return opt->rect.adjusted(0, 0, 0, -5);
+            if (pbopt->orientation == Qt::Horizontal) {
+                if (opt->rect.height() > 14 + 6)
+                    return QRect(opt->rect.left(), opt->rect.top(), opt->rect.width(), 14);
+                else
+                    return QRect(opt->rect.left(), opt->rect.top(), 32, opt->rect.height());
+            }
             else
-                return opt->rect.adjusted(0, 0, -5, 0);
+                return QRect(opt->rect.left(), opt->rect.top(), opt->rect.width(), 14);
         }
         case SE_LineEditContents: {
             return opt->rect.adjusted(6, 1, -6, -1);
@@ -1531,12 +1538,14 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
         case CT_ComboBox: {
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 6);
         }
+        /*
         case CT_ProgressBar: {
             if (qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt) && qstyleoption_cast<const QStyleOptionProgressBarV2*>(opt)->textVisible)
-                return QSize(19, 19);
+                return opt->rect.size().expandedTo(QSize(18, 18));
             else
                 return QSize(1, 1);
         }
+        */
         case CT_Slider: {
             return QSize(20, 20);
         }
