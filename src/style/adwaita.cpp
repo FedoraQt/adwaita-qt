@@ -172,9 +172,6 @@ void Adwaita::polish(QPalette &palette)
 void Adwaita::polish(QWidget *widget)
 {
     widget->setAttribute( Qt::WA_Hover );
-    if (widget->inherits("QTabBar")) {
-        qobject_cast<QTabBar*>(widget)->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    }
 }
 
 void Adwaita::polish(QApplication* app)
