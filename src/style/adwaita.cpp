@@ -30,66 +30,66 @@
 
 Adwaita::Adwaita() : QCommonStyle() {
     m_iconMap[IT_CheckBox][0]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("checkbox-unchecked-backdrop-insensitive.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/checkbox-unchecked-backdrop-insensitive.png");
     m_iconMap[IT_CheckBox][State_Active]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("checkbox-unchecked-insensitive.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/checkbox-unchecked-insensitive.png");
     m_iconMap[IT_CheckBox][State_Active | State_Enabled]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("checkbox-unchecked.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/checkbox-unchecked.png");
     m_iconMap[IT_CheckBox][               State_Enabled]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("checkbox-unchecked-backdrop.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/checkbox-unchecked-backdrop.png");
     m_iconMap[IT_CheckBox][State_Active | State_Enabled | State_Sunken]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("checkbox-unchecked-active.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/checkbox-unchecked-active.png");
     m_iconMap[IT_CheckBox][                                              State_On]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("checkbox-checked-backdrop-insensitive.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/checkbox-checked-backdrop-insensitive.png");
     m_iconMap[IT_CheckBox][State_Active                                | State_On]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("checkbox-checked-insensitive.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/checkbox-checked-insensitive.png");
     m_iconMap[IT_CheckBox][State_Active | State_Enabled                | State_On]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("checkbox-checked.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/checkbox-checked.png");
     m_iconMap[IT_CheckBox][               State_Enabled                | State_On]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("checkbox-checked-backdrop.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/checkbox-checked-backdrop.png");
     m_iconMap[IT_CheckBox][State_Active | State_Enabled | State_Sunken | State_On]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("checkbox-checked-active.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/checkbox-checked-active.png");
     m_iconMap[IT_CheckBox][                                              State_NoChange]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("checkbox-mixed-backdrop-insensitive.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/checkbox-mixed-backdrop-insensitive.png");
     m_iconMap[IT_CheckBox][State_Active                                | State_NoChange]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("checkbox-mixed-insensitive.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/checkbox-mixed-insensitive.png");
     m_iconMap[IT_CheckBox][State_Active | State_Enabled                | State_NoChange]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("checkbox-mixed.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/checkbox-mixed.png");
     m_iconMap[IT_CheckBox][               State_Enabled                | State_NoChange]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("checkbox-mixed-backdrop.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/checkbox-mixed-backdrop.png");
     m_iconMap[IT_CheckBox][State_Active | State_Enabled | State_Sunken | State_NoChange]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("checkbox-checked-active.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/checkbox-checked-active.png");
 
     m_iconMap[IT_RadioButton][0]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("radio-unchecked-backdrop-insensitive.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/radio-unchecked-backdrop-insensitive.png");
     m_iconMap[IT_RadioButton][State_Active]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("radio-unchecked-insensitive.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/radio-unchecked-insensitive.png");
     m_iconMap[IT_RadioButton][State_Active | State_Enabled]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("radio-unchecked.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/radio-unchecked.png");
     m_iconMap[IT_RadioButton][               State_Enabled]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("radio-unchecked-backdrop.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/radio-unchecked-backdrop.png");
     m_iconMap[IT_RadioButton][State_Active | State_Enabled | State_Sunken]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("radio-unchecked-active.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/radio-unchecked-active.png");
     m_iconMap[IT_RadioButton][                                              State_On]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("radio-checked-backdrop-insensitive.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/radio-checked-backdrop-insensitive.png");
     m_iconMap[IT_RadioButton][State_Active                                | State_On]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("radio-checked-insensitive.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/radio-checked-insensitive.png");
     m_iconMap[IT_RadioButton][State_Active | State_Enabled                | State_On]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("radio-checked.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/radio-checked.png");
     m_iconMap[IT_RadioButton][               State_Enabled                | State_On]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("radio-checked-backdrop.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/radio-checked-backdrop.png");
     m_iconMap[IT_RadioButton][State_Active | State_Enabled | State_Sunken | State_On]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("radio-checked-active.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/radio-checked-active.png");
     m_iconMap[IT_RadioButton][                                              State_NoChange]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("radio-mixed-backdrop-insensitive.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/radio-mixed-backdrop-insensitive.png");
     m_iconMap[IT_RadioButton][State_Active                                | State_NoChange]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("radio-mixed-insensitive.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/radio-mixed-insensitive.png");
     m_iconMap[IT_RadioButton][State_Active | State_Enabled                | State_NoChange]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("radio-mixed.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/radio-mixed.png");
     m_iconMap[IT_RadioButton][               State_Enabled                | State_NoChange]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("radio-mixed-backdrop.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/radio-mixed-backdrop.png");
     m_iconMap[IT_RadioButton][State_Active | State_Enabled | State_Sunken | State_NoChange]
-            = QPixmap(QString("%1/%2").arg(ADWAITA_ASSET_DIR).arg("radio-checked-active.png"));
+            = QPixmap(ADWAITA_ASSET_DIR "/radio-checked-active.png");
 }
 
 void Adwaita::polish(QPalette &palette)
