@@ -29,6 +29,7 @@
 #include <QStyleOption>
 #include <QCommonStyle>
 
+
 class Adwaita : public QCommonStyle
 {
     Q_OBJECT
@@ -65,12 +66,6 @@ public:
                            const QSize& contentsSize,
                            const QWidget* widget = 0) const;
 private:
-    enum IconType {
-        IT_None = 0,
-        IT_CheckBox,
-        IT_RadioButton,
-    };
-    QMap<uint64_t,QMap<uint64_t,QPixmap>> m_iconMap;
 };
 
 #endif // ADWAITA_H
