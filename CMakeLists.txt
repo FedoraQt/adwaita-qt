@@ -39,7 +39,7 @@ if (NOT THEME_INSTALL_DIR)
     set (THEME_INSTALL_DIR "${DATA_INSTALL_DIR}/themes")
 endif()
 
-set(ADWAITA_THEME_DIR "${THEME_INSTALL_DIR}/Adwaita/qt${QT_VERSION_NUMBER}")
+set(ADWAITA_THEME_DIR "${THEME_INSTALL_DIR}/Adwaita/qt")
 set(ADWAITA_ASSET_DIR "${ADWAITA_THEME_DIR}/assets")
 
 option(BUILD_EXAMPLE "Build an example widget factory app" OFF)
