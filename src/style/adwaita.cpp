@@ -722,13 +722,12 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
 
             p->save();
             p->setPen(Qt::NoPen);
-            p->setBrush(opt->palette.window());
+            p->setBrush(QColor("#ededed"));
             p->drawRect(opt->rect);
-
             p->setPen(QColor("#d6d6d6"));
             p->drawLine(opt->rect.bottomLeft(), opt->rect.bottomRight());
 
-            if (miopt->state & State_Sunken) {
+            if (miopt->state & State_Sunken && miopt->state & State_Enabled) {
                 p->setBrush(QColor("#4a90d9"));
                 p->drawRect(miopt->rect.left(), miopt->rect.bottom() - 2, miopt->rect.right(), miopt->rect.bottom());
                 p->setPen(QColor("#4a90d9"));
