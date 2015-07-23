@@ -300,7 +300,6 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
         case PE_FrameTabBarBase: {
             const QStyleOptionTabBarBase *tbbOpt = qstyleoption_cast<const QStyleOptionTabBarBase *>(opt);
             if (0 && widget && widget->parentWidget() && widget->parentWidget()->inherits("QTabWidget")) {
-                qDebug() << widget->parentWidget()->metaObject()->className();
                 return;
             }
             QRect rect = tbbOpt->tabBarRect.width() * tbbOpt->tabBarRect.height() > tbbOpt->rect.height() * tbbOpt->rect.width() ? tbbOpt->tabBarRect : tbbOpt->rect;
@@ -805,7 +804,7 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                 p->drawPolygon(triangle, Qt::WindingFill);
                 p->setRenderHint(QPainter::Antialiasing, false);
             }
-            if (miopt->maxIconWidth) {
+            if (miopt->maxIconWidth || !miopt->icon.isNull() || miopt->checkType != QStyleOptionMenuItem::NotCheckable) {
                 QPixmap icon;
                 // TODO: improve performance - change colors only once
                 if (miopt->checkType == QStyleOptionMenuItem::QStyleOptionMenuItem::NonExclusive) {
