@@ -1346,27 +1346,54 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
             if (!cbOpt) {
                 return QCommonStyle::subControlRect(cc, opt, sc, w);
             }
-            switch (sc) {
-                case SC_SpinBoxUp: {
-                    if (cbOpt->subControls & SC_SpinBoxEditField)
-                        return QRect(opt->rect.right() - opt->rect.height() * 1.2 - 1, opt->rect.top(), opt->rect.height() * 1.2 + 1, opt->rect.height());
-                    else
-                        return QRect(opt->rect.right() - opt->rect.height() * 1.2 - 1, opt->rect.top(), opt->rect.height() * 1.2 - 4, opt->rect.height());
+            if (opt->rect.width() < opt->rect.height() * 2.4 + 16) {
+                switch (sc) {
+                    case SC_SpinBoxUp: {
+                        if (cbOpt->subControls & SC_SpinBoxEditField)
+                            return QRect(opt->rect.right() - 20, opt->rect.top(), 20, opt->rect.height() / 2 + 1);
+                        else
+                            return QRect(opt->rect.right() - opt->rect.height() * 1.2 - 1, opt->rect.top(), opt->rect.height() * 1.2 - 4, opt->rect.height());
+                    }
+                    case SC_SpinBoxDown: {
+                        if (cbOpt->subControls & SC_SpinBoxEditField)
+                            return QRect(opt->rect.right() - 20, opt->rect.center().y() - 1, 20, opt->rect.height() / 2 + 1);
+                        else
+                            return QRect(4 + opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), opt->rect.height() * 1.2 - 4, opt->rect.height());
+                    }
+                    case SC_SpinBoxEditField: {
+                        return QRect(opt->rect.left(), opt->rect.top(), opt->rect.width() - 20, opt->rect.height());
+                    }
+                    case SC_SpinBoxFrame: {
+                        if (cbOpt->subControls & SC_SpinBoxEditField)
+                            return opt->rect;
+                        else
+                            return QRect(4 + opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), 2 * (opt->rect.height() * 1.2 - 2), opt->rect.height());
+                    }
                 }
-                case SC_SpinBoxDown: {
-                    if (cbOpt->subControls & SC_SpinBoxEditField)
-                        return QRect(opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), opt->rect.height() * 1.2 + 1, opt->rect.height());
-                    else
-                        return QRect(4 + opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), opt->rect.height() * 1.2 - 4, opt->rect.height());
-                }
-                case SC_SpinBoxEditField: {
-                    return QRect(opt->rect.left(), opt->rect.top(), opt->rect.width() - 2 * (opt->rect.height() * 1.2) + 1, opt->rect.height());
-                }
-                case SC_SpinBoxFrame: {
-                    if (cbOpt->subControls & SC_SpinBoxEditField)
-                        return opt->rect;
-                    else
-                        return QRect(4 + opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), 2 * (opt->rect.height() * 1.2 - 2), opt->rect.height());
+            }
+            else {
+                switch (sc) {
+                    case SC_SpinBoxUp: {
+                        if (cbOpt->subControls & SC_SpinBoxEditField)
+                            return QRect(opt->rect.right() - opt->rect.height() * 1.2 - 1, opt->rect.top(), opt->rect.height() * 1.2 + 1, opt->rect.height());
+                        else
+                            return QRect(opt->rect.right() - opt->rect.height() * 1.2 - 1, opt->rect.top(), opt->rect.height() * 1.2 - 4, opt->rect.height());
+                    }
+                    case SC_SpinBoxDown: {
+                        if (cbOpt->subControls & SC_SpinBoxEditField)
+                            return QRect(opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), opt->rect.height() * 1.2 + 1, opt->rect.height());
+                        else
+                            return QRect(4 + opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), opt->rect.height() * 1.2 - 4, opt->rect.height());
+                    }
+                    case SC_SpinBoxEditField: {
+                        return QRect(opt->rect.left(), opt->rect.top(), opt->rect.width() - 2 * (opt->rect.height() * 1.2) + 1, opt->rect.height());
+                    }
+                    case SC_SpinBoxFrame: {
+                        if (cbOpt->subControls & SC_SpinBoxEditField)
+                            return opt->rect;
+                        else
+                            return QRect(4 + opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), 2 * (opt->rect.height() * 1.2 - 2), opt->rect.height());
+                    }
                 }
             }
             break;
