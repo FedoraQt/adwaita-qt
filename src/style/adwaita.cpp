@@ -920,40 +920,93 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
             }
             QRect rect = pbopt->rect.adjusted(0, 0, -1, -1);
             p->save();
-            QLinearGradient bgGrad;
-            if (!pbopt2 || pbopt2->orientation == Qt::Horizontal) {
-                if (pbopt->progress >= 0) {
+            if (pbopt->progress >= 0) {
+                QLinearGradient bgGrad;
+                if (!pbopt2 || pbopt2->orientation == Qt::Horizontal) {
                     qreal ratio = (((qreal) pbopt->progress) - pbopt->minimum) / (((qreal) pbopt->maximum) - pbopt->minimum);
                     if (opt->version == 2 && pbopt2->invertedAppearance)
                         rect.adjust(rect.width() * ratio, 0, 0, 0);
                     else
                         rect.setWidth(rect.width() * ratio);
+                    bgGrad = QLinearGradient(0.0, rect.top()+1, 0.0, rect.bottom()+1);
                 }
-                bgGrad = QLinearGradient(0.0, rect.top()+1, 0.0, rect.bottom()+1);
-            }
-            else {
-                if (pbopt->progress >= 0) {
+                else {
                     qreal ratio = (((qreal) pbopt->progress) - pbopt->minimum) / (((qreal) pbopt->maximum) - pbopt->minimum);
                     if (pbopt2->invertedAppearance)
                         rect.adjust(0, rect.height() * ratio, 0, 0);
                     else
                         rect.setHeight(rect.height() * ratio);
+                    bgGrad = QLinearGradient(rect.left()+1, 0.0, rect.right()+1, 0.0);
                 }
-                bgGrad = QLinearGradient(rect.left()+1, 0.0, rect.right()+1, 0.0);
-            }
-            bgGrad.setColorAt(0.0, QColor("#4081C5"));
-            if (pbopt->progress >= 0) {
+                bgGrad.setColorAt(0.0, QColor("#4081C5"));
                 bgGrad.setColorAt(0.1, QColor("#4C91D9"));
                 bgGrad.setColorAt(0.95, QColor("#4C91D9"));
+                bgGrad.setColorAt(1.0, QColor("#4081C5"));
+                p->setBrush(QBrush(bgGrad));
+                p->setPen(QColor("black"));
+                p->drawRoundedRect(rect, 2, 2);
             }
             else {
-                bgGrad.setColorAt(0.1, QColor("#94CAFF"));
-                bgGrad.setColorAt(0.95, QColor("#94CAFF"));
+                QLinearGradient bgGrad;
+                if (!pbopt2 || pbopt2->orientation == Qt::Horizontal) {
+                    rect.setWidth(rect.width());
+                    bgGrad = QLinearGradient(0.0, rect.top()+1, 0.0, rect.bottom()+1);
+                }
+                else {
+                    rect.setHeight(rect.height());
+                    bgGrad = QLinearGradient(rect.left()+1, 0.0, rect.right()+1, 0.0);
+                }
+                bgGrad.setColorAt(0.0, QColor("#4A97E3"));
+                bgGrad.setColorAt(0.1, QColor("#90C8FF"));
+                bgGrad.setColorAt(0.95, QColor("#90C8FF"));
+                bgGrad.setColorAt(1.0, QColor("#4A97E3"));
+                p->setBrush(QBrush(bgGrad));
+                p->setPen(QColor("black"));
+                if (!pbopt2 || pbopt2->orientation == Qt::Horizontal) {
+                    int step = rect.height() * 2;
+                    int skew = rect.height();
+                    for (int i = rect.left(); i < rect.right(); i += step) {
+                        QPolygonF poly;
+                        poly << QPointF(i, rect.bottom() + 1);
+                        if (i + skew > rect.right())
+                            poly << QPointF(rect.right(), rect.top() + rect.right() - i);
+                        else
+                            poly << QPointF(i + skew, rect.top());
+                        if (i + skew + step > rect.right())
+                            poly << QPointF(rect.right(), rect.top());
+                        else
+                            poly << QPointF(i + skew + step, rect.top());
+                        if (i + step > rect.right())
+                            poly << QPointF(rect.right(), rect.bottom());
+                        else
+                            poly << QPointF(i + step, rect.bottom() + 1);
+                        p->drawPolygon(poly);
+                        i += step;
+                    }
+                }
+                else {
+                    int step = rect.width() * 2;
+                    int skew = rect.width();
+                    for (int i = rect.top(); i < rect.bottom(); i += step) {
+                        QPolygonF poly;
+                        poly << QPointF(rect.left(), i);
+                        if (i + skew > rect.bottom())
+                            poly << QPointF(rect.left() + rect.bottom() - i, rect.bottom());
+                        else
+                            poly << QPointF(rect.right(), i + skew);
+                        if (i + skew + step > rect.bottom())
+                            poly << QPointF(rect.right(), rect.bottom());
+                        else
+                            poly << QPointF(rect.right(), i + skew + step);
+                        if (i + step > rect.bottom())
+                            poly << QPointF(rect.left(), rect.bottom());
+                        else
+                            poly << QPointF(rect.left(), i + step);
+                        p->drawPolygon(poly);
+                        i += step;
+                    }
+                }
             }
-            bgGrad.setColorAt(1.0, QColor("#4081C5"));
-            p->setBrush(QBrush(bgGrad));
-            p->setPen(QColor("black"));
-            p->drawRoundedRect(rect, 2, 2);
             p->restore();
             break;
         }
