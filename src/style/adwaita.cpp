@@ -93,6 +93,38 @@ static QPixmap findPixmap(uint64_t element, uint64_t state) {
     return QPixmap();
 }
 
+static void adwaitaButtonBackground(QPainter *p, const QRect &r, QStyle::State s, const QPalette &palette, const QWidget *w) {
+    p->save();
+    p->setPen("#a8a8a8");
+    bool visible = !(w && w->parentWidget() && w->parentWidget()->inherits("QTabBar"));
+    QLinearGradient buttonGradient(0.0, r.top(), 0.0, r.bottom());
+    if (s & QStyle::State_Active && s & QStyle::State_Enabled) {
+        if(s & QStyle::State_On || s & QStyle::State_Sunken) {
+            buttonGradient.setColorAt(0.0, QColor("#a8a8a8"));
+            buttonGradient.setColorAt(0.05, QColor("#c0c0c0"));
+            buttonGradient.setColorAt(0.15, QColor("#d6d6d6"));
+        }
+        else if (s & QStyle::State_MouseOver) {
+            buttonGradient.setColorAt(0.0, QColor("white"));
+            buttonGradient.setColorAt(0.4, QColor("#f7f7f7"));
+            buttonGradient.setColorAt(1.0, QColor("#ededed"));
+        }
+        else if (visible) {
+            buttonGradient.setColorAt(0.0, QColor("#fafafa"));
+            buttonGradient.setColorAt(1.0, QColor("#e0e0e0"));
+        }
+    }
+    else {
+        if (s & QStyle::State_On || s & QStyle::State_Sunken)
+            buttonGradient.setColorAt(0.0, palette.mid().color());
+        else
+            buttonGradient.setColorAt(0.0, palette.button().color());
+    }
+    p->setBrush(QBrush(buttonGradient));
+    p->drawRoundedRect(r, 3, 3);
+    p->restore();
+}
+
 Adwaita::Adwaita() : QCommonStyle() {
 }
 
@@ -113,7 +145,7 @@ void Adwaita::polish(QPalette &palette)
     palette.setColor(QPalette::All,      QPalette::Light,           QColor("#fafafa"));
     palette.setColor(QPalette::All,      QPalette::Midlight,        QColor("#f3f3f3"));
     palette.setColor(QPalette::All,      QPalette::Dark,            QColor("#e0e0e0"));
-    palette.setColor(QPalette::All,      QPalette::Mid,             QColor("#e6e6e6"));
+    palette.setColor(QPalette::All,      QPalette::Mid,             QColor("#d4d4d4"));
     palette.setColor(QPalette::All,      QPalette::Shadow,          QColor("black"));
 
     palette.setColor(QPalette::All,      QPalette::Highlight,       QColor("#4a90d9"));
@@ -137,7 +169,7 @@ void Adwaita::polish(QPalette &palette)
     palette.setColor(QPalette::Disabled, QPalette::Light,           QColor("#f4f4f4"));
     palette.setColor(QPalette::Disabled, QPalette::Midlight,        QColor("#f4f4f4"));
     palette.setColor(QPalette::Disabled, QPalette::Dark,            QColor("#f4f4f4"));
-    palette.setColor(QPalette::Disabled, QPalette::Mid,             QColor("#f4f4f4"));
+    palette.setColor(QPalette::Disabled, QPalette::Mid,             QColor("#e8e8e8"));
     palette.setColor(QPalette::Disabled, QPalette::Shadow,          QColor("black"));
 
     palette.setColor(QPalette::Disabled, QPalette::Highlight,       QColor("#4a90d9"));
@@ -162,7 +194,7 @@ void Adwaita::polish(QPalette &palette)
     palette.setColor(QPalette::Inactive, QPalette::Light,           QColor("#ededed"));
     palette.setColor(QPalette::Inactive, QPalette::Midlight,        QColor("#ededed"));
     palette.setColor(QPalette::Inactive, QPalette::Dark,            QColor("#ededed"));
-    palette.setColor(QPalette::Inactive, QPalette::Mid,             QColor("#ededed"));
+    palette.setColor(QPalette::Inactive, QPalette::Mid,             QColor("#e0e0e0"));
     palette.setColor(QPalette::Inactive, QPalette::Shadow,          QColor("black"));
 
     palette.setColor(QPalette::Inactive, QPalette::Highlight,       QColor("#4a90d9"));
@@ -395,30 +427,7 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             break;
         }
         case PE_PanelButtonTool: {
-            p->save();
-            p->setPen("#a8a8a8");
-            bool visible = widget && widget->parentWidget() && widget->parentWidget()->inherits("QTabBar");
-            QLinearGradient buttonGradient(0.0, opt->rect.top(), 0.0, opt->rect.bottom());
-            if (visible) {
-                buttonGradient.setColorAt(0.0, QColor("#fafafa"));
-                buttonGradient.setColorAt(1.0, QColor("#e0e0e0"));
-                p->setBrush(QBrush(buttonGradient));
-                p->drawRoundedRect(opt->rect.adjusted(1, 1, -2, -2), 3, 3);
-            } else if(opt->state & State_On || opt->state & State_Sunken) {
-                buttonGradient.setColorAt(0.0, QColor("#a8a8a8"));
-                buttonGradient.setColorAt(0.05, QColor("#c0c0c0"));
-                buttonGradient.setColorAt(0.15, QColor("#d6d6d6"));
-                p->setBrush(QBrush(buttonGradient));
-                p->drawRoundedRect(opt->rect.adjusted(1, 1, -2, -2), 3, 3);
-            }
-            else if (opt->state & State_MouseOver) {
-                buttonGradient.setColorAt(0.0, QColor("white"));
-                buttonGradient.setColorAt(0.4, QColor("#f7f7f7"));
-                buttonGradient.setColorAt(1.0, QColor("#ededed"));
-                p->setBrush(QBrush(buttonGradient));
-                p->drawRoundedRect(opt->rect.adjusted(1, 1, -2, -2), 3, 3);
-            }
-            p->restore();
+            adwaitaButtonBackground(p, opt->rect.adjusted(1, 1, -2, -2), opt->state, opt->palette, widget);
             break;
         }
         case PE_FrameMenu:
@@ -465,33 +474,7 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             break;
         }
         case PE_PanelButtonCommand: {
-            QRect rect = opt->rect.adjusted(0, 0, -1, -1);
-            QLinearGradient buttonGradient(0.0, rect.top(), 0.0, rect.bottom());
-            if (opt->state & State_Active && opt->state & State_Enabled) {
-                if (opt->state & State_On || opt->state & State_Sunken) {
-                    buttonGradient.setColorAt(0.0, QColor("#a8a8a8"));
-                    buttonGradient.setColorAt(0.05, QColor("#c0c0c0"));
-                    buttonGradient.setColorAt(0.15, QColor("#d6d6d6"));
-                }
-                else if (opt->state & State_MouseOver) {
-                    buttonGradient.setColorAt(0.0, QColor("white"));
-                    buttonGradient.setColorAt(0.4, QColor("#f7f7f7"));
-                    buttonGradient.setColorAt(1.0, QColor("#ededed"));
-                }
-                else {
-                    buttonGradient.setColorAt(0.0, QColor("#fafafa"));
-                    buttonGradient.setColorAt(1.0, QColor("#e0e0e0"));
-                }
-            }
-            else {
-                buttonGradient.setColorAt(0.0, opt->palette.button().color());
-            }
-            QBrush buttonBrush(buttonGradient);
-            p->save();
-            p->setBrush(buttonBrush);
-            p->setPen(QColor("#a1a1a1"));
-            p->drawRoundedRect(rect, 3, 3);
-            p->restore();
+            adwaitaButtonBackground(p, opt->rect.adjusted(0, 0, -1, -1), opt->state, opt->palette, widget);
             break;
         }
         case PE_PanelLineEdit: {
@@ -1102,32 +1085,8 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
             QRect editField = subControlRect(control, cbOpt, SC_ComboBoxEditField).adjusted(0, 0, -1, 0);
             QRect popup = subControlRect(control, cbOpt, SC_ComboBoxListBoxPopup).adjusted(0, 0, -1, -1);
 
-            QLinearGradient buttonGradient(0.0, frame.top(), 0.0, frame.bottom());
-            if (opt->state & State_Active && opt->state & State_Enabled) {
-                if (opt->state & State_On || opt->state & State_Sunken) {
-                    buttonGradient.setColorAt(0.0, QColor("#a8a8a8"));
-                    buttonGradient.setColorAt(0.05, QColor("#c0c0c0"));
-                    buttonGradient.setColorAt(0.15, QColor("#d6d6d6"));
-                }
-                else if (opt->state & State_MouseOver) {
-                    buttonGradient.setColorAt(0.0, QColor("white"));
-                    buttonGradient.setColorAt(0.4, QColor("#f7f7f7"));
-                    buttonGradient.setColorAt(1.0, QColor("#ededed"));
-                }
-                else {
-                    buttonGradient.setColorAt(0.0, QColor("#fafafa"));
-                    buttonGradient.setColorAt(1.0, QColor("#e0e0e0"));
-                }
-            }
-            else {
-                buttonGradient.setColorAt(0.0, opt->palette.button().color());
-            }
-            QBrush buttonBrush(buttonGradient);
-
             p->save();
-            p->setPen(QColor("#a1a1a1"));
-            p->setBrush(buttonBrush);
-            p->drawRoundedRect(frame, 3, 3);
+            adwaitaButtonBackground(p, frame, opt->state, opt->palette, widget);
             if (cbOpt->editable) {
                 p->drawLine(arrow.topLeft(), arrow.bottomLeft());
             }
