@@ -176,6 +176,11 @@ void Adwaita::polish(QPalette &palette)
 void Adwaita::polish(QWidget *widget)
 {
     widget->setAttribute( Qt::WA_Hover );
+
+    if( qobject_cast<QFrame*>(widget) && widget->parent() && widget->parent()->inherits("KTitleWidget")) {
+        widget->setAutoFillBackground(false);
+        widget->setBackgroundRole(QPalette::Window);
+    }
 }
 
 void Adwaita::polish(QApplication* app)
@@ -350,8 +355,14 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
         case PE_FrameDefaultButton:
         case PE_Frame:
         case PE_FrameButtonTool: {
+            const QStyleOptionFrame *frOpt = qstyleoption_cast<const QStyleOptionFrame*>(opt);
+            QPen pen(QColor("#a1a1a1"), 1);
+            if (frOpt)
+                pen.setWidth(0);
+            if (pen.width() <= 0)
+                break;
             p->save();
-            p->setPen(QColor("#a1a1a1"));
+            p->setPen(pen);
             p->setBrush(Qt::transparent);
             p->drawRect(opt->rect.adjusted(0, 0, -1, -1));
             p->restore();
@@ -539,36 +550,6 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                           const QWidget *widget) const
 {
     switch(element) {
-/*
-        case CE_ShapedFrame: {
-            const QStyleOptionFrameV3* frameOpt = qstyleoption_cast<const QStyleOptionFrameV3*>(opt);
-            if(!frameOpt) {
-                break;
-            }
-            switch(frameOpt->frameShape) {
-                case QFrame::Box:
-                case QFrame::Panel:
-                case QFrame::StyledPanel:
-                case QFrame::WinPanel: {
-                    p->setPen(QPen(QColor("#a1a1a1"), frameOpt->lineWidth));
-                    p->setBrush(Qt::transparent);
-                    p->drawRect(opt->rect.adjusted(0, 0, -1, -1));
-                    break;
-                }
-                case QFrame::HLine:
-                    p->setPen(QPen(QColor("#a1a1a1"), frameOpt->lineWidth));
-                    p->drawLine(opt->rect.topLeft(), opt->rect.topRight());
-                    break;
-                case QFrame::VLine:
-                    p->setPen(QPen(QColor("#a1a1a1"), frameOpt->lineWidth));
-                    p->drawLine(opt->rect.topLeft(), opt->rect.bottomLeft());
-                    break;
-                default:
-                    break;
-            }
-            break;
-        }
-*/
         case CE_DockWidgetTitle: {
             // cast option and check
             const QStyleOptionDockWidgetV2* dwOpt = ::qstyleoption_cast<const QStyleOptionDockWidgetV2*>( opt );
