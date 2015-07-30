@@ -19,10 +19,10 @@
  */
 
 #include <QtGui>
-#include <QtGui/QPainter>
-#include <QtGui/QTransform>
-#include <QtGui/QRgb>
-#include <QtGui/QSizePolicy>
+#include <QPainter>
+#include <QTransform>
+#include <QRgb>
+#include <QSizePolicy>
 
 #include "adwaita.h"
 #include "config.h"
