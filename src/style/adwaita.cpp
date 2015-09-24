@@ -1495,7 +1495,7 @@ QRect Adwaita::subElementRect(QStyle::SubElement r, const QStyleOption* opt, con
                     if (opt->rect.height() > 14 + 6)
                         return QRect(opt->rect.left(), opt->rect.bottom() - 6, opt->rect.width(), 6);
                     else
-                        return QRect(opt->rect.left() + 32, opt->rect.bottom() - 6, opt->rect.width(), 6);
+                        return QRect(opt->rect.left() + 32, opt->rect.bottom() - 6, opt->rect.width() - 32, 6);
                 }
                 else
                     return QRect(opt->rect.center().x() - 3, opt->rect.top() + 14, 6, opt->rect.height() - 14);
