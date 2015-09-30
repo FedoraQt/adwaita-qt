@@ -239,6 +239,9 @@ int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *opt, const QWid
         case PM_ToolBarItemMargin:
         case PM_ToolBarItemSpacing:
             return 0;
+        case PM_SubMenuOverlap:
+            return -1;
+        case PM_MenuPanelWidth:
         case PM_MenuBarHMargin:
         case PM_MenuBarVMargin:
         case PM_MenuHMargin:
@@ -431,6 +434,12 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             break;
         }
         case PE_FrameMenu:
+        case PE_PanelMenu:
+            p->save();
+            p->setPen(Qt::gray);
+            p->setBrush(Qt::white);
+            p->drawRect(opt->rect.adjusted(0, 0, -1, -1));
+            p->restore();
             break;
         case PE_PanelMenuBar: {
             p->save();
