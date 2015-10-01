@@ -110,9 +110,9 @@ static void unaliasedRoundedRect(QPainter *p, const QRect &r, qreal xRadius, qre
 
         // then draw the straight lines of the frame
         p->drawLine(r.left() + xRadius, r.top(), r.right() - xRadius, r.top());
-        p->drawLine(r.left() + xRadius, r.bottom(), r.right() - xRadius, r.bottom());
+        p->drawLine(r.left() + xRadius, r.bottom() + 1, r.right() - xRadius, r.bottom() + 1);
         p->drawLine(r.left(), r.top() + yRadius, r.left(), r.bottom() - yRadius);
-        p->drawLine(r.right(), r.top() + yRadius, r.right(), r.bottom() - yRadius);
+        p->drawLine(r.right() + 1, r.top() + yRadius, r.right() + 1, r.bottom() - yRadius);
 
         // and then draw four parts of a circle in the according corners
         // getShift returns the mentioned subpixel hints to move the circle a bit to make it look like a circle instead of a potato
@@ -123,10 +123,10 @@ static void unaliasedRoundedRect(QPainter *p, const QRect &r, qreal xRadius, qre
         };
         qreal xShift = getShift(xRadius);
         qreal yShift = getShift(yRadius);
-        p->drawArc(QRectF(r.right() + xShift - xRadius * 2, r.top() + yShift, xRadius * 2, yRadius * 2), 0*16, 90*16);
+        p->drawArc(QRectF(r.right() + xShift - xRadius * 2 + 1, r.top() + yShift, xRadius * 2, yRadius * 2), 0*16, 90*16);
         p->drawArc(QRectF(r.left() + xShift, r.top() + yShift, xRadius * 2, yRadius * 2), 90*16, 90*16);
-        p->drawArc(QRectF(r.left() + xShift, r.bottom() + yShift - yRadius * 2, xRadius * 2, yRadius * 2), 180*16, 90*16);
-        p->drawArc(QRectF(r.right() + xShift - xRadius * 2, r.bottom() + yShift - yRadius * 2, xRadius * 2, yRadius * 2), 270*16, 90*16);
+        p->drawArc(QRectF(r.left() + xShift, r.bottom() + yShift - yRadius * 2 + 1, xRadius * 2, yRadius * 2), 180*16, 90*16);
+        p->drawArc(QRectF(r.right() + xShift - xRadius * 2 + 1, r.bottom() + yShift - yRadius * 2 + 1, xRadius * 2, yRadius * 2), 270*16, 90*16);
     }
     else
 #endif
