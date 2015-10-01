@@ -564,9 +564,12 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
         case PE_FrameFocusRect: {
             p->save();
             p->setBrush(Qt::transparent);
-            QPen dotPen(QBrush(QColor("#a1a1a1")), 1, Qt::DotLine);
+            QVector<qreal> dashes { 2, 1 };
+            QPen dotPen(QBrush(QColor("#b2b2b2")), 1, Qt::CustomDashLine);
+            dotPen.setDashPattern(dashes);
+            p->setRenderHint(QPainter::Antialiasing, true);
             p->setPen(dotPen);
-            unaliasedRoundedRect(p, opt->rect.adjusted(0, 0, -1, -1), 2, 2);
+            p->drawRect(QRectF(opt->rect).adjusted(0.5, 0.5, -0.5, -0.5));
             p->restore();
             break;
         }
