@@ -93,6 +93,48 @@ static QPixmap findPixmap(uint64_t element, uint64_t state) {
     return QPixmap();
 }
 
+// Yes, this IS, in fact, a HACK.
+// Never ever have I written anything this hacky.
+// The reasoning behind this is: Qt guys just decided to screw everone relying on non-unaliased QPainter rendering
+// Therefore, drawRoundedRect uses some sketchy subpixel magic to detect where (and how) to draw the arcs in the corners
+// They look okay-ish in unaliased mode but in aliased which I'm relying on here, it's just bad
+// Well anyway, this should draw rounded rects that look like the ones in Qt4... up until radius 5, then we just use what Qt provides
+static void unaliasedRoundedRect(QPainter *p, const QRect &r, qreal xRadius, qreal yRadius, Qt::SizeMode mode = Qt::AbsoluteSize) {
+#if QT_VERSION >= 0x050000
+    if (xRadius < 6 && yRadius < 6) {
+        // first draw the background with no borders
+        p->save();
+        p->setPen(Qt::transparent);
+        p->drawRoundedRect(r, xRadius, yRadius, mode);
+        p->restore();
+
+        // then draw the straight lines of the frame
+        p->drawLine(r.left() + xRadius, r.top(), r.right() - xRadius, r.top());
+        p->drawLine(r.left() + xRadius, r.bottom(), r.right() - xRadius, r.bottom());
+        p->drawLine(r.left(), r.top() + yRadius, r.left(), r.bottom() - yRadius);
+        p->drawLine(r.right(), r.top() + yRadius, r.right(), r.bottom() - yRadius);
+
+        // and then draw four parts of a circle in the according corners
+        // getShift returns the mentioned subpixel hints to move the circle a bit to make it look like a circle instead of a potato
+        auto getShift = [](qreal radius) {
+            return radius < 4 ? 0.4 :
+                   radius < 5 ? 0.35:
+                                0.4;
+        };
+        qreal xShift = getShift(xRadius);
+        qreal yShift = getShift(yRadius);
+        p->drawArc(QRectF(r.right() + xShift - xRadius * 2, r.top() + yShift, xRadius * 2, yRadius * 2), 0*16, 90*16);
+        p->drawArc(QRectF(r.left() + xShift, r.top() + yShift, xRadius * 2, yRadius * 2), 90*16, 90*16);
+        p->drawArc(QRectF(r.left() + xShift, r.bottom() + yShift - yRadius * 2, xRadius * 2, yRadius * 2), 180*16, 90*16);
+        p->drawArc(QRectF(r.right() + xShift - xRadius * 2, r.bottom() + yShift - yRadius * 2, xRadius * 2, yRadius * 2), 270*16, 90*16);
+    }
+    else
+#endif
+    {
+        p->drawRoundedRect(r, xRadius, yRadius, mode);
+    }
+}
+
 static void adwaitaButtonBackground(QPainter *p, const QRect &r, QStyle::State s, const QPalette &palette, const QWidget *w) {
     p->save();
     p->setPen("#a8a8a8");
@@ -121,7 +163,7 @@ static void adwaitaButtonBackground(QPainter *p, const QRect &r, QStyle::State s
             buttonGradient.setColorAt(0.0, palette.button().color());
     }
     p->setBrush(QBrush(buttonGradient));
-    p->drawRoundedRect(r, 3, 3);
+    unaliasedRoundedRect(p, r, 3, 3);
     p->restore();
 }
 
@@ -507,14 +549,14 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             else {
                 p->setPen(QColor("#a1a1a1"));
             }
-            p->drawRoundedRect(rect, 3, 3);
+            unaliasedRoundedRect(p, rect, 3, 3);
             if (opt->state & State_Active && opt->state & State_Enabled) {
                 p->setBrush(QBrush(shadowGradient));
-                p->drawRoundedRect(rect, 3, 3);
+                unaliasedRoundedRect(p, rect, 3, 3);
             }
             else if (!(opt->state & State_Enabled)) {
                 p->setBrush(opt->palette.button());
-                p->drawRoundedRect(rect, 3, 3);
+                unaliasedRoundedRect(p, rect, 3, 3);
             }
             p->restore();
             break;
@@ -524,7 +566,7 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             p->setBrush(Qt::transparent);
             QPen dotPen(QBrush(QColor("#a1a1a1")), 1, Qt::DotLine);
             p->setPen(dotPen);
-            p->drawRoundedRect(opt->rect.adjusted(0, 0, -1, -1), 2, 2);
+            unaliasedRoundedRect(p, opt->rect.adjusted(0, 0, -1, -1), 2, 2);
             p->restore();
             break;
         }
@@ -880,7 +922,7 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
             bgGrad.setColorAt(1.0, QColor("#b2b2b2"));
             p->setBrush(QBrush(bgGrad));
             p->setPen(QColor("#a1a1a1"));
-            p->drawRoundedRect(rect, 2, 2);
+            unaliasedRoundedRect(p, rect, 2, 2);
             p->restore();
             break;
         }
@@ -917,7 +959,7 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                 bgGrad.setColorAt(1.0, QColor("#4081C5"));
                 p->setBrush(QBrush(bgGrad));
                 p->setPen(QColor("black"));
-                p->drawRoundedRect(rect, 2, 2);
+                unaliasedRoundedRect(p, rect, 2, 2);
             }
             else {
                 QLinearGradient bgGrad;
@@ -1018,7 +1060,7 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
             p->drawRect(slOpt->rect);
             p->setBrush(QColor("#b3b5b6"));
             p->setRenderHint(QPainter::Antialiasing, true);
-            p->drawRoundedRect(slider, 3, 3);
+            unaliasedRoundedRect(p, slider, 3, 3);
             p->setRenderHint(QPainter::Antialiasing, false);
             p->restore();
             break;
@@ -1043,14 +1085,14 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
             backgroundGradient.setColorAt(0.0, QColor("#f3f3f3"));
             backgroundGradient.setColorAt(1.0/(frame.height()+1)*16, Qt::white);
             p->setBrush(QBrush(backgroundGradient));
-            p->drawRoundedRect(frame, 3, 3);
+            unaliasedRoundedRect(p, frame, 3, 3);
             if (opt->state & State_Enabled && opt->state & State_Active) {
                 QLinearGradient shadowGradient(0.0, 0.0, 0.0, 1.0);
                 shadowGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
                 shadowGradient.setColorAt(0.0, QColor("#d4d4d4"));
                 shadowGradient.setColorAt(1.0/(frame.height()+1)*4, Qt::transparent);
                 p->setBrush(QBrush(shadowGradient));
-                p->drawRoundedRect(frame, 3, 3);
+                unaliasedRoundedRect(p, frame, 3, 3);
             }
             p->setPen("#d6d6d6");
             if (sbOpt->subControls & (SC_SpinBoxEditField | SC_SpinBoxDown )&& sbOpt->subControls & SC_SpinBoxUp)
@@ -1169,7 +1211,7 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
             }
             p->setBrush(QBrush(bgGrad));
             p->setPen(QColor("#a1a1a1"));
-            p->drawRoundedRect(groove, 2, 2);
+            unaliasedRoundedRect(p, groove, 2, 2);
 
             QLinearGradient fgGrad;
             if (slOpt->orientation == Qt::Horizontal)
@@ -1191,7 +1233,7 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
                 else
                     grooveFill.adjust(0, grooveFill.height() - grooveFill.height() * ((qreal) slOpt->sliderPosition - slOpt->minimum) / (slOpt->maximum - slOpt->minimum), 0, 0);
             p->setBrush(QBrush(fgGrad));
-            p->drawRoundedRect(grooveFill, 2, 2);
+            unaliasedRoundedRect(p, grooveFill, 2, 2);
 
             // tickmarks
             if (slOpt->tickInterval > 0) {
