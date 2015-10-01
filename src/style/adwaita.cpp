@@ -1597,13 +1597,13 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
         }
         case CT_MenuBarItem: {
             //const QStyleOptionMenuItem *miopt = qstyleoption_cast<const QStyleOptionMenuItem*>(opt);
-            return QSize(QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget).width() + 16, 23);
+            return QSize(QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget).width() + 16, 30);
         }
         case CT_MenuItem: {
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(24, 0);
         }
         case CT_MenuBar: {
-            return QSize(23, 23);
+            return QSize(30, 30);
         }
         case CT_ComboBox: {
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 6);
