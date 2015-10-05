@@ -246,7 +246,6 @@ void Adwaita::polish(QPalette &palette)
     palette.setColor(QPalette::Inactive, QPalette::LinkVisited,     QColor("#4a90d9"));
 }
 
-
 void Adwaita::polish(QWidget *widget)
 {
     widget->setAttribute( Qt::WA_Hover );
@@ -259,17 +258,18 @@ void Adwaita::polish(QWidget *widget)
 
 void Adwaita::polish(QApplication* app)
 {
+    Q_UNUSED(app)
 }
-
 
 void Adwaita::unpolish(QWidget *widget)
 {
+    Q_UNUSED(widget)
 }
 
 void Adwaita::unpolish(QApplication* app)
 {
+    Q_UNUSED(app)
 }
-
 
 int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *opt, const QWidget *widget) const
 {
@@ -399,7 +399,6 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             break;
         }
         case PE_FrameTabWidget: {
-            const QStyleOptionTabWidgetFrame *twOpt = qstyleoption_cast<const QStyleOptionTabWidgetFrame*>(opt);
             const int stripWidth = 35;
             QRect north(opt->rect.left(), opt->rect.top() - stripWidth + 1, opt->rect.width() - 1, stripWidth - 1);
             QRect south(opt->rect.left(), opt->rect.bottom(), opt->rect.width() - 1, stripWidth - 1);
@@ -1077,7 +1076,7 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
             QRect frame = subControlRect(control, sbOpt, SC_SpinBoxFrame).adjusted(0, 0, -1, -1);
             QRect up = subControlRect(control, sbOpt, SC_SpinBoxUp).adjusted(0, 0, -1, -1);
             QRect down = subControlRect(control, sbOpt, SC_SpinBoxDown).adjusted(0, 0, -1, -1);
-            QRect edit = subControlRect(control, sbOpt, SC_SpinBoxEditField).adjusted(0, 0, -1, -1);
+            //QRect edit = subControlRect(control, sbOpt, SC_SpinBoxEditField).adjusted(0, 0, -1, -1);
             p->save();
             if (sbOpt->state & State_HasFocus)
                 p->setPen(sbOpt->palette.highlight().color());
@@ -1137,7 +1136,7 @@ void Adwaita::drawComplexControl(QStyle::ComplexControl control, const QStyleOpt
             QRect frame = subControlRect(control, cbOpt, SC_ComboBoxFrame).adjusted(0, 0, -1, -1);
             QRect arrow = subControlRect(control, cbOpt, SC_ComboBoxArrow).adjusted(-1, 0, -1, -1);
             QRect editField = subControlRect(control, cbOpt, SC_ComboBoxEditField).adjusted(0, 0, -1, 0);
-            QRect popup = subControlRect(control, cbOpt, SC_ComboBoxListBoxPopup).adjusted(0, 0, -1, -1);
+            //QRect popup = subControlRect(control, cbOpt, SC_ComboBoxListBoxPopup).adjusted(0, 0, -1, -1);
 
             p->save();
             adwaitaButtonBackground(p, frame, opt->state, opt->palette, widget);
@@ -1416,6 +1415,8 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
                         else
                             return QRect(4 + opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), 2 * (opt->rect.height() * 1.2 - 2), opt->rect.height());
                     }
+                    default:
+                        break; // fallthrough
                 }
             }
             else {
@@ -1441,6 +1442,8 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
                         else
                             return QRect(4 + opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), 2 * (opt->rect.height() * 1.2 - 2), opt->rect.height());
                     }
+                    default:
+                        break; // fallthrough
                 }
             }
             break;
@@ -1461,6 +1464,8 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
                         full.setLeft(10);
                     return full;
                 }
+                default:
+                    break; // fallthrough
             }
             break;
         }
@@ -1520,9 +1525,13 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
                     }
                     return tick;
                 }
+                default:
+                    break; // fallthrough
             }
             break;
         }
+        default:
+            break; // fallthrough
     }
     return QCommonStyle::subControlRect(cc, opt, sc, w);
 }
