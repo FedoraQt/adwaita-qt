@@ -250,9 +250,13 @@ void Adwaita::polish(QWidget *widget)
 {
     widget->setAttribute( Qt::WA_Hover );
 
-    if( qobject_cast<QFrame*>(widget) && widget->parent() && widget->parent()->inherits("KTitleWidget")) {
+    if (qobject_cast<QFrame*>(widget) && widget->parent() && widget->parent()->inherits("KTitleWidget")) {
         widget->setAutoFillBackground(false);
         widget->setBackgroundRole(QPalette::Window);
+    }
+
+    if (qobject_cast<QTabBar*>(widget)) {
+        qobject_cast<QTabBar*>(widget)->setDrawBase(true);
     }
 }
 
@@ -294,9 +298,10 @@ int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *opt, const QWid
         case PM_TabBarTabHSpace:
         case PM_TabBarTabVSpace:
         case PM_TabBarBaseHeight:
-            return 19;
+            return 13;
         case PM_TabBarTabShiftHorizontal:
         case PM_TabBarTabShiftVertical:
+            return 0;
         case PM_TabBarBaseOverlap:
             return 0;
         case PM_ButtonShiftVertical:
@@ -381,10 +386,7 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
         }
         case PE_FrameTabBarBase: {
             const QStyleOptionTabBarBase *tbbOpt = qstyleoption_cast<const QStyleOptionTabBarBase *>(opt);
-            if (0 && widget && widget->parentWidget() && widget->parentWidget()->inherits("QTabWidget")) {
-                return;
-            }
-            QRect rect = tbbOpt->tabBarRect.width() * tbbOpt->tabBarRect.height() > tbbOpt->rect.height() * tbbOpt->rect.width() ? tbbOpt->tabBarRect : tbbOpt->rect;
+            QRect rect = tbbOpt->rect;
             p->save();
             QLinearGradient shadowGradient(0.0, 0.0, 0.0, 1.0);
             shadowGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
@@ -392,39 +394,17 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             shadowGradient.setColorAt(1.0/(rect.height()+1)*4, Qt::transparent);
             p->setPen(QColor("#a1a1a1"));
             p->setBrush(QColor("#d6d6d6"));
-            p->drawRect(rect.adjusted(1,1,-1,-1));
+            p->drawRect(rect.adjusted(0,0,-1,-1));
             p->setBrush(QBrush(shadowGradient));
-            p->drawRect(rect.adjusted(1,1,-1,-1));
+            p->drawRect(rect.adjusted(0,0,-1,-1));
             p->restore();
             break;
         }
         case PE_FrameTabWidget: {
-            const int stripWidth = 35;
-            QRect north(opt->rect.left(), opt->rect.top() - stripWidth + 1, opt->rect.width() - 1, stripWidth - 1);
-            QRect south(opt->rect.left(), opt->rect.bottom(), opt->rect.width() - 1, stripWidth - 1);
-            QRect east(opt->rect.left() - stripWidth + 1, opt->rect.top(), stripWidth - 1, opt->rect.height() - 1);
-            QRect west(opt->rect.right(), opt->rect.top(), stripWidth - 1, opt->rect.height() - 1);
             p->save();
             p->setPen(QColor("#a1a1a1"));
             p->setBrush(Qt::transparent);
             p->drawRect(opt->rect.adjusted(0,0,-1,-1));
-            p->setBrush(QColor("#d6d6d6"));
-            p->drawRect(north);
-            p->drawRect(south);
-            p->drawRect(west);
-            p->drawRect(east);
-            QLinearGradient shadowGradient(0.0, 0.0, 0.0, 1.0);
-            shadowGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
-            shadowGradient.setColorAt(0.0, QColor("#b0b0b0"));
-            shadowGradient.setColorAt(1.0/(north.height()+1)*4, Qt::transparent);
-            p->setBrush(QBrush(shadowGradient));
-            p->drawRect(north);
-            p->drawRect(south);
-            shadowGradient.setColorAt(0.0, QColor("#b0b0b0"));
-            shadowGradient.setColorAt(1.0/(east.height()+1)*4, Qt::transparent);
-            p->setBrush(QBrush(shadowGradient));
-            p->drawRect(east);
-            p->drawRect(west);
             p->restore();
             break;
         }
@@ -1539,6 +1519,25 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
 QRect Adwaita::subElementRect(QStyle::SubElement r, const QStyleOption* opt, const QWidget* widget) const
 {
     switch(r) {
+        case SE_TabWidgetTabBar: {
+            const QStyleOptionTabWidgetFrame *twOpt = qstyleoption_cast<const QStyleOptionTabWidgetFrame*>(opt);
+            switch (twOpt->shape) {
+                case QTabBar::RoundedNorth:
+                case QTabBar::TriangularNorth:
+                    return QRect(twOpt->rect.left() + twOpt->leftCornerWidgetSize.width(), twOpt->rect.top(), twOpt->rect.width() - twOpt->leftCornerWidgetSize.width() - twOpt->rightCornerWidgetSize.width(), 35);
+                case QTabBar::RoundedEast:
+                case QTabBar::TriangularEast:
+                    return QRect(twOpt->rect.left(), twOpt->rect.top() + twOpt->leftCornerWidgetSize.height(), 35, twOpt->rect.height() - twOpt->leftCornerWidgetSize.height() - twOpt->rightCornerWidgetSize.height());
+                case QTabBar::RoundedWest:
+                case QTabBar::TriangularWest:
+                    return QRect(twOpt->rect.right() - 35, twOpt->rect.top() + twOpt->leftCornerWidgetSize.height(), 35, twOpt->rect.height() - twOpt->leftCornerWidgetSize.height() - twOpt->rightCornerWidgetSize.height());
+                case QTabBar::RoundedSouth:
+                case QTabBar::TriangularSouth:
+                    return QRect(twOpt->rect.left() + twOpt->leftCornerWidgetSize.width(), twOpt->rect.bottom() - 35, twOpt->rect.width() - twOpt->leftCornerWidgetSize.width() - twOpt->rightCornerWidgetSize.width(), 35);
+                default:
+                    break;
+            }
+        }
         case SE_CheckBoxContents:
         case SE_RadioButtonContents: {
             return opt->rect.translated(22, -1);
@@ -1603,6 +1602,25 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
                 return QSize(0, 0);
             else
                 return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget);
+        }
+        case CT_TabBarTab: {
+            const QStyleOptionTab *tOpt = qstyleoption_cast<const QStyleOptionTab*>(opt);
+            if (tOpt) {
+                switch (tOpt->shape) {
+                    case QTabBar::RoundedNorth:
+                    case QTabBar::TriangularNorth:
+                    case QTabBar::RoundedSouth:
+                    case QTabBar::TriangularSouth:
+                        return QSize(QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget).width(), 35);
+                    case QTabBar::RoundedEast:
+                    case QTabBar::TriangularEast:
+                    case QTabBar::RoundedWest:
+                    case QTabBar::TriangularWest:
+                        return QSize(35, QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget).height());
+                    default:
+                        break;
+                }
+            }
         }
         case CT_ToolButton: {
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(10, 12);
