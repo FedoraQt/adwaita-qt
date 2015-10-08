@@ -263,6 +263,9 @@ void Adwaita::polish(QWidget *widget)
 void Adwaita::polish(QApplication* app)
 {
     Q_UNUSED(app)
+    QPalette p = app->palette();
+    polish(p);
+    app->setPalette(p);
 }
 
 void Adwaita::unpolish(QWidget *widget)
@@ -575,9 +578,17 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
             }
             QRect rect = opt->rect;
             p->save();
-            p->setPen(Qt::NoPen);
-            p->setBrush(QBrush(QColor("#a1a1a1"), Qt::Dense7Pattern));
-            p->drawRect(rect.adjusted(0,0,-1,-1));
+            p->setPen(QColor("#a0a0a0"));
+            QLinearGradient grad;
+            grad.setCoordinateMode(QGradient::ObjectBoundingMode);
+            grad.setColorAt(0.0, opt->palette.window().color().lighter());
+            grad.setColorAt(1.0, opt->palette.window().color());
+            p->setBrush(grad);
+            QPainterPath path;
+            path.setFillRule(Qt::WindingFill);
+            path.addRoundedRect(rect.adjusted(-1, 0, 0, 0), 6, 6);
+            path.addRect(rect.adjusted(-1, 4, 0, 0));
+            p->drawPath(path.simplified());
             if (dwOpt && dwOpt->verticalTitleBar) {
                 p->translate(-rect.left(), -rect.top()); // move the coordinate system to 0,0
                 p->rotate(270); // rotate by 270°
