@@ -138,7 +138,6 @@ static void unaliasedRoundedRect(QPainter *p, const QRect &r, qreal xRadius, qre
 static void adwaitaButtonBackground(QPainter *p, const QRect &r, QStyle::State s, const QPalette &palette, const QWidget *w) {
     p->save();
     p->setPen("#a8a8a8");
-    bool visible = !(w && w->parentWidget() && w->parentWidget()->inherits("QTabBar"));
     QLinearGradient buttonGradient(0.0, r.top(), 0.0, r.bottom());
     if (s & QStyle::State_Active && s & QStyle::State_Enabled) {
         if(s & QStyle::State_On || s & QStyle::State_Sunken) {
@@ -151,7 +150,7 @@ static void adwaitaButtonBackground(QPainter *p, const QRect &r, QStyle::State s
             buttonGradient.setColorAt(0.4, QColor("#f7f7f7"));
             buttonGradient.setColorAt(1.0, QColor("#ededed"));
         }
-        else if (visible) {
+        else {
             buttonGradient.setColorAt(0.0, QColor("#fafafa"));
             buttonGradient.setColorAt(1.0, QColor("#e0e0e0"));
         }
@@ -299,6 +298,7 @@ int Adwaita::pixelMetric(PixelMetric metric, const QStyleOption *opt, const QWid
         case PM_MenuBarPanelWidth:
             return 0;
         case PM_TabBarTabHSpace:
+            return 48;
         case PM_TabBarTabVSpace:
         case PM_TabBarBaseHeight:
             return 13;
@@ -608,6 +608,12 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
             }
             p->save();
 
+            if (widget && widget->property("movable").toBool() && opt->state & State_Selected) {
+                p->setPen(QPen(QColor("#a1a1a1")));
+                p->setBrush(QColor("#dedede"));
+                p->drawRect(opt->rect.adjusted(0, 0, -1, -1));
+            }
+
             QPen underline;
             underline.setWidth(3);
             if (opt->state & State_Selected)
@@ -621,24 +627,50 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
             switch (tbOpt->shape) {
                 case QTabBar::RoundedNorth:
                 case QTabBar::TriangularNorth:
-                    p->drawLine(opt->rect.bottomLeft() + QPoint(6, -1), opt->rect.bottomRight() - QPoint(6, 1));
+                    p->drawLine(opt->rect.bottomLeft() + QPoint(1, -1), opt->rect.bottomRight() - QPoint(1, 1));
                     break;
                 case QTabBar::RoundedEast:
                 case QTabBar::TriangularEast:
-                    p->drawLine(opt->rect.topLeft() + QPoint(1, 6), opt->rect.bottomLeft() - QPoint(-1, 6));
+                    p->drawLine(opt->rect.topRight() + QPoint(-1, 1), opt->rect.bottomRight() - QPoint(1, 1));
                     break;
                 case QTabBar::RoundedWest:
                 case QTabBar::TriangularWest:
-                    p->drawLine(opt->rect.topRight() + QPoint(-1, 6), opt->rect.bottomRight() - QPoint(1, 6));
+                    p->drawLine(opt->rect.topLeft() + QPoint(1, 1), opt->rect.bottomLeft() - QPoint(-1, 1));
                     break;
                 case QTabBar::RoundedSouth:
                 case QTabBar::TriangularSouth:
-                    p->drawLine(opt->rect.topLeft() + QPoint(6, 1), opt->rect.topRight() - QPoint(6, -1));
+                    p->drawLine(opt->rect.topLeft() + QPoint(1, 1), opt->rect.topRight() - QPoint(1, -1));
                     break;
                 default:
                     break;
             }
             p->restore();
+            break;
+        }
+        case CE_TabBarTabLabel: {
+            const QStyleOptionTab *tbOpt = qstyleoption_cast<const QStyleOptionTab *>(opt);
+            if (!tbOpt) {
+                QCommonStyle::drawControl(element, opt, p, widget);
+                return;
+            }
+            QStyleOptionTab tmpOpt(*tbOpt);
+            switch (tmpOpt.shape) {
+                case QTabBar::RoundedEast:
+                    tmpOpt.shape = QTabBar::RoundedWest;
+                    break;
+                case QTabBar::RoundedWest:
+                    tmpOpt.shape = QTabBar::RoundedEast;
+                    break;
+                case QTabBar::TriangularEast:
+                    tmpOpt.shape = QTabBar::TriangularWest;
+                    break;
+                case QTabBar::TriangularWest:
+                    tmpOpt.shape = QTabBar::TriangularEast;
+                    break;
+                default:
+                    break;
+            }
+            QCommonStyle::drawControl(element, &tmpOpt, p, widget);
             break;
         }
         case CE_Splitter: {
