@@ -579,8 +579,7 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
             QRect rect = opt->rect;
             p->save();
             p->setPen(QColor("#a0a0a0"));
-            QLinearGradient grad;
-            grad.setCoordinateMode(QGradient::ObjectBoundingMode);
+            QLinearGradient grad(opt->rect.topLeft(), opt->rect.bottomLeft());
             grad.setColorAt(0.0, opt->palette.window().color().lighter());
             grad.setColorAt(1.0, opt->palette.window().color());
             p->setBrush(grad);
