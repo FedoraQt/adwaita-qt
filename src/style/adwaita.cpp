@@ -445,6 +445,7 @@ void Adwaita::drawPrimitive(PrimitiveElement element, const QStyleOption *opt, Q
             p->setBrush(QBrush(QColor("#a1a1a1"), Qt::Dense7Pattern));
             p->drawRect(opt->rect.adjusted(0,0,-1,-1));
             p->restore();
+            break;
         }
         case PE_IndicatorToolBarSeparator: {
             p->save();
@@ -961,7 +962,7 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
             p->save();
             if (pbopt->progress >= 0) {
                 QLinearGradient bgGrad;
-                if (!pbopt2 || pbopt2->orientation == Qt::Horizontal) {
+                if (pbopt2 && pbopt2->orientation == Qt::Horizontal) {
                     qreal ratio = (((qreal) pbopt->progress) - pbopt->minimum) / (((qreal) pbopt->maximum) - pbopt->minimum);
                     if (opt->version == 2 && pbopt2->invertedAppearance)
                         rect.adjust(rect.width() * ratio, 0, 0, 0);
