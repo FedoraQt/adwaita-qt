@@ -1670,14 +1670,20 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
         }
         case CT_MenuBarItem: {
             //const QStyleOptionMenuItem *miopt = qstyleoption_cast<const QStyleOptionMenuItem*>(opt);
-            return QSize(QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget).width() + 16, 30);
+            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(16, 8);
         }
         case CT_MenuItem: {
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(24, 0);
         }
+
+        // FIXME: is it necessary to set MenuBar size? Height should be already set by MenuBarItem to 30px and setting
+        // width to 30px doesn't really make sense to me. Resolves: https://github.com/MartinBriza/adwaita-qt/issues/34
+
+        /*
         case CT_MenuBar: {
             return QSize(30, 30);
         }
+        */
         case CT_ComboBox: {
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 6);
         }
