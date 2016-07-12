@@ -631,11 +631,11 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                     break;
                 case QTabBar::RoundedEast:
                 case QTabBar::TriangularEast:
-                    p->drawLine(opt->rect.topRight() + QPoint(-1, 1), opt->rect.bottomRight() - QPoint(1, 1));
+                    p->drawLine(opt->rect.topLeft() + QPoint(1, 1), opt->rect.bottomLeft() - QPoint(-1, 1));
                     break;
                 case QTabBar::RoundedWest:
                 case QTabBar::TriangularWest:
-                    p->drawLine(opt->rect.topLeft() + QPoint(1, 1), opt->rect.bottomLeft() - QPoint(-1, 1));
+                    p->drawLine(opt->rect.topRight() + QPoint(-1, 1), opt->rect.bottomRight() - QPoint(1, 1));
                     break;
                 case QTabBar::RoundedSouth:
                 case QTabBar::TriangularSouth:
@@ -656,16 +656,16 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
             QStyleOptionTab tmpOpt(*tbOpt);
             switch (tmpOpt.shape) {
                 case QTabBar::RoundedEast:
-                    tmpOpt.shape = QTabBar::RoundedWest;
-                    break;
-                case QTabBar::RoundedWest:
                     tmpOpt.shape = QTabBar::RoundedEast;
                     break;
+                case QTabBar::RoundedWest:
+                    tmpOpt.shape = QTabBar::RoundedWest;
+                    break;
                 case QTabBar::TriangularEast:
-                    tmpOpt.shape = QTabBar::TriangularWest;
+                    tmpOpt.shape = QTabBar::TriangularEast;
                     break;
                 case QTabBar::TriangularWest:
-                    tmpOpt.shape = QTabBar::TriangularEast;
+                    tmpOpt.shape = QTabBar::TriangularWest;
                     break;
                 default:
                     break;
@@ -1570,10 +1570,10 @@ QRect Adwaita::subElementRect(QStyle::SubElement r, const QStyleOption* opt, con
                     return QRect(twOpt->rect.left() + twOpt->leftCornerWidgetSize.width(), twOpt->rect.top(), twOpt->rect.width() - twOpt->leftCornerWidgetSize.width() - twOpt->rightCornerWidgetSize.width(), 35);
                 case QTabBar::RoundedEast:
                 case QTabBar::TriangularEast:
-                    return QRect(twOpt->rect.left(), twOpt->rect.top() + twOpt->leftCornerWidgetSize.height(), 35, twOpt->rect.height() - twOpt->leftCornerWidgetSize.height() - twOpt->rightCornerWidgetSize.height());
+                    return QRect(twOpt->rect.right() - 35, twOpt->rect.top() + twOpt->leftCornerWidgetSize.height(), 35, twOpt->rect.height() - twOpt->leftCornerWidgetSize.height() - twOpt->rightCornerWidgetSize.height());
                 case QTabBar::RoundedWest:
                 case QTabBar::TriangularWest:
-                    return QRect(twOpt->rect.right() - 35, twOpt->rect.top() + twOpt->leftCornerWidgetSize.height(), 35, twOpt->rect.height() - twOpt->leftCornerWidgetSize.height() - twOpt->rightCornerWidgetSize.height());
+                    return QRect(twOpt->rect.left(), twOpt->rect.top() + twOpt->leftCornerWidgetSize.height(), 35, twOpt->rect.height() - twOpt->leftCornerWidgetSize.height() - twOpt->rightCornerWidgetSize.height());
                 case QTabBar::RoundedSouth:
                 case QTabBar::TriangularSouth:
                     return QRect(twOpt->rect.left() + twOpt->leftCornerWidgetSize.width(), twOpt->rect.bottom() - 35, twOpt->rect.width() - twOpt->leftCornerWidgetSize.width() - twOpt->rightCornerWidgetSize.width(), 35);
