@@ -1415,60 +1415,39 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
             if (!cbOpt) {
                 return QCommonStyle::subControlRect(cc, opt, sc, w);
             }
-            if (opt->rect.width() < opt->rect.height() * 2.4 + 16) {
-                switch (sc) {
-                    case SC_SpinBoxUp: {
-                        if (cbOpt->subControls & SC_SpinBoxEditField)
-                            return QRect(opt->rect.right() - 20, opt->rect.top(), 20, opt->rect.height() / 2 + 1);
-                        else
-                            return QRect(opt->rect.right() - opt->rect.height() * 1.2 - 1, opt->rect.top(), opt->rect.height() * 1.2 - 4, opt->rect.height());
-                    }
-                    case SC_SpinBoxDown: {
-                        if (cbOpt->subControls & SC_SpinBoxEditField)
-                            return QRect(opt->rect.right() - 20, opt->rect.center().y() - 1, 20, opt->rect.height() / 2 + 1);
-                        else
-                            return QRect(4 + opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), opt->rect.height() * 1.2 - 4, opt->rect.height());
-                    }
-                    case SC_SpinBoxEditField: {
-                        return QRect(opt->rect.left(), opt->rect.top(), opt->rect.width() - 20, opt->rect.height());
-                    }
-                    case SC_SpinBoxFrame: {
-                        if (cbOpt->subControls & SC_SpinBoxEditField)
-                            return opt->rect;
-                        else
-                            return QRect(4 + opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), 2 * (opt->rect.height() * 1.2 - 2), opt->rect.height());
-                    }
-                    default:
-                        break; // fallthrough
+
+            // Compute the button width based on the original (unexpanded)
+            // spin box height
+            int buttonWidth = cbOpt->fontMetrics.height();
+            buttonWidth += 2 * (cbOpt->frame ? proxy()->pixelMetric(PM_SpinBoxFrameWidth, opt, w) : 0); // Taken from QCommonStyle::sizeFromContents()
+            buttonWidth += 6; // Originally from Adwaita::sizeFromContents
+
+            switch (sc) {
+                case SC_SpinBoxUp: {
+                    if (cbOpt->subControls & SC_SpinBoxEditField)
+                        return QRect(opt->rect.right() - buttonWidth - 1, opt->rect.top(), buttonWidth + 1, opt->rect.height());
+                    else
+                        return QRect(opt->rect.right() - buttonWidth - 1, opt->rect.top(), buttonWidth - 4, opt->rect.height());
                 }
-            }
-            else {
-                switch (sc) {
-                    case SC_SpinBoxUp: {
-                        if (cbOpt->subControls & SC_SpinBoxEditField)
-                            return QRect(opt->rect.right() - opt->rect.height() * 1.2 - 1, opt->rect.top(), opt->rect.height() * 1.2 + 1, opt->rect.height());
-                        else
-                            return QRect(opt->rect.right() - opt->rect.height() * 1.2 - 1, opt->rect.top(), opt->rect.height() * 1.2 - 4, opt->rect.height());
-                    }
-                    case SC_SpinBoxDown: {
-                        if (cbOpt->subControls & SC_SpinBoxEditField)
-                            return QRect(opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), opt->rect.height() * 1.2 + 1, opt->rect.height());
-                        else
-                            return QRect(4 + opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), opt->rect.height() * 1.2 - 4, opt->rect.height());
-                    }
-                    case SC_SpinBoxEditField: {
-                        return QRect(opt->rect.left(), opt->rect.top(), opt->rect.width() - 2 * (opt->rect.height() * 1.2) + 1, opt->rect.height());
-                    }
-                    case SC_SpinBoxFrame: {
-                        if (cbOpt->subControls & SC_SpinBoxEditField)
-                            return opt->rect;
-                        else
-                            return QRect(4 + opt->rect.right() - 2 * (opt->rect.height() * 1.2 + 1), opt->rect.top(), 2 * (opt->rect.height() * 1.2 - 2), opt->rect.height());
-                    }
-                    default:
-                        break; // fallthrough
+                case SC_SpinBoxDown: {
+                    if (cbOpt->subControls & SC_SpinBoxEditField)
+                        return QRect(opt->rect.right() - 2 * buttonWidth + 1, opt->rect.top(), buttonWidth + 1, opt->rect.height());
+                    else
+                        return QRect(4 + opt->rect.right() - 2 * buttonWidth + 1, opt->rect.top(), buttonWidth - 4, opt->rect.height());
                 }
+                case SC_SpinBoxEditField: {
+                    return QRect(opt->rect.left(), opt->rect.top(), opt->rect.width() - 2 * buttonWidth + 1, opt->rect.height());
+                }
+                case SC_SpinBoxFrame: {
+                    if (cbOpt->subControls & SC_SpinBoxEditField)
+                        return opt->rect;
+                    else
+                        return QRect(4 + opt->rect.right() - 2 * (buttonWidth + 1), opt->rect.top(), 2 * (buttonWidth - 2), opt->rect.height());
+                }
+                default:
+                    break; // fallthrough
             }
+
             break;
         }
         case CC_ComboBox: {
@@ -1699,7 +1678,15 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
             return QSize(20, 20);
         }
         case CT_SpinBox: {
-            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(12, 2);
+            const QStyleOptionSpinBox *sbOpt = qstyleoption_cast<const QStyleOptionSpinBox *>(opt);
+            QSize size = QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget);
+            if (sbOpt) {
+                QRect buttonRect = proxy()->subControlRect(CC_SpinBox, qstyleoption_cast<const QStyleOptionSpinBox *>(opt), SC_SpinBoxUp, widget);
+                size = QSize(size.width() + 2*buttonRect.width(), qMax(size.height(), buttonRect.width())); // Spin box button width should be equal to unexpanded spin box height, hence it is used in qMax()
+            } else {
+                size += QSize(12, 2);
+            }
+            return size;
         }
         case CT_PushButton:
             return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 2);
