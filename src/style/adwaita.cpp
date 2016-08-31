@@ -1455,13 +1455,21 @@ QRect Adwaita::subControlRect(QStyle::ComplexControl cc, const QStyleOptionCompl
             if (!cbOpt) {
                 return QCommonStyle::subControlRect(cc, opt, sc, w);
             }
+
+            // Compute the arrow width based on the original (unexpanded)
+            // combo box height
+            int arrowWidth = qMax(qCeil(cbOpt->fontMetrics.height()), 14) + 2;
+            arrowWidth = qMax(arrowWidth, cbOpt->iconSize.height() + 2);
+            arrowWidth += cbOpt->frame ? proxy()->pixelMetric(PM_ComboBoxFrameWidth, opt, w) * 2 : 0; // Taken from QCommonStyle::sizeFromContents()
+            arrowWidth += 6; // Originally from Awdaita::sizeFromContents
+
             switch (sc) {
                 case SC_ComboBoxArrow: {
-                    return QRect(cbOpt->rect.right() - cbOpt->rect.height() * 1.2 + 1, cbOpt->rect.top(), cbOpt->rect.height() * 1.2 + 1, cbOpt->rect.height());
+                    return QRect(cbOpt->rect.right() - arrowWidth + 1, cbOpt->rect.top(), arrowWidth + 1, cbOpt->rect.height());
                 }
                 case SC_ComboBoxEditField: {
                     QRect full = opt->rect;
-                    full.setRight(cbOpt->rect.right() - cbOpt->rect.height() * 1.2);
+                    full.setRight(cbOpt->rect.right() - arrowWidth);
                     if (!cbOpt->editable)
                         full.setLeft(10);
                     return full;
@@ -1664,7 +1672,15 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
         }
         */
         case CT_ComboBox: {
-            return QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget) + QSize(4, 6);
+            const QStyleOptionComboBox *cbOpt = qstyleoption_cast<const QStyleOptionComboBox *>(opt);
+            QSize size = QCommonStyle::sizeFromContents(ct, opt, contentsSize, widget);
+            if (cbOpt) {
+                QRect arrowButtonRect = proxy()->subControlRect(CC_ComboBox, qstyleoption_cast<const QStyleOptionComboBox *>(opt), SC_ComboBoxArrow, widget);
+                size = QSize(size.width() + arrowButtonRect.width(), qMax(size.height(), arrowButtonRect.width())); // Arrow button width should be equal to unexpanded combo box height, hence it is used in qMax()
+            } else {
+                size += QSize(4, 6);
+            }
+            return size;
         }
         /*
         case CT_ProgressBar: {
