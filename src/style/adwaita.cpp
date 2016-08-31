@@ -809,8 +809,8 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                 p->setPen(Qt::NoPen);
                 p->setBrush(Qt::white);
                 p->drawRect(miopt->rect);
-                p->setPen(QColor("#d6d6d6"));
-                p->drawLine(miopt->rect.left() + 8, miopt->rect.center().y(), miopt->rect.right() - 8, miopt->rect.center().y());
+                p->setPen(QColor(0, 0, 0, 25.5));
+                p->drawLine(miopt->rect.topLeft(), miopt->rect.topRight());
                 p->restore();
                 break;
             }
