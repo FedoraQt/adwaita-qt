@@ -27,6 +27,8 @@
 #include "adwaita.h"
 #include "config.h"
 
+#include "qstyleanimation_p.h"
+
 enum IconType {
     IT_None = 0,
     IT_CheckBox,
@@ -166,7 +168,15 @@ static void adwaitaButtonBackground(QPainter *p, const QRect &r, QStyle::State s
     p->restore();
 }
 
-Adwaita::Adwaita() : QCommonStyle() {
+Adwaita::Adwaita()
+    : QCommonStyle(),
+      animationFps(60)
+{
+}
+
+Adwaita::~Adwaita()
+{
+    qDeleteAll(animations);
 }
 
 void Adwaita::polish(QPalette &palette)
@@ -1713,3 +1723,36 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
     }
 }
 
+
+// Animation support
+QList<const QObject*> Adwaita::animationTargets() const
+{
+    return animations.keys();
+}
+
+QStyleAnimation* Adwaita::animation(const QObject* target) const
+{
+    return animations.value(target);
+}
+
+void Adwaita::startAnimation(QStyleAnimation* animation) const
+{
+    stopAnimation(animation->target());
+    connect(animation, SIGNAL(destroyed()), SLOT(_q_removeAnimation()), Qt::UniqueConnection);
+    animations.insert(animation->target(), animation);
+    animation->start();
+}
+
+void Adwaita::stopAnimation(const QObject* target) const
+{
+    QStyleAnimation* animation = animations.take(target);
+    if (animation && animation->state() != QAbstractAnimation::Stopped)
+        animation->stop();
+}
+
+void Adwaita::_q_removeAnimation()
+{
+    QObject *animation = sender();
+    if (animation)
+        animations.remove(animation->parent());
+}

@@ -30,12 +30,15 @@
 #include <QCommonStyle>
 
 
+class QStyleAnimation; // qstyleanimation_p.h
+
 class Adwaita : public QCommonStyle
 {
     Q_OBJECT
 
 public:
     Adwaita();
+    virtual ~Adwaita();
 
     void polish(QPalette &palette);
     void polish(QWidget *widget);
@@ -66,6 +69,15 @@ public:
                            const QSize& contentsSize,
                            const QWidget* widget = 0) const;
 private:
+    int animationFps;
+    void _q_removeAnimation();
+
+    QList<const QObject*> animationTargets() const;
+    QStyleAnimation* animation(const QObject *target) const;
+    void startAnimation(QStyleAnimation *animation) const;
+    void stopAnimation(const QObject *target) const;
+
+    mutable QHash<const QObject*, QStyleAnimation*> animations;
 };
 
 #endif // ADWAITA_H
