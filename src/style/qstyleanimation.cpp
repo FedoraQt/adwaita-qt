@@ -100,7 +100,11 @@ void QStyleAnimation::setFrameRate(FrameRate fps)
 
 void QStyleAnimation::updateTarget()
 {
+#if QT_VERSION >= 0x050000
     QEvent event(QEvent::StyleAnimationUpdate);
+#else
+    QEvent event(QEvent::HoverEnter);
+#endif
     event.setAccepted(false);
     QCoreApplication::sendEvent(target(), &event);
     if (!event.isAccepted())

@@ -38,6 +38,12 @@
 #include "qdatetime.h"
 #include "qimage.h"
 
+/* Q_DECL_OVERRIDE is a Qt5 feature, add empty define to not break with Qt4 */
+#if QT_VERSION < 0x050000
+# define Q_DECL_OVERRIDE
+#endif
+
+
 QT_BEGIN_NAMESPACE
 
 #ifndef QT_NO_ANIMATION

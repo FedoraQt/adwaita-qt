@@ -68,9 +68,12 @@ public:
     QSize sizeFromContents(ContentsType ct, const QStyleOption* opt,
                            const QSize& contentsSize,
                            const QWidget* widget = 0) const;
+
+private slots:
+    void _q_removeAnimation();
+
 private:
     int animationFps;
-    void _q_removeAnimation();
 
     void startAnimation(QStyleAnimation *animation) const;
     void stopAnimation(const QObject *target) const;
