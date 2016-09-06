@@ -975,7 +975,7 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
             if (!indeterminate) {
                 stopAnimation(widget);
             }
-            else if (!animation(widget)) {
+            else if (!animations.value(widget)) {
                 startAnimation(new QProgressStyleAnimation(animationFps, const_cast<QWidget*>(widget)));
             }
 
@@ -983,8 +983,9 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                 QLinearGradient bgGrad;
                 if (pbopt2 && pbopt2->orientation == Qt::Horizontal) {
                     if (indeterminate) {
+                        QProgressStyleAnimation *animation = qobject_cast<QProgressStyleAnimation*>(animations.value(widget));
                         int indicatorWidth = 0.20*rect.width();
-                        int indicatorOffset = qobject_cast<QProgressStyleAnimation*>(animation(widget))->progressStep(rect.width() - indicatorWidth);
+                        int indicatorOffset = animation->progressStep(rect.width() - indicatorWidth);
                         rect.adjust(indicatorOffset, 0, 0, 0);
                         rect.setWidth(indicatorWidth);
                     }
@@ -999,8 +1000,9 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                 }
                 else {
                     if (indeterminate) {
+                        QProgressStyleAnimation *animation = qobject_cast<QProgressStyleAnimation*>(animations.value(widget));
                         int indicatorHeight = 0.20*rect.height();
-                        int indicatorOffset = qobject_cast<QProgressStyleAnimation*>(animation(widget))->progressStep(rect.height() - indicatorHeight);
+                        int indicatorOffset = animation->progressStep(rect.height() - indicatorHeight);
                         rect.adjust(0, indicatorOffset, 0, 0);
                         rect.setHeight(indicatorHeight);
                     }
@@ -1750,16 +1752,6 @@ QSize Adwaita::sizeFromContents(QStyle::ContentsType ct, const QStyleOption* opt
 
 
 // Animation support
-QList<const QObject*> Adwaita::animationTargets() const
-{
-    return animations.keys();
-}
-
-QStyleAnimation* Adwaita::animation(const QObject* target) const
-{
-    return animations.value(target);
-}
-
 void Adwaita::startAnimation(QStyleAnimation* animation) const
 {
     stopAnimation(animation->target());
