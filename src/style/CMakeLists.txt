@@ -1,6 +1,8 @@
 set(Adwaita_SRCS
     adwaita.cpp
     styleplugin.cpp
+    qstyleanimation.cpp
+    qstyleanimation_p.h
 )
 add_definitions(-DQT_PLUGIN)
 
