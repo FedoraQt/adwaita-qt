@@ -968,25 +968,50 @@ void Adwaita::drawControl(ControlElement element, const QStyleOption *opt, QPain
                 QCommonStyle::drawControl(element, opt, p, widget);
                 return;
             }
+            bool indeterminate = (pbopt->minimum == 0 && pbopt->maximum == 0);
             QRect rect = pbopt->rect.adjusted(0, 0, -1, -1);
             p->save();
-            if (pbopt->progress >= 0) {
+
+            if (!indeterminate) {
+                stopAnimation(widget);
+            }
+            else if (!animation(widget)) {
+                startAnimation(new QProgressStyleAnimation(animationFps, const_cast<QWidget*>(widget)));
+            }
+
+            if (indeterminate || pbopt->progress >= 0) {
                 QLinearGradient bgGrad;
                 if (pbopt2 && pbopt2->orientation == Qt::Horizontal) {
-                    qreal ratio = (((qreal) pbopt->progress) - pbopt->minimum) / (((qreal) pbopt->maximum) - pbopt->minimum);
-                    if (opt->version == 2 && pbopt2->invertedAppearance)
-                        rect.adjust(rect.width() * ratio, 0, 0, 0);
-                    else
-                        rect.setWidth(rect.width() * ratio);
+                    if (indeterminate) {
+                        int indicatorWidth = 0.20*rect.width();
+                        int indicatorOffset = qobject_cast<QProgressStyleAnimation*>(animation(widget))->progressStep(rect.width() - indicatorWidth);
+                        rect.adjust(indicatorOffset, 0, 0, 0);
+                        rect.setWidth(indicatorWidth);
+                    }
+                    else {
+                        qreal ratio = (((qreal) pbopt->progress) - pbopt->minimum) / (((qreal) pbopt->maximum) - pbopt->minimum);
+                        if (opt->version == 2 && pbopt2->invertedAppearance)
+                            rect.adjust(rect.width() * ratio, 0, 0, 0);
+                        else
+                            rect.setWidth(rect.width() * ratio);
+                    }
                     bgGrad = QLinearGradient(0.0, rect.top()+1, 0.0, rect.bottom()+1);
                 }
                 else {
-                    qreal ratio = (((qreal) pbopt->progress) - pbopt->minimum) / (((qreal) pbopt->maximum) - pbopt->minimum);
-                    if (pbopt2->invertedAppearance)
-                        rect.adjust(0, rect.height() * ratio, 0, 0);
-                    else
-                        rect.setHeight(rect.height() * ratio);
-                    bgGrad = QLinearGradient(rect.left()+1, 0.0, rect.right()+1, 0.0);
+                    if (indeterminate) {
+                        int indicatorHeight = 0.20*rect.height();
+                        int indicatorOffset = qobject_cast<QProgressStyleAnimation*>(animation(widget))->progressStep(rect.height() - indicatorHeight);
+                        rect.adjust(0, indicatorOffset, 0, 0);
+                        rect.setHeight(indicatorHeight);
+                    }
+                    else {
+                        qreal ratio = (((qreal) pbopt->progress) - pbopt->minimum) / (((qreal) pbopt->maximum) - pbopt->minimum);
+                        if (pbopt2->invertedAppearance)
+                            rect.adjust(0, rect.height() * ratio, 0, 0);
+                        else
+                            rect.setHeight(rect.height() * ratio);
+                        bgGrad = QLinearGradient(rect.left()+1, 0.0, rect.right()+1, 0.0);
+                    }
                 }
                 bgGrad.setColorAt(0.0, QColor("#4081C5"));
                 bgGrad.setColorAt(0.1, QColor("#4C91D9"));
