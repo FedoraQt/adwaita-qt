@@ -98,18 +98,23 @@ void QStyleAnimation::setFrameRate(FrameRate fps)
     _fps = fps;
 }
 
+#if QT_VERSION >= 0x050000
 void QStyleAnimation::updateTarget()
 {
-#if QT_VERSION >= 0x050000
     QEvent event(QEvent::StyleAnimationUpdate);
-#else
-    QEvent event(QEvent::HoverEnter);
-#endif
     event.setAccepted(false);
     QCoreApplication::sendEvent(target(), &event);
     if (!event.isAccepted())
         stop();
 }
+#else
+void QStyleAnimation::updateTarget()
+{
+    QEvent event(QEvent::HoverEnter);
+    event.setAccepted(false);
+    QCoreApplication::sendEvent(target(), &event);
+}
+#endif
 
 void QStyleAnimation::start()
 {
