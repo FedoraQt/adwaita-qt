@@ -38,7 +38,6 @@ class Adwaita : public QCommonStyle
 
 public:
     Adwaita();
-    virtual ~Adwaita();
 
     void polish(QPalette &palette);
     void polish(QWidget *widget);

@@ -174,11 +174,6 @@ Adwaita::Adwaita()
 {
 }
 
-Adwaita::~Adwaita()
-{
-    qDeleteAll(animations);
-}
-
 void Adwaita::polish(QPalette &palette)
 {
     // All, used especially for active elements in a focused window
