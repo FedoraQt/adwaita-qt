@@ -334,6 +334,8 @@ int Adwaita::styleHint(StyleHint hint, const QStyleOption *opt, const QWidget *w
         case QStyle::SH_Menu_MouseTracking:
         case QStyle::SH_MenuBar_MouseTracking:
             return 1;
+        case QStyle::SH_DialogButtonBox_ButtonsHaveIcons:
+            return 0;
         default:
             return QCommonStyle::styleHint(hint, opt, widget, returnData);
     }
