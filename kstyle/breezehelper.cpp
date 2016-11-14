@@ -421,7 +421,7 @@ namespace Breeze
     //______________________________________________________________________________
     void Helper::renderFrame(
         QPainter* painter, const QRect& rect,
-        const QColor& color, const QColor& outline ) const
+        const QColor& color, const QColor& outline, bool hasFocus ) const
     {
 
         painter->setRenderHint( QPainter::Antialiasing );
@@ -433,7 +433,10 @@ namespace Breeze
         if( outline.isValid() )
         {
 
-            painter->setPen( outline );
+            if (hasFocus)
+                painter->setPen( QPen( outline, 2 ) );
+            else
+                painter->setPen( outline );
             frameRect.adjust( 0.5, 0.5, -0.5, -0.5 );
             radius = qMax( radius - 1, qreal( 0.0 ) );
 
