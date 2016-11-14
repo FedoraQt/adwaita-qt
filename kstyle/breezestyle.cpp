@@ -3445,7 +3445,7 @@ namespace Breeze
             const QColor background( _helper->buttonBackgroundColor( palette, mouseOver, hasFocus, sunken, opacity, mode ) );
 
             // render
-            _helper->renderButtonFrame( painter, rect, background, outline, shadow, hasFocus, sunken );
+            _helper->renderButtonFrame( painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver );
 
         }
 
@@ -3476,7 +3476,7 @@ namespace Breeze
         const AnimationMode mode( _animations->widgetStateEngine().buttonAnimationMode( widget ) );
         const qreal opacity( _animations->widgetStateEngine().buttonOpacity( widget ) );
 
-        if( !autoRaise )
+        if( !autoRaise || mouseOver )
         {
 
             // need to check widget for popup mode, because option is not set properly
@@ -3497,7 +3497,7 @@ namespace Breeze
             }
 
             // render
-            _helper->renderButtonFrame( painter, rect, background, outline, shadow, hasFocus, sunken );
+            _helper->renderButtonFrame( painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver );
 
         } else {
 
@@ -3851,7 +3851,7 @@ namespace Breeze
         frameRect = visualRect( option, frameRect );
 
         // render
-        _helper->renderButtonFrame( painter, frameRect, background, outline, shadow, hasFocus, sunken );
+        _helper->renderButtonFrame( painter, frameRect, background, outline, shadow, hasFocus, sunken, mouseOver );
 
         // also render separator
         QRect separatorRect( rect.adjusted( 0, 2, -2, -2 ) );
@@ -4132,17 +4132,16 @@ namespace Breeze
 
         // contents
         QRect contentsRect( rect );
-        if( sunken && !flat ) contentsRect.translate( 1, 1 );
 
         // color role
         QPalette::ColorRole textRole;
         if( flat )
         {
 
-            if( hasFocus && sunken ) textRole = QPalette::HighlightedText;
+            if( hasFocus && sunken ) textRole = QPalette::ButtonText;
             else textRole = QPalette::WindowText;
 
-        } else if( hasFocus ) textRole = QPalette::HighlightedText;
+        } else if( hasFocus ) textRole = QPalette::ButtonText;
         else textRole = QPalette::ButtonText;
 
         // menu arrow
@@ -4255,7 +4254,6 @@ namespace Breeze
 
         // contents
         QRect contentsRect( rect );
-        if( sunken && !flat ) contentsRect.translate( 1, 1 );
 
         // icon size
         const QSize iconSize( toolButtonOption->iconSize );
@@ -5888,14 +5886,12 @@ namespace Breeze
             copy.rect = menuRect;
             if( !flat ) drawPrimitive( PE_IndicatorButtonDropDown, &copy, painter, widget );
 
-            if( sunken && !flat ) copy.rect.translate( 1, 1 );
             drawPrimitive( PE_IndicatorArrowDown, &copy, painter, widget );
 
         } else if( hasInlineIndicator ) {
 
             copy.rect = menuRect;
 
-            if( sunken && !flat ) copy.rect.translate( 1, 1 );
             drawPrimitive( PE_IndicatorArrowDown, &copy, painter, widget );
 
         }
@@ -6006,7 +6002,7 @@ namespace Breeze
                     const QColor background( _helper->buttonBackgroundColor( palette, mouseOver, hasFocus, false, opacity, mode ) );
 
                     // render
-                    _helper->renderButtonFrame( painter, rect, background, outline, shadow, hasFocus, sunken );
+                    _helper->renderButtonFrame( painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver );
 
                 }
 
