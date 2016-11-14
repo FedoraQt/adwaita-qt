@@ -230,39 +230,7 @@ namespace Breeze
     QColor Helper::toolButtonColor( const QPalette& palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity, AnimationMode mode ) const
     {
 
-        QColor outline;
-        const QColor hoverColor( this->hoverColor( palette ) );
-        const QColor focusColor( this->focusColor( palette ) );
-        const QColor sunkenColor = alphaColor( palette.color( QPalette::WindowText ), 0.2 );
-
-        // hover takes precedence over focus
-        if( mode == AnimationHover )
-        {
-
-            if( hasFocus ) outline = KColorUtils::mix( focusColor, hoverColor, opacity );
-            else if( sunken ) outline = sunkenColor;
-            else outline = alphaColor( hoverColor, opacity );
-
-        } else if( mouseOver ) {
-
-            outline = hoverColor;
-
-        } else if( mode == AnimationFocus ) {
-
-            if( sunken ) outline = KColorUtils::mix( sunkenColor, focusColor, opacity );
-            else outline = alphaColor( focusColor, opacity );
-
-        } else if( hasFocus ) {
-
-            outline = focusColor;
-
-        } else if( sunken ) {
-
-            outline = sunkenColor;
-
-        }
-
-        return outline;
+        return buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode);
 
     }
 
