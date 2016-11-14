@@ -54,7 +54,7 @@ namespace Breeze
     {
 
         // frames
-        Frame_FrameWidth = 2,
+        Frame_FrameWidth = 3,
         Frame_FrameRadius = 3,
 
         // layout
@@ -67,7 +67,7 @@ namespace Breeze
 
         // menu items
         Menu_FrameWidth = 0,
-        MenuItem_MarginWidth = 3,
+        MenuItem_MarginWidth = 5,
         MenuItem_ItemSpacing = 4,
         MenuItem_AcceleratorSpace = 16,
         MenuButton_IndicatorWidth = 20,
@@ -98,8 +98,8 @@ namespace Breeze
         CheckBox_ItemSpacing = 4,
 
         // menubar items
-        MenuBarItem_MarginWidth = 10,
-        MenuBarItem_MarginHeight = 6,
+        MenuBarItem_MarginWidth = 8,
+        MenuBarItem_MarginHeight = 4,
 
         // scrollbars
         ScrollBar_Extend = 20,

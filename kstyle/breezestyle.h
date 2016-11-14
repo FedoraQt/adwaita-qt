@@ -293,6 +293,7 @@ namespace Breeze
         virtual bool drawToolButtonLabelControl( const QStyleOption*, QPainter*, const QWidget* ) const;
         virtual bool drawCheckBoxLabelControl( const QStyleOption*, QPainter*, const QWidget* ) const;
         virtual bool drawComboBoxLabelControl( const QStyleOption*, QPainter*, const QWidget* ) const;
+        virtual bool drawMenuBarEmptyArea( const QStyleOption*, QPainter* , const QWidget*) const;
         virtual bool drawMenuBarItemControl( const QStyleOption*, QPainter*, const QWidget* ) const;
         virtual bool drawMenuItemControl( const QStyleOption*, QPainter*, const QWidget* ) const;
         virtual bool drawProgressBarControl( const QStyleOption*, QPainter*, const QWidget* ) const;

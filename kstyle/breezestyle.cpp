@@ -879,7 +879,7 @@ namespace Breeze
             case CE_RadioButtonLabel: fcn = &Style::drawCheckBoxLabelControl; break;
             case CE_ToolButtonLabel: fcn = &Style::drawToolButtonLabelControl; break;
             case CE_ComboBoxLabel: fcn = &Style::drawComboBoxLabelControl; break;
-            case CE_MenuBarEmptyArea: fcn = &Style::emptyControl; break;
+            case CE_MenuBarEmptyArea: fcn = &Style::drawMenuBarEmptyArea; break;
             case CE_MenuBarItem: fcn = &Style::drawMenuBarItemControl; break;
             case CE_MenuItem: fcn = &Style::drawMenuItemControl; break;
             case CE_ToolBar: fcn = &Style::emptyControl; break;
@@ -4499,6 +4499,26 @@ namespace Breeze
 
     }
 
+
+    //___________________________________________________________________________________
+    bool Style::drawMenuBarEmptyArea( const QStyleOption* option, QPainter* painter, const QWidget* ) const
+    {
+
+        const QRect& rect( option->rect);
+        const QPalette& palette( option->palette );
+
+        painter->save();
+        painter->setRenderHint( QPainter::Antialiasing, false );
+        painter->setBrush( Qt::NoBrush );
+        painter->setPen( KColorUtils::mix( palette.color( QPalette::Button ), palette.color( QPalette::ButtonText ), 0.3 ) );
+
+        painter->drawLine( rect.bottomLeft(), rect.bottomRight() );
+        painter->restore();
+
+        return true;
+
+    }
+
     //___________________________________________________________________________________
     bool Style::drawMenuBarItemControl( const QStyleOption* option, QPainter* painter, const QWidget* ) const
     {
@@ -4518,14 +4538,20 @@ namespace Breeze
         const bool sunken( enabled && (state & State_Sunken) );
         const bool useStrongFocus( StyleConfigData::menuItemDrawStrongFocus() );
 
+        painter->save();
+        painter->setRenderHint( QPainter::Antialiasing, false );
+        painter->setBrush( Qt::NoBrush );
+        painter->setPen( KColorUtils::mix( palette.color( QPalette::Button ), palette.color( QPalette::ButtonText ), 0.3 ) );
+
+        painter->drawLine( rect.bottomLeft(), rect.bottomRight() );
+        painter->restore();
+
         // render hover and focus
-        if( useStrongFocus && ( selected || sunken ) )
+        if( useStrongFocus && sunken )
         {
 
-            QColor outlineColor;
-            if( sunken ) outlineColor = _helper->focusColor( palette );
-            else if( selected ) outlineColor = _helper->hoverColor( palette );
-            _helper->renderFocusRect( painter, rect.adjusted( 1, 1, -1, -1 ), outlineColor );
+            QColor outlineColor = _helper->focusColor( palette );
+            _helper->renderFocusRect( painter, QRect( rect.left(), rect.bottom() - 2, rect.width(), 3 ), outlineColor );
 
         }
 
@@ -4534,7 +4560,7 @@ namespace Breeze
         const QRect textRect = option->fontMetrics.boundingRect( rect, textFlags, menuItemOption->text );
 
         // render text
-        const QPalette::ColorRole role = (useStrongFocus && sunken ) ? QPalette::HighlightedText : QPalette::WindowText;
+        const QPalette::ColorRole role = (useStrongFocus && sunken ) ? QPalette::Highlight : QPalette::WindowText;
         drawItemText( painter, textRect, textFlags, palette, enabled, menuItemOption->text, role );
 
         // render outline
