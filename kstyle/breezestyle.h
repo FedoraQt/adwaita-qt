@@ -306,6 +306,7 @@ namespace Breeze
         virtual bool drawShapedFrameControl( const QStyleOption*, QPainter*, const QWidget* ) const;
         virtual bool drawRubberBandControl( const QStyleOption*, QPainter*, const QWidget* ) const;
         virtual bool drawHeaderSectionControl( const QStyleOption*, QPainter*, const QWidget* ) const;
+        virtual bool drawHeaderLabelControl( const QStyleOption*, QPainter*, const QWidget* ) const;
         virtual bool drawHeaderEmptyAreaControl( const QStyleOption*, QPainter*, const QWidget* ) const;
         virtual bool drawTabBarTabLabelControl( const QStyleOption*, QPainter*, const QWidget* ) const;
         virtual bool drawTabBarTabShapeControl( const QStyleOption*, QPainter*, const QWidget* ) const;

@@ -152,8 +152,8 @@ namespace Breeze
         ToolTip_FrameWidth = 3,
 
         // list headers
-        Header_MarginWidth = 6,
-        Header_ItemSpacing = 4,
+        Header_MarginWidth = 3,
+        Header_ItemSpacing = 2,
         Header_ArrowSize = 10,
 
         // tree view

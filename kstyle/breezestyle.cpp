@@ -875,6 +875,7 @@ namespace Breeze
         switch( element )
         {
 
+
             case PE_PanelButtonCommand: fcn = &Style::drawPanelButtonCommandPrimitive; break;
             case PE_PanelButtonTool: fcn = &Style::drawPanelButtonToolPrimitive; break;
             case PE_PanelScrollAreaCorner: fcn = &Style::drawPanelScrollAreaCornerPrimitive; break;
@@ -903,7 +904,6 @@ namespace Breeze
             case PE_FrameTabBarBase: fcn = &Style::drawFrameTabBarBasePrimitive; break;
             case PE_FrameWindow: fcn = &Style::drawFrameWindowPrimitive; break;
             case PE_FrameFocusRect: fcn = _frameFocusPrimitive; break;
-
             // fallback
             default: break;
 
@@ -934,7 +934,6 @@ namespace Breeze
         #endif
 
         switch( element ) {
-
             case CE_PushButtonBevel: fcn = &Style::drawPanelButtonCommandPrimitive; break;
             case CE_PushButtonLabel: fcn = &Style::drawPushButtonLabelControl; break;
             case CE_CheckBoxLabel: fcn = &Style::drawCheckBoxLabelControl; break;
@@ -958,13 +957,13 @@ namespace Breeze
             case CE_RubberBand: fcn = &Style::drawRubberBandControl; break;
             case CE_SizeGrip: fcn = &Style::emptyControl; break;
             case CE_HeaderSection: fcn = &Style::drawHeaderSectionControl; break;
+            case CE_HeaderLabel: fcn = &Style::drawHeaderLabelControl; break;
             case CE_HeaderEmptyArea: fcn = &Style::drawHeaderEmptyAreaControl; break;
             case CE_TabBarTabLabel: fcn = &Style::drawTabBarTabLabelControl; break;
             case CE_TabBarTabShape: fcn = &Style::drawTabBarTabShapeControl; break;
             case CE_ToolBoxTabLabel: fcn = &Style::drawToolBoxTabLabelControl; break;
             case CE_ToolBoxTabShape: fcn = &Style::drawToolBoxTabShapeControl; break;
             case CE_DockWidgetTitle: fcn = &Style::drawDockWidgetTitleControl; break;
-
             // fallback
             default: break;
 
@@ -5282,16 +5281,7 @@ namespace Breeze
         const bool animated( enabled && _animations->headerViewEngine().isAnimated( widget, rect.topLeft() ) );
         const qreal opacity( _animations->headerViewEngine().opacity( widget, rect.topLeft() ) );
 
-        // fill
-        const QColor normal( palette.color( QPalette::Button ) );
-        const QColor focus( KColorUtils::mix( normal, _helper->focusColor( palette ), 0.2 ) );
-        const QColor hover( KColorUtils::mix( normal, _helper->hoverColor( palette ), 0.2 ) );
-
-        QColor color;
-        if( sunken ) color = focus;
-        else if( animated ) color = KColorUtils::mix( normal, hover, opacity );
-        else if( mouseOver ) color = hover;
-        else color = normal;
+        QBrush color = palette.base();
 
         painter->setRenderHint( QPainter::Antialiasing, false );
         painter->setBrush( color );
@@ -5342,6 +5332,33 @@ namespace Breeze
 
         return true;
 
+    }
+
+    bool Style::drawHeaderLabelControl(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+    {
+        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
+            QRect rect = header->rect;
+            if (!header->icon.isNull()) {
+                QPixmap pixmap = header->icon.pixmap(proxy()->pixelMetric(PM_SmallIconSize), (header->state & State_Enabled) ? QIcon::Normal : QIcon::Disabled);
+                int pixw = pixmap.width();
+
+                QRect aligned = alignedRect(header->direction, QFlag(header->iconAlignment), pixmap.size(), rect);
+                QRect inter = aligned.intersected(rect);
+                painter->drawPixmap(inter.x(), inter.y(), pixmap, inter.x() - aligned.x(), inter.y() - aligned.y(), inter.width(), inter.height());
+
+                if (header->direction == Qt::LeftToRight)
+                    rect.setLeft(rect.left() + pixw + 2);
+                else
+                    rect.setRight(rect.right() - pixw - 2);
+            }
+            QFont fnt = painter->font();
+            fnt.setBold(true);
+            painter->setFont(fnt);
+            QPalette palette(header->palette);
+            palette.setColor(QPalette::Text, _helper->frameOutlineColor(palette).darker(150));
+            proxy()->drawItemText(painter, rect, header->textAlignment, palette, (header->state & State_Active), header->text, QPalette::Text);
+        }
+        return true;
     }
 
     //___________________________________________________________________________________
