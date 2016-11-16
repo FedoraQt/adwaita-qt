@@ -6278,9 +6278,12 @@ namespace Breeze
         const bool enabled( state & State_Enabled );
         const bool mouseOver( enabled && ( state & State_MouseOver ) );
         const bool hasFocus( enabled && ( state & State_HasFocus ) );
-
-        // direction
         const bool horizontal( sliderOption->orientation == Qt::Horizontal );
+        Side tickSide { SideNone };
+        if (horizontal && sliderOption->tickPosition == QSlider::TicksAbove) tickSide = (Side) ((int) tickSide | (int) SideTop);
+        if (horizontal && sliderOption->tickPosition == QSlider::TicksBelow) tickSide = (Side) ((int) tickSide | (int) SideBottom);
+        if (!horizontal && sliderOption->tickPosition == QSlider::TicksLeft) tickSide = (Side) ((int) tickSide | (int) SideLeft);
+        if (!horizontal && sliderOption->tickPosition == QSlider::TicksRight) tickSide = (Side) ((int) tickSide | (int) SideRight);
 
         // tickmarks
         if( StyleConfigData::sliderDrawTickMarks() && ( sliderOption->subControls & SC_SliderTickmarks ) )
@@ -6407,7 +6410,7 @@ namespace Breeze
             const QColor shadow( _helper->shadowColor( palette ) );
 
             // render
-            _helper->renderSliderHandle( painter, handleRect, background, outline, shadow, sunken );
+            _helper->renderSliderHandle( painter, handleRect, background, outline, shadow, sunken, tickSide );
 
         }
 
@@ -6427,6 +6430,12 @@ namespace Breeze
         const bool enabled( state & State_Enabled );
         const bool mouseOver( enabled && ( state & State_MouseOver ) );
         const bool hasFocus( enabled && ( state & State_HasFocus ) );
+        const bool horizontal( sliderOption->orientation == Qt::Horizontal );
+        Side tickSide { SideNone };
+        if (horizontal && sliderOption->tickPosition == QSlider::TicksAbove) tickSide = (Side) ((int) tickSide | (int) SideTop);
+        if (horizontal && sliderOption->tickPosition == QSlider::TicksBelow) tickSide = (Side) ((int) tickSide | (int) SideBottom);
+        if (!horizontal && sliderOption->tickPosition == QSlider::TicksLeft) tickSide = (Side) ((int) tickSide | (int) SideLeft);
+        if (!horizontal && sliderOption->tickPosition == QSlider::TicksRight) tickSide = (Side) ((int) tickSide | (int) SideRight);
 
         // do not render tickmarks
         if( sliderOption->subControls & SC_DialTickmarks )
@@ -6487,7 +6496,7 @@ namespace Breeze
             const QColor shadow( _helper->shadowColor( palette ) );
 
             // render
-            _helper->renderSliderHandle( painter, handleRect, background, outline, shadow, sunken );
+            _helper->renderSliderHandle( painter, handleRect, background, outline, shadow, sunken, tickSide );
 
         }
 

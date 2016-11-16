@@ -200,6 +200,7 @@ namespace Breeze
     //* sides
     enum Side
     {
+        SideNone = 0x0,
         SideLeft = 0x1,
         SideTop = 0x2,
         SideRight = 0x4,

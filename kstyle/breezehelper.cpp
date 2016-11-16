@@ -1005,12 +1005,12 @@ namespace Breeze
     }
 
     //______________________________________________________________________________
-    void Helper::renderSliderHandle(
-        QPainter* painter, const QRect& rect,
+    void Helper::renderSliderHandle(QPainter* painter, const QRect& rect,
         const QColor& color,
         const QColor& outline,
         const QColor& shadow,
-        bool sunken ) const
+        bool sunken,
+        Side ticks ) const
     {
 
         // setup painter
@@ -1020,21 +1020,15 @@ namespace Breeze
         QRectF frameRect( rect );
         frameRect.adjust( 1, 1, -1, -1 );
 
-        // shadow
-        if( shadow.isValid() && !sunken )
-        {
-
-            painter->setPen( QPen( shadow, 2 ) );
-            painter->setBrush( Qt::NoBrush );
-            painter->drawEllipse( shadowRect( frameRect ) );
-
-        }
-
         // set pen
         if( outline.isValid() )
         {
 
-            painter->setPen( outline );
+            QPen pen(outline);
+            pen.setCapStyle( Qt::FlatCap );
+            pen.setJoinStyle( Qt::MiterJoin );
+            painter->setPen(pen);
+
             frameRect.adjust( 0.5, 0.5, -0.5, -0.5 );
 
         } else painter->setPen( Qt::NoPen );
@@ -1043,8 +1037,48 @@ namespace Breeze
         if( color.isValid() ) painter->setBrush( color );
         else painter->setBrush( Qt::NoBrush );
 
-        // render
-        painter->drawEllipse( frameRect );
+        painter->setBrush(Qt::white);
+        QRect r(rect.right() - rect.height(), rect.top(), rect.height(), rect.height());
+        r.adjust(4.5, 3.5, -2.5, -3.5);
+
+        QPainterPath circle;
+        circle.addEllipse(r);
+        circle.closeSubpath();
+
+        if (ticks & SideBottom) {
+            QPainterPath triangle(r.center());
+            triangle.moveTo(r.left() + 1.5, r.center().y() + 5.5);
+            triangle.lineTo(r.center().x() + 1, r.bottom() + 4.5);
+            triangle.lineTo(r.right() - 0.5, r.center().y() + 5.5);
+            triangle.closeSubpath();
+            circle = circle.united(triangle);
+        }
+        else if (ticks & SideTop) {
+            QPainterPath triangle(r.center());
+            triangle.moveTo(r.left() + 1.5, r.center().y() - 3.5);
+            triangle.lineTo(r.center().x() + 1, r.top() - 2.5);
+            triangle.lineTo(r.right() - 0.5, r.center().y() - 3.5);
+            triangle.closeSubpath();
+            circle = circle.united(triangle);
+        }
+        else if (ticks & SideLeft) {
+            QPainterPath triangle(r.center());
+            triangle.moveTo(r.center().x() - 3.5, r.top() + 1.5);
+            triangle.lineTo(r.left() - 2.5, r.center().y() + 1);
+            triangle.lineTo(r.center().x() - 3.5, r.bottom() - 0.5);
+            triangle.closeSubpath();
+            circle = circle.united(triangle);
+        }
+        else if (ticks & SideRight) {
+            QPainterPath triangle(r.center());
+            triangle.moveTo(r.center().x() + 3.5, r.top() + 1.5);
+            triangle.lineTo(r.right() + 2.5, r.center().y() + 1);
+            triangle.lineTo(r.center().x() + 3.5, r.bottom() - 0.5);
+            triangle.closeSubpath();
+            circle = circle.united(triangle);
+        }
+
+        painter->drawPath(circle);
 
     }
 
