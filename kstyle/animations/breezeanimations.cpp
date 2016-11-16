@@ -160,7 +160,7 @@ namespace Breeze
         // spinbox
         else if( qobject_cast<QSpinBox*>( widget ) ) {
             _spinBoxEngine->registerWidget( widget );
-            _inputWidgetEngine->registerWidget( widget, AnimationHover|AnimationFocus );
+            _inputWidgetEngine->registerWidget( widget, AnimationHover|AnimationFocus|AnimationPressed );
         }
 
         // editors

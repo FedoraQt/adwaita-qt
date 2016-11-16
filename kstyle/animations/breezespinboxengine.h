@@ -48,11 +48,11 @@ namespace Breeze
         virtual bool registerWidget( QWidget* );
 
         //* state
-        virtual bool updateState( const QObject* object, QStyle::SubControl subControl, bool value )
+        virtual bool updateState( const QObject* object, QStyle::SubControl subControl, bool value, bool pressed )
         {
             if( DataMap<SpinBoxData>::Value data = _data.find( object ) )
             {
-                return data.data()->updateState( subControl, value );
+                return data.data()->updateState( subControl, value, pressed );
             } else return false;
         }
 
@@ -72,6 +72,15 @@ namespace Breeze
             if( DataMap<SpinBoxData>::Value data = _data.find( object ) )
             {
                 return data.data()->opacity( subControl );
+            } else return AnimationData::OpacityInvalid;
+        }
+
+        //* animation opacity
+        virtual qreal pressed( const QObject* object, QStyle::SubControl subControl )
+        {
+            if( DataMap<SpinBoxData>::Value data = _data.find( object ) )
+            {
+                return data.data()->pressed( subControl );
             } else return AnimationData::OpacityInvalid;
         }
 

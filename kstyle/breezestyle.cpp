@@ -2260,39 +2260,36 @@ namespace Breeze
             case SC_SpinBoxFrame: return flat ? QRect():rect;
 
             case SC_SpinBoxUp:
+
+                return QRect(rect.right() - rect.height(),
+                             rect.top(),
+                             rect.height(),
+                             rect.height() - 1
+                            );
+
             case SC_SpinBoxDown:
             {
 
-                // take out frame width
-                if( !flat && rect.height() >= 2*Metrics::Frame_FrameWidth + Metrics::SpinBox_ArrowButtonWidth ) rect = insideMargin( rect, Metrics::Frame_FrameWidth );
-
-                QRect arrowRect;
-                arrowRect = QRect(
-                    rect.right() - Metrics::SpinBox_ArrowButtonWidth + 1,
-                    rect.top(),
-                    Metrics::SpinBox_ArrowButtonWidth,
-                    rect.height() );
-
-                const int arrowHeight( qMin( rect.height(), int(Metrics::SpinBox_ArrowButtonWidth) ) );
-                arrowRect = centerRect( arrowRect, Metrics::SpinBox_ArrowButtonWidth, arrowHeight );
-                arrowRect.setHeight( arrowHeight/2 );
-                if( subControl == SC_SpinBoxDown ) arrowRect.translate( 0, arrowHeight/2 );
-
-                return visualRect( option, arrowRect );
+                return QRect(rect.right() - 2 * rect.height() + 1,
+                             rect.top(),
+                             rect.height(),
+                             rect.height() - 1
+                            );
 
             }
 
             case SC_SpinBoxEditField:
             {
 
+                const int frameWidth( pixelMetric( PM_SpinBoxFrameWidth, option, widget ) );
+
                 QRect labelRect;
                 labelRect = QRect(
                     rect.left(), rect.top(),
-                    rect.width() - Metrics::SpinBox_ArrowButtonWidth,
+                    rect.width() - 2 * rect.height() - frameWidth ,
                     rect.height() );
 
                 // remove right side line editor margins
-                const int frameWidth( pixelMetric( PM_SpinBoxFrameWidth, option, widget ) );
                 if( !flat && labelRect.height() >= option->fontMetrics.height() + 2*frameWidth )
                 { labelRect.adjust( frameWidth, frameWidth, 0, -frameWidth ); }
 
@@ -2591,7 +2588,7 @@ namespace Breeze
         size.setHeight( qMax( size.height(), int(Metrics::SpinBox_ArrowButtonWidth) ) );
 
         // add button width and spacing
-        size.rwidth() += Metrics::SpinBox_ArrowButtonWidth;
+        size.rwidth() += 2 * Metrics::SpinBox_ArrowButtonWidth + 3;
 
         return size;
 
@@ -3800,6 +3797,7 @@ namespace Breeze
         // copy rect and palette
         const QRect& rect( option->rect );
         const QPalette& palette( option->palette );
+        const QColor& outline( _helper->frameOutlineColor( palette ) );
 
         // store flags
         const State& state( option->state );
@@ -3827,7 +3825,7 @@ namespace Breeze
         {
 
             color = _helper->checkBoxIndicatorColor( palette, false, enabled && checked );
-            _helper->renderRadioButtonBackground( painter, rect, palette.color( QPalette::Base ), sunken );
+            _helper->renderRadioButtonBackground( painter, rect, palette.color( QPalette::Base ), outline, sunken );
 
         } else {
 
@@ -3838,7 +3836,7 @@ namespace Breeze
         }
 
         // render
-        _helper->renderRadioButton( painter, rect, color, shadow, sunken, radioButtonState, animation );
+        _helper->renderRadioButton( painter, rect, color, outline, shadow, sunken, radioButtonState, animation );
 
         return true;
 
@@ -4720,12 +4718,12 @@ namespace Breeze
             checkBoxRect = visualRect( option, checkBoxRect );
 
             if( useStrongFocus && ( selected || sunken ) )
-            { _helper->renderRadioButtonBackground( painter, checkBoxRect, palette.color( QPalette::Window ), sunken ); }
+            { _helper->renderRadioButtonBackground( painter, checkBoxRect, palette.color( QPalette::Window ), outline, sunken ); }
 
             const bool active( menuItemOption->checked );
             const QColor shadow( _helper->shadowColor( palette ) );
             const QColor color( _helper->checkBoxIndicatorColor( palette, false, enabled && active ) );
-            _helper->renderRadioButton( painter, checkBoxRect, color, shadow, sunken, active ? RadioOn:RadioOff );
+            _helper->renderRadioButton( painter, checkBoxRect, color, outline, shadow, sunken, active ? RadioOn:RadioOff );
 
         }
 
@@ -6628,7 +6626,10 @@ namespace Breeze
         const State& state( option->state );
 
         // enable state
+        bool hasFocus( state & State_HasFocus );
         bool enabled( state & State_Enabled );
+        bool sunken( state & State_Sunken && option->activeSubControls & subControl);
+        const QColor& outline = _helper->frameOutlineColor(option->palette).lighter(120);
 
         // check steps enable step
         const bool atLimit(
@@ -6642,11 +6643,13 @@ namespace Breeze
         const bool mouseOver( enabled && ( state & State_MouseOver ) );
 
         // check animation state
-        const bool subControlHover( enabled && mouseOver && ( option->activeSubControls & subControl ) );
-        _animations->spinBoxEngine().updateState( widget, subControl, subControlHover );
+        const bool subControlHover( enabled && ( mouseOver ) && ( option->activeSubControls & subControl ) );
+        const bool subControlSunken( enabled && ( sunken ) && ( option->activeSubControls & subControl ) );
+        _animations->spinBoxEngine().updateState( widget, subControl, subControlHover, subControlSunken );
 
         const bool animated( enabled && _animations->spinBoxEngine().isAnimated( widget, subControl ) );
         const qreal opacity( _animations->spinBoxEngine().opacity( widget, subControl ) );
+        const qreal pressedOpacity( _animations->spinBoxEngine().pressed( widget, subControl ) );
 
         QColor color = _helper->arrowColor( palette, QPalette::Text );
         if( animated )
@@ -6670,6 +6673,24 @@ namespace Breeze
 
         // arrow rect
         const QRect arrowRect( subControlRect( CC_SpinBox, option, subControl, widget ) );
+
+        if (subControl == SC_SpinBoxDown) {
+            painter->setBrush(Qt::NoBrush);
+            painter->setPen(outline);
+            int highlight = hasFocus ? 1 : 0;
+            painter->drawLine(arrowRect.left(), arrowRect.top() + 2 + highlight, arrowRect.left(), arrowRect.bottom() - 1 - highlight);
+            painter->drawLine(arrowRect.right(), arrowRect.top() + 2 + highlight, arrowRect.right(), arrowRect.bottom() - 1 - highlight);
+        }
+
+        if (true) {
+            painter->setPen(Qt::NoPen);
+            QColor background = KColorUtils::mix( palette.base().color(), outline, 0.4 * opacity + 0.6 * pressedOpacity );
+            painter->setBrush(background);
+            if (hasFocus)
+                painter->drawRect(arrowRect.adjusted(1, 3, -1, -2));
+            else
+                painter->drawRect(arrowRect.adjusted(1, 2, -1, -1));
+        }
 
         // render
         _helper->renderArrow( painter, arrowRect, color, orientation );

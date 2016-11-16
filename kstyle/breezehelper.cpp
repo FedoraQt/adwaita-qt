@@ -848,7 +848,7 @@ namespace Breeze
     }
 
     //______________________________________________________________________________
-    void Helper::renderRadioButtonBackground( QPainter* painter, const QRect& rect, const QColor& color, bool sunken ) const
+    void Helper::renderRadioButtonBackground( QPainter* painter, const QRect& rect, const QColor& color, const QColor& outline, bool sunken ) const
     {
 
         // setup painter
@@ -859,7 +859,7 @@ namespace Breeze
         frameRect.adjust( 3, 3, -3, -3 );
         if( sunken ) frameRect.translate(1, 1);
 
-        painter->setPen( Qt::NoPen );
+        painter->setPen( outline );
         painter->setBrush( color );
         painter->drawEllipse( frameRect );
 
@@ -868,7 +868,7 @@ namespace Breeze
     //______________________________________________________________________________
     void Helper::renderRadioButton(
         QPainter* painter, const QRect& rect,
-        const QColor& color, const QColor& shadow,
+        const QColor& color, const QColor& outline, const QColor& shadow,
         bool sunken, RadioButtonState state, qreal animation ) const
     {
 
@@ -879,24 +879,10 @@ namespace Breeze
         QRectF frameRect( rect );
         frameRect.adjust( 2, 2, -2, -2 );
 
-        // shadow
-        if( sunken )
-        {
-
-            frameRect.translate( 1, 1 );
-
-        } else {
-
-            painter->setPen( QPen( shadow, 1 ) );
-            painter->setBrush( Qt::NoBrush );
-            painter->drawEllipse( shadowRect( frameRect ).adjusted( -0.5, -0.5, 0.5, 0.5 ) );
-
-        }
-
         // content
         {
 
-            painter->setPen( QPen( color, 1 ) );
+            painter->setPen( QPen( outline, 1 ) );
             painter->setBrush( Qt::NoBrush );
 
             const QRectF contentRect( frameRect.adjusted( 0.5, 0.5, -0.5, -0.5 ) );
@@ -911,20 +897,17 @@ namespace Breeze
             painter->setBrush( color );
             painter->setPen( Qt::NoPen );
 
-            const QRectF markerRect( frameRect.adjusted( 3, 3, -3, -3 ) );
+            const QRectF markerRect( frameRect.adjusted( 5, 5, -5, -5 ) );
             painter->drawEllipse( markerRect );
 
         } else if( state == RadioAnimated ) {
 
             painter->setBrush( color );
             painter->setPen( Qt::NoPen );
-            QRectF markerRect( frameRect.adjusted( 3, 3, -3, -3 ) );
+            QRectF markerRect( frameRect.adjusted( 5, 5, -5, -5 ) );
+            qreal remaining = markerRect.width() / 2.0 * (1.0 - animation);
+            markerRect.adjust(remaining, remaining, -remaining, -remaining);
 
-            painter->translate( markerRect.center() );
-            painter->rotate( 45 );
-
-            markerRect.setWidth( markerRect.width()*animation );
-            markerRect.translate( -markerRect.center() );
             painter->drawEllipse( markerRect );
 
         }
@@ -1241,6 +1224,7 @@ namespace Breeze
         painter->setBrush( Qt::NoBrush );
         painter->setPen( QPen( color, 1.1 ) );
         painter->drawPolyline( arrow );
+
         painter->restore();
 
         return;

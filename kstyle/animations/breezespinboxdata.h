@@ -36,6 +36,8 @@ namespace Breeze
         //* declare opacity property
         Q_PROPERTY( qreal upArrowOpacity READ upArrowOpacity WRITE setUpArrowOpacity )
         Q_PROPERTY( qreal downArrowOpacity READ downArrowOpacity WRITE setDownArrowOpacity )
+        Q_PROPERTY( qreal upArrowPressed READ upArrowPressed WRITE setUpArrowPressed )
+        Q_PROPERTY( qreal downArrowPressed READ downArrowPressed WRITE setDownArrowPressed )
 
         public:
 
@@ -47,10 +49,10 @@ namespace Breeze
         {}
 
         //* animation state
-        virtual bool updateState( QStyle::SubControl subControl, bool value )
+        virtual bool updateState( QStyle::SubControl subControl, bool value, bool pressed )
         {
-            if( subControl == QStyle::SC_SpinBoxUp ) return _upArrowData.updateState( value );
-            else if( subControl == QStyle::SC_SpinBoxDown ) return _downArrowData.updateState( value );
+            if( subControl == QStyle::SC_SpinBoxUp ) return _upArrowData.updateState( value, pressed );
+            else if( subControl == QStyle::SC_SpinBoxDown ) return _downArrowData.updateState( value, pressed );
             else return false;
         }
 
@@ -67,6 +69,14 @@ namespace Breeze
         {
             if( subControl == QStyle::SC_SpinBoxUp ) return upArrowOpacity();
             else if( subControl == QStyle::SC_SpinBoxDown ) return downArrowOpacity();
+            else return OpacityInvalid;
+        }
+
+        //* opacity
+        virtual qreal pressed( QStyle::SubControl subControl ) const
+        {
+            if( subControl == QStyle::SC_SpinBoxUp ) return upArrowPressed();
+            else if( subControl == QStyle::SC_SpinBoxDown ) return downArrowPressed();
             else return OpacityInvalid;
         }
 
@@ -95,7 +105,7 @@ namespace Breeze
 
         //* animation
         Animation::Pointer upArrowAnimation( void ) const
-        { return _upArrowData._animation; }
+        { return _upArrowData._hoverAnimation; }
 
         //@}
 
@@ -117,7 +127,48 @@ namespace Breeze
 
         //* animation
         Animation::Pointer downArrowAnimation( void ) const
-        { return _downArrowData._animation; }
+        { return _downArrowData._hoverAnimation; }
+
+
+        //*@name up arrow pressed animation
+        //@{
+
+        //* opacity
+        qreal upArrowPressed( void ) const
+        { return _upArrowData._pressed; }
+
+        //* opacity
+        void setUpArrowPressed( qreal value )
+        {
+            value = digitize( value );
+            if( _upArrowData._pressed == value ) return;
+            _upArrowData._pressed = value;
+            setDirty();
+        }
+
+        //* animation
+        Animation::Pointer upArrowPressedAnimation( void ) const
+        { return _upArrowData._pressedAnimation; }
+
+        //*@name down arrow pressed animation
+        //@{
+
+        //* opacity
+        qreal downArrowPressed( void ) const
+        { return _downArrowData._pressed; }
+
+        //* opacity
+        void setDownArrowPressed( qreal value )
+        {
+            value = digitize( value );
+            if( _downArrowData._pressed == value ) return;
+            _downArrowData._pressed = value;
+            setDirty();
+        }
+
+        //* animation
+        Animation::Pointer downArrowPressedAnimation( void ) const
+        { return _downArrowData._pressedAnimation; }
 
         //@}
 
@@ -131,21 +182,26 @@ namespace Breeze
 
             //* default constructor
             Data( void ):
-                _state( false ),
-                _opacity(0)
+                _hoverState( false ),
+                _pressedState( false ),
+                _opacity(0),
+                _pressed(0)
                 {}
 
             //* state
-            bool updateState( bool );
+            bool updateState( bool, bool );
 
             //* arrow state
-            bool _state;
+            bool _hoverState;
+            bool _pressedState;
 
             //* animation
-            Animation::Pointer _animation;
+            Animation::Pointer _hoverAnimation;
+            Animation::Pointer _pressedAnimation;
 
             //* opacity
             qreal _opacity;
+            qreal _pressed;
 
         };
 
