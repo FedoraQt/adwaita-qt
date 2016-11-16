@@ -1140,7 +1140,8 @@ namespace Breeze
         painter->setRenderHint( QPainter::Antialiasing, true );
 
         const QRectF baseRect( rect );
-        const qreal radius( 0.5*Metrics::ScrollBar_SliderWidth );
+        const qreal metric( rect.width() < rect.height() ? rect.width() : rect.height());
+        const qreal radius( 0.5*metric );
 
         // content
         if( color.isValid() )

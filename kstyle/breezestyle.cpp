@@ -2386,6 +2386,7 @@ namespace Breeze
 
                 // handle RTL here to unreflect things if need be
                 QRect groove = visualRect( option, subControlRect( CC_ScrollBar, option, SC_ScrollBarGroove, widget ) );
+                groove.adjust(0, 0, 1, 1);
 
                 if( sliderOption->minimum == sliderOption->maximum ) return groove;
 
@@ -4994,15 +4995,13 @@ namespace Breeze
         if( !sliderOption ) return true;
 
         // copy rect and palette
-        const QRect& rect( option->rect );
+        const QRect& rect( option->rect.adjusted(4, 4, -4, -4) );
         const QPalette& palette( option->palette );
 
         // define handle rect
         QRect handleRect;
         const State& state( option->state );
         const bool horizontal( state & State_Horizontal );
-        if( horizontal ) handleRect = centerRect( rect, rect.width(), Metrics::ScrollBar_SliderWidth );
-        else handleRect = centerRect( rect, Metrics::ScrollBar_SliderWidth, rect.height() );
 
         const bool enabled( state & State_Enabled );
         const bool mouseOver( enabled && ( state & State_MouseOver ) );
@@ -5015,11 +5014,30 @@ namespace Breeze
         const bool handleActive( sliderOption->activeSubControls & SC_ScrollBarSlider );
         _animations->scrollBarEngine().updateState( widget, AnimationFocus, hasFocus );
 
-        _animations->scrollBarEngine().updateState( widget, AnimationHover, mouseOver && handleActive );
+        _animations->scrollBarEngine().updateState( widget, AnimationHover, mouseOver );
 
         const AnimationMode mode( _animations->scrollBarEngine().animationMode( widget, SC_ScrollBarSlider ) );
-        const qreal opacity( _animations->scrollBarEngine().opacity( widget, SC_ScrollBarSlider ) );
+        qreal opacity( _animations->scrollBarEngine().opacity( widget, SC_ScrollBarSlider ) );
         const QColor color = _helper->scrollBarHandleColor( palette, mouseOver, hasFocus, opacity, mode );
+        if (mode == AnimationHover)
+            opacity = opacity;
+        else if (mouseOver)
+            opacity = 1;
+        else
+            opacity = 0;
+
+        /*
+        if( horizontal ) handleRect = centerRect( rect, rect.width(), rect.height() * (0.5 + 0.5 * opacity));
+        else handleRect = centerRect( rect, rect.width() * (0.5 + 0.5 * opacity), rect.height() );
+        */
+        if (horizontal) {
+            handleRect = rect.adjusted(0, 6, 0, 2);
+            handleRect.adjust(0, -6.0 * opacity, 0, -2.0 * opacity);
+        }
+        else {
+            handleRect = rect.adjusted(6, 0, 2, 0);
+            handleRect.adjust(-6.0 * opacity, 0, -2.0 * opacity, 0);
+        }
 
         _helper->renderScrollBarHandle( painter, handleRect, color );
         return true;
@@ -6464,6 +6482,7 @@ namespace Breeze
     {
         //the animation for QStyle::SC_ScrollBarGroove is special: it will animate
         //the opacity of everything else as well, included slider and arrows
+        bool enabled( option->state & State_Enabled );
         qreal opacity( _animations->scrollBarEngine().opacity( widget, QStyle::SC_ScrollBarGroove ) );
         const bool animated( StyleConfigData::scrollBarShowOnMouseOver() && _animations->scrollBarEngine().isAnimated( widget,  AnimationHover, QStyle::SC_ScrollBarGroove ) );
         const bool mouseOver( option->state & State_MouseOver );
@@ -6477,7 +6496,7 @@ namespace Breeze
             QRect grooveRect( subControlRect( CC_ScrollBar, option, SC_ScrollBarGroove, widget ) );
 
             const QPalette& palette( option->palette );
-            const QColor color( _helper->alphaColor( palette.color( QPalette::WindowText ), 0.3 * (animated ? opacity : 1) ) );
+            const QColor color( _helper->alphaColor( palette.color( QPalette::Window ).darker(), (animated ? 0.3 * opacity : 0.3) ) );
             const State& state( option->state );
             const bool horizontal( state & State_Horizontal );
 
@@ -6485,11 +6504,38 @@ namespace Breeze
             else grooveRect = centerRect( grooveRect, Metrics::ScrollBar_SliderWidth, grooveRect.height() );
 
             // render
-            _helper->renderScrollBarGroove( painter, grooveRect, color );
+            if (enabled) {
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(color);
+                painter->drawRect(option->rect);
+            }
         }
 
         // call base class primitive
-        ParentStyleClass::drawComplexControl( CC_ScrollBar, option, painter, widget );
+        //ParentStyleClass::drawComplexControl( CC_ScrollBar, option, painter, widget );
+        if (const QStyleOptionSlider *scrollbar = qstyleoption_cast<const QStyleOptionSlider *>(option)) {
+
+            QStyleOptionSlider newScrollbar = *scrollbar;
+            State saveFlags = scrollbar->state;
+
+            if (scrollbar->subControls & SC_ScrollBarSlider) {
+                newScrollbar.rect = scrollbar->rect;
+                newScrollbar.state = saveFlags;
+                newScrollbar.rect = proxy()->subControlRect( CC_ScrollBar, &newScrollbar, SC_ScrollBarSlider, widget);
+                if (newScrollbar.rect.isValid()) {
+                    proxy()->drawControl(CE_ScrollBarSlider, &newScrollbar, painter, widget);
+
+                    if (scrollbar->state & State_HasFocus) {
+                        QStyleOptionFocusRect fropt;
+                        fropt.QStyleOption::operator=(newScrollbar);
+                        fropt.rect.setRect(newScrollbar.rect.x() + 2, newScrollbar.rect.y() + 2,
+                        newScrollbar.rect.width() - 5,
+                        newScrollbar.rect.height() - 5);
+                        proxy()->drawPrimitive(PE_FrameFocusRect, &fropt, painter, widget);
+                    }
+                }
+            }
+        }
 
         return true;
     }
