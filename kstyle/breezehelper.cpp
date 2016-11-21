@@ -837,7 +837,7 @@ namespace Breeze
             path.lineTo( markerRect.left() + markerRect.width() / 3.0, markerRect.center().y() );
             path.translate(-markerRect.right(), -markerRect.top());
 
-            //painter->setClipRect(markerRect);
+            painter->setClipRect(markerRect.adjusted(1, 1, -1, -1));
             painter->translate(markerRect.right(), markerRect.top());
             painter->scale(animation, 0.5 + 0.5 * animation);
             painter->drawPath( path );
