@@ -1239,6 +1239,7 @@ namespace Breeze
     }
 
     //______________________________________________________________________________
+    // TODO blurry edges
     void Helper::renderArrow( QPainter* painter, const QRect& rect, const QColor& color, ArrowOrientation orientation ) const
     {
 
@@ -1253,12 +1254,16 @@ namespace Breeze
             default: break;
         }
 
+        QPen pen(color, 1.2);
+        pen.setCapStyle( Qt::FlatCap );
+        pen.setJoinStyle( Qt::MiterJoin );
+
         painter->save();
         painter->setRenderHints( QPainter::Antialiasing );
         painter->translate( QRectF( rect ).center() );
-        painter->setBrush( Qt::NoBrush );
-        painter->setPen( QPen( color, 1.1 ) );
-        painter->drawPolyline( arrow );
+        painter->setBrush( color );
+        painter->setPen( pen );
+        painter->drawPolygon( arrow );
 
         painter->restore();
 
