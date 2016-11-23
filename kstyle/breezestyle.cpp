@@ -6349,9 +6349,12 @@ namespace Breeze
             QRect grooveRect( subControlRect( CC_Slider, sliderOption, SC_SliderGroove, widget ) );
 
             // base color
-            const QColor grooveColor( _helper->alphaColor( palette.color( QPalette::WindowText ), 0.3 ) );
+            const QColor grooveColor( _helper->buttonBackgroundColor( palette, false, false, true ) );
+            const QColor outline( _helper->buttonOutlineColor( palette, false, false ) );
+            const QColor highlightColor( palette.color( QPalette::Highlight ) );
+            const QColor highlightOutline( _helper->buttonOutlineColor( palette, false, false ).darker(250) );
 
-            if( !enabled ) _helper->renderSliderGroove( painter, grooveRect, grooveColor );
+            if( !enabled ) _helper->renderProgressBarGroove( painter, grooveRect, grooveColor, outline );
             else {
 
                 const bool upsideDown( sliderOption->upsideDown );
@@ -6359,29 +6362,46 @@ namespace Breeze
                 // handle rect
                 QRect handleRect( subControlRect( CC_Slider, sliderOption, SC_SliderHandle, widget ) );
 
-                // highlight color
-                const QColor highlight( palette.color( QPalette::Highlight ) );
-
                 if( sliderOption->orientation == Qt::Horizontal )
                 {
 
                     QRect leftRect( grooveRect );
-                    leftRect.setRight( handleRect.right() - Metrics::Slider_ControlThickness/2 );
-                    _helper->renderSliderGroove( painter, leftRect, upsideDown ? grooveColor:highlight );
-
                     QRect rightRect( grooveRect );
+                    leftRect.setRight( handleRect.right() - Metrics::Slider_ControlThickness/2 );
                     rightRect.setLeft( handleRect.left() + Metrics::Slider_ControlThickness/2 );
-                    _helper->renderSliderGroove( painter, rightRect, upsideDown ? highlight:grooveColor );
+
+                    if (upsideDown) {
+
+                        _helper->renderProgressBarGroove( painter, leftRect, grooveColor, outline );
+                        _helper->renderProgressBarContents( painter, rightRect, highlightColor, highlightOutline );
+
+                    }
+                    else {
+
+                        _helper->renderProgressBarContents( painter, leftRect, highlightColor, highlightOutline );
+                        _helper->renderProgressBarGroove( painter, rightRect, grooveColor, outline );
+
+                    }
 
                 } else {
 
                     QRect topRect( grooveRect );
                     topRect.setBottom( handleRect.bottom() - Metrics::Slider_ControlThickness/2 );
-                    _helper->renderSliderGroove( painter, topRect, upsideDown ? grooveColor:highlight );
-
                     QRect bottomRect( grooveRect );
                     bottomRect.setTop( handleRect.top() + Metrics::Slider_ControlThickness/2 );
-                    _helper->renderSliderGroove( painter, bottomRect, upsideDown ? highlight:grooveColor );
+
+                    if (upsideDown) {
+
+                        _helper->renderProgressBarGroove( painter, topRect, grooveColor, outline );
+                        _helper->renderProgressBarContents( painter, bottomRect, highlightColor, highlightOutline );
+
+                    }
+                    else {
+
+                        _helper->renderProgressBarContents( painter, topRect, highlightColor, highlightOutline );
+                        _helper->renderProgressBarGroove( painter, bottomRect, grooveColor, outline );
+
+                    }
 
                 }
 
