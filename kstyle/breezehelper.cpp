@@ -1243,6 +1243,18 @@ namespace Breeze
         return;
     }
 
+    void Helper::renderSign(QPainter *painter, const QRect &rect, const QColor &color, bool orientation) const {
+        QPen pen( color, 2 );
+        pen.setCapStyle( Qt::FlatCap );
+
+        QRect r = rect.adjusted(1, 2, 0, 0);
+
+        painter->setPen(pen);
+        painter->drawLine(r.center() - QPointF(5, 0), r.center() + QPointF(5, 0));
+        if (orientation)
+            painter->drawLine(r.center() - QPointF(0, 5), r.center() + QPointF(0, 5));
+    }
+
     //______________________________________________________________________________
     void Helper::renderDecorationButton( QPainter* painter, const QRect& rect, const QColor& color, ButtonType buttonType, bool inverted ) const
     {

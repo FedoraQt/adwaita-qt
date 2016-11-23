@@ -6787,7 +6787,7 @@ namespace Breeze
         }
 
         // render
-        _helper->renderArrow( painter, arrowRect, color, orientation );
+        _helper->renderSign( painter, arrowRect, color, orientation == ArrowUp );
 
         return;
 
