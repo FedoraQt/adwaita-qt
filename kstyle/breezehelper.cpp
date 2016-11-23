@@ -803,22 +803,13 @@ namespace Breeze
 
         } else if( state == CheckPartial ) {
 
-            QPen pen( color, 2 );
-            pen.setJoinStyle( Qt::MiterJoin );
+            QPen pen( color, 4 );
+            pen.setCapStyle( Qt::RoundCap );
             painter->setPen( pen );
 
             const QRectF markerRect( frameRect.adjusted( 4, 4, -4, -4 ) );
-            painter->drawRect( markerRect );
 
-            painter->setPen( Qt::NoPen );
-            painter->setBrush( color );
-            painter->setRenderHint( QPainter::Antialiasing, false );
-
-            QPainterPath path;
-            path.moveTo( markerRect.topLeft() );
-            path.lineTo( markerRect.right() - 1, markerRect.top() );
-            path.lineTo( markerRect.left(), markerRect.bottom()-1 );
-            painter->drawPath( path );
+            painter->drawLine( markerRect.center() - QPoint(3, 0), markerRect.center() + QPoint(3, 0) );
 
         } else if( state == CheckAnimated ) {
 

@@ -3765,8 +3765,10 @@ namespace Breeze
 
         // animation state
         _animations->widgetStateEngine().updateState( widget, AnimationHover, mouseOver );
-        _animations->widgetStateEngine().updateState( widget, AnimationPressed, checkBoxState != CheckOff );
-        if( _animations->widgetStateEngine().isAnimated( widget, AnimationPressed ) ) checkBoxState = CheckAnimated;
+        if (checkBoxState != CheckPartial) {
+            _animations->widgetStateEngine().updateState( widget, AnimationPressed, checkBoxState != CheckOff );
+            if( _animations->widgetStateEngine().isAnimated( widget, AnimationPressed ) ) checkBoxState = CheckAnimated;
+        }
         const qreal animation( _animations->widgetStateEngine().opacity( widget, AnimationPressed ) );
 
         QColor color;
