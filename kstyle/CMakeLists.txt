@@ -145,7 +145,7 @@ if(BREEZE_USE_KDE4)
     target_link_libraries(adwaita ${XCB_LIBRARIES})
   endif()
 
-  install(TARGETS adwaita  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/styles/)
+  install(TARGETS adwaita  DESTINATION ${LIB_INSTALL_DIR}/qt4/plugins/styles/)
 
 else()
 
