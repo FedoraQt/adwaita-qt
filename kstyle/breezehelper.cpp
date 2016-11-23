@@ -721,7 +721,7 @@ namespace Breeze
     //______________________________________________________________________________
     void Helper::renderCheckBox(
         QPainter* painter, const QRect& rect,
-        const QColor& color, const QColor& outline, const QColor& shadow,
+        const QColor& background, const QColor& outline, const QColor& tickColor,
         bool sunken, CheckBoxState state, qreal animation ) const
     {
 
@@ -736,12 +736,7 @@ namespace Breeze
         // content
         {
 
-            painter->setPen( QPen( outline, 1 ) );
-            painter->setBrush( Qt::NoBrush );
-
-            radius = qMax( radius-1, qreal( 0.0 ) );
-            const QRectF contentRect( frameRect.adjusted( 0.5, 0.5, -0.5, -0.5 ) );
-            painter->drawRoundedRect( contentRect, radius, radius );
+            renderButtonFrame(painter, rect, background, outline, Qt::transparent, false, sunken, false);
 
         }
 
@@ -751,7 +746,7 @@ namespace Breeze
             painter->save();
             painter->setRenderHint(QPainter::Antialiasing);
             painter->setBrush( Qt::NoBrush );
-            QPen pen( color, 3 );
+            QPen pen( tickColor, 3 );
             pen.setJoinStyle(Qt::MiterJoin);
             painter->setPen( pen );
 
@@ -768,7 +763,7 @@ namespace Breeze
 
         } else if( state == CheckPartial ) {
 
-            QPen pen( color, 4 );
+            QPen pen( tickColor, 4 );
             pen.setCapStyle( Qt::RoundCap );
             painter->setPen( pen );
 
@@ -781,7 +776,7 @@ namespace Breeze
             painter->save();
             painter->setRenderHint(QPainter::Antialiasing);
             painter->setBrush( Qt::NoBrush );
-            QPen pen( color, 3 );
+            QPen pen( tickColor, 3 );
             pen.setJoinStyle(Qt::MiterJoin);
             painter->setPen( pen );
 
@@ -824,7 +819,7 @@ namespace Breeze
     //______________________________________________________________________________
     void Helper::renderRadioButton(
         QPainter* painter, const QRect& rect,
-        const QColor& color, const QColor& outline, const QColor& shadow,
+        const QColor& background, const QColor& outline, const QColor& tickColor,
         bool sunken, RadioButtonState state, qreal animation ) const
     {
 
@@ -838,8 +833,18 @@ namespace Breeze
         // content
         {
 
+
+            QLinearGradient gradient( frameRect.topLeft(), frameRect.bottomLeft() );
+            if (sunken) {
+                gradient.setColorAt( 0, background);
+            }
+            else {
+                gradient.setColorAt( 0, background.lighter( 100 ) );
+                gradient.setColorAt( 1, background.darker( 110 ) );
+            }
+
             painter->setPen( QPen( outline, 1 ) );
-            painter->setBrush( Qt::NoBrush );
+            painter->setBrush( gradient );
 
             const QRectF contentRect( frameRect.adjusted( 0.5, 0.5, -0.5, -0.5 ) );
             painter->drawEllipse( contentRect );
@@ -850,7 +855,7 @@ namespace Breeze
         if( state == RadioOn )
         {
 
-            painter->setBrush( color );
+            painter->setBrush( tickColor );
             painter->setPen( Qt::NoPen );
 
             const QRectF markerRect( frameRect.adjusted( 5, 5, -5, -5 ) );
@@ -858,7 +863,7 @@ namespace Breeze
 
         } else if( state == RadioAnimated ) {
 
-            painter->setBrush( color );
+            painter->setBrush( tickColor );
             painter->setPen( Qt::NoPen );
             QRectF markerRect( frameRect.adjusted( 5, 5, -5, -5 ) );
             qreal remaining = markerRect.width() / 2.0 * (1.0 - animation);
@@ -990,10 +995,21 @@ namespace Breeze
         } else painter->setPen( Qt::NoPen );
 
         // set brush
-        if( color.isValid() ) painter->setBrush( color );
+        if( color.isValid() ) {
+
+            QLinearGradient gradient( frameRect.topLeft(), frameRect.bottomLeft() );
+            if (sunken) {
+                gradient.setColorAt( 0, color);
+            }
+            else {
+                gradient.setColorAt( 0, color.lighter( 100 ) );
+                gradient.setColorAt( 1, color.darker( 110 ) );
+            }
+
+            painter->setBrush(gradient);
+        }
         else painter->setBrush( Qt::NoBrush );
 
-        painter->setBrush(Qt::white);
         QRect r(rect.right() - rect.height(), rect.top(), rect.height(), rect.height());
         r.adjust(4.5, 3.5, -2.5, -3.5);
 

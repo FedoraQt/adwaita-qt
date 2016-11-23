@@ -201,13 +201,13 @@ namespace Breeze
         void renderCheckBoxBackground( QPainter*, const QRect&, const QColor& color, const QColor& outline, bool sunken ) const;
 
         //* checkbox
-        void renderCheckBox( QPainter*, const QRect&, const QColor& color, const QColor& outline, const QColor& shadow, bool sunken, CheckBoxState state, qreal animation = AnimationData::OpacityInvalid ) const;
+        void renderCheckBox( QPainter*, const QRect&, const QColor& background, const QColor& outline, const QColor& tickColor, bool sunken, CheckBoxState state, qreal animation = AnimationData::OpacityInvalid ) const;
 
         //* radio button
         void renderRadioButtonBackground( QPainter*, const QRect&, const QColor& color, const QColor& outline, bool sunken ) const;
 
         //* radio button
-        void renderRadioButton( QPainter*, const QRect&, const QColor& color, const QColor& outline, const QColor& shadow, bool sunken, RadioButtonState state, qreal animation = AnimationData::OpacityInvalid ) const;
+        void renderRadioButton( QPainter*, const QRect&, const QColor& background, const QColor& outline, const QColor& tickColor, bool sunken, RadioButtonState state, qreal animation = AnimationData::OpacityInvalid ) const;
 
         //* slider groove
         void renderSliderGroove( QPainter*, const QRect&, const QColor& ) const;
