@@ -165,31 +165,11 @@ namespace Breeze
     QColor Helper::arrowColor( const QPalette& palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode ) const
     {
 
-        QColor outline( arrowColor( palette, QPalette::WindowText ) );
-        if( mode == AnimationHover )
-        {
-
-            const QColor focus( focusColor( palette ) );
-            const QColor hover( hoverColor( palette ) );
-            if( hasFocus ) outline = KColorUtils::mix( focus, hover, opacity );
-            else outline = KColorUtils::mix( outline, hover, opacity );
-
-        } else if( mouseOver ) {
-
-            outline = hoverColor( palette );
-
-        } else if( mode == AnimationFocus ) {
-
-            const QColor focus( focusColor( palette ) );
-            outline = KColorUtils::mix( outline, focus, opacity );
-
-        } else if( hasFocus ) {
-
-            outline = focusColor( palette );
-
-        }
-
-        return outline;
+        Q_UNUSED(mouseOver);
+        Q_UNUSED(hasFocus);
+        Q_UNUSED(opacity);
+        Q_UNUSED(mode);
+        return palette.text().color();
 
     }
 
@@ -306,26 +286,11 @@ namespace Breeze
     QColor Helper::checkBoxIndicatorColor( const QPalette& palette, bool mouseOver, bool active, qreal opacity, AnimationMode mode ) const
     {
 
-        QColor color( KColorUtils::mix( palette.color( QPalette::Window ), palette.color( QPalette::WindowText ), 0.6 ) );
-        if( mode == AnimationHover )
-        {
-
-            const QColor focus( focusColor( palette ) );
-            const QColor hover( hoverColor( palette ) );
-            if( active ) color =  KColorUtils::mix( focus, hover, opacity );
-            else color = KColorUtils::mix( color, hover, opacity );
-
-        } else if( mouseOver ) {
-
-            color = hoverColor( palette );
-
-        } else if( active ) {
-
-            color = focusColor( palette );
-
-        }
-
-        return color;
+        Q_UNUSED(mouseOver);
+        Q_UNUSED(active);
+        Q_UNUSED(opacity);
+        Q_UNUSED(mode);
+        return palette.text().color();
 
     }
 

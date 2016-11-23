@@ -6748,17 +6748,7 @@ namespace Breeze
         const qreal pressedOpacity( _animations->spinBoxEngine().pressed( widget, subControl ) );
 
         QColor color = _helper->arrowColor( palette, QPalette::Text );
-        if( animated )
-        {
-
-            QColor highlight = _helper->hoverColor( palette );
-            color = KColorUtils::mix( color, highlight, opacity );
-
-        } else if( subControlHover ) {
-
-            color = _helper->hoverColor( palette );
-
-        } else if( atLimit ) {
+        if( atLimit ) {
 
             color = _helper->arrowColor( palette, QPalette::Disabled, QPalette::Text );
 
