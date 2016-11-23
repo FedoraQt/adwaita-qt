@@ -4896,6 +4896,7 @@ namespace Breeze
         // copy rect and palette
         QRect rect( option->rect );
         const QPalette& palette( option->palette );
+        const QColor outline( _helper->buttonOutlineColor( palette, false, false ).darker(250) );
 
         // get direction
         const QStyleOptionProgressBarV2* progressBarOption2( qstyleoption_cast<const QStyleOptionProgressBarV2*>( option ) );
@@ -4911,9 +4912,8 @@ namespace Breeze
 
             const qreal progress( _animations->busyIndicatorEngine().value() );
 
-            const QColor first( palette.color( QPalette::Highlight ) );
-            const QColor second( KColorUtils::mix( palette.color( QPalette::Highlight ), palette.color( QPalette::Window ), 0.7 ) );
-            _helper->renderProgressBarBusyContents( painter, rect, first, second, horizontal, reverse, progress );
+            const QColor color( palette.color( QPalette::Highlight ) );
+            _helper->renderProgressBarBusyContents( painter, rect, color, outline, horizontal, reverse, progress );
 
         } else {
 
@@ -4938,7 +4938,8 @@ namespace Breeze
 
             }
 
-            _helper->renderProgressBarContents( painter, rect, palette.color( QPalette::Highlight ) );
+
+            _helper->renderProgressBarContents( painter, rect, palette.color( QPalette::Highlight ), outline );
             painter->setClipRegion( oldClipRegion );
 
         }
@@ -4951,8 +4952,9 @@ namespace Breeze
     bool Style::drawProgressBarGrooveControl( const QStyleOption* option, QPainter* painter, const QWidget* ) const
     {
         const QPalette& palette( option->palette );
-        const QColor color( _helper->alphaColor( palette.color( QPalette::WindowText ), 0.3 ) );
-        _helper->renderProgressBarGroove( painter, option->rect, color );
+        const QColor color( _helper->buttonBackgroundColor( palette, false, false, true ) );
+        const QColor outline( _helper->buttonOutlineColor( palette, false, false ) );
+        _helper->renderProgressBarGroove( painter, option->rect, color, outline );
         return true;
     }
 

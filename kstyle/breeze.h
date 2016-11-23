@@ -118,8 +118,8 @@ namespace Breeze
         ToolBar_ItemSpacing = 0,
 
         // progressbars
-        ProgressBar_BusyIndicatorSize = 14,
-        ProgressBar_Thickness = 6,
+        ProgressBar_BusyIndicatorSize = 24,
+        ProgressBar_Thickness = 4,
         ProgressBar_ItemSpacing = 4,
 
         // mdi title bar

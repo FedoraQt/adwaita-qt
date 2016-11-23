@@ -93,12 +93,12 @@ namespace Breeze
                     _animation = new Animation( duration(), this );
 
                     // setup
-                    _animation.data()->setStartValue( 0 );
-                    _animation.data()->setEndValue( 2*Metrics::ProgressBar_BusyIndicatorSize );
+                    _animation.data()->setStartValue( 0.0 );
+                    _animation.data()->setEndValue( 100.0 );
                     _animation.data()->setTargetObject( this );
                     _animation.data()->setPropertyName( "value" );
                     _animation.data()->setLoopCount( -1 );
-                    _animation.data()->setDuration( duration() );
+                    _animation.data()->setDuration( duration() * 3);
 
                 }
 

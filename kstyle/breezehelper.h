@@ -222,14 +222,14 @@ namespace Breeze
         void renderDialContents( QPainter*, const QRect&, const QColor&, qreal first, qreal second ) const;
 
         //* progress bar groove
-        void renderProgressBarGroove( QPainter*, const QRect&, const QColor& ) const;
+        void renderProgressBarGroove( QPainter*, const QRect&, const QColor&, const QColor& ) const;
 
         //* progress bar contents
-        void renderProgressBarContents( QPainter* painter, const QRect& rect, const QColor& color ) const
-        { return renderProgressBarGroove( painter, rect, color ); }
+        void renderProgressBarContents( QPainter* painter, const QRect& rect, const QColor& color, const QColor& outline ) const
+        { return renderProgressBarGroove( painter, rect, color, outline ); }
 
         //* progress bar contents (animated)
-        void renderProgressBarBusyContents( QPainter* painter, const QRect& rect, const QColor& first, const QColor& second, bool horizontal, bool reverse, int progress  ) const;
+        void renderProgressBarBusyContents( QPainter* painter, const QRect& rect, const QColor& color, const QColor& outline, bool horizontal, bool reverse, int progress  ) const;
 
         //* scrollbar groove
         void renderScrollBarGroove( QPainter* painter, const QRect& rect, const QColor& color ) const
@@ -240,7 +240,7 @@ namespace Breeze
 
         //* toolbar handle
         void renderToolBarHandle( QPainter* painter, const QRect& rect, const QColor& color ) const
-        { return renderProgressBarGroove( painter, rect, color ); }
+        { return renderProgressBarGroove( painter, rect, color, Qt::transparent ); }
 
         //* tabbar tab
         void renderTabBarTab( QPainter*, const QRect&, const QColor& color, const QColor& outline, Corners ) const;

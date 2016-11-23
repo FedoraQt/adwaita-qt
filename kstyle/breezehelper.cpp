@@ -1083,21 +1083,20 @@ namespace Breeze
     }
 
     //______________________________________________________________________________
-    void Helper::renderProgressBarGroove(
-        QPainter* painter, const QRect& rect,
-        const QColor& color ) const
+    void Helper::renderProgressBarGroove(QPainter* painter, const QRect& rect,
+        const QColor& color , const QColor& outline) const
     {
 
         // setup painter
         painter->setRenderHint( QPainter::Antialiasing, true );
 
         const QRectF baseRect( rect );
-        const qreal radius( 0.5*Metrics::ProgressBar_Thickness );
+        const qreal radius( 0.25*Metrics::ProgressBar_Thickness );
 
         // content
         if( color.isValid() )
         {
-            painter->setPen( Qt::NoPen );
+            painter->setPen( outline );
             painter->setBrush( color );
             painter->drawRoundedRect( baseRect, radius, radius );
         }
@@ -1110,55 +1109,29 @@ namespace Breeze
     //______________________________________________________________________________
     void Helper::renderProgressBarBusyContents(
         QPainter* painter, const QRect& rect,
-        const QColor& first,
-        const QColor& second,
+        const QColor& color,
+        const QColor& outline,
         bool horizontal,
         bool reverse,
         int progress
         ) const
     {
+        Q_UNUSED(reverse);
 
         // setup painter
         painter->setRenderHint( QPainter::Antialiasing, true );
 
         const QRectF baseRect( rect );
-        const qreal radius( 0.5*Metrics::ProgressBar_Thickness );
+        const qreal radius( 0.25*Metrics::ProgressBar_Thickness );
+        QRectF contentRect;
+        if (horizontal)
+            contentRect = QRect(baseRect.left(), baseRect.top(), Metrics::ProgressBar_BusyIndicatorSize, baseRect.height());
 
-        // setup brush
-        QPixmap pixmap( horizontal ? 2*Metrics::ProgressBar_BusyIndicatorSize : 1, horizontal ? 1:2*Metrics::ProgressBar_BusyIndicatorSize );
-        pixmap.fill( second );
-        if( horizontal )
-        {
+        contentRect.translate(fabs(progress - 50) / 50.0 * (baseRect.width() - contentRect.width()), 0);
 
-            QPainter painter( &pixmap );
-            painter.setBrush( first );
-            painter.setPen( Qt::NoPen );
-
-            progress %= 2*Metrics::ProgressBar_BusyIndicatorSize;
-            if( reverse ) progress = 2*Metrics::ProgressBar_BusyIndicatorSize - progress - 1;
-            painter.drawRect( QRect( 0, 0, Metrics::ProgressBar_BusyIndicatorSize, 1 ).translated( progress, 0 ) );
-
-            if( progress > Metrics::ProgressBar_BusyIndicatorSize )
-            { painter.drawRect( QRect( 0, 0, Metrics::ProgressBar_BusyIndicatorSize, 1 ).translated( progress - 2*Metrics::ProgressBar_BusyIndicatorSize, 0 ) ); }
-
-        } else {
-
-            QPainter painter( &pixmap );
-            painter.setBrush( first );
-            painter.setPen( Qt::NoPen );
-
-            progress %= 2*Metrics::ProgressBar_BusyIndicatorSize;
-            progress = 2*Metrics::ProgressBar_BusyIndicatorSize - progress - 1;
-            painter.drawRect( QRect( 0, 0, 1, Metrics::ProgressBar_BusyIndicatorSize ).translated( 0, progress ) );
-
-            if( progress > Metrics::ProgressBar_BusyIndicatorSize )
-            { painter.drawRect( QRect( 0, 0, 1, Metrics::ProgressBar_BusyIndicatorSize ).translated( 0, progress - 2*Metrics::ProgressBar_BusyIndicatorSize ) ); }
-
-        }
-
-        painter->setPen( Qt::NoPen );
-        painter->setBrush( pixmap );
-        painter->drawRoundedRect( baseRect, radius, radius );
+        painter->setBrush(color);
+        painter->setPen(outline);
+        painter->drawRoundedRect(contentRect, radius, radius);
 
         return;
 
