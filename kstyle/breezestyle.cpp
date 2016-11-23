@@ -603,6 +603,8 @@ namespace Breeze
 
             // menu buttons
             case PM_MenuButtonIndicator: return Metrics::MenuButton_IndicatorWidth;
+            case PM_MenuVMargin: return 3;
+            case PM_MenuHMargin: return 1;
 
             // toolbars
             case PM_ToolBarHandleExtent: return Metrics::ToolBar_HandleExtent;
@@ -942,6 +944,7 @@ namespace Breeze
             case CE_ComboBoxLabel: fcn = &Style::drawComboBoxLabelControl; break;
             case CE_MenuBarEmptyArea: fcn = &Style::drawMenuBarEmptyArea; break;
             case CE_MenuBarItem: fcn = &Style::drawMenuBarItemControl; break;
+            case CE_MenuEmptyArea: fcn = &Style::drawMenuEmptyAreaControl; break;
             case CE_MenuItem: fcn = &Style::drawMenuItemControl; break;
             case CE_ToolBar: fcn = &Style::emptyControl; break;
             case CE_ProgressBar: fcn = &Style::drawProgressBarControl; break;
@@ -4620,6 +4623,13 @@ namespace Breeze
 
     }
 
+    bool Style::drawMenuEmptyAreaControl( const QStyleOption* option, QPainter* painter, const QWidget* widget ) const {
+        painter->setPen(_helper->frameOutlineColor(option->palette));
+        painter->setBrush(option->palette.base().color());
+        painter->drawRect(option->rect.adjusted(0, 0, -1, -1));
+        return true;
+    }
+
 
     //___________________________________________________________________________________
     bool Style::drawMenuItemControl( const QStyleOption* option, QPainter* painter, const QWidget* widget ) const
@@ -4634,6 +4644,11 @@ namespace Breeze
         const QRect& rect( option->rect );
         const QPalette& palette( option->palette );
         const QColor& outline( _helper->frameOutlineColor( palette ) );
+        const QColor& background( palette.base().color() );
+
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(background);
+        painter->drawRect(rect);
 
         // deal with separators
         if( menuItemOption->menuItemType == QStyleOptionMenuItem::Separator )
