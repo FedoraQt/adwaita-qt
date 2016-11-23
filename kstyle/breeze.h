@@ -84,8 +84,8 @@ namespace Breeze
 
         // buttons
         Button_MinWidth = 80,
-        Button_MarginWidth = 6,
-        Button_ItemSpacing = 4,
+        Button_MarginWidth = 4,
+        Button_ItemSpacing = 3,
 
         // tool buttons
         ToolButton_MarginWidth = 6,
