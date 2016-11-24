@@ -876,7 +876,7 @@ namespace Breeze
         if( !_seat ) {
             return;
         }
-
+        /* TODO RETURN THIS
         QWindow* windowHandle = widget->window()->windowHandle();
         auto shellSurface = KWayland::Client::ShellSurface::fromWindow(windowHandle);
         if( !shellSurface ) {
@@ -885,6 +885,7 @@ namespace Breeze
         }
 
         shellSurface->requestMove( _seat, _waylandSerial );
+        */
         #else
         Q_UNUSED( widget );
         Q_UNUSED( position );

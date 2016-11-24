@@ -149,10 +149,10 @@ if(BREEZE_USE_KDE4)
 
 else()
 
-  kconfig_add_kcfg_files(adwaita breezestyleconfigdata.kcfgc)
-  add_library(adwaita MODULE ${breeze_PART_SRCS})
-  target_link_libraries(adwaita Qt5::Core Qt5::Gui Qt5::Widgets Qt5::DBus)
-  target_link_libraries(adwaita KF5::ConfigCore KF5::ConfigWidgets KF5::GuiAddons KF5::WindowSystem)
+    kconfig_add_kcfg_files(breeze_PART_SRCS breezestyleconfigdata.kcfgc)
+    add_library(adwaita MODULE ${breeze_PART_SRCS})
+    target_link_libraries(adwaita Qt5::Core Qt5::Gui Qt5::Widgets Qt5::DBus)
+    target_link_libraries(adwaita KF5::ConfigCore KF5::ConfigWidgets KF5::GuiAddons KF5::WindowSystem)
 
   if( KF5FrameworkIntegration_FOUND )
   target_link_libraries(adwaita KF5::Style)
@@ -173,7 +173,7 @@ else()
     target_link_libraries(adwaita KF5::WaylandClient)
   endif()
 
-  install(TARGETS adwaita DESTINATION ${QT_PLUGIN_INSTALL_DIR}/styles/)
+  install(TARGETS adwaita DESTINATION ${LIB_INSTALL_DIR}/qt5/plugins/styles/)
 
 endif()
 
