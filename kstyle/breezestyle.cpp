@@ -3115,7 +3115,10 @@ namespace Breeze
             // render
             const QColor background( palette.color( QPalette::Base ) );
             const QColor outline( _helper->frameOutlineColor( palette, mouseOver, hasFocus, opacity, mode ) );
-            _helper->renderFrame( painter, rect, background, outline, hasFocus );
+            if (qobject_cast<const QComboBox*>(widget))
+                _helper->renderFlatFrame( painter, rect, background, outline, hasFocus );
+            else
+                _helper->renderFrame( painter, rect, background, outline, hasFocus );
 
         }
 
@@ -6142,10 +6145,10 @@ namespace Breeze
                     const QColor outline( _helper->buttonOutlineColor( palette, mouseOver, hasFocus, opacity, mode ) );
                     const QColor background( _helper->buttonBackgroundColor( palette, mouseOver, hasFocus, false, opacity, mode ) );
 
-                    _helper->renderButtonFrame( painter, subControlRect( CC_ComboBox, option, SC_ComboBoxArrow, widget), background, outline, shadow, hasFocus, sunken, mouseOver );
+                    _helper->renderFlatButtonFrame( painter, subControlRect( CC_ComboBox, option, SC_ComboBoxArrow, widget), background, outline, shadow, hasFocus, sunken, mouseOver );
 
                     QStyleOptionComplex tmpOpt(*option);
-                    tmpOpt.rect.setWidth(tmpOpt.rect.width() - subControlRect( CC_ComboBox, option, SC_ComboBoxArrow, widget).width() + 4);
+                    tmpOpt.rect.setWidth(tmpOpt.rect.width() - subControlRect( CC_ComboBox, option, SC_ComboBoxArrow, widget).width() + 3);
 
                     drawPrimitive( PE_FrameLineEdit, &tmpOpt, painter, widget );
 

@@ -54,8 +54,8 @@ namespace Breeze
     {
 
         // frames
-        Frame_FrameWidth = 3,
-        Frame_FrameRadius = 3,
+        Frame_FrameWidth = 4,
+        Frame_FrameRadius = 4,
 
         // layout
         Layout_TopLevelMarginWidth = 10,
@@ -63,7 +63,7 @@ namespace Breeze
         Layout_DefaultSpacing = 6,
 
         // line editors
-        LineEdit_FrameWidth = 6,
+        LineEdit_FrameWidth = 7,
 
         // menu items
         Menu_FrameWidth = 0,
@@ -73,7 +73,7 @@ namespace Breeze
         MenuButton_IndicatorWidth = 20,
 
         // combobox
-        ComboBox_FrameWidth = 6,
+        ComboBox_FrameWidth = 7,
 
         // spinbox
         SpinBox_FrameWidth = LineEdit_FrameWidth,

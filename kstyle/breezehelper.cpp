@@ -421,6 +421,49 @@ namespace Breeze
     }
 
     //______________________________________________________________________________
+    void Helper::renderFlatFrame(
+        QPainter* painter, const QRect& rect,
+        const QColor& color, const QColor& outline, bool hasFocus ) const
+    {
+
+        painter->setRenderHint( QPainter::Antialiasing );
+
+        QRectF frameRect( rect.adjusted( 1, 1, -1, -1 ) );
+        qreal radius( frameRadius() );
+
+        // set pen
+        if( outline.isValid() )
+        {
+
+            if (hasFocus)
+                painter->setPen( QPen( outline, 2 ) );
+            else
+                painter->setPen( outline );
+            frameRect.adjust( 0.5, 0.5, -0.5, -0.5 );
+            radius = qMax( radius - 1, qreal( 0.0 ) );
+
+        } else {
+
+            painter->setPen( Qt::NoPen );
+
+        }
+
+        // set brush
+        if( color.isValid() ) painter->setBrush( color );
+        else painter->setBrush( Qt::NoBrush );
+
+        QPainterPath path;
+        path.setFillRule( Qt::WindingFill );
+        path.addRoundedRect( frameRect.adjusted(0, 0, - 2 *radius, 0), radius, radius);
+        path.addRect( frameRect.adjusted(2 * radius, 0, 0, 0) );
+        painter->drawPath( path.simplified() );
+
+        // render
+        //painter->drawRoundedRect( frameRect, radius, radius );
+
+    }
+
+    //______________________________________________________________________________
     void Helper::renderSidePanelFrame( QPainter* painter, const QRect& rect, const QColor& outline, Side side ) const
     {
 
@@ -541,6 +584,60 @@ namespace Breeze
 
         // render
         painter->drawRoundedRect( frameRect, radius, radius );
+
+    }
+
+    //______________________________________________________________________________
+    void Helper::renderFlatButtonFrame(
+        QPainter* painter, const QRect& rect,
+        const QColor& color, const QColor& outline, const QColor& shadow,
+        bool hasFocus, bool sunken, bool mouseOver ) const
+    {
+
+        // setup painter
+        painter->setRenderHint( QPainter::Antialiasing, true );
+
+        // copy rect
+        QRectF frameRect( rect );
+        frameRect.adjust( 1, 1, -1, -1 );
+        qreal radius( frameRadius() );
+
+        if( outline.isValid() )
+        {
+
+            painter->setPen( QPen( outline, 1.0 ) );
+
+            frameRect.adjust( 0.5, 0.5, -0.5, -0.5 );
+            radius = qMax( radius - 1, qreal( 0.0 ) );
+
+        } else painter->setPen( Qt::NoPen );
+
+        // content
+        if( color.isValid() )
+        {
+
+            QLinearGradient gradient( frameRect.topLeft(), frameRect.bottomLeft() );
+            //gradient.setColorAt( 0, color.darker( sunken ? 110 : (hasFocus|mouseOver) ? 85 : 100 ) );
+            //gradient.setColorAt( 1, color.darker( sunken ? 130 : (hasFocus|mouseOver) ? 95 : 110 ) );
+            if (sunken) {
+                gradient.setColorAt( 0, color);
+            }
+            else {
+                gradient.setColorAt( 0, color.lighter( 100 ) );
+                gradient.setColorAt( 1, color.darker( 110 ) );
+            }
+            painter->setBrush( gradient );
+
+        } else painter->setBrush( Qt::NoBrush );
+
+        QPainterPath path;
+        path.setFillRule( Qt::WindingFill );
+        path.addRoundedRect( frameRect.adjusted(2*radius, 0, 0, 0), radius, radius );
+        path.addRect( frameRect.adjusted(0, 0, -2*radius, 0) );
+        painter->drawPath( path.simplified() );
+
+        // render
+        //painter->drawRoundedRect( frameRect, radius, radius );
 
     }
 
