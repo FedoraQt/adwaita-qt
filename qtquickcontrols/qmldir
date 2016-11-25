@@ -1,4 +1,4 @@
-module QtQuick.Controls.Styles.Breeze
+module QtQuick.Controls.Styles.Adwaita
 
 ApplicationWindowStyle 1.0 ApplicationWindowStyle.qml
 BusyIndicatorStyle 1.0 BusyIndicatorStyle.qml

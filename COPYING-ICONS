@@ -1,4 +1,4 @@
-The Breeze Icon Theme in icons/
+The Adwaita Icon Theme in icons/
 
     Copyright (C) 2014 Uri Herrera <uri_herrera@nitrux.in> and others
 
@@ -21,7 +21,7 @@ Clarification:
   software libraries in the first place. We expressly want the LGPL to
   be valid for this artwork library too.
 
-  KDE Breeze theme icons is a special kind of software library, it is an
+  KDE Adwaita theme icons is a special kind of software library, it is an
   artwork library, it's elements can be used in a Graphical User Interface, or
   GUI.
 

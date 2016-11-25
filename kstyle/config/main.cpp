@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// breezeanimationconfigitem.h
+// adwaitaanimationconfigitem.h
 // animation configuration item
 // -------------------
 //
@@ -34,16 +34,16 @@
 //__________________________________________
 int main(int argc, char *argv[])
 {
-    KLocalizedString::setApplicationDomain("breeze_style_config");
+    KLocalizedString::setApplicationDomain("adwaita_style_config");
 
     QApplication app( argc, argv );
-    app.setApplicationName( i18n( "Breeze Settings" ) );
-    app.setWindowIcon( QIcon::fromTheme( QStringLiteral( "breeze-settings" ) ) );
+    app.setApplicationName( i18n( "Adwaita Settings" ) );
+    app.setWindowIcon( QIcon::fromTheme( QStringLiteral( "adwaita-settings" ) ) );
 
     KCMultiDialog dialog;
-    dialog.setWindowTitle( i18n( "Breeze Settings" ) );
-    dialog.addModule( QStringLiteral( "breezestyleconfig" ) );
-    dialog.addModule( QStringLiteral( "breezedecorationconfig" ) );
+    dialog.setWindowTitle( i18n( "Adwaita Settings" ) );
+    dialog.addModule( QStringLiteral( "adwaitastyleconfig" ) );
+    dialog.addModule( QStringLiteral( "adwaitadecorationconfig" ) );
     dialog.show();
 
     foreach( auto child, dialog.findChildren<QAbstractScrollArea*>() )

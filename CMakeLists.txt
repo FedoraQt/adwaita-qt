@@ -1,6 +1,6 @@
-project(breeze)
-set(PROJECT_VERSION "5.8.90")
-set(PROJECT_VERSION_MAJOR 5)
+project(adwaita)
+set(PROJECT_VERSION "1.0")
+set(PROJECT_VERSION_MAJOR 1)
 
 cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
 
@@ -22,7 +22,7 @@ else()
   include(GenerateExportHeader)
   include(GtkUpdateIconCache)
 
-  option(WITH_DECORATIONS "Build Breeze window decorations for KWin" OFF)
+  option(WITH_DECORATIONS "Build Adwaita window decorations for KWin" OFF)
   if(WITH_DECORATIONS)
     find_package(KDecoration2 REQUIRED)
     add_subdirectory(kdecoration)
@@ -31,9 +31,9 @@ else()
   add_subdirectory(kstyle)
   #add_subdirectory(qtquickcontrols)
 
-  #INSTALL(FILES colors/Breeze.colors DESTINATION ${DATA_INSTALL_DIR}/color-schemes/)
-  #INSTALL(FILES colors/BreezeDark.colors DESTINATION ${DATA_INSTALL_DIR}/color-schemes/)
-  #INSTALL(FILES colors/BreezeHighContrast.colors DESTINATION ${DATA_INSTALL_DIR}/color-schemes/)
+  #INSTALL(FILES colors/Adwaita.colors DESTINATION ${DATA_INSTALL_DIR}/color-schemes/)
+  #INSTALL(FILES colors/AdwaitaDark.colors DESTINATION ${DATA_INSTALL_DIR}/color-schemes/)
+  #INSTALL(FILES colors/AdwaitaHighContrast.colors DESTINATION ${DATA_INSTALL_DIR}/color-schemes/)
 
   find_package(KF5Package CONFIG REQUIRED)
   #if(EXISTS ${CMAKE_SOURCE_DIR}/po AND IS_DIRECTORY ${CMAKE_SOURCE_DIR}/po)
@@ -42,20 +42,20 @@ else()
   #endif()
 
   include(ECMSetupVersion)
-  ecm_setup_version(${PROJECT_VERSION} VARIABLE_PREFIX BREEZE
-                    PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/BreezeConfigVersion.cmake"
+  ecm_setup_version(${PROJECT_VERSION} VARIABLE_PREFIX ADWAITA
+                    PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/AdwaitaConfigVersion.cmake"
                     )
 
   # create a Config.cmake and a ConfigVersion.cmake file and install them
-  #set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/Breeze")
+  #set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/Adwaita")
 
-  #ecm_configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/BreezeConfig.cmake.in"
-  #                                  "${CMAKE_CURRENT_BINARY_DIR}/BreezeConfig.cmake"
+  #ecm_configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/AdwaitaConfig.cmake.in"
+  #                                  "${CMAKE_CURRENT_BINARY_DIR}/AdwaitaConfig.cmake"
   #                                  INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
   #                                  )
 
-  #install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/BreezeConfig.cmake"
-  #               "${CMAKE_CURRENT_BINARY_DIR}/BreezeConfigVersion.cmake"
+  #install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/AdwaitaConfig.cmake"
+  #               "${CMAKE_CURRENT_BINARY_DIR}/AdwaitaConfigVersion.cmake"
   #        DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   #        COMPONENT Devel
   #       )

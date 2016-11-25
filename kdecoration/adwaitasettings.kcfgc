@@ -1,0 +1,6 @@
+File=adwaitasettingsdata.kcfg
+ClassName=InternalSettings
+NameSpace=Adwaita
+Singleton=false
+Mutators=true
+GlobalEnums=true
