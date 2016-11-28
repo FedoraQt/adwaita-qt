@@ -119,8 +119,8 @@ namespace Adwaita
 
         // progressbars
         ProgressBar_BusyIndicatorSize = 24,
-        ProgressBar_Thickness = 4,
-        ProgressBar_ItemSpacing = 4,
+        ProgressBar_Thickness = 3,
+        ProgressBar_ItemSpacing = 3,
 
         // mdi title bar
         TitleBar_MarginWidth = 4,
@@ -128,7 +128,7 @@ namespace Adwaita
         // sliders
         Slider_TickLength = 8,
         Slider_TickMarginWidth = 2,
-        Slider_GrooveThickness = 4,
+        Slider_GrooveThickness = 3,
         Slider_ControlThickness = 24,
 
         // tabbar

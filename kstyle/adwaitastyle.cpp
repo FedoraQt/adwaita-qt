@@ -4124,6 +4124,7 @@ namespace Adwaita
 
         const QPoint center( rect.center() );
         const QColor lineColor( KColorUtils::mix( palette.color( QPalette::Base ), palette.color( QPalette::Text ), 0.25 ) );
+        painter->save();
         painter->setRenderHint( QPainter::Antialiasing, true );
         painter->translate( 0.5, 0.5 );
         painter->setPen( QPen( lineColor, 1 ) );
@@ -4149,6 +4150,7 @@ namespace Adwaita
             const QLineF line( QPointF( center.x(), center.y() + expanderAdjust ), QPointF( center.x(), rect.bottom() ) );
             painter->drawLine( line );
         }
+        painter->restore();
 
         return true;
     }
@@ -4493,6 +4495,7 @@ namespace Adwaita
         else textRole = QPalette::ButtonText;
 
         // change pen color directly
+        painter->save();
         painter->setPen( QPen( option->palette.color( textRole ), 1 ) );
 
         // translate painter for pressed down comboboxes
@@ -4541,6 +4544,8 @@ namespace Adwaita
         // call base class method
         ParentStyleClass::drawControl( CE_ComboBoxLabel, option, painter, widget );
         #endif
+
+        painter->restore();
 
         return true;
 

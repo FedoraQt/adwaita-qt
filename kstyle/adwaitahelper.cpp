@@ -713,11 +713,13 @@ namespace Adwaita
         path.lineTo( baseRect.width()-1, baseRect.height()-1 );
 
         // render
+        painter->save();
         painter->setRenderHints( QPainter::Antialiasing );
         painter->setBrush( Qt::NoBrush );
         painter->setPen( outline );
         painter->translate( baseRect.topLeft() );
         painter->drawPath( path );
+        painter->restore();
 
         return;
 
@@ -774,6 +776,7 @@ namespace Adwaita
         const QColor& color, bool vertical ) const
     {
 
+        painter->save();
         painter->setRenderHint( QPainter::Antialiasing, false );
         painter->setBrush( Qt::NoBrush );
         painter->setPen( color );
@@ -791,6 +794,8 @@ namespace Adwaita
 
 
         }
+
+        painter->restore();
 
         return;
 
@@ -823,6 +828,7 @@ namespace Adwaita
     {
 
         // setup painter
+        painter->save();
         painter->setRenderHint( QPainter::Antialiasing, true );
 
         // copy rect and radius
@@ -893,6 +899,7 @@ namespace Adwaita
 
         }
 
+        painter->restore();
     }
 
     //______________________________________________________________________________
@@ -1158,16 +1165,17 @@ namespace Adwaita
 
         // setup painter
         painter->setRenderHint( QPainter::Antialiasing, true );
+        painter->setRenderHint( QPainter::SmoothPixmapTransform, true );
 
         const QRectF baseRect( rect );
-        const qreal radius( 0.25*Metrics::ProgressBar_Thickness );
+        const qreal radius( 0.5 );
 
         // content
         if( color.isValid() )
         {
             painter->setPen( outline );
             painter->setBrush( color );
-            painter->drawRoundedRect( baseRect, radius, radius );
+            painter->drawRoundedRect( baseRect.translated(0.5, 0.5), radius, radius );
         }
 
         return;
@@ -1200,7 +1208,7 @@ namespace Adwaita
 
         painter->setBrush(color);
         painter->setPen(outline);
-        painter->drawRoundedRect(contentRect, radius, radius);
+        painter->drawRoundedRect(contentRect.translated(0.5, 0.5), radius, radius);
 
         return;
 
