@@ -5325,7 +5325,7 @@ namespace Adwaita
 
         // outline
         painter->setBrush( Qt::NoBrush );
-        painter->setPen( _helper->alphaColor( palette.color( QPalette::WindowText ), 0.1 ) );
+        painter->setPen( _helper->alphaColor( palette.color( QPalette::WindowText ), 0.6 ) );
 
         if( isCorner )
         {
@@ -5346,7 +5346,7 @@ namespace Adwaita
         }
 
         // separators
-        painter->setPen( _helper->alphaColor( palette.color( QPalette::WindowText ), 0.2 ) );
+        painter->setPen( _helper->alphaColor( palette.color( QPalette::WindowText ), 0.4 ) );
 
         if( horizontal )
         {
@@ -5409,7 +5409,7 @@ namespace Adwaita
 
         // fill
         painter->setRenderHint( QPainter::Antialiasing, false );
-        painter->setBrush( palette.color( QPalette::Button ) );
+        painter->setBrush( palette.color( QPalette::Base ) );
         painter->setPen( Qt::NoPen );
         painter->drawRect( rect );
 
