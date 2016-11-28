@@ -2263,7 +2263,7 @@ namespace Adwaita
 
             case SC_SpinBoxUp:
 
-                return QRect(rect.right() - rect.height(),
+                return QRect(rect.right() - rect.height() - 1,
                              rect.top(),
                              rect.height(),
                              rect.height() - 1
@@ -2272,7 +2272,7 @@ namespace Adwaita
             case SC_SpinBoxDown:
             {
 
-                return QRect(rect.right() - 2 * rect.height() + 1,
+                return QRect(rect.right() - 2 * rect.height(),
                              rect.top(),
                              rect.height(),
                              rect.height() - 1

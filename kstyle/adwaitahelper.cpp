@@ -398,10 +398,13 @@ namespace Adwaita
         if( outline.isValid() )
         {
 
-            if (hasFocus)
+            if (hasFocus) {
                 painter->setPen( QPen( outline, 2 ) );
-            else
+                frameRect.adjust(0.5, 0.5, -0.5, -0.5);
+            }
+            else {
                 painter->setPen( outline );
+            }
             frameRect.adjust( 0.5, 0.5, -0.5, -0.5 );
             radius = qMax( radius - 1, qreal( 0.0 ) );
 
@@ -435,10 +438,13 @@ namespace Adwaita
         if( outline.isValid() )
         {
 
-            if (hasFocus)
+            if (hasFocus) {
                 painter->setPen( QPen( outline, 2 ) );
-            else
+                frameRect.adjust(0.5, 0.5, -0.5, -0.5);
+            }
+            else {
                 painter->setPen( outline );
+            }
             frameRect.adjust( 0.5, 0.5, -0.5, -0.5 );
             radius = qMax( radius - 1, qreal( 0.0 ) );
 
