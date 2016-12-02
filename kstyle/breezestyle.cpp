@@ -3749,6 +3749,7 @@ namespace Breeze
         // copy rect and palette
         const QRect& rect( option->rect );
         const QPalette& palette( option->palette );
+        const QColor& outline( _helper->frameOutlineColor( palette ) );
 
         // store flags
         const State& state( option->state );
@@ -3775,7 +3776,7 @@ namespace Breeze
         if( isSelectedItem ) {
 
             color = _helper->checkBoxIndicatorColor( palette, false, enabled && active  );
-            _helper->renderCheckBoxBackground( painter, rect, palette.color( QPalette::Base ), sunken );
+            _helper->renderCheckBoxBackground( painter, rect, palette.color( QPalette::Base ), outline, sunken );
 
         } else {
 
@@ -3787,7 +3788,7 @@ namespace Breeze
 
         // render
         const QColor shadow( _helper->shadowColor( palette ) );
-        _helper->renderCheckBox( painter, rect, color, shadow, sunken, checkBoxState, animation );
+        _helper->renderCheckBox( painter, rect, color, outline, shadow, sunken, checkBoxState, animation );
         return true;
 
     }
@@ -4628,6 +4629,7 @@ namespace Breeze
         // copy rect and palette
         const QRect& rect( option->rect );
         const QPalette& palette( option->palette );
+        const QColor& outline( _helper->frameOutlineColor( palette ) );
 
         // deal with separators
         if( menuItemOption->menuItemType == QStyleOptionMenuItem::Separator )
@@ -4705,13 +4707,13 @@ namespace Breeze
             // checkbox state
 
             if( useStrongFocus && ( selected || sunken ) )
-            { _helper->renderCheckBoxBackground( painter, checkBoxRect, palette.color( QPalette::Window ), sunken ); }
+            { _helper->renderCheckBoxBackground( painter, checkBoxRect, palette.color( QPalette::Window ), outline, sunken ); }
 
             CheckBoxState state( menuItemOption->checked ? CheckOn : CheckOff );
             const bool active( menuItemOption->checked );
             const QColor shadow( _helper->shadowColor( palette ) );
             const QColor color( _helper->checkBoxIndicatorColor( palette, false, enabled && active ) );
-            _helper->renderCheckBox( painter, checkBoxRect, color, shadow, sunken, state );
+            _helper->renderCheckBox( painter, checkBoxRect, color, outline, shadow, sunken, state );
 
         } else if( menuItemOption->checkType == QStyleOptionMenuItem::Exclusive ) {
 

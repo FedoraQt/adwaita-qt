@@ -737,7 +737,7 @@ namespace Breeze
     //______________________________________________________________________________
     void Helper::renderCheckBoxBackground(
         QPainter* painter, const QRect& rect,
-        const QColor& color, bool sunken ) const
+        const QColor& color, const QColor &outline, bool sunken ) const
     {
 
         // setup painter
@@ -747,9 +747,7 @@ namespace Breeze
         QRectF frameRect( rect );
         frameRect.adjust( 3, 3, -3, -3 );
 
-        if( sunken ) frameRect.translate(1, 1);
-
-        painter->setPen( Qt::NoPen );
+        painter->setPen( outline );
         painter->setBrush( color );
         painter->drawRect( frameRect );
 
@@ -758,7 +756,7 @@ namespace Breeze
     //______________________________________________________________________________
     void Helper::renderCheckBox(
         QPainter* painter, const QRect& rect,
-        const QColor& color, const QColor& shadow,
+        const QColor& color, const QColor& outline, const QColor& shadow,
         bool sunken, CheckBoxState state, qreal animation ) const
     {
 
@@ -770,26 +768,10 @@ namespace Breeze
         frameRect.adjust( 2, 2, -2, -2 );
         qreal radius( frameRadius() );
 
-        // shadow
-        if( sunken )
-        {
-
-            frameRect.translate(1, 1);
-
-        } else {
-
-            painter->setPen( QPen( shadow, 1 ) );
-            painter->setBrush( Qt::NoBrush );
-
-            const qreal shadowRadius( radius + 0.5 );
-            painter->drawRoundedRect( shadowRect( frameRect ).adjusted( -0.5, -0.5, 0.5, 0.5 ), shadowRadius, shadowRadius );
-
-        }
-
         // content
         {
 
-            painter->setPen( QPen( color, 1 ) );
+            painter->setPen( QPen( outline, 1 ) );
             painter->setBrush( Qt::NoBrush );
 
             radius = qMax( radius-1, qreal( 0.0 ) );
@@ -801,12 +783,23 @@ namespace Breeze
         // mark
         if( state == CheckOn )
         {
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing);
+            painter->setBrush( Qt::NoBrush );
+            QPen pen( color, 3 );
+            pen.setJoinStyle(Qt::MiterJoin);
+            painter->setPen( pen );
 
-            painter->setBrush( color );
-            painter->setPen( Qt::NoPen );
+            const QRectF markerRect(frameRect);
 
-            const QRectF markerRect( frameRect.adjusted( 3, 3, -3, -3 ) );
-            painter->drawRect( markerRect );
+            QPainterPath path;
+            path.moveTo( markerRect.right(), markerRect.top() + markerRect.height() / 4 );
+            path.lineTo( markerRect.center().x(), markerRect.bottom() - markerRect.height() / 3.0 );
+            path.lineTo( markerRect.left() + markerRect.width() / 3.0, markerRect.center().y() );
+
+            painter->setClipRect(markerRect);
+            painter->drawPath( path );
+            painter->restore();
 
         } else if( state == CheckPartial ) {
 
@@ -829,17 +822,26 @@ namespace Breeze
 
         } else if( state == CheckAnimated ) {
 
-            const QRectF markerRect( frameRect.adjusted( 3, 3, -3, -3 ) );
-            QPainterPath path;
-            path.moveTo( markerRect.topRight() );
-            path.lineTo( markerRect.center() + animation*( markerRect.topLeft() - markerRect.center() ) );
-            path.lineTo( markerRect.bottomLeft() );
-            path.lineTo( markerRect.center() + animation*( markerRect.bottomRight() - markerRect.center() ) );
-            path.closeSubpath();
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing);
+            painter->setBrush( Qt::NoBrush );
+            QPen pen( color, 3 );
+            pen.setJoinStyle(Qt::MiterJoin);
+            painter->setPen( pen );
 
-            painter->setBrush( color );
-            painter->setPen( Qt::NoPen );
+            const QRectF markerRect(frameRect);
+
+            QPainterPath path;
+            path.moveTo( markerRect.right(), markerRect.top() + markerRect.height() / 4 );
+            path.lineTo( markerRect.center().x(), markerRect.bottom() - markerRect.height() / 3.0 );
+            path.lineTo( markerRect.left() + markerRect.width() / 3.0, markerRect.center().y() );
+            path.translate(-markerRect.right(), -markerRect.top());
+
+            //painter->setClipRect(markerRect);
+            painter->translate(markerRect.right(), markerRect.top());
+            painter->scale(animation, 0.5 + 0.5 * animation);
             painter->drawPath( path );
+            painter->restore();
 
         }
 
