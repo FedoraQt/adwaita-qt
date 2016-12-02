@@ -2591,7 +2591,7 @@ namespace Adwaita
         size.setHeight( qMax( size.height(), int(Metrics::SpinBox_ArrowButtonWidth) ) );
 
         // add button width and spacing
-        size.rwidth() += 2 * Metrics::SpinBox_ArrowButtonWidth + 3;
+        size.rwidth() += 2 * size.height() + 9;
 
         return size;
 
