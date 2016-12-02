@@ -1189,14 +1189,32 @@ namespace Breeze
 
         } else painter->setPen( Qt::NoPen );
 
-
-        // brush
-        if( color.isValid() ) painter->setBrush( color );
-        else painter->setBrush( Qt::NoBrush );
+        painter->setBrush( Qt::NoBrush );
 
         // render
-        QPainterPath path( roundedPath( frameRect, corners, radius ) );
-        painter->drawPath( path );
+        painter->drawRect( frameRect );
+
+        painter->setPen( QPen( color, 5 ) );
+
+        switch (corners) {
+            case CornerTopLeft|CornerTopRight:
+                painter->drawLine(frameRect.bottomLeft(), frameRect.bottomRight());
+                break;
+
+            case CornerBottomLeft|CornerBottomRight:
+                painter->drawLine(frameRect.topLeft(), frameRect.topRight());
+                break;
+
+            case CornerTopLeft|CornerBottomLeft:
+                painter->drawLine(frameRect.topRight(), frameRect.bottomRight());
+                break;
+
+            case CornerTopRight|CornerBottomRight:
+                painter->drawLine(frameRect.topLeft(), frameRect.bottomLeft());
+                break;
+    
+        }
+
 
     }
 

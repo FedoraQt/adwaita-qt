@@ -148,6 +148,65 @@ namespace BreezePrivate
 
 }
 
+void tabLayout(const QStyleOptionTabV3 *opt, const QWidget *widget, QRect *textRect, QRect *iconRect, const QStyle *proxyStyle) {
+    Q_ASSERT(textRect);
+    Q_ASSERT(iconRect);
+    QRect tr = opt->rect;
+    bool verticalTabs = opt->shape == QTabBar::RoundedEast
+                        || opt->shape == QTabBar::RoundedWest
+                        || opt->shape == QTabBar::TriangularEast
+                        || opt->shape == QTabBar::TriangularWest;
+    if (verticalTabs)
+        tr.setRect(0, 0, tr.height(), tr.width()); //0, 0 as we will have a translate transform
+
+    int verticalShift = proxyStyle->pixelMetric(QStyle::PM_TabBarTabShiftVertical, opt, widget);
+    int horizontalShift = proxyStyle->pixelMetric(QStyle::PM_TabBarTabShiftHorizontal, opt, widget);
+    int hpadding = proxyStyle->pixelMetric(QStyle::PM_TabBarTabHSpace, opt, widget) / 2;
+    int vpadding = proxyStyle->pixelMetric(QStyle::PM_TabBarTabVSpace, opt, widget) / 2;
+    if (opt->shape == QTabBar::RoundedSouth || opt->shape == QTabBar::TriangularSouth)
+        verticalShift = -verticalShift;
+    tr.adjust(hpadding, verticalShift - vpadding, horizontalShift - hpadding, vpadding);
+    bool selected = opt->state & QStyle::State_Selected;
+    if (selected) {
+        tr.setTop(tr.top() - verticalShift);
+        tr.setRight(tr.right() - horizontalShift);
+    }
+
+    // left widget
+    if (!opt->leftButtonSize.isEmpty()) {
+        tr.setLeft(tr.left() + 4 +
+            (verticalTabs ? opt->leftButtonSize.height() : opt->leftButtonSize.width()));
+    }
+    // right widget
+    if (!opt->rightButtonSize.isEmpty()) {
+        tr.setRight(tr.right() - 4 -
+        (verticalTabs ? opt->rightButtonSize.height() : opt->rightButtonSize.width()));
+    }
+
+    // icon
+    if (!opt->icon.isNull()) {
+        QSize iconSize = opt->iconSize;
+        if (!iconSize.isValid()) {
+            int iconExtent = proxyStyle->pixelMetric(QStyle::PM_SmallIconSize);
+            iconSize = QSize(iconExtent, iconExtent);
+        }
+        QSize tabIconSize = opt->icon.actualSize(iconSize,
+                        (opt->state & QStyle::State_Enabled) ? QIcon::Normal : QIcon::Disabled,
+                        (opt->state & QStyle::State_Selected) ? QIcon::On : QIcon::Off  );
+
+        *iconRect = QRect(tr.left(), tr.center().y() - tabIconSize.height() / 2,
+                    tabIconSize.width(), tabIconSize .height());
+        if (!verticalTabs)
+            *iconRect = proxyStyle->visualRect(opt->direction, opt->rect, *iconRect);
+        tr.setLeft(tr.left() + tabIconSize.width() + 4);
+    }
+
+    if (!verticalTabs)
+        tr = proxyStyle->visualRect(opt->direction, opt->rect, tr);
+
+    *textRect = tr;
+}
+
 namespace Breeze
 {
 
@@ -234,6 +293,10 @@ namespace Breeze
             || widget->inherits( "KTextEditor::View" )
             )
         { widget->setAttribute( Qt::WA_Hover ); }
+
+        if (qobject_cast<QTabBar*>(widget)) {
+            qobject_cast<QTabBar*>(widget)->setDrawBase(true);
+        }
 
         // enforce translucency for drag and drop window
         if( widget->testAttribute( Qt::WA_X11NetWmWindowTypeDND ) && _helper->compositingActive() )
@@ -697,7 +760,6 @@ namespace Breeze
             case SE_TabWidgetLeftCorner: return tabWidgetCornerRect( SE_TabWidgetLeftCorner, option, widget );
             case SE_TabWidgetRightCorner: return tabWidgetCornerRect( SE_TabWidgetRightCorner, option, widget );
             case SE_ToolBoxTabContents: return toolBoxTabContentsRect( option, widget );
-
             // fallback
             default: return ParentStyleClass::subElementRect( element, option, widget );
 
@@ -1744,9 +1806,8 @@ namespace Breeze
             rect.setLeft( leftButtonRect.width() );
             rect.setRight( rightButtonRect.left() - 1 );
 
-            tabBarRect.setWidth( qMin( tabBarRect.width(), rect.width() - 2 ) );
-            if( tabBarAlignment == Qt::AlignCenter ) tabBarRect.moveLeft( rect.left() + (rect.width() - tabBarRect.width())/2 );
-            else tabBarRect.moveLeft( rect.left() + 1 );
+            tabBarRect.moveLeft( rect.left() + 1 );
+            tabBarRect.setWidth( rect.width() - 2 );
 
             tabBarRect = visualRect( option, tabBarRect );
 
@@ -2874,6 +2935,10 @@ namespace Breeze
         // add margins
         QSize size( contentsSize );
 
+        if ( hasText ) {
+            widthIncrement += option->fontMetrics.width(tabOption->text) * 0.2;
+        }
+
         // compare to minimum size
         const bool verticalTabs( tabOption && isVerticalTab( tabOption ) );
         if( verticalTabs )
@@ -3223,39 +3288,14 @@ namespace Breeze
         // get rect, orientation, palette
         const QRect rect( option->rect );
         const QColor outline( _helper->frameOutlineColor( option->palette ) );
+        const QColor background( _helper->frameOutlineColor( option->palette ).lighter(115) );
 
         // setup painter
-        painter->setBrush( Qt::NoBrush );
+        painter->setBrush( background );
         painter->setRenderHint( QPainter::Antialiasing, false );
         painter->setPen( QPen( outline, 1 ) );
 
-        // render
-        switch( tabOption->shape )
-        {
-            case QTabBar::RoundedNorth:
-            case QTabBar::TriangularNorth:
-            painter->drawLine( rect.bottomLeft() - QPoint( 1, 0 ), rect.bottomRight() + QPoint( 1, 0 ) );
-            break;
-
-            case QTabBar::RoundedSouth:
-            case QTabBar::TriangularSouth:
-            painter->drawLine( rect.topLeft() - QPoint( 1, 0 ), rect.topRight() + QPoint( 1, 0 ) );
-            break;
-
-            case QTabBar::RoundedWest:
-            case QTabBar::TriangularWest:
-            painter->drawLine( rect.topRight() - QPoint( 0, 1 ), rect.bottomRight() + QPoint( 1, 0 ) );
-            break;
-
-            case QTabBar::RoundedEast:
-            case QTabBar::TriangularEast:
-            painter->drawLine( rect.topLeft() - QPoint( 0, 1 ), rect.bottomLeft() + QPoint( 1, 0 ) );
-            break;
-
-            default:
-            break;
-
-        }
+        painter->drawRect(rect.adjusted(0, 0, -1, -1));
 
         return true;
 
@@ -5325,9 +5365,76 @@ namespace Breeze
     //___________________________________________________________________________________
     bool Style::drawTabBarTabLabelControl( const QStyleOption* option, QPainter* painter, const QWidget* widget ) const
     {
+        if (const QStyleOptionTab *tab = qstyleoption_cast<const QStyleOptionTab *>(option)) {
+            QStyleOptionTabV3 tabV2(*tab);
+            QRect tr = tabV2.rect;
+            bool verticalTabs = tabV2.shape == QTabBar::RoundedEast
+                                || tabV2.shape == QTabBar::RoundedWest
+                                || tabV2.shape == QTabBar::TriangularEast
+                                || tabV2.shape == QTabBar::TriangularWest;
 
-        // call parent style method
-        ParentStyleClass::drawControl( CE_TabBarTabLabel, option, painter, widget );
+            int alignment = Qt::AlignCenter | Qt::TextShowMnemonic;
+            if (!proxy()->styleHint(SH_UnderlineShortcut, option, widget))
+                alignment |= Qt::TextHideMnemonic;
+
+            if (verticalTabs) {
+                painter->save();
+                int newX, newY, newRot;
+                if (tabV2.shape == QTabBar::RoundedEast || tabV2.shape == QTabBar::TriangularEast) {
+                    newX = tr.width() + tr.x();
+                    newY = tr.y();
+                    newRot = 90;
+                } else {
+                    newX = tr.x();
+                    newY = tr.y() + tr.height();
+                    newRot = -90;
+                }
+                QTransform m = QTransform::fromTranslate(newX, newY);
+                m.rotate(newRot);
+                painter->setTransform(m, true);
+            }
+            QRect iconRect;
+            tabLayout(&tabV2, widget, &tr, &iconRect, proxy());
+            tr = proxy()->subElementRect(SE_TabBarTabText, option, widget); //we compute tr twice because the style may override subElementRect
+
+            if (!tabV2.icon.isNull()) {
+                QPixmap tabIcon = tabV2.icon.pixmap(tabV2.iconSize,
+                                                    (tabV2.state & State_Enabled) ? QIcon::Normal
+                                                                                  : QIcon::Disabled,
+                                                    (tabV2.state & State_Selected) ? QIcon::On
+                                                                                   : QIcon::Off);
+                painter->drawPixmap(iconRect.x(), iconRect.y(), tabIcon);
+            }
+
+            QFont font = painter->font();
+            font.setBold(true);
+            painter->setFont(font);
+            if (tabV2.state & State_Selected)
+                painter->setPen(option->palette.brush(QPalette::WindowText).color());
+            else if (tabV2.state & State_MouseOver)
+                painter->setPen(option->palette.brush(QPalette::Mid).color().darker(150));
+            else
+                painter->setPen(option->palette.brush(QPalette::Mid).color().darker(130));
+
+            proxy()->drawItemText(painter, tr, alignment, tab->palette, tab->state & State_Enabled, tab->text, QPalette::NoRole);
+
+            if (verticalTabs)
+                painter->restore();
+
+            if (tabV2.state & State_HasFocus) {
+                const int OFFSET = 1 + pixelMetric(PM_DefaultFrameWidth);
+
+                int x1, x2;
+                x1 = tabV2.rect.left();
+                x2 = tabV2.rect.right() - 1;
+
+                QStyleOptionFocusRect fropt;
+                fropt.QStyleOption::operator=(*tab);
+                fropt.rect.setRect(x1 + 1 + OFFSET, tabV2.rect.y() + OFFSET,
+                                   x2 - x1 - 2*OFFSET, tabV2.rect.height() - 2*OFFSET);
+                drawPrimitive(PE_FrameFocusRect, &fropt, painter, widget);
+            }
+        }
 
         // store rect and palette
         const QRect& rect( option->rect );
@@ -5470,7 +5577,6 @@ namespace Breeze
             {
 
                 corners = CornerTopLeft|CornerTopRight;
-                rect.adjust( 0, 0, 0, 1 );
 
             } else {
 
@@ -5490,7 +5596,6 @@ namespace Breeze
             {
 
                 corners = CornerBottomLeft|CornerBottomRight;
-                rect.adjust( 0, - 1, 0, 0 );
 
             } else {
 
@@ -5509,7 +5614,6 @@ namespace Breeze
             if( selected )
             {
                 corners = CornerTopLeft|CornerBottomLeft;
-                rect.adjust( 0, 0, 1, 0 );
 
             } else {
 
@@ -5529,7 +5633,6 @@ namespace Breeze
             {
 
                 corners = CornerTopRight|CornerBottomRight;
-                rect.adjust( -1, 0, 0, 0 );
 
             } else {
 
@@ -5546,38 +5649,11 @@ namespace Breeze
             default: break;
         }
 
-        // color
-        QColor color;
-        if( selected )
-        {
-
-            #if QT_VERSION >= 0x050000
-            bool documentMode = tabOption->documentMode;
-            #else
-            bool documentMode = false;
-            if( const QStyleOptionTabV3* tabOptionV3 = qstyleoption_cast<const QStyleOptionTabV3*>( option ) )
-            { documentMode = tabOptionV3->documentMode; }
-            #endif
-
-            // flag passed to QStyleOptionTab is unfortunately not reliable enough
-            // also need to check on parent widget
-            const QTabWidget *tabWidget = ( widget && widget->parentWidget() ) ? qobject_cast<const QTabWidget *>( widget->parentWidget() ) : nullptr;
-            documentMode |= ( tabWidget ? tabWidget->documentMode() : true );
-
-            color = (documentMode&&!isQtQuickControl&&!hasAlteredBackground(widget)) ? palette.color( QPalette::Window ) : _helper->frameBackgroundColor( palette );
-
-        } else {
-
-            const QColor normal( _helper->alphaColor( palette.color( QPalette::WindowText ), 0.2 ) );
-            const QColor hover( _helper->alphaColor( _helper->hoverColor( palette ), 0.2 ) );
-            if( animated ) color = KColorUtils::mix( normal, hover, opacity );
-            else if( mouseOver ) color = hover;
-            else color = normal;
-
-        }
+        // underline
+        QColor underline( selected ? _helper->focusColor( palette ) : mouseOver ? option->palette.mid().color().darker(150) : QColor() );
 
         // outline
-        const QColor outline( selected ? _helper->alphaColor( palette.color( QPalette::WindowText ), 0.25 ) : QColor() );
+        const QColor outline( selected ? _helper->frameOutlineColor( palette ) : QColor() );
 
         // render
         if( selected )
@@ -5585,12 +5661,12 @@ namespace Breeze
 
             QRegion oldRegion( painter->clipRegion() );
             painter->setClipRect( option->rect, Qt::IntersectClip );
-            _helper->renderTabBarTab( painter, rect, color, outline, corners );
+            _helper->renderTabBarTab( painter, rect, underline, outline, corners );
             painter->setClipRegion( oldRegion );
 
         } else {
 
-            _helper->renderTabBarTab( painter, rect, color, outline, corners );
+            _helper->renderTabBarTab( painter, rect, underline, outline, corners );
 
         }
 
