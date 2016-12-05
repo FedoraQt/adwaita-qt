@@ -1250,10 +1250,10 @@ namespace Adwaita
     {
 
         // setup painter
-        painter->setRenderHint( QPainter::Antialiasing, true );
+        painter->setRenderHint( QPainter::Antialiasing, false );
 
         QRectF frameRect( rect );
-        qreal radius( frameRadius() );
+        qreal adjustment;
 
         // pen
         if( outline.isValid() )
@@ -1261,32 +1261,34 @@ namespace Adwaita
 
             painter->setPen( outline );
             frameRect.adjust( 0.5, 0.5, -0.5, -0.5 );
-            radius = qMax( radius-1, qreal( 0.0 ) );
+            adjustment = 0;
 
-        } else painter->setPen( Qt::NoPen );
+            painter->setBrush( color );
 
-        painter->setBrush( Qt::NoBrush );
+            // render
+            painter->drawRect( frameRect );
 
-        // render
-        painter->drawRect( frameRect );
+        } else {
+            adjustment = 12;
+        }
 
-        painter->setPen( QPen( color, 5 ) );
+        painter->setPen( QPen( color, 6 ) );
 
         switch (corners) {
             case CornerTopLeft|CornerTopRight:
-                painter->drawLine(frameRect.bottomLeft(), frameRect.bottomRight());
+                painter->drawLine(frameRect.left() + adjustment, frameRect.bottom(), frameRect.right() - adjustment, frameRect.bottom());
                 break;
 
             case CornerBottomLeft|CornerBottomRight:
-                painter->drawLine(frameRect.topLeft(), frameRect.topRight());
+                painter->drawLine(frameRect.left() + adjustment, frameRect.top(), frameRect.right() - adjustment, frameRect.top());
                 break;
 
             case CornerTopLeft|CornerBottomLeft:
-                painter->drawLine(frameRect.topRight(), frameRect.bottomRight());
+                painter->drawLine(frameRect.right(), frameRect.top() + adjustment, frameRect.right(), frameRect.bottom() - adjustment);
                 break;
 
             case CornerTopRight|CornerBottomRight:
-                painter->drawLine(frameRect.topLeft(), frameRect.bottomLeft());
+                painter->drawLine(frameRect.left(), frameRect.top() + adjustment, frameRect.left(), frameRect.bottom() - adjustment);
                 break;
     
         }

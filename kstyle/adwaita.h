@@ -132,7 +132,7 @@ namespace Adwaita
         Slider_ControlThickness = 24,
 
         // tabbar
-        TabBar_TabMarginHeight = 3,
+        TabBar_TabMarginHeight = 9,
         TabBar_TabMarginWidth = 8,
         TabBar_TabMinWidth = 80,
         TabBar_TabMinHeight = 36,

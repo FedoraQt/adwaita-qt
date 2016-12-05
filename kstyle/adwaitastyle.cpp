@@ -1895,7 +1895,7 @@ namespace Adwaita
         const QStyleOptionTabWidgetFrame* tabOption = qstyleoption_cast<const QStyleOptionTabWidgetFrame*>( option );
         if( !tabOption || tabOption->tabBarSize.isEmpty() ) return option->rect;
 
-        const int overlap = Metrics::TabBar_BaseOverlap - 1;
+        const int overlap = Metrics::TabBar_BaseOverlap + 1;
         const QSize tabBarSize( tabOption->tabBarSize - QSize( overlap, overlap ) );
 
         QRect rect( option->rect );
@@ -5495,7 +5495,7 @@ namespace Adwaita
                 fropt.QStyleOption::operator=(*tab);
                 fropt.rect.setRect(x1 + 1 + OFFSET, tabV2.rect.y() + OFFSET,
                                    x2 - x1 - 2*OFFSET, tabV2.rect.height() - 2*OFFSET);
-                drawPrimitive(PE_FrameFocusRect, &fropt, painter, widget);
+                //drawPrimitive(PE_FrameFocusRect, &fropt, painter, widget);
             }
         }
 
@@ -5560,12 +5560,9 @@ namespace Adwaita
         textRect = option->fontMetrics.boundingRect( textRect, textFlags, tabOption->text );
 
         // focus color
-        QColor focusColor;
-        if( animated ) focusColor = _helper->alphaColor( _helper->focusColor( palette ), opacity );
-        else if( hasFocus ) focusColor =  _helper->focusColor( palette );
 
         // render focus line
-        _helper->renderFocusLine( painter, textRect, focusColor );
+        //_helper->renderFocusLine( painter, textRect, focusColor );
 
         if( verticalTabs ) painter->restore();
 
@@ -5585,7 +5582,7 @@ namespace Adwaita
         const State& state( option->state );
         const bool enabled( state & State_Enabled );
         const bool selected( state & State_Selected );
-        const bool mouseOver( enabled && !selected && ( state & State_MouseOver ) );
+        const bool mouseOver( !selected && ( state & State_MouseOver ) );
 
         // check if tab is being dragged
         const bool isDragged( widget && selected && painter->device() != widget );
@@ -5636,102 +5633,41 @@ namespace Adwaita
         {
             case QTabBar::RoundedNorth:
             case QTabBar::TriangularNorth:
-            if( selected )
-            {
-
                 corners = CornerTopLeft|CornerTopRight;
-
-            } else {
-
-                rect.adjust( 0, 0, 0, -1 );
-                if( isFirst ) corners |= CornerTopLeft;
-                if( isLast ) corners |= CornerTopRight;
-                if( isRightOfSelected ) rect.adjust( -Metrics::Frame_FrameRadius, 0, 0, 0 );
-                if( isLeftOfSelected ) rect.adjust( 0, 0, Metrics::Frame_FrameRadius, 0 );
-                else if( !isLast ) rect.adjust( 0, 0, overlap, 0 );
-
-            }
-            break;
+                break;
 
             case QTabBar::RoundedSouth:
             case QTabBar::TriangularSouth:
-            if( selected )
-            {
-
                 corners = CornerBottomLeft|CornerBottomRight;
-
-            } else {
-
-                rect.adjust( 0, 1, 0, 0 );
-                if( isFirst ) corners |= CornerBottomLeft;
-                if( isLast ) corners |= CornerBottomRight;
-                if( isRightOfSelected ) rect.adjust( -Metrics::Frame_FrameRadius, 0, 0, 0 );
-                if( isLeftOfSelected ) rect.adjust( 0, 0, Metrics::Frame_FrameRadius, 0 );
-                else if( !isLast ) rect.adjust( 0, 0, overlap, 0 );
-
-            }
-            break;
+                break;
 
             case QTabBar::RoundedWest:
             case QTabBar::TriangularWest:
-            if( selected )
-            {
                 corners = CornerTopLeft|CornerBottomLeft;
-
-            } else {
-
-                rect.adjust( 0, 0, -1, 0 );
-                if( isFirst ) corners |= CornerTopLeft;
-                if( isLast ) corners |= CornerBottomLeft;
-                if( isRightOfSelected ) rect.adjust( 0, -Metrics::Frame_FrameRadius, 0, 0 );
-                if( isLeftOfSelected ) rect.adjust( 0, 0, 0, Metrics::Frame_FrameRadius );
-                else if( !isLast ) rect.adjust( 0, 0, 0, overlap );
-
-            }
-            break;
+                break;
 
             case QTabBar::RoundedEast:
             case QTabBar::TriangularEast:
-            if( selected )
-            {
-
                 corners = CornerTopRight|CornerBottomRight;
-
-            } else {
-
-                rect.adjust( 1, 0, 0, 0 );
-                if( isFirst ) corners |= CornerTopRight;
-                if( isLast ) corners |= CornerBottomRight;
-                if( isRightOfSelected ) rect.adjust( 0, -Metrics::Frame_FrameRadius, 0, 0 );
-                if( isLeftOfSelected ) rect.adjust( 0, 0, 0, Metrics::Frame_FrameRadius );
-                else if( !isLast ) rect.adjust( 0, 0, 0, overlap );
-
-            }
-            break;
+                break;
 
             default: break;
         }
 
         // underline
-        QColor underline( selected ? _helper->focusColor( palette ) : mouseOver ? option->palette.mid().color().darker(150) : QColor() );
+        QColor underline( selected ? _helper->focusColor( palette ) : mouseOver ? option->palette.brush(QPalette::Mid).color() : Qt::transparent );
 
         // outline
-        const QColor outline( selected ? _helper->frameOutlineColor( palette ) : QColor() );
+        QColor outline = QColor();
+        if (selected && widget && widget->property("movable").toBool()) {
+            outline = _helper->frameOutlineColor( palette );
+        }
 
         // render
-        if( selected )
-        {
-
-            QRegion oldRegion( painter->clipRegion() );
-            painter->setClipRect( option->rect, Qt::IntersectClip );
-            _helper->renderTabBarTab( painter, rect, underline, outline, corners );
-            painter->setClipRegion( oldRegion );
-
-        } else {
-
-            _helper->renderTabBarTab( painter, rect, underline, outline, corners );
-
-        }
+        QRegion oldRegion( painter->clipRegion() );
+        painter->setClipRect( option->rect, Qt::IntersectClip );
+        _helper->renderTabBarTab( painter, rect, underline, outline, corners );
+        painter->setClipRegion( oldRegion );
 
         return true;
 
