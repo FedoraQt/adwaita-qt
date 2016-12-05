@@ -4485,14 +4485,7 @@ namespace Adwaita
         const bool hasFocus( enabled && !mouseOver && (option->state & State_HasFocus) );
         const bool flat( !comboBoxOption->frame );
 
-        QPalette::ColorRole textRole;
-        if( flat )  {
-
-            if( hasFocus && sunken ) textRole = QPalette::HighlightedText;
-            else textRole = QPalette::WindowText;
-
-        } else if( hasFocus ) textRole = QPalette::HighlightedText;
-        else textRole = QPalette::ButtonText;
+        QPalette::ColorRole textRole = QPalette::ButtonText;
 
         // change pen color directly
         painter->save();
@@ -6199,45 +6192,7 @@ namespace Adwaita
             const bool empty( comboBox && !comboBox->count() );
 
             // arrow color
-            QColor arrowColor;
-            if( editable )
-            {
-
-                if( empty || !enabled ) arrowColor = palette.color( QPalette::Disabled, QPalette::Text );
-                else {
-
-                    // check animation state
-                    const bool subControlHover( enabled && mouseOver && comboBoxOption->activeSubControls&SC_ComboBoxArrow );
-                    _animations->comboBoxEngine().updateState( widget, AnimationHover, subControlHover  );
-
-                    const bool animated( enabled && _animations->comboBoxEngine().isAnimated( widget, AnimationHover ) );
-                    const qreal opacity( _animations->comboBoxEngine().opacity( widget, AnimationHover ) );
-
-                    // color
-                    const QColor normal( _helper->arrowColor( palette, QPalette::WindowText ) );
-                    const QColor hover( _helper->hoverColor( palette ) );
-
-                    if( animated )
-                    {
-                        arrowColor = KColorUtils::mix( normal, hover, opacity );
-
-                    } else if( subControlHover ) {
-
-                        arrowColor = hover;
-
-                    } else arrowColor = normal;
-
-                }
-
-            } else if( flat )  {
-
-                if( empty || !enabled ) arrowColor = _helper->arrowColor( palette, QPalette::Disabled, QPalette::WindowText );
-                else if( hasFocus && !mouseOver && sunken ) arrowColor = palette.color( QPalette::HighlightedText );
-                else arrowColor = _helper->arrowColor( palette, QPalette::WindowText );
-
-            } else if( empty || !enabled ) arrowColor = _helper->arrowColor( palette, QPalette::Disabled, QPalette::ButtonText );
-            else if( hasFocus && !mouseOver ) arrowColor = palette.color( QPalette::HighlightedText );
-            else arrowColor = _helper->arrowColor( palette, QPalette::ButtonText );
+            QColor arrowColor = _helper->arrowColor( palette, QPalette::ButtonText );
 
             // arrow rect
             QRect arrowRect( subControlRect( CC_ComboBox, option, SC_ComboBoxArrow, widget ) );
