@@ -1010,8 +1010,6 @@ namespace Adwaita
         { ParentStyleClass::drawComplexControl( element, option, painter, widget ); }
 
         painter->restore();
-
-
     }
 
 
@@ -3291,7 +3289,7 @@ namespace Adwaita
         // get rect, orientation, palette
         const QRect rect( option->rect );
         const QColor outline( _helper->frameOutlineColor( option->palette ) );
-        const QColor background( _helper->frameOutlineColor( option->palette ).lighter(115) );
+        const QColor background( option->palette.mid().color().lighter(115) );
 
         // setup painter
         painter->setBrush( background );
@@ -5940,6 +5938,13 @@ namespace Adwaita
         _animations->widgetStateEngine().updateState( widget, AnimationHover, mouseOver );
         _animations->widgetStateEngine().updateState( widget, AnimationFocus, hasFocus && !mouseOver );
 
+        qreal opacity = 0.0;
+        if ( _animations->widgetStateEngine().buttonAnimationMode( widget ) == AnimationHover ) {
+            opacity = _animations->widgetStateEngine().buttonOpacity( widget );
+        }
+        if (mouseOver)
+            opacity = 1.0;
+
         // detect buttons in tabbar, for which special rendering is needed
         const bool inTabBar( widget && qobject_cast<const QTabBar*>( widget->parentWidget() ) );
         const bool isMenuTitle( this->isMenuTitle( widget ) );
@@ -5972,8 +5977,39 @@ namespace Adwaita
         if( toolButtonOption->subControls & SC_ToolButton )
         {
             copy.rect = buttonRect;
-            if( inTabBar ) drawTabBarPanelButtonToolPrimitive( &copy, painter, widget );
-            else drawPrimitive( PE_PanelButtonTool, &copy, painter, widget);
+            if( inTabBar ) {
+                const QRect rect(option->rect);
+                QColor background( option->palette.mid().color().lighter(115 + 10.0 * opacity) );
+                const QColor outline ( option->palette.mid().color());
+                painter->setPen(background);
+                painter->setBrush(background);
+                switch (toolButtonOption->arrowType) {
+                case Qt::UpArrow: painter->drawRect(rect.adjusted(1, 1, -2, -1)); break;
+                case Qt::DownArrow: painter->drawRect(rect.adjusted(1, 0, -2, -2)); break;
+                case Qt::LeftArrow: painter->drawRect(rect.adjusted(1, 1, -1, -2)); break;
+                case Qt::RightArrow: painter->drawRect(rect.adjusted(0, 1, -2, -2)); break;
+                }
+                painter->setPen(outline);
+                switch (toolButtonOption->arrowType) {
+                case Qt::DownArrow: painter->drawLine(rect.bottomLeft(), rect.bottomRight()); break;
+                case Qt::RightArrow: painter->drawLine(rect.topRight(), rect.bottomRight()); break;
+                }
+                switch (toolButtonOption->arrowType) {
+                case Qt::UpArrow:
+                case Qt::DownArrow:
+                    painter->drawLine(rect.topLeft(), rect.bottomLeft());
+                    painter->drawLine(rect.topLeft(), rect.bottomLeft());
+                    break;
+                case Qt::LeftArrow:
+                case Qt::RightArrow:
+                    painter->drawLine(rect.topLeft(), rect.topRight());
+                    painter->drawLine(rect.bottomLeft(), rect.bottomRight());
+                    break;
+                }
+            }
+            else {
+                drawPrimitive( PE_PanelButtonTool, &copy, painter, widget);
+            }
         }
 
         // arrow
