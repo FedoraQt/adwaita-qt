@@ -1347,41 +1347,26 @@ namespace Adwaita
         painter->save();
         painter->setViewport( rect );
         painter->setWindow( 0, 0, 18, 18 );
-        painter->setRenderHints( QPainter::Antialiasing );
+        painter->setRenderHints( QPainter::Antialiasing, false );
 
         // initialize pen
         QPen pen;
         pen.setCapStyle( Qt::RoundCap );
         pen.setJoinStyle( Qt::MiterJoin );
 
-        if( inverted )
-        {
-            // render circle
-            painter->setPen( Qt::NoPen );
-            painter->setBrush( color );
-            painter->drawEllipse( QRectF( 0, 0, 18, 18 ) );
+        painter->setBrush( Qt::NoBrush );
 
-            // take out the inner part
-            painter->setCompositionMode( QPainter::CompositionMode_DestinationOut );
-            painter->setBrush( Qt::NoBrush );
-            pen.setColor( Qt::black );
-
-        } else {
-
-            painter->setBrush( Qt::NoBrush );
-            pen.setColor( color );
-
-        }
-
+        pen.setColor( color );
         pen.setCapStyle( Qt::RoundCap );
         pen.setJoinStyle( Qt::MiterJoin );
-        pen.setWidthF( 1.1*qMax(1.0, 18.0/rect.width() ) );
+        pen.setWidthF( 2.0*qMax(1.0, 18.0/rect.width() ) );
         painter->setPen( pen );
 
         switch( buttonType )
         {
             case ButtonClose:
             {
+                painter->setRenderHints( QPainter::Antialiasing, true );
                 painter->drawLine( QPointF( 5, 5 ), QPointF( 13, 13 ) );
                 painter->drawLine( 13, 5, 5, 13 );
                 break;
@@ -1390,9 +1375,10 @@ namespace Adwaita
             case ButtonMaximize:
             {
                 painter->drawPolyline( QPolygonF()
-                    << QPointF( 4, 11 )
-                    << QPointF( 9, 6 )
-                    << QPointF( 14, 11 ) );
+                    << QPointF( 4, 4 )
+                    << QPointF( 4, 14 )
+                    << QPointF( 14, 14 )
+                    << QPointF( 14, 4 ) );
                 break;
             }
 
@@ -1400,21 +1386,17 @@ namespace Adwaita
             {
 
                 painter->drawPolyline( QPolygonF()
-                    << QPointF( 4, 7 )
-                    << QPointF( 9, 12 )
-                    << QPointF( 14, 7 ) );
+                    << QPointF( 4, 14 )
+                    << QPointF( 14, 14 ) );
                 break;
             }
 
             case ButtonRestore:
             {
-                pen.setJoinStyle( Qt::RoundJoin );
                 painter->setPen( pen );
-                painter->drawPolygon( QPolygonF()
-                    << QPointF( 4.5, 9 )
-                    << QPointF( 9, 4.5 )
-                    << QPointF( 13.5, 9 )
-                    << QPointF( 9, 13.5 ) );
+                QPolygonF rect = QPolygonF() << QPointF( 0, 0 ) << QPointF( 8, 0 ) << QPointF( 8, 8 ) << QPointF( 0, 8 );
+                painter->drawPolygon( rect.translated(7, 3) );
+                painter->drawPolygon( rect.translated(3, 7) );
                 break;
             }
 

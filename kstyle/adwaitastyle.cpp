@@ -5841,7 +5841,7 @@ namespace Adwaita
         QString title( dockWidgetOption->title );
         int titleWidth = dockWidgetOption->fontMetrics.size( _mnemonics->textFlags(), title ).width();
         int width = verticalTitleBar ? rect.height() : rect.width();
-        if( width < titleWidth ) title = dockWidgetOption->fontMetrics.elidedText( title, Qt::ElideRight, width, Qt::TextShowMnemonic );
+        if( width < titleWidth ) title = dockWidgetOption->fontMetrics.elidedText( title, Qt::ElideMiddle, width, Qt::TextShowMnemonic );
 
         if( verticalTitleBar )
         {
@@ -5946,6 +5946,7 @@ namespace Adwaita
             opacity = 1.0;
 
         // detect buttons in tabbar, for which special rendering is needed
+        const bool isDockWidgetTitleButton( widget && widget->inherits( "QDockWidgetTitleButton" ) );
         const bool inTabBar( widget && qobject_cast<const QTabBar*>( widget->parentWidget() ) );
         const bool isMenuTitle( this->isMenuTitle( widget ) );
         if( isMenuTitle )
@@ -5960,9 +5961,23 @@ namespace Adwaita
             return true;
         }
 
-
         // copy option and alter palette
         QStyleOptionToolButton copy( *toolButtonOption );
+
+        if( isDockWidgetTitleButton )
+        {
+
+            // cast to abstract button
+            // adjust state to have correct icon rendered
+            const QAbstractButton* button( qobject_cast<const QAbstractButton*>( widget ) );
+            if( button->isChecked() || button->isDown() ) {
+                copy.state |= State_Enabled | State_On | State_Sunken;
+            }
+            if ( button->underMouse() ) {
+                copy.state |= State_Enabled | State_MouseOver;
+            }
+
+        }
 
         const bool hasPopupMenu( toolButtonOption->features & QStyleOptionToolButton::MenuButtonPopup );
         const bool hasInlineIndicator(
@@ -5974,7 +5989,7 @@ namespace Adwaita
         const QRect menuRect( subControlRect( CC_ToolButton, option, SC_ToolButtonMenu, widget ) );
 
         // frame
-        if( toolButtonOption->subControls & SC_ToolButton )
+        if( toolButtonOption->subControls & SC_ToolButton || isDockWidgetTitleButton )
         {
             copy.rect = buttonRect;
             if( inTabBar ) {
@@ -6040,14 +6055,18 @@ namespace Adwaita
 
             // detect dock widget title button
             // for dockwidget title buttons, do not take out margins, so that icon do not get scaled down
-            const bool isDockWidgetTitleButton( widget && widget->inherits( "QDockWidgetTitleButton" ) );
             if( isDockWidgetTitleButton )
             {
 
                 // cast to abstract button
                 // adjust state to have correct icon rendered
                 const QAbstractButton* button( qobject_cast<const QAbstractButton*>( widget ) );
-                if( button->isChecked() || button->isDown() ) copy.state |= State_On;
+                if( button->isChecked() || button->isDown() ) {
+                    copy.state |= State_Enabled | State_On | State_Sunken;
+                }
+                if ( button->underMouse() ) {
+                    copy.state |= State_Enabled | State_MouseOver;
+                }
 
             } else if( !inTabBar && hasInlineIndicator ) {
 
