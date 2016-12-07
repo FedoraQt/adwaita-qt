@@ -3452,8 +3452,8 @@ namespace Adwaita
 
         // update animation state
         // mouse over takes precedence over focus
+        _animations->widgetStateEngine().updateState( widget, AnimationPressed, sunken );
         _animations->widgetStateEngine().updateState( widget, AnimationHover, mouseOver );
-        _animations->widgetStateEngine().updateState( widget, AnimationFocus, hasFocus && !mouseOver );
 
         const AnimationMode mode( _animations->widgetStateEngine().buttonAnimationMode( widget ) );
         const qreal opacity( _animations->widgetStateEngine().buttonOpacity( widget ) );
@@ -3879,8 +3879,8 @@ namespace Adwaita
 
         // update animation state
         // mouse over takes precedence over focus
+        _animations->widgetStateEngine().updateState( widget, AnimationPressed, sunken );
         _animations->widgetStateEngine().updateState( widget, AnimationHover, mouseOver );
-        _animations->widgetStateEngine().updateState( widget, AnimationFocus, hasFocus && !mouseOver );
 
         const AnimationMode mode( _animations->widgetStateEngine().buttonAnimationMode( widget ) );
         const qreal opacity( _animations->widgetStateEngine().buttonOpacity( widget ) );
@@ -5934,16 +5934,27 @@ namespace Adwaita
         const bool flat( state & State_AutoRaise );
 
         // update animation state
-        // mouse over takes precedence over focus
-        _animations->widgetStateEngine().updateState( widget, AnimationHover, mouseOver );
-        _animations->widgetStateEngine().updateState( widget, AnimationFocus, hasFocus && !mouseOver );
+        // pressed takes precedence over mouse
 
-        qreal opacity = 0.0;
-        if ( _animations->widgetStateEngine().buttonAnimationMode( widget ) == AnimationHover ) {
-            opacity = _animations->widgetStateEngine().buttonOpacity( widget );
+        qreal mouseOpacity = 0.0;
+        qreal pressedOpacity = 0.0;
+
+        _animations->widgetStateEngine().updateState( widget, AnimationPressed, sunken);
+        _animations->widgetStateEngine().updateState( widget, AnimationHover, mouseOver );
+
+        AnimationMode mode ( _animations->widgetStateEngine().buttonAnimationMode( widget ) );
+
+        if ( mode == AnimationPressed ) {
+            pressedOpacity = _animations->widgetStateEngine().buttonOpacity( widget );
         }
-        if (mouseOver)
-            opacity = 1.0;
+        else if ( sunken ) {
+            pressedOpacity = 1.0;
+        }
+        else if ( mode == AnimationHover ) {
+            mouseOpacity = _animations->widgetStateEngine().buttonOpacity( widget );
+        }
+        else if (mouseOver)
+            mouseOpacity = 1.0;
 
         // detect buttons in tabbar, for which special rendering is needed
         const bool isDockWidgetTitleButton( widget && widget->inherits( "QDockWidgetTitleButton" ) );
@@ -5994,7 +6005,7 @@ namespace Adwaita
             copy.rect = buttonRect;
             if( inTabBar ) {
                 const QRect rect(option->rect);
-                QColor background( option->palette.mid().color().lighter(115 + 10.0 * opacity) );
+                QColor background( option->palette.mid().color().lighter(115 + 10.0 * mouseOpacity - 20 * pressedOpacity) );
                 const QColor outline ( option->palette.mid().color());
                 painter->setPen(background);
                 painter->setBrush(background);
@@ -6132,7 +6143,7 @@ namespace Adwaita
 
                     const QColor shadow( _helper->shadowColor( palette ) );
                     const QColor outline( _helper->buttonOutlineColor( palette, mouseOver, hasFocus, opacity, mode ) );
-                    const QColor background( _helper->buttonBackgroundColor( palette, mouseOver, hasFocus, false, opacity, mode ) );
+                    const QColor background( _helper->buttonBackgroundColor( palette, mouseOver, hasFocus, sunken, opacity, mode ) );
 
                     _helper->renderFlatButtonFrame( painter, subControlRect( CC_ComboBox, option, SC_ComboBoxArrow, widget), background, outline, shadow, hasFocus, sunken, mouseOver );
 
@@ -6149,6 +6160,7 @@ namespace Adwaita
                 // hover takes precedence over focus
                 _animations->inputWidgetEngine().updateState( widget, AnimationHover, mouseOver );
                 _animations->inputWidgetEngine().updateState( widget, AnimationFocus, hasFocus && !mouseOver );
+
                 const AnimationMode mode( _animations->inputWidgetEngine().buttonAnimationMode( widget ) );
                 const qreal opacity( _animations->inputWidgetEngine().buttonOpacity( widget ) );
 
@@ -6163,7 +6175,7 @@ namespace Adwaita
                     // define colors
                     const QColor shadow( _helper->shadowColor( palette ) );
                     const QColor outline( _helper->buttonOutlineColor( palette, mouseOver, hasFocus, opacity, mode ) );
-                    const QColor background( _helper->buttonBackgroundColor( palette, mouseOver, hasFocus, false, opacity, mode ) );
+                    const QColor background( _helper->buttonBackgroundColor( palette, mouseOver, hasFocus, sunken, opacity, mode ) );
 
                     // render
                     _helper->renderButtonFrame( painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver );

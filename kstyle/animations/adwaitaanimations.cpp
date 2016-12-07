@@ -119,8 +119,8 @@ namespace Adwaita
         if( qobject_cast<QToolButton*>(widget) )
         {
 
-            _toolButtonEngine->registerWidget( widget, AnimationHover|AnimationFocus );
-            _widgetStateEngine->registerWidget( widget, AnimationHover|AnimationFocus );
+            _toolButtonEngine->registerWidget( widget, AnimationHover|AnimationPressed );
+            _widgetStateEngine->registerWidget( widget, AnimationHover|AnimationPressed );
 
         } else if( qobject_cast<QCheckBox*>(widget) || qobject_cast<QRadioButton*>(widget) ) {
 
@@ -132,7 +132,7 @@ namespace Adwaita
             if( qobject_cast<QToolBox*>( widget->parent() ) )
             { _toolBoxEngine->registerWidget( widget ); }
 
-            _widgetStateEngine->registerWidget( widget, AnimationHover|AnimationFocus );
+            _widgetStateEngine->registerWidget( widget, AnimationHover|AnimationPressed );
 
         }
 

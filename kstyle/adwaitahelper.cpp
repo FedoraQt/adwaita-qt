@@ -180,7 +180,9 @@ namespace Adwaita
 
         QColor background( palette.color( QPalette::Button ) );
 
-        if ( sunken ) {
+        if ( mode == AnimationPressed) {
+            background = background.darker(100 + 15.0 * opacity);
+        } else if ( sunken ) {
             background = background.darker(115);
         } else if( mode == AnimationHover )
         {

@@ -88,6 +88,7 @@ namespace Adwaita
         virtual AnimationMode buttonAnimationMode( const QObject* object )
         {
             if( isAnimated( object, AnimationEnable ) ) return AnimationEnable;
+            else if( isAnimated( object, AnimationPressed ) ) return AnimationPressed;
             else if( isAnimated( object, AnimationHover ) ) return AnimationHover;
             else if( isAnimated( object, AnimationFocus ) ) return AnimationFocus;
             else return AnimationNone;
@@ -98,6 +99,7 @@ namespace Adwaita
         virtual qreal buttonOpacity( const QObject* object )
         {
             if( isAnimated( object, AnimationEnable ) ) return data( object, AnimationEnable ).data()->opacity();
+            else if( isAnimated( object, AnimationPressed ) ) return data( object, AnimationPressed ).data()->opacity();
             else if( isAnimated( object, AnimationHover ) ) return data( object, AnimationHover ).data()->opacity();
             else if( isAnimated( object, AnimationFocus ) ) return data( object, AnimationFocus ).data()->opacity();
             else return AnimationData::OpacityInvalid;
