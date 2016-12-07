@@ -91,15 +91,6 @@ namespace Adwaita
 
             outline = focusColor( palette );
 
-        } else if( mode == AnimationHover ) {
-
-            const QColor hover( hoverColor( palette ) );
-            outline = KColorUtils::mix( outline, hover, opacity );
-
-        } else if( mouseOver ) {
-
-            outline = hoverColor( palette );
-
         }
 
         return outline;
