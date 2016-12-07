@@ -36,13 +36,13 @@ namespace Adwaita
         if( !_widget ) return;
 
         // metrics
-        const int shadowSize = StyleConfigData::shadowSize()*12/16;
-        const int shadowOffset = qMax( shadowSize/2, Metrics::Shadow_Overlap*2 );
-        const int size( shadowSize - Metrics::Shadow_Overlap );
-        const int topSize( size - shadowOffset );
-        const int bottomSize( size );
-        const int leftSize( size - shadowOffset );
-        const int rightSize( size );
+        int shadowSize = StyleConfigData::shadowSize()*12/16;
+        int shadowOffset = qMax( shadowSize/2, Metrics::Shadow_Overlap*2 );
+        int size( shadowSize - Metrics::Shadow_Overlap );
+        int topSize( size - shadowOffset );
+        int bottomSize( size );
+        int leftSize( size - shadowOffset );
+        int rightSize( size );
 
         // get tileSet rect
         _shadowTilesRect = _widget->frameGeometry().adjusted( -leftSize, -topSize, rightSize, bottomSize );

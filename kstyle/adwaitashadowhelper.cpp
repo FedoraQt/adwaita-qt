@@ -94,11 +94,11 @@ namespace Adwaita
         registry->create( connection );
         connect(registry, &Registry::interfacesAnnounced, this,
             [registry, this] {
-                const auto interface = registry->interface( Registry::Interface::Shadow );
+                auto interface = registry->interface( Registry::Interface::Shadow );
                 if( interface.name != 0 ) {
                     _shadowManager = registry->createShadowManager( interface.name, interface.version, this );
                 }
-                const auto shmInterface = registry->interface( Registry::Interface::Shm );
+                auto shmInterface = registry->interface( Registry::Interface::Shm );
                 if( shmInterface.name != 0 ) {
                     _shmPool = registry->createShmPool( shmInterface.name, shmInterface.version, this );
                 }
@@ -192,13 +192,13 @@ namespace Adwaita
         if( !_shadowTiles.isValid() )
         {
 
-            const QPalette palette( QApplication::palette() );
-            const QColor shadowColor( StyleConfigData::shadowColor() );
+            QPalette palette( QApplication::palette() );
+            QColor shadowColor( StyleConfigData::shadowColor() );
 
             // metrics
-            const int shadowSize = StyleConfigData::shadowSize()*12/16;
-            const int shadowOffset = qMax( shadowSize/2, Metrics::Shadow_Overlap*2 );
-            const int shadowStrength = StyleConfigData::shadowStrength();
+            int shadowSize = StyleConfigData::shadowSize()*12/16;
+            int shadowOffset = qMax( shadowSize/2, Metrics::Shadow_Overlap*2 );
+            int shadowStrength = StyleConfigData::shadowStrength();
 
             // pixmap
             QPixmap pixmap = _helper.highDpiPixmap( shadowSize*2 );
@@ -218,7 +218,7 @@ namespace Adwaita
             QRadialGradient radialGradient( shadowSize, shadowSize, shadowSize);
             for( int i = 0; i < 10; ++i )
             {
-                const qreal x( qreal( i )/9 );
+                qreal x( qreal( i )/9 );
                 radialGradient.setColorAt(x,  gradientStopColor(shadowColor, alpha(x)*shadowStrength));
             }
 
@@ -238,7 +238,7 @@ namespace Adwaita
 
             p.setCompositionMode(QPainter::CompositionMode_DestinationOut );
 
-            const qreal radius( _helper.frameRadius() );
+            qreal radius( _helper.frameRadius() );
             p.drawRoundedRect( innerRect, radius, radius );
             p.end();
 
@@ -353,8 +353,8 @@ namespace Adwaita
 
         #if ADWAITA_HAVE_X11
 
-        const int width( source.width() );
-        const int height( source.height() );
+        int width( source.width() );
+        int height( source.height() );
 
         // create X11 pixmap
         xcb_pixmap_t pixmap = xcb_generate_id( Helper::connection() );
@@ -414,11 +414,11 @@ namespace Adwaita
         { data.append( value ); }
 
 
-        const QMargins margins = shadowMargins( widget );
-        const int topSize = margins.top();
-        const int bottomSize = margins.bottom();
-        const int leftSize( margins.left() );
-        const int rightSize( margins.right() );
+        QMargins margins = shadowMargins( widget );
+        int topSize = margins.top();
+        int bottomSize = margins.bottom();
+        int leftSize( margins.left() );
+        int rightSize( margins.right() );
 
         // assign to data and xcb property
         data << topSize << rightSize << bottomSize << leftSize;
@@ -478,18 +478,18 @@ namespace Adwaita
     {
         // get devicePixelRatio
         // for testing purposes only
-        const qreal devicePixelRatio( _helper.devicePixelRatio( _shadowTiles.pixmap( 0 ) ) );
+        qreal devicePixelRatio( _helper.devicePixelRatio( _shadowTiles.pixmap( 0 ) ) );
 
         // metrics
-        const int shadowSize = StyleConfigData::shadowSize()*12/16;
-        const int shadowOffset = qMax( shadowSize/2, Metrics::Shadow_Overlap*2 );
+        int shadowSize = StyleConfigData::shadowSize()*12/16;
+        int shadowOffset = qMax( shadowSize/2, Metrics::Shadow_Overlap*2 );
 
         // define shadows padding
         int size( shadowSize - Metrics::Shadow_Overlap );
         int topSize = ( size - shadowOffset ) * devicePixelRatio;
         int bottomSize = size * devicePixelRatio;
-        const int leftSize( (size - shadowOffset) * devicePixelRatio );
-        const int rightSize( size * devicePixelRatio );
+        int leftSize( (size - shadowOffset) * devicePixelRatio );
+        int rightSize( size * devicePixelRatio );
 
         if( widget->inherits( "QBalloonTip" ) )
         {

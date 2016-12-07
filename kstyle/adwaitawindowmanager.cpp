@@ -181,7 +181,7 @@ namespace Adwaita
                 the origin of this issue is unknown at the moment.
                 This apparently got fixed with qt5
                 */
-                const QPoint cursor = QCursor::pos();
+                QPoint cursor = QCursor::pos();
                 QCursor::setPos(window->mapToGlobal( window->rect().topRight() ) + QPoint(1, 0) );
                 QCursor::setPos(cursor);
 
@@ -261,7 +261,7 @@ namespace Adwaita
         registry->create( connection );
         connect(registry, &Registry::interfacesAnnounced, this,
             [registry, this] {
-                const auto interface = registry->interface( Registry::Interface::Seat );
+                auto interface = registry->interface( Registry::Interface::Seat );
                 if( interface.name != 0 ) {
                     _seat = registry->createSeat( interface.name, interface.version, this );
                     connect(_seat, &Seat::hasPointerChanged, this, &WindowManager::waylandHasPointerChanged);
@@ -837,7 +837,7 @@ namespace Adwaita
         xcb_connection_t* connection( Helper::connection() );
 
         // window
-        const WId window( widget->window()->winId() );
+        WId window( widget->window()->winId() );
 
         #if QT_VERSION >= 0x050300
         qreal dpiRatio = 1;
@@ -846,7 +846,7 @@ namespace Adwaita
         else dpiRatio = qApp->devicePixelRatio();
         dpiRatio = qApp->devicePixelRatio();
         #else
-        const qreal dpiRatio = 1;
+        qreal dpiRatio = 1;
         #endif
 
         #if ADWAITA_USE_KDE4

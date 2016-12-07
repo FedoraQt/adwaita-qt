@@ -131,7 +131,7 @@ namespace Adwaita
         if( !rect.isValid() ) rect = this->rect();
 
         // local pixmap
-        const bool paintOnWidget( testFlag( PaintOnWidget ) && !testFlag( Transparent ) );
+        bool paintOnWidget( testFlag( PaintOnWidget ) && !testFlag( Transparent ) );
         if( !paintOnWidget )
         {
 
@@ -233,7 +233,7 @@ namespace Adwaita
         // painting
         QPainter p(&pixmap);
         p.setClipRect( rect );
-        const QBrush backgroundBrush = parent->palette().brush( parent->backgroundRole());
+        QBrush backgroundBrush = parent->palette().brush( parent->backgroundRole());
         if( backgroundBrush.style() == Qt::TexturePattern)
         {
 

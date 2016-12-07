@@ -255,7 +255,7 @@ namespace Adwaita
         rect.adjust( 1, 1, -1, -1 );
 
         // adjust geometry
-        const int shadowSize( Metrics::Frame_FrameRadius );
+        int shadowSize( Metrics::Frame_FrameRadius );
         switch( _area )
         {
 
@@ -329,15 +329,15 @@ namespace Adwaita
         if( QFrame *frame = qobject_cast<QFrame *>( parentWidget() ) )
         { if (frame->frameStyle() != (QFrame::StyledPanel | QFrame::Sunken)) return; }
 
-        const QRect parentRect( parentWidget()->contentsRect().translated( mapFromParent( QPoint( 0, 0 ) ) ) );
-        const QRect rect( parentRect.adjusted( _margins.left(), _margins.top(), _margins.right(), _margins.bottom() ) );
+        QRect parentRect( parentWidget()->contentsRect().translated( mapFromParent( QPoint( 0, 0 ) ) ) );
+        QRect rect( parentRect.adjusted( _margins.left(), _margins.top(), _margins.right(), _margins.bottom() ) );
 
         // render
         QPainter painter(this);
         painter.setClipRegion( event->region() );
         painter.setRenderHint( QPainter::Antialiasing );
 
-        const QColor outline( _helper.frameOutlineColor( palette(), _mouseOver, _hasFocus, _opacity, _mode ) );
+        QColor outline( _helper.frameOutlineColor( palette(), _mouseOver, _hasFocus, _opacity, _mode ) );
         painter.setCompositionMode( QPainter::CompositionMode_SourceOver );
         _helper.renderFrame( &painter, rect, QColor(), outline );
 

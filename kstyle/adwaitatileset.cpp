@@ -60,10 +60,10 @@ namespace Adwaita
 
         } else if( size != rect.size() ) {
 
-            const qreal dpiRatio( devicePixelRatio( source ) );
-            const QRect scaledRect( rect.topLeft()*dpiRatio, rect.size()*dpiRatio );
-            const QSize scaledSize( size*dpiRatio );
-            const QPixmap tile( source.copy(scaledRect) );
+            qreal dpiRatio( devicePixelRatio( source ) );
+            QRect scaledRect( rect.topLeft()*dpiRatio, rect.size()*dpiRatio );
+            QSize scaledSize( size*dpiRatio );
+            QPixmap tile( source.copy(scaledRect) );
             QPixmap pixmap( scaledSize );
 
             pixmap.fill(Qt::transparent);
@@ -74,8 +74,8 @@ namespace Adwaita
 
         } else {
 
-            const qreal dpiRatio( devicePixelRatio( source ) );
-            const QRect scaledRect( rect.topLeft()*dpiRatio, rect.size()*dpiRatio );
+            qreal dpiRatio( devicePixelRatio( source ) );
+            QRect scaledRect( rect.topLeft()*dpiRatio, rect.size()*dpiRatio );
             QPixmap pixmap( source.copy( scaledRect ) );
             setDevicePixelRatio( pixmap, dpiRatio );
             pixmaps.append( pixmap );
@@ -123,7 +123,7 @@ namespace Adwaita
     void TileSet::render(const QRect &constRect, QPainter *painter, Tiles tiles) const
     {
 
-        const bool oldHint( painter->testRenderHint( QPainter::SmoothPixmapTransform ) );
+        bool oldHint( painter->testRenderHint( QPainter::SmoothPixmapTransform ) );
         painter->setRenderHint( QPainter::SmoothPixmapTransform, true );
 
         // check initialization
@@ -159,13 +159,13 @@ namespace Adwaita
         // calculate corner locations
         w -= wLeft + wRight;
         h -= hTop + hBottom;
-        const int x1 = x0 + wLeft;
-        const int x2 = x1 + w;
-        const int y1 = y0 + hTop;
-        const int y2 = y1 + h;
+        int x1 = x0 + wLeft;
+        int x2 = x1 + w;
+        int y1 = y0 + hTop;
+        int y2 = y1 + h;
 
-        const int w2 = _pixmaps.at(7).width()/devicePixelRatio( _pixmaps.at(7) );
-        const int h2 = _pixmaps.at(5).height()/devicePixelRatio( _pixmaps.at(5) );
+        int w2 = _pixmaps.at(7).width()/devicePixelRatio( _pixmaps.at(7) );
+        int h2 = _pixmaps.at(5).height()/devicePixelRatio( _pixmaps.at(5) );
 
         // corner
         if( bits( tiles, Top|Left) )  painter->drawPixmap(x0, y0, _pixmaps.at(0), 0, 0, wLeft*devicePixelRatio( _pixmaps.at(0) ), hTop*devicePixelRatio( _pixmaps.at(0) ));

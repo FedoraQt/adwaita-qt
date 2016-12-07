@@ -90,7 +90,7 @@ int KStyleKDE4Compat::styleHint(StyleHint hint, const QStyleOption *option, cons
         KConfigGroup g(KSharedConfig::openConfig(), "Toolbar style");
 
         bool useOthertoolbars = false;
-        const QWidget *parent = widget ? widget->parentWidget() : nullptr;
+        QWidget *parent = widget ? widget->parentWidget() : nullptr;
 
         //If the widget parent is a QToolBar and the magic property is set
         if (parent && qobject_cast< const QToolBar * >(parent)) {

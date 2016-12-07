@@ -62,8 +62,8 @@ namespace Adwaita
         _viewHoverBrush = KStatefulBrush( KColorScheme::View, KColorScheme::HoverColor, _config );
         _viewNegativeTextBrush = KStatefulBrush( KColorScheme::View, KColorScheme::NegativeText, _config );
 
-        const QPalette palette( QApplication::palette() );
-        const KConfigGroup group( _config->group( "WM" ) );
+        QPalette palette( QApplication::palette() );
+        KConfigGroup group( _config->group( "WM" ) );
         _activeTitleBarColor = group.readEntry( "activeBackground", palette.color( QPalette::Active, QPalette::Highlight ) );
         _activeTitleBarTextColor = group.readEntry( "activeForeground", palette.color( QPalette::Active, QPalette::HighlightedText ) );
         _inactiveTitleBarColor = group.readEntry( "inactiveBackground", palette.color( QPalette::Disabled, QPalette::Highlight ) );
@@ -81,8 +81,8 @@ namespace Adwaita
         if( mode == AnimationFocus )
         {
 
-            const QColor focus( focusColor( palette ) );
-            const QColor hover( hoverColor( palette ) );
+            QColor focus( focusColor( palette ) );
+            QColor hover( hoverColor( palette ) );
 
             if( mouseOver ) outline = KColorUtils::mix( hover, focus, opacity );
             else outline = KColorUtils::mix( outline, focus, opacity );
@@ -217,8 +217,8 @@ namespace Adwaita
         if( mode == AnimationHover )
         {
 
-            const QColor hover( hoverColor( palette ) );
-            const QColor focus( focusColor( palette ) );
+            QColor hover( hoverColor( palette ) );
+            QColor focus( focusColor( palette ) );
             if( hasFocus ) outline = KColorUtils::mix( focus, hover, opacity );
             else outline = KColorUtils::mix( outline, hover, opacity );
 
@@ -228,7 +228,7 @@ namespace Adwaita
 
         } else if( mode == AnimationFocus ) {
 
-            const QColor focus( focusColor( palette ) );
+            QColor focus( focusColor( palette ) );
             outline = KColorUtils::mix( outline, focus, opacity );
 
         } else if( hasFocus ) {
@@ -251,8 +251,8 @@ namespace Adwaita
         if( mode == AnimationHover )
         {
 
-            const QColor hover( hoverColor( palette ) );
-            const QColor focus( focusColor( palette ) );
+            QColor hover( hoverColor( palette ) );
+            QColor focus( focusColor( palette ) );
             if( hasFocus ) color = KColorUtils::mix( focus, hover, opacity );
             else color = KColorUtils::mix( color, hover, opacity );
 
@@ -262,7 +262,7 @@ namespace Adwaita
 
         } else if( mode == AnimationFocus ) {
 
-            const QColor focus( focusColor( palette ) );
+            QColor focus( focusColor( palette ) );
             color = KColorUtils::mix( color, focus, opacity );
 
         } else if( hasFocus ) {
@@ -345,7 +345,7 @@ namespace Adwaita
             QRectF copy( rect );
             copy.adjust( 0.5, 0.5, -0.5, -0.5 );
 
-            const qreal radius( frameRadius( -1.0 ) );
+            qreal radius( frameRadius( -1.0 ) );
             if( !(sides&SideTop) ) copy.adjust( 0, -radius, 0, 0 );
             if( !(sides&SideBottom) ) copy.adjust( 0, 0, 0, radius );
             if( !(sides&SideLeft) ) copy.adjust( -radius, 0, 0, 0 );
@@ -503,7 +503,7 @@ namespace Adwaita
 
             case AllSides:
             {
-                const qreal radius( frameRadius( -1.0 ) );
+                qreal radius( frameRadius( -1.0 ) );
                 painter->drawRoundedRect( frameRect, radius, radius );
                 break;
             }
@@ -652,26 +652,26 @@ namespace Adwaita
         // setup painter
         painter->setRenderHints( QPainter::Antialiasing );
 
-        const QRectF baseRect( rect );
+        QRectF baseRect( rect );
 
         if( sunken )
         {
 
-            const qreal radius( frameRadius() );
+            qreal radius( frameRadius() );
 
             painter->setPen( Qt::NoPen );
             painter->setBrush( color );
 
-            const QRectF contentRect( baseRect.adjusted( 1, 1, -1, -1 ) );
+            QRectF contentRect( baseRect.adjusted( 1, 1, -1, -1 ) );
             painter->drawRoundedRect( contentRect, radius, radius );
 
         } else {
 
-            const qreal radius( frameRadius(-0.5) );
+            qreal radius( frameRadius(-0.5) );
 
             painter->setPen( color );
             painter->setBrush( Qt::NoBrush );
-            const QRectF outlineRect( baseRect.adjusted( 1.5, 1.5, -1.5, -1.5 ) );
+            QRectF outlineRect( baseRect.adjusted( 1.5, 1.5, -1.5, -1.5 ) );
             painter->drawRoundedRect( outlineRect, radius, radius );
 
         }
@@ -687,8 +687,8 @@ namespace Adwaita
         if( !outline.isValid() ) return;
 
         // round radius
-        const qreal radius( frameRadius() );
-        const QSizeF cornerSize( 2*radius, 2*radius );
+        qreal radius( frameRadius() );
+        QSizeF cornerSize( 2*radius, 2*radius );
 
         // if rect - tabwidth is even, need to increase tabWidth by 1 unit
         // for anti aliasing
@@ -852,7 +852,7 @@ namespace Adwaita
             pen.setJoinStyle(Qt::MiterJoin);
             painter->setPen( pen );
 
-            const QRectF markerRect(frameRect);
+            QRectF markerRect(frameRect);
 
             QPainterPath path;
             path.moveTo( markerRect.right(), markerRect.top() + markerRect.height() / 4 );
@@ -869,7 +869,7 @@ namespace Adwaita
             pen.setCapStyle( Qt::RoundCap );
             painter->setPen( pen );
 
-            const QRectF markerRect( frameRect.adjusted( 4, 4, -4, -4 ) );
+            QRectF markerRect( frameRect.adjusted( 4, 4, -4, -4 ) );
 
             painter->drawLine( markerRect.center() - QPoint(3, 0), markerRect.center() + QPoint(3, 0) );
 
@@ -882,7 +882,7 @@ namespace Adwaita
             pen.setJoinStyle(Qt::MiterJoin);
             painter->setPen( pen );
 
-            const QRectF markerRect(frameRect);
+            QRectF markerRect(frameRect);
 
             QPainterPath path;
             path.moveTo( markerRect.right(), markerRect.top() + markerRect.height() / 4 );
@@ -949,7 +949,7 @@ namespace Adwaita
             painter->setPen( QPen( outline, 1 ) );
             painter->setBrush( gradient );
 
-            const QRectF contentRect( frameRect.adjusted( 0.5, 0.5, -0.5, -0.5 ) );
+            QRectF contentRect( frameRect.adjusted( 0.5, 0.5, -0.5, -0.5 ) );
             painter->drawEllipse( contentRect );
 
         }
@@ -961,7 +961,7 @@ namespace Adwaita
             painter->setBrush( tickColor );
             painter->setPen( Qt::NoPen );
 
-            const QRectF markerRect( frameRect.adjusted( 5, 5, -5, -5 ) );
+            QRectF markerRect( frameRect.adjusted( 5, 5, -5, -5 ) );
             painter->drawEllipse( markerRect );
 
         } else if( state == RadioAnimated ) {
@@ -987,8 +987,8 @@ namespace Adwaita
         // setup painter
         painter->setRenderHint( QPainter::Antialiasing, true );
 
-        const QRectF baseRect( rect );
-        const qreal radius( 0.5*Metrics::Slider_GrooveThickness );
+        QRectF baseRect( rect );
+        qreal radius( 0.5*Metrics::Slider_GrooveThickness );
 
         // content
         if( color.isValid() )
@@ -1011,13 +1011,13 @@ namespace Adwaita
         // setup painter
         painter->setRenderHint( QPainter::Antialiasing, true );
 
-        const QRectF baseRect( rect );
+        QRectF baseRect( rect );
 
         // content
         if( color.isValid() )
         {
-            const qreal penWidth( Metrics::Slider_GrooveThickness );
-            const QRectF grooveRect( rect.adjusted( penWidth/2, penWidth/2, -penWidth/2, -penWidth/2 ) );
+            qreal penWidth( Metrics::Slider_GrooveThickness );
+            QRectF grooveRect( rect.adjusted( penWidth/2, penWidth/2, -penWidth/2, -penWidth/2 ) );
 
             painter->setPen( QPen( color, penWidth ) );
             painter->setBrush( Qt::NoBrush );
@@ -1038,19 +1038,19 @@ namespace Adwaita
         // setup painter
         painter->setRenderHint( QPainter::Antialiasing, true );
 
-        const QRectF baseRect( rect );
+        QRectF baseRect( rect );
 
         // content
         if( color.isValid() )
         {
 
             // setup groove rect
-            const qreal penWidth( Metrics::Slider_GrooveThickness );
-            const QRectF grooveRect( rect.adjusted( penWidth/2, penWidth/2, -penWidth/2, -penWidth/2 ) );
+            qreal penWidth( Metrics::Slider_GrooveThickness );
+            QRectF grooveRect( rect.adjusted( penWidth/2, penWidth/2, -penWidth/2, -penWidth/2 ) );
 
             // setup angles
-            const int angleStart( first * 180 * 16 / M_PI );
-            const int angleSpan( (second - first ) * 180 * 16 / M_PI );
+            int angleStart( first * 180 * 16 / M_PI );
+            int angleSpan( (second - first ) * 180 * 16 / M_PI );
 
             // setup pen
             if( angleSpan != 0 )
@@ -1166,8 +1166,8 @@ namespace Adwaita
         painter->setRenderHint( QPainter::Antialiasing, true );
         painter->setRenderHint( QPainter::SmoothPixmapTransform, true );
 
-        const QRectF baseRect( rect );
-        const qreal radius( 0.5 );
+        QRectF baseRect( rect );
+        qreal radius( 0.5 );
 
         // content
         if( color.isValid() )
@@ -1197,8 +1197,8 @@ namespace Adwaita
         // setup painter
         painter->setRenderHint( QPainter::Antialiasing, true );
 
-        const QRectF baseRect( rect );
-        const qreal radius( 0.25*Metrics::ProgressBar_Thickness );
+        QRectF baseRect( rect );
+        qreal radius( 0.25*Metrics::ProgressBar_Thickness );
         QRectF contentRect;
         if (horizontal)
             contentRect = QRect(baseRect.left(), baseRect.top(), Metrics::ProgressBar_BusyIndicatorSize, baseRect.height());
@@ -1222,9 +1222,9 @@ namespace Adwaita
         // setup painter
         painter->setRenderHint( QPainter::Antialiasing, true );
 
-        const QRectF baseRect( rect );
-        const qreal metric( rect.width() < rect.height() ? rect.width() : rect.height());
-        const qreal radius( 0.5*metric );
+        QRectF baseRect( rect );
+        qreal metric( rect.width() < rect.height() ? rect.width() : rect.height());
+        qreal radius( 0.5*metric );
 
         // content
         if( color.isValid() )
@@ -1453,7 +1453,7 @@ namespace Adwaita
 
         }
 
-        const QSizeF cornerSize( 2*radius, 2*radius );
+        QSizeF cornerSize( 2*radius, 2*radius );
 
         // rotate counterclockwise
         // top left corner
@@ -1525,7 +1525,7 @@ namespace Adwaita
     QPixmap Helper::highDpiPixmap( int width, int height ) const
     {
         #if QT_VERSION >= 0x050300
-        const qreal dpiRatio( qApp->devicePixelRatio() );
+        qreal dpiRatio( qApp->devicePixelRatio() );
         QPixmap pixmap( width*dpiRatio, height*dpiRatio );
         pixmap.setDevicePixelRatio( dpiRatio );
         return pixmap;
@@ -1589,7 +1589,7 @@ namespace Adwaita
         if( isX11() )
         {
             // create compositing screen
-            const QString atomName( QStringLiteral( "_NET_WM_CM_S%1" ).arg( QX11Info::appScreen() ) );
+            QString atomName( QStringLiteral( "_NET_WM_CM_S%1" ).arg( QX11Info::appScreen() ) );
             _compositingManagerAtom = createAtom( atomName );
         }
 

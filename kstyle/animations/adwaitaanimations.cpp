@@ -67,8 +67,8 @@ namespace Adwaita
         // animation steps
         AnimationData::setSteps( StyleConfigData::animationSteps() );
 
-        const bool animationsEnabled( StyleConfigData::animationsEnabled() );
-        const int animationsDuration( StyleConfigData::animationsDuration() );
+        bool animationsEnabled( StyleConfigData::animationsEnabled() );
+        int animationsDuration( StyleConfigData::animationsDuration() );
 
         _widgetEnabilityEngine->setEnabled( animationsEnabled );
         _comboBoxEngine->setEnabled( animationsEnabled );

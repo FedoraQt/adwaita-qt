@@ -303,7 +303,7 @@ namespace Adwaita
         if( _splitter.data() == widget ) return;
 
         // get cursor position
-        const QPoint position( QCursor::pos() );
+        QPoint position( QCursor::pos() );
 
         // store splitter and hook
         _splitter = widget;

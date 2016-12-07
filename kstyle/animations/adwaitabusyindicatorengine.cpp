@@ -167,7 +167,7 @@ namespace Adwaita
     //__________________________________________________________
     bool BusyIndicatorEngine::unregisterWidget( QObject* object )
     {
-        const bool removed( _data.unregisterWidget( object ) );
+        bool removed( _data.unregisterWidget( object ) );
         if( _animation && _data.isEmpty() )
         {
             _animation.data()->stop();
