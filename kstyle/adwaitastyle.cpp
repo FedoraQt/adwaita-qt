@@ -525,7 +525,7 @@ namespace Adwaita
             #if QT_VERSION >= 0x050000
             else if( isQtQuickControl( option, widget ) )
             {
-                QString &elementType = option->styleObject->property( "elementType" ).toString();
+                const QString &elementType = option->styleObject->property( "elementType" ).toString();
                 if( elementType == QLatin1String( "edit" ) || elementType == QLatin1String( "spinbox" ) )
                 {
 
