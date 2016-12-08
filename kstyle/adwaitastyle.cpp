@@ -2585,11 +2585,8 @@ namespace Adwaita
         int frameWidth( pixelMetric( PM_SpinBoxFrameWidth, option, widget ) );
         if( !flat ) size = expandSize( size, frameWidth );
 
-        // make sure there is enough height for the button
-        size.setHeight( qMax( size.height(), int(Metrics::SpinBox_ArrowButtonWidth) ) );
-
         // add button width and spacing
-        size.rwidth() += 2 * size.height() + 9;
+        size.rwidth() += 2 * size.height() - 1;
 
         return size;
 
