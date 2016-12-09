@@ -367,12 +367,16 @@ namespace Adwaita
         if( !color.isValid() ) return;
 
         painter->save();
-        painter->setRenderHint( QPainter::Antialiasing, false );
-        painter->setBrush( Qt::NoBrush );
-        painter->setPen( color );
 
-        painter->translate( 0, 2 );
-        painter->drawLine( rect.bottomLeft(), rect.bottomRight() );
+        QPen pen(color, 1);
+        pen.setStyle(Qt::DotLine);
+
+        painter->setRenderHint( QPainter::Antialiasing, false );
+        painter->setPen( pen );
+        painter->setBrush( Qt::NoBrush );
+
+        painter->drawRoundedRect( rect, 1, 1 );
+
         painter->restore();
     }
 

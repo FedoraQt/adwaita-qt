@@ -3124,9 +3124,6 @@ namespace Adwaita
     //___________________________________________________________________________________
     bool Style::drawFrameFocusRectPrimitive( const QStyleOption* option, QPainter* painter, const QWidget* widget ) const
     {
-        // no focus indicator on buttons, since it is rendered elsewhere
-        if ( widget && qobject_cast< const QAbstractButton*>( widget ) )
-            return true;
 
         #if QT_VERSION >= 0x050000
             if ( option->styleObject && option->styleObject->property("elementType") == QLatin1String("button") )
@@ -3134,15 +3131,17 @@ namespace Adwaita
         #endif
 
         const State& state( option->state );
-        QRect rect( option->rect.adjusted( 0, 0, 0, 1 ) );
+        QRect rect( option->rect.adjusted( 0, 0, -1, -1 ) );
         const QPalette& palette( option->palette );
 
         if( rect.width() < 10 ) return true;
 
-        QColor outlineColor( state & State_Selected ? palette.color( QPalette::HighlightedText ):palette.color( QPalette::Highlight ) );
+        QColor outlineColor( palette.color( QPalette::Dark ).darker() );
+        QPen pen(outlineColor, 1);
+        pen.setStyle(Qt::DotLine);
         painter->setRenderHint( QPainter::Antialiasing, false );
-        painter->setPen( outlineColor );
-        painter->drawLine( QPoint( rect.bottomLeft() - QPoint( 0,1 ) ), QPoint( rect.bottomRight() - QPoint( 0,1 ) ) );
+        painter->setPen( pen );
+        painter->drawRoundedRect( rect, 1, 1 );
 
         return true;
 
@@ -4450,14 +4449,6 @@ namespace Adwaita
             bool isFocusAnimated( _animations->widgetStateEngine().isAnimated( widget, AnimationFocus ) );
             qreal opacity( _animations->widgetStateEngine().opacity( widget, AnimationFocus ) );
 
-            // focus color
-            QColor focusColor;
-            if( isFocusAnimated ) focusColor = _helper->alphaColor( _helper->focusColor( palette ), opacity );
-            else if( hasFocus ) focusColor =  _helper->focusColor( palette );
-
-            // render focus
-            _helper->renderFocusLine( painter, textRect, focusColor );
-
         }
 
         return true;
@@ -4602,18 +4593,6 @@ namespace Adwaita
         // render text
         const QPalette::ColorRole role = (useStrongFocus && sunken ) ? QPalette::Highlight : QPalette::WindowText;
         drawItemText( painter, textRect, textFlags, palette, enabled, menuItemOption->text, role );
-
-        // render outline
-        if( !useStrongFocus && ( selected || sunken ) )
-        {
-
-            QColor outlineColor;
-            if( sunken ) outlineColor = _helper->focusColor( palette );
-            else if( selected ) outlineColor = _helper->hoverColor( palette );
-
-            _helper->renderFocusLine( painter, textRect, outlineColor );
-
-        }
 
         return true;
 
@@ -4835,18 +4814,6 @@ namespace Adwaita
             int textFlags( Qt::AlignVCenter | (reverseLayout ? Qt::AlignRight : Qt::AlignLeft ) | _mnemonics->textFlags() );
             textRect = option->fontMetrics.boundingRect( textRect, textFlags, text );
             drawItemText( painter, textRect, textFlags, palette, enabled, text, role );
-
-            // render hover and focus
-            if( !useStrongFocus && ( selected || sunken ) )
-            {
-
-                QColor outlineColor;
-                if( sunken ) outlineColor = _helper->focusColor( palette );
-                else if( selected ) outlineColor = _helper->hoverColor( palette );
-
-                _helper->renderFocusLine( painter, textRect, outlineColor );
-
-            }
 
         }
 
@@ -5490,7 +5457,7 @@ namespace Adwaita
                 fropt.QStyleOption::operator=(*tab);
                 fropt.rect.setRect(x1 + 1 + OFFSET, tabV2.rect.y() + OFFSET,
                                    x2 - x1 - 2*OFFSET, tabV2.rect.height() - 2*OFFSET);
-                //drawPrimitive(PE_FrameFocusRect, &fropt, painter, widget);
+                drawPrimitive(PE_FrameFocusRect, &fropt, painter, widget);
             }
         }
 
@@ -5553,11 +5520,6 @@ namespace Adwaita
 
         // adjust text rect based on font metrics
         textRect = option->fontMetrics.boundingRect( textRect, textFlags, tabOption->text );
-
-        // focus color
-
-        // render focus line
-        //_helper->renderFocusLine( painter, textRect, focusColor );
 
         if( verticalTabs ) painter->restore();
 
@@ -5906,9 +5868,6 @@ namespace Adwaita
         QColor focusColor;
         if( isFocusAnimated ) focusColor = _helper->alphaColor( _helper->focusColor( palette ), opacity );
         else if( hasFocus ) focusColor =  _helper->focusColor( palette );
-
-        // render focus
-        _helper->renderFocusLine( painter, textRect, focusColor );
 
         return true;
 
