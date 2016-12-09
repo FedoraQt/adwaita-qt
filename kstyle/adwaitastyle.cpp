@@ -6136,6 +6136,15 @@ namespace Adwaita
                     // render
                     _helper->renderButtonFrame( painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver );
 
+                    if (hasFocus)
+                    {
+
+                        QStyleOption copy(*option);
+                        copy.rect.adjust(5, 5, -5, -5);
+                        drawPrimitive( PE_FrameFocusRect, &copy, painter, widget);
+
+                    }
+
                 }
 
             }
