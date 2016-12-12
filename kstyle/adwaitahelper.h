@@ -249,7 +249,7 @@ namespace Adwaita
         { return renderProgressBarGroove( painter, rect, color, Qt::transparent ); }
 
         //* tabbar tab
-        void renderTabBarTab( QPainter*, const QRect&, const QColor& color, const QColor& outline, Corners ) const;
+        void renderTabBarTab( QPainter*, const QRect&, const QColor& color, const QColor& outline, Corners, bool renderFrame ) const;
 
         //* generic arrow
         void renderArrow( QPainter*, const QRect&, const QColor&, ArrowOrientation ) const;

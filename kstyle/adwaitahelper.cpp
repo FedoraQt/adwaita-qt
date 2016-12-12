@@ -1243,7 +1243,7 @@ namespace Adwaita
     }
 
     //______________________________________________________________________________
-    void Helper::renderTabBarTab( QPainter* painter, const QRect& rect, const QColor& color, const QColor& outline, Corners corners ) const
+    void Helper::renderTabBarTab( QPainter* painter, const QRect& rect, const QColor& color, const QColor& outline, Corners corners, bool renderFrame ) const
     {
 
         // setup painter
@@ -1260,13 +1260,13 @@ namespace Adwaita
             frameRect.adjust( 0.5, 0.5, -0.5, -0.5 );
             adjustment = 0;
 
-            painter->setBrush( color );
+            painter->setBrush( Qt::NoBrush );
 
             // render
             painter->drawRect( frameRect );
 
-        } else {
-            adjustment = 12;
+        } else if (!renderFrame) {
+            adjustment = 9;
         }
 
         painter->setPen( QPen( color, 6 ) );

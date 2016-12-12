@@ -5623,7 +5623,7 @@ namespace Adwaita
         // render
         QRegion oldRegion( painter->clipRegion() );
         painter->setClipRect( option->rect, Qt::IntersectClip );
-        _helper->renderTabBarTab( painter, rect, underline, outline, corners );
+        _helper->renderTabBarTab( painter, rect, underline, outline, corners, widget && widget->property("movable").toBool() );
         painter->setClipRegion( oldRegion );
 
         return true;
