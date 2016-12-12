@@ -1204,10 +1204,14 @@ namespace Adwaita
         QRectF baseRect( rect );
         qreal radius( 0.25*Metrics::ProgressBar_Thickness );
         QRectF contentRect;
-        if (horizontal)
+        if (horizontal) {
             contentRect = QRect(baseRect.left(), baseRect.top(), Metrics::ProgressBar_BusyIndicatorSize, baseRect.height());
-
-        contentRect.translate(fabs(progress - 50) / 50.0 * (baseRect.width() - contentRect.width()), 0);
+            contentRect.translate(fabs(progress - 50) / 50.0 * (baseRect.width() - contentRect.width()), 0);
+        }
+        else {
+            contentRect = QRect(baseRect.left(), baseRect.top(), baseRect.width(), Metrics::ProgressBar_BusyIndicatorSize);
+            contentRect.translate(0, fabs(progress - 50) / 50.0 * (baseRect.height() - contentRect.height()));
+        }
 
         painter->setBrush(color);
         painter->setPen(outline);
