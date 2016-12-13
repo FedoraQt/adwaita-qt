@@ -19,7 +19,7 @@
 
 #include "adwaitaanimations.h"
 #include "adwaitapropertynames.h"
-#include "adwaitastyleconfigdata.h"
+#include "fakeadwaitastyleconfigdata.h"
 
 #include <QAbstractItemView>
 #include <QComboBox>

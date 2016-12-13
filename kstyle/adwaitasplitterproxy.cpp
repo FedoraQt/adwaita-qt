@@ -20,7 +20,7 @@
 #include "adwaitasplitterproxy.h"
 
 #include "adwaita.h"
-#include "adwaitastyleconfigdata.h"
+#include "fakeadwaitastyleconfigdata.h"
 
 #include <QCoreApplication>
 #include <QDebug>

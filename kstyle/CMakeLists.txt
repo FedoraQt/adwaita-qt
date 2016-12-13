@@ -129,11 +129,11 @@ set(adwaita_PART_SRCS
     adwaitastyleplugin.cpp
     adwaitatileset.cpp
     adwaitawindowmanager.cpp
+    fakeadwaitastyleconfigdata.cpp
 )
 
 if(ADWAITA_USE_KDE4)
 
-  kde4_add_kcfg_files(adwaita_PART_SRCS adwaitastyleconfigdata.kcfgc)
   kde4_add_plugin(adwaita ${adwaita_PART_SRCS} kstylekde4compat.cpp)
   target_link_libraries(adwaita ${KDE4_KDEUI_LIBS})
 
@@ -146,7 +146,6 @@ if(ADWAITA_USE_KDE4)
 
 else()
 
-    kconfig_add_kcfg_files(adwaita_PART_SRCS adwaitastyleconfigdata.kcfgc)
     add_library(adwaita MODULE ${adwaita_PART_SRCS})
     target_link_libraries(adwaita Qt5::Core Qt5::Gui Qt5::Widgets Qt5::DBus)
     target_link_libraries(adwaita KF5::ConfigCore KF5::ConfigWidgets KF5::GuiAddons KF5::WindowSystem)

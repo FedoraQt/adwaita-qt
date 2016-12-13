@@ -20,9 +20,8 @@
 #include "adwaitahelper.h"
 
 #include "adwaita.h"
-#include "adwaitastyleconfigdata.h"
+#include "fakeadwaitastyleconfigdata.h"
 
-#include <KColorUtils>
 #include <KWindowSystem>
 
 #include <QApplication>
@@ -39,35 +38,33 @@ namespace Adwaita
     static const qreal arrowShade = 0.15;
 
     //____________________________________________________________________
-    Helper::Helper( KSharedConfig::Ptr config ):
-        _config( config )
+    Helper::Helper( )
     { init(); }
 
     //____________________________________________________________________
     #if ADWAITA_USE_KDE4
-    Helper::Helper( const QByteArray& name ):
-        _componentData( name, 0, KComponentData::SkipMainComponentRegistration ),
-        _config( _componentData.config() )
+    Helper::Helper( const QByteArray& name )
     { init(); }
     #endif
 
     //____________________________________________________________________
-    KSharedConfig::Ptr Helper::config() const
-    { return _config; }
-
-    //____________________________________________________________________
     void Helper::loadConfig()
     {
-        _viewFocusBrush = KStatefulBrush( KColorScheme::View, KColorScheme::FocusColor, _config );
-        _viewHoverBrush = KStatefulBrush( KColorScheme::View, KColorScheme::HoverColor, _config );
-        _viewNegativeTextBrush = KStatefulBrush( KColorScheme::View, KColorScheme::NegativeText, _config );
 
         QPalette palette( QApplication::palette() );
+        // ADWAITA TODO
+        /*
         KConfigGroup group( _config->group( "WM" ) );
         _activeTitleBarColor = group.readEntry( "activeBackground", palette.color( QPalette::Active, QPalette::Highlight ) );
         _activeTitleBarTextColor = group.readEntry( "activeForeground", palette.color( QPalette::Active, QPalette::HighlightedText ) );
         _inactiveTitleBarColor = group.readEntry( "inactiveBackground", palette.color( QPalette::Disabled, QPalette::Highlight ) );
         _inactiveTitleBarTextColor = group.readEntry( "inactiveForeground", palette.color( QPalette::Disabled, QPalette::HighlightedText ) );
+        */
+
+        _activeTitleBarColor = Qt::red;
+        _activeTitleBarTextColor = Qt::red;
+        _inactiveTitleBarColor = Qt::red;
+        _inactiveTitleBarTextColor = Qt::red;
 
     }
 

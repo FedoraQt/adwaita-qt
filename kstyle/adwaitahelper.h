@@ -25,13 +25,6 @@
 #include "adwaitaanimationdata.h"
 #include "config-adwaita.h"
 
-#include <KColorScheme>
-#include <KSharedConfig>
-
-#if ADWAITA_USE_KDE4
-#include <KComponentData>
-#endif
-
 #include <QPainterPath>
 #include <QWidget>
 
@@ -52,7 +45,7 @@ namespace Adwaita
         public:
 
         //* constructor
-        explicit Helper( KSharedConfig::Ptr );
+        explicit Helper( );
 
         #if ADWAITA_USE_KDE4
         //* constructor
@@ -65,9 +58,6 @@ namespace Adwaita
 
         //* load configuration
         virtual void loadConfig();
-
-        //* pointer to shared config
-        KSharedConfig::Ptr config() const;
 
         //*@name color utilities
         //@{
@@ -92,17 +82,22 @@ namespace Adwaita
         //* add alpha channel multiplier to color
         QColor alphaColor( QColor color, qreal alpha ) const;
 
+        // ADWAITA TODO
+
         //* mouse over color
         QColor hoverColor( const QPalette& palette ) const
-        { return _viewHoverBrush.brush( palette ).color(); }
+        // { return _viewHoverBrush.brush( palette ).color(); }
+        { return Qt::red; }
 
         //* focus color
         QColor focusColor( const QPalette& palette ) const
-        { return _viewFocusBrush.brush( palette ).color(); }
+        // { return _viewFocusBrush.brush( palette ).color(); }
+        { return Qt::red; }
 
         //* negative text color (used for close button)
         QColor negativeText( const QPalette& palette ) const
-        { return _viewNegativeTextBrush.brush( palette ).color(); }
+        // { return _viewNegativeTextBrush.brush( palette ).color(); }
+        { return Qt::red; }
 
         //* shadow
         QColor shadowColor( const QPalette& palette ) const
@@ -348,21 +343,6 @@ namespace Adwaita
         QPainterPath roundedPath( const QRectF&, Corners, qreal ) const;
 
         private:
-
-        #if ADWAITA_USE_KDE4
-        //* component data
-        KComponentData _componentData;
-        #endif
-
-        //* configuration
-        KSharedConfig::Ptr _config;
-
-        //*@name brushes
-        //@{
-        KStatefulBrush _viewFocusBrush;
-        KStatefulBrush _viewHoverBrush;
-        KStatefulBrush _viewNegativeTextBrush;
-        //@}
 
         //*@name windeco colors
         //@{

@@ -25,11 +25,9 @@
 #include "adwaitamnemonics.h"
 #include "adwaitapropertynames.h"
 #include "adwaitasplitterproxy.h"
-#include "adwaitastyleconfigdata.h"
+#include "fakeadwaitastyleconfigdata.h"
 #include "adwaitawidgetexplorer.h"
 #include "adwaitawindowmanager.h"
-
-#include <KColorUtils>
 
 #include <QApplication>
 #include <QCheckBox>
@@ -215,7 +213,7 @@ namespace Adwaita
         #if ADWAITA_USE_KDE4
         , _helper( new Helper( "adwaita" ) )
         #else
-        , _helper( new Helper( StyleConfigData::self()->sharedConfig() ) )
+        , _helper( new Helper( ) )
         #endif
 
 
@@ -225,7 +223,7 @@ namespace Adwaita
         , _splitterFactory( new SplitterFactory( this ) )
         , _widgetExplorer( new WidgetExplorer( this ) )
         , _tabBarData( new AdwaitaPrivate::TabBarData( this ) )
-        #if ADWAITA_HAVE_KSTYLE||ADWAITA_USE_KDE4
+        #if ADWAITA_USE_KDE4
         , SH_ArgbDndWindow( newStyleHint( QStringLiteral( "SH_ArgbDndWindow" ) ) )
         , CE_CapacityBar( newControlElement( QStringLiteral( "CE_CapacityBar" ) ) )
         #endif
@@ -1377,11 +1375,7 @@ namespace Adwaita
     {
 
         // reload
-        #if ADWAITA_USE_KDE4
-        StyleConfigData::self()->readConfig();
-        #else
-        StyleConfigData::self()->load();
-        #endif
+        StyleConfigData::self();
 
         // reload configuration
         loadConfiguration();
@@ -7145,15 +7139,13 @@ namespace Adwaita
     //____________________________________________________________________
     bool Style::showIconsInMenuItems( void ) const
     {
-        KConfigGroup g(KSharedConfig::openConfig(), "KDE");
-        return g.readEntry("ShowIconsInMenuItems", true);
+        return Adwaita::Settings::ShowIconsInMenuItems;
     }
 
     //____________________________________________________________________
     bool Style::showIconsOnPushButtons( void ) const
     {
-        KConfigGroup g(KSharedConfig::openConfig(), "KDE");
-        return g.readEntry("ShowIconsOnPushButtons", true);
+        return Adwaita::Settings::ShowIconsOnPushButtons;
     }
 
     //____________________________________________________________________

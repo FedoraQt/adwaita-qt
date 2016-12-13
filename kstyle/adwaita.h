@@ -49,6 +49,17 @@ namespace Adwaita
 
     //@}
 
+    //* Settings
+    namespace Settings
+    {
+
+        const bool SingleClick { true };
+        const bool ShowIconsOnPushButtons { true };
+        const int ToolButtonStyle { Qt::ToolButtonTextBesideIcon };
+        const bool ShowIconsInMenuItems { true };
+
+    }
+
     //* metrics
     enum Metrics
     {

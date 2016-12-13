@@ -18,10 +18,9 @@
  *************************************************************************/
 
 #include "kstylekde4compat.h"
+#include "adwaita.h"
 
-#include <KConfigGroup>
 #include <QToolBar>
-#include <KSharedConfig>
 
 static const QStyle::StyleHint SH_KCustomStyleElement = (QStyle::StyleHint)0xff000001;
 static const int X_KdeBase = 0xff000000;
@@ -73,45 +72,18 @@ int KStyleKDE4Compat::styleHint(StyleHint hint, const QStyleOption *option, cons
 
     switch (hint) {
     case SH_ItemView_ActivateItemOnSingleClick: {
-        KConfigGroup g(KSharedConfig::openConfig(), "KDE");
-        return g.readEntry("SingleClick", true);
+        return Adwaita::Settings::SingleClick;
     }
 
     case SH_DialogButtonBox_ButtonsHaveIcons: {
-        // was KGlobalSettings::showIconsOnPushButtons() :
-        KConfigGroup g(KSharedConfig::openConfig(), "KDE");
-        return g.readEntry("ShowIconsOnPushButtons", true);
+        return Adwaita::Settings::ShowIconsOnPushButtons;
     }
 
     case SH_ItemView_ArrowKeysNavigateIntoChildren:
         return true;
 
     case SH_ToolButtonStyle: {
-        KConfigGroup g(KSharedConfig::openConfig(), "Toolbar style");
-
-        bool useOthertoolbars = false;
-        QWidget *parent = widget ? widget->parentWidget() : nullptr;
-
-        //If the widget parent is a QToolBar and the magic property is set
-        if (parent && qobject_cast< const QToolBar * >(parent)) {
-            if (parent->property("otherToolbar").isValid()) {
-                useOthertoolbars = true;
-            }
-        }
-
-        QString buttonStyle;
-        if (useOthertoolbars) {
-            buttonStyle = g.readEntry("ToolButtonStyleOtherToolbars", "NoText").toLower();
-        } else {
-            buttonStyle = g.readEntry("ToolButtonStyle", "TextBesideIcon").toLower();
-        }
-
-        return buttonStyle == QLatin1String("textbesideicon") ? Qt::ToolButtonTextBesideIcon
-               : buttonStyle == QLatin1String("icontextright") ? Qt::ToolButtonTextBesideIcon
-               : buttonStyle == QLatin1String("textundericon") ? Qt::ToolButtonTextUnderIcon
-               : buttonStyle == QLatin1String("icontextbottom") ? Qt::ToolButtonTextUnderIcon
-               : buttonStyle == QLatin1String("textonly") ? Qt::ToolButtonTextOnly
-               : Qt::ToolButtonIconOnly;
+        return Adwaita::Settings::ToolButtonStyle;
     }
 
     default:

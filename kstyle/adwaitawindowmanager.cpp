@@ -48,7 +48,7 @@
 
 #include "adwaitawindowmanager.h"
 #include "adwaitapropertynames.h"
-#include "adwaitastyleconfigdata.h"
+#include "fakeadwaitastyleconfigdata.h"
 #include "adwaitahelper.h"
 
 #include <QApplication>

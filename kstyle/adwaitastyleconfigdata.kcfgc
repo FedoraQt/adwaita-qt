@@ -1,6 +1,0 @@
-File=adwaita.kcfg
-ClassName=StyleConfigData
-NameSpace=Adwaita
-Singleton=true
-Mutators=true
-GlobalEnums=true

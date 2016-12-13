@@ -23,10 +23,6 @@
 #include "adwaita.h"
 #include "config-adwaita.h"
 
-#if ADWAITA_HAVE_KSTYLE
-#include <KStyle>
-#endif
-
 #if ADWAITA_USE_KDE4
 #include "kstylekde4compat.h"
 #endif
@@ -67,10 +63,8 @@ namespace Adwaita
     //* convenience typedef for base class
     #if ADWAITA_USE_KDE4
     using ParentStyleClass = KStyleKDE4Compat;
-    #elif !ADWAITA_HAVE_KSTYLE
-    using ParentStyleClass = QCommonStyle;
     #else
-    using ParentStyleClass = KStyle;
+    using ParentStyleClass = QCommonStyle;
     #endif
 
     //* base class for adwaita style

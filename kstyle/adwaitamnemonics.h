@@ -24,7 +24,7 @@
 #include <QObject>
 #include <QApplication>
 
-#include "adwaitastyleconfigdata.h"
+#include "fakeadwaitastyleconfigdata.h"
 
 namespace Adwaita
 {
