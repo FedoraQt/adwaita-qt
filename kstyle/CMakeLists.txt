@@ -121,12 +121,9 @@ set(adwaita_PART_SRCS
     animations/adwaitawidgetstatedata.cpp
     debug/adwaitawidgetexplorer.cpp
     adwaitaaddeventfilter.cpp
-    adwaitaframeshadow.cpp
     adwaitahelper.cpp
-    adwaitamdiwindowshadow.cpp
     adwaitamnemonics.cpp
     adwaitapropertynames.cpp
-    adwaitashadowhelper.cpp
     adwaitasplitterproxy.cpp
     adwaitastyle.cpp
     adwaitastyleplugin.cpp

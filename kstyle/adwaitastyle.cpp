@@ -21,12 +21,9 @@
 
 #include "adwaita.h"
 #include "adwaitaanimations.h"
-#include "adwaitaframeshadow.h"
 #include "adwaitahelper.h"
-#include "adwaitamdiwindowshadow.h"
 #include "adwaitamnemonics.h"
 #include "adwaitapropertynames.h"
-#include "adwaitashadowhelper.h"
 #include "adwaitasplitterproxy.h"
 #include "adwaitastyleconfigdata.h"
 #include "adwaitawidgetexplorer.h"
@@ -221,12 +218,10 @@ namespace Adwaita
         , _helper( new Helper( StyleConfigData::self()->sharedConfig() ) )
         #endif
 
-        , _shadowHelper( new ShadowHelper( this, *_helper ) )
+
         , _animations( new Animations( this ) )
         , _mnemonics( new Mnemonics( this ) )
         , _windowManager( new WindowManager( this ) )
-        , _frameShadowFactory( new FrameShadowFactory( this ) )
-        , _mdiWindowShadowFactory( new MdiWindowShadowFactory( this ) )
         , _splitterFactory( new SplitterFactory( this ) )
         , _widgetExplorer( new WidgetExplorer( this ) )
         , _tabBarData( new AdwaitaPrivate::TabBarData( this ) )
@@ -269,9 +264,6 @@ namespace Adwaita
         // register widget to animations
         _animations->registerWidget( widget );
         _windowManager->registerWidget( widget );
-        _frameShadowFactory->registerWidget( widget, *_helper );
-        _mdiWindowShadowFactory->registerWidget( widget );
-        _shadowHelper->registerWidget( widget );
         _splitterFactory->registerWidget( widget );
 
         // enable mouse over effects for all necessary widgets
@@ -493,9 +485,6 @@ namespace Adwaita
 
         // register widget to animations
         _animations->unregisterWidget( widget );
-        _frameShadowFactory->unregisterWidget( widget );
-        _mdiWindowShadowFactory->unregisterWidget( widget );
-        _shadowHelper->unregisterWidget( widget );
         _windowManager->unregisterWidget( widget );
         _splitterFactory->unregisterWidget( widget );
 
@@ -1461,12 +1450,6 @@ namespace Adwaita
 
         // splitter proxy
         _splitterFactory->setEnabled( StyleConfigData::splitterProxyEnabled() );
-
-        // reset shadow tiles
-        _shadowHelper->loadConfig();
-
-        // set mdiwindow factory shadow tiles
-        _mdiWindowShadowFactory->setShadowTiles( _shadowHelper->shadowTiles() );
 
         // clear icon cache
         _iconCache.clear();
@@ -3054,15 +3037,6 @@ namespace Adwaita
 
         } else {
 
-            if( _frameShadowFactory->isRegistered( widget ) )
-            {
-
-                // update frame shadow factory
-                _frameShadowFactory->updateShadowsGeometry( widget, rect );
-                _frameShadowFactory->updateState( widget, hasFocus, mouseOver, opacity, mode );
-
-            }
-
             QColor background( isTitleWidget ? palette.color( widget->backgroundRole() ):QColor() );
             QColor outline( _helper->frameOutlineColor( palette, mouseOver, hasFocus, opacity, mode ) );
             _helper->renderFrame( painter, rect, background, outline, hasFocus );
@@ -3649,10 +3623,6 @@ namespace Adwaita
     //___________________________________________________________________________________
     bool Style::drawPanelTipLabelPrimitive( const QStyleOption* option, QPainter* painter, const QWidget* widget ) const
     {
-
-        // force registration of widget
-        if( widget && widget->window() )
-        { _shadowHelper->registerWidget( widget->window(), true ); }
 
         const QPalette& palette( option->palette );
         QColor background( palette.color( QPalette::ToolTipBase ) );
