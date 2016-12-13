@@ -75,7 +75,7 @@ namespace Adwaita
     QColor Helper::frameOutlineColor( const QPalette& palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode ) const
     {
 
-        QColor outline( KColorUtils::mix( palette.color( QPalette::Window ), palette.color( QPalette::WindowText ), 0.25 ) );
+        QColor outline( mix( palette.color( QPalette::Window ), palette.color( QPalette::WindowText ), 0.25 ) );
 
         // focus takes precedence over hover
         if( mode == AnimationFocus )
@@ -84,8 +84,8 @@ namespace Adwaita
             QColor focus( focusColor( palette ) );
             QColor hover( hoverColor( palette ) );
 
-            if( mouseOver ) outline = KColorUtils::mix( hover, focus, opacity );
-            else outline = KColorUtils::mix( outline, focus, opacity );
+            if( mouseOver ) outline = mix( hover, focus, opacity );
+            else outline = mix( outline, focus, opacity );
 
         } else if( hasFocus ) {
 
@@ -99,19 +99,19 @@ namespace Adwaita
 
     //____________________________________________________________________
     QColor Helper::focusOutlineColor( const QPalette& palette ) const
-    { return KColorUtils::mix( focusColor( palette ), palette.color( QPalette::WindowText ), 0.15 ); }
+    { return mix( focusColor( palette ), palette.color( QPalette::WindowText ), 0.15 ); }
 
     //____________________________________________________________________
     QColor Helper::hoverOutlineColor( const QPalette& palette ) const
-    { return KColorUtils::mix( hoverColor( palette ), palette.color( QPalette::WindowText ), 0.15 ); }
+    { return mix( hoverColor( palette ), palette.color( QPalette::WindowText ), 0.15 ); }
 
     //____________________________________________________________________
     QColor Helper::buttonFocusOutlineColor( const QPalette& palette ) const
-    { return KColorUtils::mix( focusColor( palette ), palette.color( QPalette::ButtonText ), 0.15 ); }
+    { return mix( focusColor( palette ), palette.color( QPalette::ButtonText ), 0.15 ); }
 
     //____________________________________________________________________
     QColor Helper::buttonHoverOutlineColor( const QPalette& palette ) const
-    { return KColorUtils::mix( hoverColor( palette ), palette.color( QPalette::ButtonText ), 0.15 ); }
+    { return mix( hoverColor( palette ), palette.color( QPalette::ButtonText ), 0.15 ); }
 
     //____________________________________________________________________
     QColor Helper::sidePanelOutlineColor( const QPalette& palette, bool hasFocus, qreal opacity, AnimationMode mode ) const
@@ -123,7 +123,7 @@ namespace Adwaita
         if( mode == AnimationFocus )
         {
 
-            outline = KColorUtils::mix( outline, focus, opacity );
+            outline = mix( outline, focus, opacity );
 
         } else if( hasFocus ) {
 
@@ -137,16 +137,16 @@ namespace Adwaita
 
     //____________________________________________________________________
     QColor Helper::frameBackgroundColor( const QPalette& palette, QPalette::ColorGroup group ) const
-    { return KColorUtils::mix( palette.color( group, QPalette::Window ), palette.color( group, QPalette::Base ), 0.3 ); }
+    { return mix( palette.color( group, QPalette::Window ), palette.color( group, QPalette::Base ), 0.3 ); }
 
     //____________________________________________________________________
     QColor Helper::arrowColor( const QPalette& palette, QPalette::ColorGroup group, QPalette::ColorRole role ) const
     {
         switch( role )
         {
-            case QPalette::Text: return KColorUtils::mix( palette.color( group, QPalette::Text ), palette.color( group, QPalette::Base ), arrowShade );
-            case QPalette::WindowText: return KColorUtils::mix( palette.color( group, QPalette::WindowText ), palette.color( group, QPalette::Window ), arrowShade );
-            case QPalette::ButtonText: return KColorUtils::mix( palette.color( group, QPalette::ButtonText ), palette.color( group, QPalette::Button ), arrowShade );
+            case QPalette::Text: return mix( palette.color( group, QPalette::Text ), palette.color( group, QPalette::Base ), arrowShade );
+            case QPalette::WindowText: return mix( palette.color( group, QPalette::WindowText ), palette.color( group, QPalette::Window ), arrowShade );
+            case QPalette::ButtonText: return mix( palette.color( group, QPalette::ButtonText ), palette.color( group, QPalette::Button ), arrowShade );
             default: return palette.color( group, role );
         }
 
@@ -168,7 +168,7 @@ namespace Adwaita
     QColor Helper::buttonOutlineColor( const QPalette& palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode ) const
     {
 
-        QColor outline( KColorUtils::mix( palette.color( QPalette::Button ), palette.color( QPalette::ButtonText ), 0.3 ) );
+        QColor outline( mix( palette.color( QPalette::Button ), palette.color( QPalette::ButtonText ), 0.3 ) );
 
         return outline;
 
@@ -186,8 +186,8 @@ namespace Adwaita
             background = background.darker(115);
         } else if( mode == AnimationHover )
         {
-            background = KColorUtils::mix(background, background.lighter( 120 ), opacity);
-            //if( hasFocus ) background = KColorUtils::mix( focus, hover, opacity );
+            background = mix(background, background.lighter( 120 ), opacity);
+            //if( hasFocus ) background = mix( focus, hover, opacity );
 
         } else if( mouseOver ) {
 
@@ -211,7 +211,7 @@ namespace Adwaita
     QColor Helper::sliderOutlineColor( const QPalette& palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode ) const
     {
 
-        QColor outline( KColorUtils::mix( palette.color( QPalette::Window ), palette.color( QPalette::WindowText ), 0.4 ) );
+        QColor outline( mix( palette.color( QPalette::Window ), palette.color( QPalette::WindowText ), 0.4 ) );
 
         // hover takes precedence over focus
         if( mode == AnimationHover )
@@ -219,8 +219,8 @@ namespace Adwaita
 
             QColor hover( hoverColor( palette ) );
             QColor focus( focusColor( palette ) );
-            if( hasFocus ) outline = KColorUtils::mix( focus, hover, opacity );
-            else outline = KColorUtils::mix( outline, hover, opacity );
+            if( hasFocus ) outline = mix( focus, hover, opacity );
+            else outline = mix( outline, hover, opacity );
 
         } else if( mouseOver ) {
 
@@ -229,7 +229,7 @@ namespace Adwaita
         } else if( mode == AnimationFocus ) {
 
             QColor focus( focusColor( palette ) );
-            outline = KColorUtils::mix( outline, focus, opacity );
+            outline = mix( outline, focus, opacity );
 
         } else if( hasFocus ) {
 
@@ -253,8 +253,8 @@ namespace Adwaita
 
             QColor hover( hoverColor( palette ) );
             QColor focus( focusColor( palette ) );
-            if( hasFocus ) color = KColorUtils::mix( focus, hover, opacity );
-            else color = KColorUtils::mix( color, hover, opacity );
+            if( hasFocus ) color = mix( focus, hover, opacity );
+            else color = mix( color, hover, opacity );
 
         } else if( mouseOver ) {
 
@@ -263,7 +263,7 @@ namespace Adwaita
         } else if( mode == AnimationFocus ) {
 
             QColor focus( focusColor( palette ) );
-            color = KColorUtils::mix( color, focus, opacity );
+            color = mix( color, focus, opacity );
 
         } else if( hasFocus ) {
 
@@ -289,7 +289,7 @@ namespace Adwaita
 
     //______________________________________________________________________________
     QColor Helper::separatorColor( const QPalette& palette ) const
-    { return KColorUtils::mix( palette.color( QPalette::Window ), palette.color( QPalette::WindowText ), 0.25 ); }
+    { return mix( palette.color( QPalette::Window ), palette.color( QPalette::WindowText ), 0.25 ); }
 
     //______________________________________________________________________________
     QPalette Helper::disabledPalette( const QPalette& source, qreal ratio ) const
@@ -299,7 +299,7 @@ namespace Adwaita
 
         const QList<QPalette::ColorRole> roles = { QPalette::Background, QPalette::Highlight, QPalette::WindowText, QPalette::ButtonText, QPalette::Text, QPalette::Button };
         foreach( const QPalette::ColorRole& role, roles )
-        { copy.setColor( role, KColorUtils::mix( source.color( QPalette::Active, role ), source.color( QPalette::Disabled, role ), 1.0-ratio ) ); }
+        { copy.setColor( role, mix( source.color( QPalette::Active, role ), source.color( QPalette::Disabled, role ), 1.0-ratio ) ); }
 
         return copy;
     }

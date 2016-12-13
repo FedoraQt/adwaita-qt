@@ -3473,7 +3473,7 @@ namespace Adwaita
             {
                 QColor button( palette.color( QPalette::Button ) );
                 QColor base( palette.color( QPalette::Base ) );
-                palette.setColor( QPalette::Button, KColorUtils::mix( button, base, 0.7 ) );
+                palette.setColor( QPalette::Button, Helper::mix( button, base, 0.7 ) );
             }
 
             QColor shadow( _helper->shadowColor( palette ) );
@@ -3656,7 +3656,7 @@ namespace Adwaita
 
         const QPalette& palette( option->palette );
         QColor background( palette.color( QPalette::ToolTipBase ) );
-        QColor outline( KColorUtils::mix( palette.color( QPalette::ToolTipBase ), palette.color( QPalette::ToolTipText ), 0.25 ) );
+        QColor outline( Helper::mix( palette.color( QPalette::ToolTipBase ), palette.color( QPalette::ToolTipText ), 0.25 ) );
         bool hasAlpha( _helper->hasAlphaChannel( widget ) );
 
         _helper->renderMenuFrame( painter, option->rect, background, outline, hasAlpha );
@@ -4120,7 +4120,7 @@ namespace Adwaita
         if( !StyleConfigData::viewDrawTreeBranchLines() ) return true;
 
         QPoint center( rect.center() );
-        QColor lineColor( KColorUtils::mix( palette.color( QPalette::Base ), palette.color( QPalette::Text ), 0.25 ) );
+        QColor lineColor( Helper::mix( palette.color( QPalette::Base ), palette.color( QPalette::Text ), 0.25 ) );
         painter->save();
         painter->setRenderHint( QPainter::Antialiasing, true );
         painter->translate( 0.5, 0.5 );
@@ -4544,7 +4544,7 @@ namespace Adwaita
         painter->save();
         painter->setRenderHint( QPainter::Antialiasing, false );
         painter->setBrush( Qt::NoBrush );
-        painter->setPen( KColorUtils::mix( palette.color( QPalette::Button ), palette.color( QPalette::ButtonText ), 0.3 ) );
+        painter->setPen( Helper::mix( palette.color( QPalette::Button ), palette.color( QPalette::ButtonText ), 0.3 ) );
 
         painter->drawLine( rect.bottomLeft(), rect.bottomRight() );
         painter->restore();
@@ -4575,7 +4575,7 @@ namespace Adwaita
         painter->save();
         painter->setRenderHint( QPainter::Antialiasing, false );
         painter->setBrush( Qt::NoBrush );
-        painter->setPen( KColorUtils::mix( palette.color( QPalette::Button ), palette.color( QPalette::ButtonText ), 0.3 ) );
+        painter->setPen( Helper::mix( palette.color( QPalette::Button ), palette.color( QPalette::ButtonText ), 0.3 ) );
 
         painter->drawLine( rect.bottomLeft(), rect.bottomRight() );
         painter->restore();
@@ -5241,7 +5241,7 @@ namespace Adwaita
         QRect rect( option->rect );
 
         QColor color = palette.color( QPalette::Highlight );
-        painter->setPen( KColorUtils::mix( color, palette.color( QPalette::Active, QPalette::WindowText ) ) );
+        painter->setPen( Helper::mix( color, palette.color( QPalette::Active, QPalette::WindowText ) ) );
         color.setAlpha( 50 );
         painter->setBrush( color );
         painter->setClipRegion( rect );
@@ -6446,7 +6446,7 @@ namespace Adwaita
             QRect grooveRect( subControlRect( CC_Dial, sliderOption, SC_SliderGroove, widget ) );
 
             // groove
-            QColor grooveColor( KColorUtils::mix( palette.color( QPalette::Window ), palette.color( QPalette::WindowText ), 0.3 ) );
+            QColor grooveColor( Helper::mix( palette.color( QPalette::Window ), palette.color( QPalette::WindowText ), 0.3 ) );
 
             // render groove
             _helper->renderDialGroove( painter, grooveRect, grooveColor );
@@ -6743,7 +6743,7 @@ namespace Adwaita
 
         if (true) {
             painter->setPen(Qt::NoPen);
-            QColor background = KColorUtils::mix( palette.base().color(), outline, 0.4 * opacity + 0.6 * pressedOpacity );
+            QColor background = Helper::mix( palette.base().color(), outline, 0.4 * opacity + 0.6 * pressedOpacity );
             painter->setBrush(background);
             if (hasFocus)
                 painter->drawRect(arrowRect.adjusted(1, 3, -1, -2));
@@ -6891,7 +6891,7 @@ namespace Adwaita
             QColor highlight = _helper->hoverColor( palette );
             if( animated )
             {
-                color = KColorUtils::mix( color, highlight, opacity );
+                color = Helper::mix( color, highlight, opacity );
 
             } else if( mouseOver ) {
 
@@ -7071,16 +7071,16 @@ namespace Adwaita
         {
 
             // state off icons
-            { KColorUtils::mix( palette.color( QPalette::Window ), base,  0.5 ), invertNormalState, QIcon::Normal, QIcon::Off },
-            { KColorUtils::mix( palette.color( QPalette::Window ), selected, 0.5 ), invertNormalState, QIcon::Selected, QIcon::Off },
-            { KColorUtils::mix( palette.color( QPalette::Window ), negative, 0.5 ), true, QIcon::Active, QIcon::Off },
-            { KColorUtils::mix( palette.color( QPalette::Window ), base, 0.2 ), invertNormalState, QIcon::Disabled, QIcon::Off },
+            { Helper::mix( palette.color( QPalette::Window ), base,  0.5 ), invertNormalState, QIcon::Normal, QIcon::Off },
+            { Helper::mix( palette.color( QPalette::Window ), selected, 0.5 ), invertNormalState, QIcon::Selected, QIcon::Off },
+            { Helper::mix( palette.color( QPalette::Window ), negative, 0.5 ), true, QIcon::Active, QIcon::Off },
+            { Helper::mix( palette.color( QPalette::Window ), base, 0.2 ), invertNormalState, QIcon::Disabled, QIcon::Off },
 
             // state on icons
-            { KColorUtils::mix( palette.color( QPalette::Window ), negative, 0.7 ), true, QIcon::Normal, QIcon::On },
-            { KColorUtils::mix( palette.color( QPalette::Window ), negativeSelected, 0.7 ), true, QIcon::Selected, QIcon::On },
-            { KColorUtils::mix( palette.color( QPalette::Window ), negative, 0.7 ), true, QIcon::Active, QIcon::On },
-            { KColorUtils::mix( palette.color( QPalette::Window ), base, 0.2 ), invertNormalState, QIcon::Disabled, QIcon::On }
+            { Helper::mix( palette.color( QPalette::Window ), negative, 0.7 ), true, QIcon::Normal, QIcon::On },
+            { Helper::mix( palette.color( QPalette::Window ), negativeSelected, 0.7 ), true, QIcon::Selected, QIcon::On },
+            { Helper::mix( palette.color( QPalette::Window ), negative, 0.7 ), true, QIcon::Active, QIcon::On },
+            { Helper::mix( palette.color( QPalette::Window ), base, 0.2 ), invertNormalState, QIcon::Disabled, QIcon::On }
 
         };
 

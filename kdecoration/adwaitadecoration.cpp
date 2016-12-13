@@ -109,7 +109,7 @@ namespace Adwaita
         if( hideTitleBar() ) return c->color( ColorGroup::Inactive, ColorRole::TitleBar );
         else if( m_animation->state() == QPropertyAnimation::Running )
         {
-            return KColorUtils::mix(
+            return Helper::mix(
                 c->color( ColorGroup::Inactive, ColorRole::TitleBar ),
                 c->color( ColorGroup::Active, ColorRole::TitleBar ),
                 m_opacity );
@@ -139,7 +139,7 @@ namespace Adwaita
         auto c = client().data();
         if( m_animation->state() == QPropertyAnimation::Running )
         {
-            return KColorUtils::mix(
+            return Helper::mix(
                 c->color( ColorGroup::Inactive, ColorRole::Foreground ),
                 c->color( ColorGroup::Active, ColorRole::Foreground ),
                 m_opacity );

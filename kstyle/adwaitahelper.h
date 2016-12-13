@@ -40,6 +40,8 @@
 #include <xcb/xcb.h>
 #endif
 
+#include <math.h>
+
 namespace Adwaita
 {
 
@@ -69,6 +71,23 @@ namespace Adwaita
 
         //*@name color utilities
         //@{
+
+        // Borrowed from the KColorUtils code
+        static QColor mix(const QColor &c1, const QColor &c2, qreal bias = 0.5)
+        {
+            auto mixQreal = [](qreal a, qreal b, qreal bias) { return a + (b - a) * bias; };
+
+            if (bias <= 0.0) return c1;
+            if (bias >= 1.0) return c2;
+            if (isnan(bias)) return c1;
+
+            qreal r = mixQreal(c1.redF(),   c2.redF(),   bias);
+            qreal g = mixQreal(c1.greenF(), c2.greenF(), bias);
+            qreal b = mixQreal(c1.blueF(),  c2.blueF(),  bias);
+            qreal a = mixQreal(c1.alphaF(), c2.alphaF(), bias);
+
+            return QColor::fromRgbF(r, g, b, a);
+        }
 
         //* add alpha channel multiplier to color
         QColor alphaColor( QColor color, qreal alpha ) const;

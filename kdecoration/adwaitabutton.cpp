@@ -374,7 +374,7 @@ namespace Adwaita
 
         } else if( m_animation->state() == QPropertyAnimation::Running ) {
 
-            return KColorUtils::mix( d->fontColor(), d->titleBarColor(), m_opacity );
+            return Helper::mix( d->fontColor(), d->titleBarColor(), m_opacity );
 
         } else if( isHovered() ) {
 
@@ -402,7 +402,7 @@ namespace Adwaita
         if( isPressed() ) {
 
             if( type() == DecorationButtonType::Close ) return c->color( ColorGroup::Warning, ColorRole::Foreground );
-            else return KColorUtils::mix( d->titleBarColor(), d->fontColor(), 0.3 );
+            else return Helper::mix( d->titleBarColor(), d->fontColor(), 0.3 );
 
         } else if( ( type() == DecorationButtonType::KeepBelow || type() == DecorationButtonType::KeepAbove ) && isChecked() ) {
 
@@ -415,7 +415,7 @@ namespace Adwaita
                 if( d->internalSettings()->outlineCloseButton() )
                 {
 
-                    return KColorUtils::mix( d->fontColor(), c->color( ColorGroup::Warning, ColorRole::Foreground ).lighter(), m_opacity );
+                    return Helper::mix( d->fontColor(), c->color( ColorGroup::Warning, ColorRole::Foreground ).lighter(), m_opacity );
 
                 } else {
 
