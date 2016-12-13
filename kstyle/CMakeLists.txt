@@ -178,7 +178,7 @@ else()
 endif()
 
 ########### install files ###############
-install(FILES adwaita.themerc  DESTINATION  ${DATA_INSTALL_DIR}/kstyle/themes)
+#install(FILES adwaita.themerc  DESTINATION  ${DATA_INSTALL_DIR}/kstyle/themes)
 
 ########### subdirectories ###############
 #add_subdirectory(config)
