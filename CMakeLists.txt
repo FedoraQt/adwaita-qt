@@ -22,18 +22,7 @@ else()
   include(GenerateExportHeader)
   include(GtkUpdateIconCache)
 
-  option(WITH_DECORATIONS "Build Adwaita window decorations for KWin" OFF)
-  if(WITH_DECORATIONS)
-    find_package(KDecoration2 REQUIRED)
-    add_subdirectory(kdecoration)
-  endif()
-
   add_subdirectory(kstyle)
-  #add_subdirectory(qtquickcontrols)
-
-  #INSTALL(FILES colors/Adwaita.colors DESTINATION ${DATA_INSTALL_DIR}/color-schemes/)
-  #INSTALL(FILES colors/AdwaitaDark.colors DESTINATION ${DATA_INSTALL_DIR}/color-schemes/)
-  #INSTALL(FILES colors/AdwaitaHighContrast.colors DESTINATION ${DATA_INSTALL_DIR}/color-schemes/)
 
   find_package(KF5Package CONFIG REQUIRED)
   #if(EXISTS ${CMAKE_SOURCE_DIR}/po AND IS_DIRECTORY ${CMAKE_SOURCE_DIR}/po)
