@@ -153,8 +153,8 @@ namespace Adwaita
 
         // combo box
         else if( qobject_cast<QComboBox*>( widget ) ) {
-            _comboBoxEngine->registerWidget( widget, AnimationHover );
-            _inputWidgetEngine->registerWidget( widget, AnimationHover|AnimationFocus );
+            _comboBoxEngine->registerWidget( widget, AnimationHover|AnimationPressed );
+            _inputWidgetEngine->registerWidget( widget, AnimationHover|AnimationFocus|AnimationPressed );
         }
 
         // spinbox

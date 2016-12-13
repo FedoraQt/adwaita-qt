@@ -6069,11 +6069,32 @@ namespace Adwaita
         // state
         const State& state( option->state );
         bool enabled( state & State_Enabled );
-        bool mouseOver( enabled && ( state & State_MouseOver ) );
-        bool hasFocus( enabled && ( state & (State_HasFocus | State_Sunken ) ) );
         bool editable( comboBoxOption->editable );
-        bool sunken( state & (State_On|State_Sunken) );
+        bool arrowActive( comboBoxOption->activeSubControls & SC_ComboBoxArrow );
         bool flat( !comboBoxOption->frame );
+        bool mouseOver; // ( enabled && ( state & State_MouseOver ) );
+        bool hasFocus; // ( enabled && ( state & (State_HasFocus | State_Sunken ) ) );
+        bool sunken; // ( state & (State_On|State_Sunken) );
+        if (editable)
+        {
+
+            mouseOver = arrowActive && enabled && ( state & State_MouseOver );
+            hasFocus = enabled && ( state & ( State_HasFocus | State_Sunken ) );
+            sunken = arrowActive && enabled && ( state & (State_On|State_Sunken) );
+
+        } else {
+
+            mouseOver = enabled && ( state & State_MouseOver );
+            hasFocus = enabled && ( state & ( State_HasFocus | State_Sunken ) );
+            sunken = enabled && ( state & (State_On|State_Sunken) );
+
+        }
+
+        // update animation state
+        // sunken takes precedence over hover that takes precedence over focus
+        _animations->inputWidgetEngine().updateState( widget, AnimationPressed, sunken );
+        _animations->inputWidgetEngine().updateState( widget, AnimationHover, mouseOver );
+        _animations->inputWidgetEngine().updateState( widget, AnimationFocus, hasFocus && !mouseOver );
 
         // frame
         if( option->subControls & SC_ComboBoxFrame )
@@ -6111,11 +6132,6 @@ namespace Adwaita
                 }
 
             } else {
-
-                // update animation state
-                // hover takes precedence over focus
-                _animations->inputWidgetEngine().updateState( widget, AnimationHover, mouseOver );
-                _animations->inputWidgetEngine().updateState( widget, AnimationFocus, hasFocus && !mouseOver );
 
                 AnimationMode mode( _animations->inputWidgetEngine().buttonAnimationMode( widget ) );
                 qreal opacity( _animations->inputWidgetEngine().buttonOpacity( widget ) );
