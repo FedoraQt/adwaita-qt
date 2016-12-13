@@ -6072,9 +6072,9 @@ namespace Adwaita
         bool editable( comboBoxOption->editable );
         bool arrowActive( comboBoxOption->activeSubControls & SC_ComboBoxArrow );
         bool flat( !comboBoxOption->frame );
-        bool mouseOver; // ( enabled && ( state & State_MouseOver ) );
-        bool hasFocus; // ( enabled && ( state & (State_HasFocus | State_Sunken ) ) );
-        bool sunken; // ( state & (State_On|State_Sunken) );
+        bool mouseOver;
+        bool hasFocus;
+        bool sunken;
         if (editable)
         {
 
