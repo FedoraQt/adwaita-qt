@@ -3131,17 +3131,20 @@ namespace Adwaita
         #endif
 
         const State& state( option->state );
-        QRect rect( option->rect.adjusted( 0, 0, -1, -1 ) );
+        QRectF rect( QRectF(option->rect).adjusted( 0, 0, -1, -1 ) );
         const QPalette& palette( option->palette );
 
         if( rect.width() < 10 ) return true;
 
-        QColor outlineColor( palette.color( QPalette::Dark ).darker() );
-        QPen pen(outlineColor, 1);
-        pen.setStyle(Qt::DotLine);
+        QColor outlineColor( palette.color( QPalette::Dark ) );
+        QPen pen(outlineColor.darker(115), 1);
+        pen.setStyle( Qt::CustomDashLine );
+        pen.setDashPattern(QVector<qreal>() << 2 << 1);
+
         painter->setRenderHint( QPainter::Antialiasing, false );
+
         painter->setPen( pen );
-        painter->drawRoundedRect( rect, 1, 1 );
+        painter->drawRoundedRect( rect, 2, 2 );
 
         return true;
 
@@ -6156,7 +6159,7 @@ namespace Adwaita
                     {
 
                         QStyleOption copy(*option);
-                        copy.rect.adjust(5, 5, -5, -5);
+                        copy.rect.adjust(4, 4, -4, -4);
                         drawPrimitive( PE_FrameFocusRect, &copy, painter, widget);
 
                     }
