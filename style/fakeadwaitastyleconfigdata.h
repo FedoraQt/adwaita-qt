@@ -621,40 +621,40 @@ class StyleConfigData
 
 
     // Common
-    int mShadowStrength;
-    int mShadowSize;
-    QColor mShadowColor;
-    bool mOutlineCloseButton;
+    int mShadowStrength { 0 };
+    int mShadowSize { 0 };
+    QColor mShadowColor { Qt::transparent };
+    bool mOutlineCloseButton { false };
 
     // Style
     bool mAnimationsEnabled { true };
     int mAnimationSteps { 100 };
     int mAnimationsDuration { 180 };
-    bool mStackedWidgetTransitionsEnabled { true };
+    bool mStackedWidgetTransitionsEnabled { false };
     bool mProgressBarAnimated { true };
     int mProgressBarBusyStepDuration { 600 };
-    int mScrollBarAddLineButtons;
-    int mScrollBarSubLineButtons;
-    bool mScrollBarShowOnMouseOver;
-    int mMnemonicsMode;
-    bool mToolBarDrawItemSeparator;
-    bool mViewDrawFocusIndicator;
-    bool mSliderDrawTickMarks;
-    bool mViewDrawTreeBranchLines;
-    bool mViewInvertSortIndicator;
-    bool mTabBarDrawCenteredTabs;
-    bool mTitleWidgetDrawFrame;
-    bool mDockWidgetDrawFrame;
-    bool mSidePanelDrawFrame;
+    int mScrollBarAddLineButtons { 0 };
+    int mScrollBarSubLineButtons { 0 };
+    bool mScrollBarShowOnMouseOver { true };
+    int mMnemonicsMode { 0 };
+    bool mToolBarDrawItemSeparator { 0 };
+    bool mViewDrawFocusIndicator { true };
+    bool mSliderDrawTickMarks { true };
+    bool mViewDrawTreeBranchLines { true };
+    bool mViewInvertSortIndicator { true };
+    bool mTabBarDrawCenteredTabs { false };
+    bool mTitleWidgetDrawFrame { true };
+    bool mDockWidgetDrawFrame { true };
+    bool mSidePanelDrawFrame { false };
     bool mMenuItemDrawStrongFocus { true };
-    int mWindowDragMode;
-    QStringList mWindowDragWhiteList;
-    QStringList mWindowDragBlackList;
-    bool mUseWMMoveResize;
-    bool mSplitterProxyEnabled;
-    int mSplitterProxyWidth;
+    int mWindowDragMode { 0 };
+    QStringList mWindowDragWhiteList { };
+    QStringList mWindowDragBlackList { };
+    bool mUseWMMoveResize { true };
+    bool mSplitterProxyEnabled { true };
+    int mSplitterProxyWidth { 3 };
     bool mWidgetExplorerEnabled { false };
-    bool mDrawWidgetRects;
+    bool mDrawWidgetRects { false };
 
   private:
 

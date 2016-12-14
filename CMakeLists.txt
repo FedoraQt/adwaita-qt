@@ -1,53 +1,55 @@
-project(adwaita)
-set(PROJECT_VERSION "1.0")
-set(PROJECT_VERSION_MAJOR 1)
+project(Adwaita)
+cmake_minimum_required(VERSION 2.8.11)
+set(CMAKE_AUTOMOC ON)
+add_definitions(-std=c++11)
 
-cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
-
-option(USE_KDE4 "Build a widget style for KDE4 (and nothing else)")
-
-include(WriteBasicConfigVersionFile)
-include(FeatureSummary)
-
-if(USE_KDE4)
-  add_subdirectory(kstyle)
+option(USE_QT4 "Use Qt4 instead of Qt5" OFF)
+if (USE_QT4)
+    find_package(Qt4 REQUIRED)
+    set(QT_VERSION_NUMBER "4")
 else()
-  find_package(ECM 0.0.9 REQUIRED NO_MODULE)
-  set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} ${CMAKE_SOURCE_DIR}/cmake)
-
-  include(ECMInstallIcons)
-  include(KDEInstallDirs)
-  include(KDECMakeSettings)
-  include(KDECompilerSettings NO_POLICY_SCOPE)
-  include(GenerateExportHeader)
-  include(GtkUpdateIconCache)
-
-  add_subdirectory(kstyle)
-
-  find_package(KF5Package CONFIG REQUIRED)
-  #if(EXISTS ${CMAKE_SOURCE_DIR}/po AND IS_DIRECTORY ${CMAKE_SOURCE_DIR}/po)
-  #  find_package(KF5I18n CONFIG REQUIRED)
-  #  ki18n_install(po)
-  #endif()
-
-  include(ECMSetupVersion)
-  ecm_setup_version(${PROJECT_VERSION} VARIABLE_PREFIX ADWAITA
-                    PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/AdwaitaConfigVersion.cmake"
-                    )
-
-  # create a Config.cmake and a ConfigVersion.cmake file and install them
-  #set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/Adwaita")
-
-  #ecm_configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/AdwaitaConfig.cmake.in"
-  #                                  "${CMAKE_CURRENT_BINARY_DIR}/AdwaitaConfig.cmake"
-  #                                  INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
-  #                                  )
-
-  #install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/AdwaitaConfig.cmake"
-  #               "${CMAKE_CURRENT_BINARY_DIR}/AdwaitaConfigVersion.cmake"
-  #        DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
-  #        COMPONENT Devel
-  #       )
+    find_package(Qt5Core REQUIRED)
+    find_package(Qt5Gui REQUIRED)
+    find_package(Qt5Widgets REQUIRED)
+    find_package(Qt5DBus REQUIRED)
+    set(QT_QTGUI_LIBRARY Qt5::Gui Qt5::Widgets)
+    set(QT_QTCORE_LIBRARY Qt5::Core)
+    set(QT_QTDBUS_LIBRARY Qt5::DBus)
+    #target_link_libraries(${LIBRARY_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
+    set(QT_VERSION_NUMBER "5")
 endif()
 
-feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)
+if (NOT CMAKE_INSTALL_PREFIX)
+    set (CMAKE_INSTALL_PREFIX "/usr/local")
+endif()
+
+if (NOT QT_ROOT)
+    set(QT_ROOT "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/qt${QT_VERSION_NUMBER}")
+endif()
+
+if (NOT QT_PLUGIN_PATH)
+    set(QT_PLUGIN_PATH "${QT_ROOT}/plugins")
+endif()
+if (NOT QT_STYLE_PATH)
+    set(QT_STYLE_PATH "${QT_PLUGIN_PATH}/styles")
+endif()
+
+if (NOT DATA_INSTALL_DIR)
+    set (DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share")
+endif()
+if (NOT THEME_INSTALL_DIR)
+    set (THEME_INSTALL_DIR "${DATA_INSTALL_DIR}/themes")
+endif()
+
+set(ADWAITA_THEME_DIR "${THEME_INSTALL_DIR}/Adwaita/qt")
+
+option(BUILD_EXAMPLE "Build an example widget factory app" OFF)
+if (BUILD_EXAMPLE)
+    if (USE_QT4)
+        find_package(KDE4)
+    else()
+        error("It's not possible to build the example using Qt5 yet, sorry.")
+    endif()
+endif()
+
+add_subdirectory(style)

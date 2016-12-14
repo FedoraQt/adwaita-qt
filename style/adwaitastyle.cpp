@@ -250,7 +250,6 @@ namespace Adwaita
     //______________________________________________________________
     Style::~Style( void )
     {
-        delete _shadowHelper;
         delete _helper;
     }
 

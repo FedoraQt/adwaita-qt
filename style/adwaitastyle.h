@@ -51,11 +51,8 @@ namespace Adwaita
 {
 
     class Animations;
-    class FrameShadowFactory;
     class Helper;
-    class MdiWindowShadowFactory;
     class Mnemonics;
-    class ShadowHelper;
     class SplitterFactory;
     class WidgetExplorer;
     class WindowManager;
@@ -477,9 +474,6 @@ namespace Adwaita
         //* helper
         Helper* _helper;
 
-        //* shadow helper
-        ShadowHelper* _shadowHelper;
-
         //* animations
         Animations* _animations;
 
@@ -488,12 +482,6 @@ namespace Adwaita
 
         //* window manager
         WindowManager* _windowManager;
-
-        //* frame shadows
-        FrameShadowFactory* _frameShadowFactory;
-
-        //* mdi window shadows
-        MdiWindowShadowFactory* _mdiWindowShadowFactory;
 
         //* splitter Factory, to extend splitters hit area
         SplitterFactory* _splitterFactory;
