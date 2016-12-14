@@ -22,8 +22,6 @@
 #include "adwaita.h"
 #include "fakeadwaitastyleconfigdata.h"
 
-#include <KWindowSystem>
-
 #include <QApplication>
 #include <QPainter>
 
@@ -1518,7 +1516,8 @@ namespace Adwaita
         #endif
 
         // use KWindowSystem
-        return KWindowSystem::compositingActive();
+        //return KWindowSystem::compositingActive();
+        return false;
 
     }
 

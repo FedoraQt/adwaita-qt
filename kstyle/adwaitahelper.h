@@ -86,18 +86,16 @@ namespace Adwaita
 
         //* mouse over color
         QColor hoverColor( const QPalette& palette ) const
-        // { return _viewHoverBrush.brush( palette ).color(); }
-        { return Qt::red; }
+        { return palette.highlight().color(); }
 
         //* focus color
         QColor focusColor( const QPalette& palette ) const
-        // { return _viewFocusBrush.brush( palette ).color(); }
-        { return Qt::red; }
+        { return palette.highlight().color(); }
 
         //* negative text color (used for close button)
         QColor negativeText( const QPalette& palette ) const
         // { return _viewNegativeTextBrush.brush( palette ).color(); }
-        { return Qt::red; }
+        { Q_UNUSED(palette); return Qt::red; }
 
         //* shadow
         QColor shadowColor( const QPalette& palette ) const

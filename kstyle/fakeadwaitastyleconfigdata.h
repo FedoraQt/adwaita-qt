@@ -627,12 +627,12 @@ class StyleConfigData
     bool mOutlineCloseButton;
 
     // Style
-    bool mAnimationsEnabled;
-    int mAnimationSteps;
-    int mAnimationsDuration;
-    bool mStackedWidgetTransitionsEnabled;
-    bool mProgressBarAnimated;
-    int mProgressBarBusyStepDuration;
+    bool mAnimationsEnabled { true };
+    int mAnimationSteps { 100 };
+    int mAnimationsDuration { 180 };
+    bool mStackedWidgetTransitionsEnabled { true };
+    bool mProgressBarAnimated { true };
+    int mProgressBarBusyStepDuration { 600 };
     int mScrollBarAddLineButtons;
     int mScrollBarSubLineButtons;
     bool mScrollBarShowOnMouseOver;
@@ -646,14 +646,14 @@ class StyleConfigData
     bool mTitleWidgetDrawFrame;
     bool mDockWidgetDrawFrame;
     bool mSidePanelDrawFrame;
-    bool mMenuItemDrawStrongFocus;
+    bool mMenuItemDrawStrongFocus { true };
     int mWindowDragMode;
     QStringList mWindowDragWhiteList;
     QStringList mWindowDragBlackList;
     bool mUseWMMoveResize;
     bool mSplitterProxyEnabled;
     int mSplitterProxyWidth;
-    bool mWidgetExplorerEnabled;
+    bool mWidgetExplorerEnabled { false };
     bool mDrawWidgetRects;
 
   private:
