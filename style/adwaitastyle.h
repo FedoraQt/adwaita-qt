@@ -91,6 +91,9 @@ namespace Adwaita
         //* widget unpolishing
         virtual void unpolish( QWidget* );
 
+        //* palette polishing
+        virtual void polish( QPalette &palette );
+
         //* polish scrollarea
         void polishScrollArea( QAbstractScrollArea* );
 
