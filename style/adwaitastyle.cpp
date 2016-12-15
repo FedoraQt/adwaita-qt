@@ -538,7 +538,7 @@ namespace Adwaita
         palette.setColor(QPalette::Disabled, QPalette::Light,           QColor("#f4f4f4"));
         palette.setColor(QPalette::Disabled, QPalette::Midlight,        QColor("#f4f4f4"));
         palette.setColor(QPalette::Disabled, QPalette::Dark,            QColor("#f4f4f4"));
-        palette.setColor(QPalette::Disabled, QPalette::Mid,             QColor("#e8e8e8"));
+        palette.setColor(QPalette::Disabled, QPalette::Mid,             QColor("#c3c3c3"));
         palette.setColor(QPalette::Disabled, QPalette::Shadow,          QColor("black"));
 
         palette.setColor(QPalette::Disabled, QPalette::Highlight,       QColor("#4a90d9"));
@@ -563,7 +563,7 @@ namespace Adwaita
         palette.setColor(QPalette::Inactive, QPalette::Light,           QColor("#ededed"));
         palette.setColor(QPalette::Inactive, QPalette::Midlight,        QColor("#ededed"));
         palette.setColor(QPalette::Inactive, QPalette::Dark,            QColor("#ededed"));
-        palette.setColor(QPalette::Inactive, QPalette::Mid,             QColor("#e0e0e0"));
+        palette.setColor(QPalette::Inactive, QPalette::Mid,             QColor("#c3c3c3"));
         palette.setColor(QPalette::Inactive, QPalette::Shadow,          QColor("black"));
 
         palette.setColor(QPalette::Inactive, QPalette::Highlight,       QColor("#4a90d9"));
