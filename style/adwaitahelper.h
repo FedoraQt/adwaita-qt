@@ -33,7 +33,7 @@
 #include <xcb/xcb.h>
 #endif
 
-#include <math.h>
+#include <cmath>
 
 namespace Adwaita
 {
@@ -69,7 +69,7 @@ namespace Adwaita
 
             if (bias <= 0.0) return c1;
             if (bias >= 1.0) return c2;
-            if (isnan(bias)) return c1;
+            if (std::isnan(bias)) return c1;
 
             qreal r = mixQreal(c1.redF(),   c2.redF(),   bias);
             qreal g = mixQreal(c1.greenF(), c2.greenF(), bias);
