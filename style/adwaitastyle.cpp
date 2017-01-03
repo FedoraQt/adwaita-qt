@@ -779,7 +779,7 @@ namespace Adwaita
             case SH_Menu_SupportsSections: return true;
             #endif
 
-            case SH_DialogButtonBox_ButtonsHaveIcons: return true;
+            case SH_DialogButtonBox_ButtonsHaveIcons: return false;
 
             case SH_GroupBox_TextLabelVerticalAlignment: return Qt::AlignVCenter;
             case SH_TabBar_Alignment: return StyleConfigData::tabBarDrawCenteredTabs() ? Qt::AlignCenter:Qt::AlignLeft;
