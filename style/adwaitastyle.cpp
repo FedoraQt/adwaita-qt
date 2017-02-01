@@ -515,7 +515,7 @@ namespace Adwaita
             palette.setColor(QPalette::All,      QPalette::Light,           QColor("white"));
             palette.setColor(QPalette::All,      QPalette::Midlight,        QColor("#d7d7d7"));
             palette.setColor(QPalette::All,      QPalette::Mid,             QColor("#b4b4b4"));
-            palette.setColor(QPalette::All,      QPalette::Dark,            QColor("#33393b"));
+            palette.setColor(QPalette::All,      QPalette::Dark,            QColor("#1a1a1a"));
             palette.setColor(QPalette::All,      QPalette::Shadow,          QColor("black"));
 
             palette.setColor(QPalette::All,      QPalette::Highlight,       QColor("#4a90d9"));
@@ -582,7 +582,7 @@ namespace Adwaita
 
             palette.setColor(QPalette::All,      QPalette::Light,           QColor("#fafafa"));
             palette.setColor(QPalette::All,      QPalette::Midlight,        QColor("#f3f3f3"));
-            palette.setColor(QPalette::All,      QPalette::Dark,            QColor("#e0e0e0"));
+            palette.setColor(QPalette::All,      QPalette::Dark,            QColor("#d3d3d3"));
             palette.setColor(QPalette::All,      QPalette::Mid,             QColor("#b4b4b4"));
             palette.setColor(QPalette::All,      QPalette::Shadow,          QColor("black"));
 
@@ -5549,12 +5549,20 @@ namespace Adwaita
             QFont font = painter->font();
             font.setBold(true);
             painter->setFont(font);
-            if (tabV2.state & State_Selected)
-                painter->setPen(option->palette.brush(QPalette::WindowText).color());
-            else if (tabV2.state & State_MouseOver)
-                painter->setPen(option->palette.brush(QPalette::Mid).color().darker(150));
-            else
-                painter->setPen(option->palette.brush(QPalette::Mid).color().darker(130));
+            if (!(tabV2.state & State_Enabled)) {
+                if (tabV2.state & State_Selected)
+                    painter->setPen(Helper::mix(option->palette.brush(QPalette::Text).color(), option->palette.brush(QPalette::Window).color(), 0.3));
+                else
+                    painter->setPen(Helper::mix(option->palette.brush(QPalette::Text).color(), option->palette.brush(QPalette::Window).color(), 0.4));
+            }
+            else {
+                if (tabV2.state & State_Selected)
+                    painter->setPen(option->palette.brush(QPalette::WindowText).color());
+                else if (tabV2.state & State_MouseOver)
+                    painter->setPen(Helper::mix(option->palette.brush(QPalette::Dark).color(), option->palette.brush(QPalette::Text).color(), 0.7));
+                else
+                    painter->setPen(Helper::mix(option->palette.brush(QPalette::Dark).color(), option->palette.brush(QPalette::Text).color(), 0.6));
+            }
 
             proxy()->drawItemText(painter, tr, alignment, tab->palette, tab->state & State_Enabled, tab->text, QPalette::NoRole);
 
@@ -5654,7 +5662,7 @@ namespace Adwaita
         const State& state( option->state );
         bool enabled( state & State_Enabled );
         bool selected( state & State_Selected );
-        bool mouseOver( !selected && ( state & State_MouseOver ) );
+        bool mouseOver( !selected && ( state & State_MouseOver ) && enabled );
 
         // check if tab is being dragged
         bool isDragged( widget && selected && painter->device() != widget );
@@ -5727,7 +5735,7 @@ namespace Adwaita
         }
 
         // underline
-        QColor underline( selected ? _helper->focusColor( palette ) : mouseOver ? option->palette.brush(QPalette::Mid).color() : Qt::transparent );
+        QColor underline( enabled && selected ? _helper->focusColor( palette ) : selected || mouseOver ? option->palette.brush(QPalette::Mid).color() : Qt::transparent );
 
         // outline
         QColor outline = QColor();
@@ -6857,7 +6865,8 @@ namespace Adwaita
 
         if (true) {
             painter->setPen(Qt::NoPen);
-            QColor background = Helper::mix( palette.base().color(), outline, 0.4 * opacity + 0.6 * pressedOpacity );
+            QColor background = Helper::mix( palette.base().color(), palette.text().color(), opacity * 0.1);
+            background = Helper::mix( background, palette.dark().color(), pressedOpacity);
             painter->setBrush(background);
             if (hasFocus)
                 painter->drawRect(arrowRect.adjusted(1, 3, -1, -2));

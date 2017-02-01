@@ -1275,7 +1275,7 @@ namespace Adwaita
         {
 
             painter->setPen( outline );
-            frameRect.adjust( 0.5, 0.5, -0.5, -0.5 );
+            frameRect.adjust( 1.0, 1.0, -1.0, -1.0 );
             adjustment = 0;
 
             painter->setBrush( Qt::NoBrush );
