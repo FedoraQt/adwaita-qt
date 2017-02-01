@@ -163,7 +163,7 @@ namespace Adwaita
     QColor Helper::buttonOutlineColor( const QPalette& palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode ) const
     {
 
-        QColor outline( mix( palette.color( QPalette::Button ), palette.color( QPalette::Shadow ), 0.5 ) );
+        QColor outline( mix( palette.color( QPalette::Button ), palette.color( QPalette::Shadow ), 0.3 ) );
 
         return outline;
 
