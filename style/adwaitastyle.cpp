@@ -3592,7 +3592,7 @@ namespace Adwaita
             QColor background( _helper->buttonBackgroundColor( palette, mouseOver, hasFocus, sunken, opacity, mode ) );
 
             // render
-            _helper->renderButtonFrame( painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver, windowActive );
+            _helper->renderButtonFrame( painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver, enabled && windowActive );
 
         }
 
@@ -3901,7 +3901,7 @@ namespace Adwaita
 
         // render
         QColor shadow( _helper->shadowColor( palette ) );
-        _helper->renderCheckBox( painter, rect, background, outline, tickColor, sunken, checkBoxState, animation, windowActive );
+        _helper->renderCheckBox( painter, rect, background, outline, tickColor, sunken, checkBoxState, animation, enabled && windowActive );
         return true;
 
     }
@@ -4824,7 +4824,7 @@ namespace Adwaita
             bool active( menuItemOption->checked );
             QColor shadow( _helper->shadowColor( palette ) );
             QColor color( _helper->checkBoxIndicatorColor( palette, false, enabled && active ) );
-            _helper->renderCheckBox( painter, checkBoxRect, Qt::transparent, outline, color, sunken, state, active );
+            _helper->renderCheckBox( painter, checkBoxRect, Qt::transparent, outline, color, sunken, state, enabled && windowActive);
 
         } else if( menuItemOption->checkType == QStyleOptionMenuItem::Exclusive ) {
 
@@ -6246,7 +6246,7 @@ namespace Adwaita
                     QColor outline( _helper->buttonOutlineColor( palette, mouseOver, hasFocus, opacity, mode ) );
                     QColor background( _helper->buttonBackgroundColor( palette, mouseOver, hasFocus, sunken, opacity, mode ) );
 
-                    _helper->renderFlatButtonFrame( painter, subControlRect( CC_ComboBox, option, SC_ComboBoxArrow, widget), background, outline, shadow, hasFocus, sunken, mouseOver, windowActive );
+                    _helper->renderFlatButtonFrame( painter, subControlRect( CC_ComboBox, option, SC_ComboBoxArrow, widget), background, outline, shadow, hasFocus, sunken, mouseOver, enabled && windowActive );
 
                     QStyleOptionComplex tmpOpt(*option);
                     tmpOpt.rect.setWidth(tmpOpt.rect.width() - subControlRect( CC_ComboBox, option, SC_ComboBoxArrow, widget).width() + 3);
@@ -6274,7 +6274,7 @@ namespace Adwaita
                     QColor background( _helper->buttonBackgroundColor( palette, mouseOver, hasFocus, sunken, opacity, mode ) );
 
                     // render
-                    _helper->renderButtonFrame( painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver, windowActive );
+                    _helper->renderButtonFrame( painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver, enabled && windowActive );
 
                     if (hasFocus)
                     {
