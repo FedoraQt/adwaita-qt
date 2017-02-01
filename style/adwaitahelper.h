@@ -195,10 +195,10 @@ namespace Adwaita
         void renderMenuFrame( QPainter*, const QRect&, const QColor& color, const QColor& outline, bool roundCorners = true ) const;
 
         //* button frame
-        void renderButtonFrame( QPainter*, const QRect&, const QColor& color, const QColor& outline, const QColor& shadow, bool focus, bool sunken, bool mouseOver ) const;
+        void renderButtonFrame(QPainter*, const QRect&, const QColor& color, const QColor& outline, const QColor& shadow, bool focus, bool sunken, bool mouseOver , bool active) const;
 
         //* button frame
-        void renderFlatButtonFrame( QPainter*, const QRect&, const QColor& color, const QColor& outline, const QColor& shadow, bool focus, bool sunken, bool mouseOver ) const;
+        void renderFlatButtonFrame(QPainter*, const QRect&, const QColor& color, const QColor& outline, const QColor& shadow, bool focus, bool sunken, bool mouseOver , bool active) const;
 
         //* toolbutton frame
         void renderToolButtonFrame( QPainter*, const QRect&, const QColor& color, bool sunken ) const;
@@ -219,19 +219,19 @@ namespace Adwaita
         void renderCheckBoxBackground( QPainter*, const QRect&, const QColor& color, const QColor& outline, bool sunken ) const;
 
         //* checkbox
-        void renderCheckBox( QPainter*, const QRect&, const QColor& background, const QColor& outline, const QColor& tickColor, bool sunken, CheckBoxState state, qreal animation = AnimationData::OpacityInvalid ) const;
+        void renderCheckBox( QPainter*, const QRect&, const QColor& background, const QColor& outline, const QColor& tickColor, bool sunken, CheckBoxState state, qreal animation = AnimationData::OpacityInvalid, bool active = true ) const;
 
         //* radio button
         void renderRadioButtonBackground( QPainter*, const QRect&, const QColor& color, const QColor& outline, bool sunken ) const;
 
         //* radio button
-        void renderRadioButton( QPainter*, const QRect&, const QColor& background, const QColor& outline, const QColor& tickColor, bool sunken, RadioButtonState state, qreal animation = AnimationData::OpacityInvalid ) const;
+        void renderRadioButton(QPainter*, const QRect&, const QColor& background, const QColor& outline, const QColor& tickColor, bool sunken, bool enabled, RadioButtonState state, qreal animation = AnimationData::OpacityInvalid ) const;
 
         //* slider groove
         void renderSliderGroove( QPainter*, const QRect&, const QColor& ) const;
 
         //* slider handle
-        void renderSliderHandle( QPainter*, const QRect&, const QColor&, const QColor& outline, const QColor& shadow, bool sunken, Side ticks) const;
+        void renderSliderHandle( QPainter*, const QRect&, const QColor&, const QColor& outline, const QColor& shadow, bool sunken, bool enabled, Side ticks) const;
 
         //* dial groove
         void renderDialGroove( QPainter*, const QRect&, const QColor& ) const;

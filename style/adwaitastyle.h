@@ -76,7 +76,7 @@ namespace Adwaita
         public:
 
         //* constructor
-        explicit Style( void );
+        explicit Style( bool dark );
 
         //* destructor
         virtual ~Style( void );
@@ -517,6 +517,8 @@ namespace Adwaita
 
         //! styled painting for KCapacityBar
         QStyle::ControlElement CE_CapacityBar;
+
+        bool _dark { false };
 
         //@}
 

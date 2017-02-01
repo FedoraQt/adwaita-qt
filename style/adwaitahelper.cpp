@@ -70,7 +70,7 @@ namespace Adwaita
     QColor Helper::frameOutlineColor( const QPalette& palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode ) const
     {
 
-        QColor outline( mix( palette.color( QPalette::Window ), palette.color( QPalette::WindowText ), 0.25 ) );
+        QColor outline( mix( palette.color( QPalette::Window ), palette.color( QPalette::Shadow ), 0.5 ) );
 
         // focus takes precedence over hover
         if( mode == AnimationFocus )
@@ -163,7 +163,7 @@ namespace Adwaita
     QColor Helper::buttonOutlineColor( const QPalette& palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode ) const
     {
 
-        QColor outline( mix( palette.color( QPalette::Button ), palette.color( QPalette::ButtonText ), 0.3 ) );
+        QColor outline( mix( palette.color( QPalette::Button ), palette.color( QPalette::Shadow ), 0.5 ) );
 
         return outline;
 
@@ -198,7 +198,9 @@ namespace Adwaita
     QColor Helper::toolButtonColor( const QPalette& palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity, AnimationMode mode ) const
     {
 
-        return buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode);
+        if (sunken || mode != AnimationNone)
+            return buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode);
+        return Qt::transparent;
 
     }
 
@@ -206,7 +208,7 @@ namespace Adwaita
     QColor Helper::sliderOutlineColor( const QPalette& palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode ) const
     {
 
-        QColor outline( mix( palette.color( QPalette::Window ), palette.color( QPalette::WindowText ), 0.4 ) );
+        QColor outline( mix( palette.color( QPalette::Window ), palette.color( QPalette::Shadow ), 0.5 ) );
 
         // hover takes precedence over focus
         if( mode == AnimationHover )
@@ -541,7 +543,7 @@ namespace Adwaita
     void Helper::renderButtonFrame(
         QPainter* painter, const QRect& rect,
         const QColor& color, const QColor& outline, const QColor& shadow,
-        bool hasFocus, bool sunken, bool mouseOver ) const
+        bool hasFocus, bool sunken, bool mouseOver, bool active ) const
     {
 
         // setup painter
@@ -569,12 +571,15 @@ namespace Adwaita
             QLinearGradient gradient( frameRect.topLeft(), frameRect.bottomLeft() );
             //gradient.setColorAt( 0, color.darker( sunken ? 110 : (hasFocus|mouseOver) ? 85 : 100 ) );
             //gradient.setColorAt( 1, color.darker( sunken ? 130 : (hasFocus|mouseOver) ? 95 : 110 ) );
-            if (sunken) {
-                gradient.setColorAt( 0, color);
+            if (!active) {
+                gradient.setColorAt( 0, color );
+            }
+            else if (sunken) {
+                gradient.setColorAt( 0, color );
             }
             else {
-                gradient.setColorAt( 0, color.lighter( 100 ) );
-                gradient.setColorAt( 1, color.darker( 110 ) );
+                gradient.setColorAt( 0, mix(color, Qt::white, 0.07) );
+                gradient.setColorAt( 1, mix(color, Qt::black, 0.1) );
             }
             painter->setBrush( gradient );
 
@@ -589,7 +594,7 @@ namespace Adwaita
     void Helper::renderFlatButtonFrame(
         QPainter* painter, const QRect& rect,
         const QColor& color, const QColor& outline, const QColor& shadow,
-        bool hasFocus, bool sunken, bool mouseOver ) const
+        bool hasFocus, bool sunken, bool mouseOver, bool active ) const
     {
 
         // setup painter
@@ -617,12 +622,16 @@ namespace Adwaita
             QLinearGradient gradient( frameRect.topLeft(), frameRect.bottomLeft() );
             //gradient.setColorAt( 0, color.darker( sunken ? 110 : (hasFocus|mouseOver) ? 85 : 100 ) );
             //gradient.setColorAt( 1, color.darker( sunken ? 130 : (hasFocus|mouseOver) ? 95 : 110 ) );
-            if (sunken) {
+
+            if (!active) {
+                gradient.setColorAt( 0, color );
+            }
+            else if (sunken) {
                 gradient.setColorAt( 0, color);
             }
             else {
-                gradient.setColorAt( 0, color.lighter( 100 ) );
-                gradient.setColorAt( 1, color.darker( 110 ) );
+                gradient.setColorAt( 0, mix(color, Qt::white, 0.07) );
+                gradient.setColorAt( 1, mix(color, Qt::black, 0.1) );
             }
             painter->setBrush( gradient );
 
@@ -822,7 +831,7 @@ namespace Adwaita
     void Helper::renderCheckBox(
         QPainter* painter, const QRect& rect,
         const QColor& background, const QColor& outline, const QColor& tickColor,
-        bool sunken, CheckBoxState state, qreal animation ) const
+        bool sunken, CheckBoxState state, qreal animation, bool active ) const
     {
 
         // setup painter
@@ -837,7 +846,7 @@ namespace Adwaita
         // content
         {
 
-            renderButtonFrame(painter, rect, background, outline, Qt::transparent, false, sunken, false);
+            renderButtonFrame(painter, rect, background, outline, Qt::transparent, false, sunken, false, active);
 
         }
 
@@ -922,7 +931,7 @@ namespace Adwaita
     void Helper::renderRadioButton(
         QPainter* painter, const QRect& rect,
         const QColor& background, const QColor& outline, const QColor& tickColor,
-        bool sunken, RadioButtonState state, qreal animation ) const
+        bool sunken, bool enabled, RadioButtonState state, qreal animation ) const
     {
 
         // setup painter
@@ -935,18 +944,22 @@ namespace Adwaita
         // content
         {
 
-
-            QLinearGradient gradient( frameRect.topLeft(), frameRect.bottomLeft() );
-            if (sunken) {
-                gradient.setColorAt( 0, background);
+            if (enabled) {
+                QLinearGradient gradient( frameRect.topLeft(), frameRect.bottomLeft() );
+                if (sunken) {
+                    gradient.setColorAt( 0, background);
+                }
+                else {
+                    gradient.setColorAt( 0, mix(background, Qt::white, 0.07) );
+                    gradient.setColorAt( 1, mix(background, Qt::black, 0.1) );
+                }
+                painter->setBrush( gradient );
             }
             else {
-                gradient.setColorAt( 0, background.lighter( 100 ) );
-                gradient.setColorAt( 1, background.darker( 110 ) );
+                painter->setBrush( background );
             }
 
             painter->setPen( QPen( outline, 1 ) );
-            painter->setBrush( gradient );
 
             QRectF contentRect( frameRect.adjusted( 0.5, 0.5, -0.5, -0.5 ) );
             painter->drawEllipse( contentRect );
@@ -1073,7 +1086,8 @@ namespace Adwaita
         const QColor& outline,
         const QColor& shadow,
         bool sunken,
-        Side ticks ) const
+        bool enabled,
+        Side ticks) const
     {
 
         // setup painter
@@ -1099,16 +1113,21 @@ namespace Adwaita
         // set brush
         if( color.isValid() ) {
 
-            QLinearGradient gradient( frameRect.topLeft(), frameRect.bottomLeft() );
-            if (sunken) {
-                gradient.setColorAt( 0, color);
+            if (enabled) {
+                QLinearGradient gradient( frameRect.topLeft(), frameRect.bottomLeft() );
+                if (sunken) {
+                    gradient.setColorAt( 0, color);
+                }
+                else {
+                    gradient.setColorAt( 0, mix(color, Qt::white, 0.07) );
+                    gradient.setColorAt( 1, mix(color, Qt::black, 0.1) );
+                }
+                painter->setBrush(gradient);
             }
             else {
-                gradient.setColorAt( 0, color.lighter( 100 ) );
-                gradient.setColorAt( 1, color.darker( 110 ) );
+                painter->setBrush(color);
             }
 
-            painter->setBrush(gradient);
         }
         else painter->setBrush( Qt::NoBrush );
 

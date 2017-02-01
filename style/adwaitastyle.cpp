@@ -206,7 +206,7 @@ namespace Adwaita
 {
 
     //______________________________________________________________
-    Style::Style( void ):
+    Style::Style( bool dark ):
         _addLineButtons( SingleButton )
         , _subLineButtons( SingleButton )
 
@@ -227,6 +227,7 @@ namespace Adwaita
         , SH_ArgbDndWindow( newStyleHint( QStringLiteral( "SH_ArgbDndWindow" ) ) )
         , CE_CapacityBar( newControlElement( QStringLiteral( "CE_CapacityBar" ) ) )
         #endif
+        , _dark(dark)
     {
 
         // use DBus connection to update on adwaita configuration change
@@ -499,79 +500,142 @@ namespace Adwaita
     void Style::polish(QPalette &palette)
     {
 
-        // All, used especially for active elements in a focused window
-        palette.setColor(QPalette::All,      QPalette::Window,          QColor("#ededed"));
-        palette.setColor(QPalette::All,      QPalette::WindowText,      QColor("#2e3436"));
-        palette.setColor(QPalette::All,      QPalette::Base,            QColor("white"));
-        palette.setColor(QPalette::All,      QPalette::AlternateBase,   QColor("#ededed"));
-        palette.setColor(QPalette::All,      QPalette::ToolTipBase,     QColor("#060606"));
-        palette.setColor(QPalette::All,      QPalette::ToolTipText,     QColor("white"));
-        palette.setColor(QPalette::All,      QPalette::Text,            QColor("#2e3436"));
-        palette.setColor(QPalette::All,      QPalette::Button,          QColor("#eeeeee"));
-        palette.setColor(QPalette::All,      QPalette::ButtonText,      QColor("#2e3436"));
-        palette.setColor(QPalette::All,      QPalette::BrightText,      QColor("white"));
+        if (_dark) {
+            palette.setColor(QPalette::All,      QPalette::Window,          QColor("#33393b"));
+            palette.setColor(QPalette::All,      QPalette::WindowText,      QColor("white"));
+            palette.setColor(QPalette::All,      QPalette::Base,            QColor("#232729"));
+            palette.setColor(QPalette::All,      QPalette::AlternateBase,   QColor("#1c1f20"));
+            palette.setColor(QPalette::All,      QPalette::ToolTipBase,     QColor("#1c1f20"));
+            palette.setColor(QPalette::All,      QPalette::ToolTipText,     QColor("white"));
+            palette.setColor(QPalette::All,      QPalette::Text,            QColor("white"));
+            palette.setColor(QPalette::All,      QPalette::Button,          QColor("#25292b"));
+            palette.setColor(QPalette::All,      QPalette::ButtonText,      QColor("white"));
+            palette.setColor(QPalette::All,      QPalette::BrightText,      QColor("black"));
 
-        palette.setColor(QPalette::All,      QPalette::Light,           QColor("#fafafa"));
-        palette.setColor(QPalette::All,      QPalette::Midlight,        QColor("#f3f3f3"));
-        palette.setColor(QPalette::All,      QPalette::Dark,            QColor("#e0e0e0"));
-        palette.setColor(QPalette::All,      QPalette::Mid,             QColor("#b4b4b4"));
-        palette.setColor(QPalette::All,      QPalette::Shadow,          QColor("black"));
+            palette.setColor(QPalette::All,      QPalette::Light,           QColor("white"));
+            palette.setColor(QPalette::All,      QPalette::Midlight,        QColor("#d7d7d7"));
+            palette.setColor(QPalette::All,      QPalette::Mid,             QColor("#b4b4b4"));
+            palette.setColor(QPalette::All,      QPalette::Dark,            QColor("#33393b"));
+            palette.setColor(QPalette::All,      QPalette::Shadow,          QColor("black"));
 
-        palette.setColor(QPalette::All,      QPalette::Highlight,       QColor("#4a90d9"));
-        palette.setColor(QPalette::All,      QPalette::HighlightedText, QColor("white"));
+            palette.setColor(QPalette::All,      QPalette::Highlight,       QColor("#4a90d9"));
+            palette.setColor(QPalette::All,      QPalette::HighlightedText, QColor("white"));
 
-        palette.setColor(QPalette::All,      QPalette::Link,            QColor("#2a76c6"));
-        palette.setColor(QPalette::All,      QPalette::LinkVisited,     QColor("#2a76c6"));
-
-        // Exceptions for disabled elements in a focused window
-        palette.setColor(QPalette::Disabled, QPalette::Window,          QColor("#f4f4f4"));
-        palette.setColor(QPalette::Disabled, QPalette::WindowText,      QColor("#8d9091"));
-        palette.setColor(QPalette::Disabled, QPalette::Base,            QColor("white"));
-        palette.setColor(QPalette::Disabled, QPalette::AlternateBase,   QColor("#ededed"));
-    //     palette.setColor(QPalette::Disabled, QPalette::ToolTipBase,     QColor("#ff1234"));
-    //     palette.setColor(QPalette::Disabled, QPalette::ToolTipText,     QColor("#ff1234"));
-        palette.setColor(QPalette::Disabled, QPalette::Text,            QColor("#8d9091"));
-        palette.setColor(QPalette::Disabled, QPalette::Button,          QColor("#f4f4f4"));
-        palette.setColor(QPalette::Disabled, QPalette::ButtonText,      QColor("#8d9091"));
-        palette.setColor(QPalette::Disabled, QPalette::BrightText,      QColor("#ededed"));
-
-        palette.setColor(QPalette::Disabled, QPalette::Light,           QColor("#f4f4f4"));
-        palette.setColor(QPalette::Disabled, QPalette::Midlight,        QColor("#f4f4f4"));
-        palette.setColor(QPalette::Disabled, QPalette::Dark,            QColor("#f4f4f4"));
-        palette.setColor(QPalette::Disabled, QPalette::Mid,             QColor("#c3c3c3"));
-        palette.setColor(QPalette::Disabled, QPalette::Shadow,          QColor("black"));
-
-        palette.setColor(QPalette::Disabled, QPalette::Highlight,       QColor("#4a90d9"));
-        palette.setColor(QPalette::Disabled, QPalette::HighlightedText, QColor("white"));
-
-        palette.setColor(QPalette::Disabled, QPalette::Link,            QColor("#4a90d9"));
-        palette.setColor(QPalette::Disabled, QPalette::LinkVisited,     QColor("#4a90d9"));
+            palette.setColor(QPalette::All,      QPalette::Link,            QColor("#2a76c6"));
+            palette.setColor(QPalette::All,      QPalette::LinkVisited,     QColor("#2a76c6"));
 
 
-        // Exceptions for an unfocused window
-        palette.setColor(QPalette::Inactive, QPalette::Window,          QColor("#ededed"));
-        palette.setColor(QPalette::Inactive, QPalette::WindowText,      QColor("#54595a"));
-        palette.setColor(QPalette::Inactive, QPalette::Base,            QColor("#fcfcfc"));
-        palette.setColor(QPalette::Inactive, QPalette::AlternateBase,   QColor("#ededed"));
-    //     palette.setColor(QPalette::Inactive, QPalette::ToolTipBase,     QColor("#ff1234"));
-    //     palette.setColor(QPalette::Inactive, QPalette::ToolTipText,     QColor("#ff1234"));
-        palette.setColor(QPalette::Inactive, QPalette::Text,            QColor("#54595a"));
-        palette.setColor(QPalette::Inactive, QPalette::Button,          QColor("#ededed"));
-        palette.setColor(QPalette::Inactive, QPalette::ButtonText,      QColor("#54595a"));
-        palette.setColor(QPalette::Inactive, QPalette::BrightText,      QColor("#ededed"));
+            palette.setColor(QPalette::Disabled, QPalette::Window,          QColor("#2e3436"));
+            palette.setColor(QPalette::Disabled, QPalette::WindowText,      QColor("#8d9091"));
+            palette.setColor(QPalette::Disabled, QPalette::Base,            QColor("#2d3234"));
+            palette.setColor(QPalette::Disabled, QPalette::AlternateBase,   QColor("#ededed"));
+            palette.setColor(QPalette::Disabled, QPalette::Text,            QColor("#8d9091"));
+            palette.setColor(QPalette::Disabled, QPalette::Button,          QColor("#33393b"));
+            palette.setColor(QPalette::Disabled, QPalette::ButtonText,      QColor("#8d9091"));
+            palette.setColor(QPalette::Disabled, QPalette::BrightText,      QColor("#ededed"));
 
-        palette.setColor(QPalette::Inactive, QPalette::Light,           QColor("#ededed"));
-        palette.setColor(QPalette::Inactive, QPalette::Midlight,        QColor("#ededed"));
-        palette.setColor(QPalette::Inactive, QPalette::Dark,            QColor("#ededed"));
-        palette.setColor(QPalette::Inactive, QPalette::Mid,             QColor("#c3c3c3"));
-        palette.setColor(QPalette::Inactive, QPalette::Shadow,          QColor("black"));
+            palette.setColor(QPalette::Disabled, QPalette::Light,           QColor("#f4f4f4"));
+            palette.setColor(QPalette::Disabled, QPalette::Midlight,        QColor("#f4f4f4"));
+            palette.setColor(QPalette::Disabled, QPalette::Dark,            QColor("#f4f4f4"));
+            palette.setColor(QPalette::Disabled, QPalette::Mid,             QColor("#c3c3c3"));
+            palette.setColor(QPalette::Disabled, QPalette::Shadow,          QColor("black"));
 
-        palette.setColor(QPalette::Inactive, QPalette::Highlight,       QColor("#4a90d9"));
-        palette.setColor(QPalette::Inactive, QPalette::HighlightedText, QColor("white"));
+            palette.setColor(QPalette::Disabled, QPalette::Highlight,       QColor("#4a90d9"));
+            palette.setColor(QPalette::Disabled, QPalette::HighlightedText, QColor("white"));
 
-        palette.setColor(QPalette::Inactive, QPalette::Link,            QColor("#4a90d9"));
-        palette.setColor(QPalette::Inactive, QPalette::LinkVisited,     QColor("#4a90d9"));
+            palette.setColor(QPalette::Disabled, QPalette::Link,            QColor("#4a90d9"));
+            palette.setColor(QPalette::Disabled, QPalette::LinkVisited,     QColor("#4a90d9"));
 
+
+            palette.setColor(QPalette::Inactive, QPalette::Window,          QColor("#33393b"));
+            palette.setColor(QPalette::Inactive, QPalette::WindowText,      QColor("#d3d4d5"));
+            palette.setColor(QPalette::Inactive, QPalette::Base,            QColor("#252a2c"));
+            palette.setColor(QPalette::Inactive, QPalette::AlternateBase,   QColor("#1d2021"));
+            palette.setColor(QPalette::Inactive, QPalette::Text,            QColor("#d3d4d5"));
+            palette.setColor(QPalette::Inactive, QPalette::Button,          QColor("#33393b"));
+            palette.setColor(QPalette::Inactive, QPalette::ButtonText,      QColor("#eeeeec"));
+            palette.setColor(QPalette::Inactive, QPalette::BrightText,      QColor("#d3d4d5"));
+
+            palette.setColor(QPalette::Inactive, QPalette::Light,           QColor("white"));
+            palette.setColor(QPalette::Inactive, QPalette::Midlight,        QColor("#d7d7d7"));
+            palette.setColor(QPalette::Inactive, QPalette::Mid,             QColor("#b4b4b4"));
+            palette.setColor(QPalette::Inactive, QPalette::Dark,            QColor("#33393b"));
+            palette.setColor(QPalette::Inactive, QPalette::Shadow,          QColor("black"));
+
+            palette.setColor(QPalette::Inactive, QPalette::Highlight,       QColor("#4a90d9"));
+            palette.setColor(QPalette::Inactive, QPalette::HighlightedText, QColor("white"));
+
+            palette.setColor(QPalette::Inactive, QPalette::Link,            QColor("#4a90d9"));
+            palette.setColor(QPalette::Inactive, QPalette::LinkVisited,     QColor("#4a90d9"));
+        }
+        else {
+            palette.setColor(QPalette::All,      QPalette::Window,          QColor("#ededed"));
+            palette.setColor(QPalette::All,      QPalette::WindowText,      QColor("#2e3436"));
+            palette.setColor(QPalette::All,      QPalette::Base,            QColor("white"));
+            palette.setColor(QPalette::All,      QPalette::AlternateBase,   QColor("#ededed"));
+            palette.setColor(QPalette::All,      QPalette::ToolTipBase,     QColor("#060606"));
+            palette.setColor(QPalette::All,      QPalette::ToolTipText,     QColor("white"));
+            palette.setColor(QPalette::All,      QPalette::Text,            QColor("#2e3436"));
+            palette.setColor(QPalette::All,      QPalette::Button,          QColor("#eeeeee"));
+            palette.setColor(QPalette::All,      QPalette::ButtonText,      QColor("#2e3436"));
+            palette.setColor(QPalette::All,      QPalette::BrightText,      QColor("white"));
+
+            palette.setColor(QPalette::All,      QPalette::Light,           QColor("#fafafa"));
+            palette.setColor(QPalette::All,      QPalette::Midlight,        QColor("#f3f3f3"));
+            palette.setColor(QPalette::All,      QPalette::Dark,            QColor("#e0e0e0"));
+            palette.setColor(QPalette::All,      QPalette::Mid,             QColor("#b4b4b4"));
+            palette.setColor(QPalette::All,      QPalette::Shadow,          QColor("black"));
+
+            palette.setColor(QPalette::All,      QPalette::Highlight,       QColor("#4a90d9"));
+            palette.setColor(QPalette::All,      QPalette::HighlightedText, QColor("white"));
+
+            palette.setColor(QPalette::All,      QPalette::Link,            QColor("#2a76c6"));
+            palette.setColor(QPalette::All,      QPalette::LinkVisited,     QColor("#2a76c6"));
+
+
+            palette.setColor(QPalette::Disabled, QPalette::Window,          QColor("#f4f4f4"));
+            palette.setColor(QPalette::Disabled, QPalette::WindowText,      QColor("#8d9091"));
+            palette.setColor(QPalette::Disabled, QPalette::Base,            QColor("white"));
+            palette.setColor(QPalette::Disabled, QPalette::AlternateBase,   QColor("#ededed"));
+            palette.setColor(QPalette::Disabled, QPalette::Text,            QColor("#8d9091"));
+            palette.setColor(QPalette::Disabled, QPalette::Button,          QColor("#f4f4f4"));
+            palette.setColor(QPalette::Disabled, QPalette::ButtonText,      QColor("#8d9091"));
+            palette.setColor(QPalette::Disabled, QPalette::BrightText,      QColor("#ededed"));
+
+            palette.setColor(QPalette::Disabled, QPalette::Light,           QColor("#f4f4f4"));
+            palette.setColor(QPalette::Disabled, QPalette::Midlight,        QColor("#f4f4f4"));
+            palette.setColor(QPalette::Disabled, QPalette::Dark,            QColor("#f4f4f4"));
+            palette.setColor(QPalette::Disabled, QPalette::Mid,             QColor("#c3c3c3"));
+            palette.setColor(QPalette::Disabled, QPalette::Shadow,          QColor("black"));
+
+            palette.setColor(QPalette::Disabled, QPalette::Highlight,       QColor("#4a90d9"));
+            palette.setColor(QPalette::Disabled, QPalette::HighlightedText, QColor("white"));
+
+            palette.setColor(QPalette::Disabled, QPalette::Link,            QColor("#4a90d9"));
+            palette.setColor(QPalette::Disabled, QPalette::LinkVisited,     QColor("#4a90d9"));
+
+
+            palette.setColor(QPalette::Inactive, QPalette::Window,          QColor("#ededed"));
+            palette.setColor(QPalette::Inactive, QPalette::WindowText,      QColor("#54595a"));
+            palette.setColor(QPalette::Inactive, QPalette::Base,            QColor("#fcfcfc"));
+            palette.setColor(QPalette::Inactive, QPalette::AlternateBase,   QColor("#ededed"));
+            palette.setColor(QPalette::Inactive, QPalette::Text,            QColor("#54595a"));
+            palette.setColor(QPalette::Inactive, QPalette::Button,          QColor("#ededed"));
+            palette.setColor(QPalette::Inactive, QPalette::ButtonText,      QColor("#54595a"));
+            palette.setColor(QPalette::Inactive, QPalette::BrightText,      QColor("#ededed"));
+
+            palette.setColor(QPalette::Inactive, QPalette::Light,           QColor("#ededed"));
+            palette.setColor(QPalette::Inactive, QPalette::Midlight,        QColor("#ededed"));
+            palette.setColor(QPalette::Inactive, QPalette::Dark,            QColor("#ededed"));
+            palette.setColor(QPalette::Inactive, QPalette::Mid,             QColor("#c3c3c3"));
+            palette.setColor(QPalette::Inactive, QPalette::Shadow,          QColor("black"));
+
+            palette.setColor(QPalette::Inactive, QPalette::Highlight,       QColor("#4a90d9"));
+            palette.setColor(QPalette::Inactive, QPalette::HighlightedText, QColor("white"));
+
+            palette.setColor(QPalette::Inactive, QPalette::Link,            QColor("#4a90d9"));
+            palette.setColor(QPalette::Inactive, QPalette::LinkVisited,     QColor("#4a90d9"));
+        }
     }
 
     //______________________________________________________________
@@ -3333,7 +3397,8 @@ namespace Adwaita
         // get rect, orientation, palette
         QRect rect( option->rect );
         QColor outline( _helper->frameOutlineColor( option->palette ) );
-        QColor background( option->palette.mid().color().lighter(115) );
+        //QColor background( option->palette.mid().color().lighter(115) );
+        QColor background( _helper->mix(option->palette.button().color(), option->palette.buttonText().color(), 0.08) );
 
         // setup painter
         painter->setBrush( background );
@@ -3489,6 +3554,7 @@ namespace Adwaita
         // button state
         const State& state( option->state );
         bool enabled( state & State_Enabled );
+        bool windowActive( state & State_Active );
         bool mouseOver( enabled && ( state & State_MouseOver ) );
         bool hasFocus( ( enabled && ( state & State_HasFocus ) ) && !( widget && widget->focusProxy()));
         bool sunken( state & ( State_On|State_Sunken ) );
@@ -3526,7 +3592,7 @@ namespace Adwaita
             QColor background( _helper->buttonBackgroundColor( palette, mouseOver, hasFocus, sunken, opacity, mode ) );
 
             // render
-            _helper->renderButtonFrame( painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver );
+            _helper->renderButtonFrame( painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver, windowActive );
 
         }
 
@@ -3546,6 +3612,7 @@ namespace Adwaita
         const State& state( option->state );
         bool autoRaise( state & State_AutoRaise );
         bool enabled( state & State_Enabled );
+        bool windowActive( state & State_Active );
         bool sunken( state & (State_On | State_Sunken) );
         bool mouseOver( enabled && (option->state & State_MouseOver) );
         bool hasFocus( enabled && (option->state & (State_HasFocus | State_Sunken)) );
@@ -3578,7 +3645,7 @@ namespace Adwaita
             }
 
             // render
-            _helper->renderButtonFrame( painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver );
+            _helper->renderButtonFrame( painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver, windowActive );
 
         } else {
 
@@ -3725,7 +3792,7 @@ namespace Adwaita
         bool mouseOver( ( state & State_MouseOver ) && ( !abstractItemView || abstractItemView->selectionMode() != QAbstractItemView::NoSelection ) );
         bool selected( state & State_Selected );
         bool enabled( state & State_Enabled );
-        bool active( state & State_Active );
+        bool windowActive( state & State_Active );
 
         bool hasCustomBackground = viewItemOption->backgroundBrush.style() != Qt::NoBrush && !( state & State_Selected );
         bool hasSolidBackground = !hasCustomBackground || viewItemOption->backgroundBrush.style() == Qt::SolidPattern;
@@ -3737,7 +3804,7 @@ namespace Adwaita
 
         // define color group
         QPalette::ColorGroup colorGroup;
-        if( enabled ) colorGroup = active ? QPalette::Active : QPalette::Inactive;
+        if( enabled ) colorGroup = windowActive ? QPalette::Active : QPalette::Inactive;
         else colorGroup = QPalette::Disabled;
 
         // render alternate background
@@ -3797,9 +3864,10 @@ namespace Adwaita
         bool mouseOver( enabled && ( state & State_MouseOver ) );
         bool sunken( enabled && ( state & State_Sunken ) );
         bool active( ( state & (State_On|State_NoChange) ) );
+        bool windowActive( state & State_Active );
 
         const QColor& outline( _helper->frameOutlineColor( palette ) );
-        const QColor& background( _helper->buttonBackgroundColor(palette, mouseOver, false, sunken ).lighter() );
+        const QColor& background( _helper->buttonBackgroundColor(palette, mouseOver, false, sunken ) );
 
         // checkbox state
         CheckBoxState checkBoxState( CheckOff );
@@ -3833,7 +3901,7 @@ namespace Adwaita
 
         // render
         QColor shadow( _helper->shadowColor( palette ) );
-        _helper->renderCheckBox( painter, rect, background, outline, tickColor, sunken, checkBoxState, animation );
+        _helper->renderCheckBox( painter, rect, background, outline, tickColor, sunken, checkBoxState, animation, windowActive );
         return true;
 
     }
@@ -3852,9 +3920,10 @@ namespace Adwaita
         bool mouseOver( enabled && ( state & State_MouseOver ) );
         bool sunken( state & State_Sunken );
         bool checked( state & State_On );
+        bool windowActive( state & State_Active );
 
         const QColor& outline( _helper->frameOutlineColor( palette ) );
-        const QColor& background( _helper->buttonBackgroundColor(palette, mouseOver, false, sunken ).lighter() );
+        const QColor& background( _helper->buttonBackgroundColor(palette, mouseOver, false, sunken ) );
 
         // radio button state
         RadioButtonState radioButtonState( state & State_On ? RadioOn:RadioOff );
@@ -3886,7 +3955,7 @@ namespace Adwaita
         }
 
         // render
-        _helper->renderRadioButton( painter, rect, background, outline, tickColor, sunken, radioButtonState, animation );
+        _helper->renderRadioButton( painter, rect, background, outline, tickColor, sunken, enabled && windowActive, radioButtonState, animation );
 
         return true;
 
@@ -3913,6 +3982,7 @@ namespace Adwaita
 
         // store state
         bool enabled( state & State_Enabled );
+        bool windowActive( state & State_Active );
         bool hasFocus( enabled && ( state & ( State_HasFocus | State_Sunken ) ) );
         bool mouseOver( enabled && ( state & State_MouseOver ) );
         bool sunken( enabled && ( state & State_Sunken ) );
@@ -3936,7 +4006,7 @@ namespace Adwaita
         frameRect = visualRect( option, frameRect );
 
         // render
-        _helper->renderButtonFrame( painter, frameRect, background, outline, shadow, hasFocus, sunken, mouseOver );
+        _helper->renderButtonFrame( painter, frameRect, background, outline, shadow, hasFocus, sunken, mouseOver, windowActive );
 
         // also render separator
         QRect separatorRect( rect.adjusted( 0, 2, -2, -2 ) );
@@ -4699,6 +4769,7 @@ namespace Adwaita
         // store state
         const State& state( option->state );
         bool enabled( state & State_Enabled );
+        bool windowActive( state & State_Active );
         bool selected( enabled && (state & State_Selected) );
         bool sunken( enabled && (state & (State_On|State_Sunken) ) );
         bool reverseLayout( option->direction == Qt::RightToLeft );
@@ -4753,7 +4824,7 @@ namespace Adwaita
             bool active( menuItemOption->checked );
             QColor shadow( _helper->shadowColor( palette ) );
             QColor color( _helper->checkBoxIndicatorColor( palette, false, enabled && active ) );
-            _helper->renderCheckBox( painter, checkBoxRect, Qt::transparent, outline, color, sunken, state );
+            _helper->renderCheckBox( painter, checkBoxRect, Qt::transparent, outline, color, sunken, state, active );
 
         } else if( menuItemOption->checkType == QStyleOptionMenuItem::Exclusive ) {
 
@@ -4767,7 +4838,7 @@ namespace Adwaita
             bool active( menuItemOption->checked );
             QColor shadow( _helper->shadowColor( palette ) );
             QColor color( _helper->checkBoxIndicatorColor( palette, false, enabled && active ) );
-            _helper->renderRadioButton( painter, checkBoxRect, Qt::transparent, outline, color, sunken, active ? RadioOn:RadioOff );
+            _helper->renderRadioButton( painter, checkBoxRect, Qt::transparent, outline, color, sunken, enabled && windowActive, active ? RadioOn:RadioOff );
 
         }
 
@@ -6113,6 +6184,7 @@ namespace Adwaita
         // state
         const State& state( option->state );
         bool enabled( state & State_Enabled );
+        bool windowActive( state & State_Active );
         bool editable( comboBoxOption->editable );
         bool arrowActive( comboBoxOption->activeSubControls & SC_ComboBoxArrow );
         bool flat( !comboBoxOption->frame );
@@ -6166,7 +6238,7 @@ namespace Adwaita
                     QColor outline( _helper->buttonOutlineColor( palette, mouseOver, hasFocus, opacity, mode ) );
                     QColor background( _helper->buttonBackgroundColor( palette, mouseOver, hasFocus, sunken, opacity, mode ) );
 
-                    _helper->renderFlatButtonFrame( painter, subControlRect( CC_ComboBox, option, SC_ComboBoxArrow, widget), background, outline, shadow, hasFocus, sunken, mouseOver );
+                    _helper->renderFlatButtonFrame( painter, subControlRect( CC_ComboBox, option, SC_ComboBoxArrow, widget), background, outline, shadow, hasFocus, sunken, mouseOver, windowActive );
 
                     QStyleOptionComplex tmpOpt(*option);
                     tmpOpt.rect.setWidth(tmpOpt.rect.width() - subControlRect( CC_ComboBox, option, SC_ComboBoxArrow, widget).width() + 3);
@@ -6194,7 +6266,7 @@ namespace Adwaita
                     QColor background( _helper->buttonBackgroundColor( palette, mouseOver, hasFocus, sunken, opacity, mode ) );
 
                     // render
-                    _helper->renderButtonFrame( painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver );
+                    _helper->renderButtonFrame( painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver, windowActive );
 
                     if (hasFocus)
                     {
@@ -6294,6 +6366,7 @@ namespace Adwaita
         // copy state
         const State& state( option->state );
         bool enabled( state & State_Enabled );
+        bool windowActive( state & State_Active );
         bool mouseOver( enabled && ( state & State_MouseOver ) );
         bool hasFocus( enabled && ( state & State_HasFocus ) );
         bool horizontal( sliderOption->orientation == Qt::Horizontal );
@@ -6443,12 +6516,12 @@ namespace Adwaita
             qreal opacity( _animations->widgetStateEngine().buttonOpacity( widget ) );
 
             // define colors
-            QColor background( _helper->buttonBackgroundColor( palette, mouseOver, false, sunken, opacity, mode ).lighter() );
+            QColor background( _helper->buttonBackgroundColor( palette, mouseOver, false, sunken, opacity, mode ) );
             QColor outline( _helper->sliderOutlineColor( palette, handleActive && mouseOver, hasFocus, opacity, mode ) );
             QColor shadow( _helper->shadowColor( palette ) );
 
             // render
-            _helper->renderSliderHandle( painter, handleRect, background, outline, shadow, sunken, tickSide );
+            _helper->renderSliderHandle( painter, handleRect, background, outline, shadow, sunken, enabled && windowActive, tickSide );
 
         }
 
@@ -6534,7 +6607,7 @@ namespace Adwaita
             QColor shadow( _helper->shadowColor( palette ) );
 
             // render
-            _helper->renderSliderHandle( painter, handleRect, background, outline, shadow, sunken, tickSide );
+            _helper->renderSliderHandle( painter, handleRect, background, outline, shadow, sunken, enabled, tickSide );
 
         }
 
