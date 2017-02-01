@@ -4655,7 +4655,7 @@ namespace Adwaita
         painter->save();
         painter->setRenderHint( QPainter::Antialiasing, false );
         painter->setBrush( Qt::NoBrush );
-        painter->setPen( Helper::mix( palette.color( QPalette::Button ), palette.color( QPalette::ButtonText ), 0.3 ) );
+        painter->setPen( Helper::mix( palette.color( QPalette::Window ), palette.color( QPalette::Shadow ), 0.2 ) );
 
         painter->drawLine( rect.bottomLeft(), rect.bottomRight() );
         painter->restore();
@@ -4686,7 +4686,7 @@ namespace Adwaita
         painter->save();
         painter->setRenderHint( QPainter::Antialiasing, false );
         painter->setBrush( Qt::NoBrush );
-        painter->setPen( Helper::mix( palette.color( QPalette::Button ), palette.color( QPalette::ButtonText ), 0.3 ) );
+        painter->setPen( Helper::mix( palette.color( QPalette::Window ), palette.color( QPalette::Shadow ), 0.2 ) );
 
         painter->drawLine( rect.bottomLeft(), rect.bottomRight() );
         painter->restore();
