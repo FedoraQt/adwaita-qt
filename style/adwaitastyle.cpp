@@ -1456,7 +1456,7 @@ namespace Adwaita
             // state
             const State& state( option.state );
             bool enabled( state & State_Enabled );
-            bool mouseOver( enabled && ( state & State_MouseOver ) );
+            bool mouseOver( (state & State_Active) && enabled && ( state & State_MouseOver ) );
             bool hasFocus( enabled && ( state & State_HasFocus ) );
 
             // icon
@@ -3150,7 +3150,7 @@ namespace Adwaita
         #endif
 
         bool enabled( state & State_Enabled );
-        bool mouseOver( enabled && isInputWidget && ( state & State_MouseOver ) );
+        bool mouseOver( (state & State_Active) && enabled && isInputWidget && ( state & State_MouseOver ) );
         bool hasFocus( enabled && isInputWidget && ( state & State_HasFocus ) );
 
         // focus takes precedence over mouse over
@@ -3205,7 +3205,7 @@ namespace Adwaita
             // copy state
             const State& state( option->state );
             bool enabled( state & State_Enabled );
-            bool mouseOver( enabled && ( state & State_MouseOver ) );
+            bool mouseOver( (state & State_Active) && enabled && ( state & State_MouseOver ) );
             bool hasFocus( enabled && ( state & State_HasFocus ) );
 
             // focus takes precedence over mouse over
@@ -3440,7 +3440,7 @@ namespace Adwaita
         // store state
         const State& state( option->state );
         bool enabled( state & State_Enabled );
-        bool mouseOver( enabled && ( state & State_MouseOver ) );
+        bool mouseOver( (state & State_Active) && enabled && ( state & State_MouseOver ) );
         bool hasFocus( enabled && ( state & State_HasFocus ) );
 
         // detect special buttons
@@ -3555,7 +3555,7 @@ namespace Adwaita
         const State& state( option->state );
         bool enabled( state & State_Enabled );
         bool windowActive( state & State_Active );
-        bool mouseOver( enabled && ( state & State_MouseOver ) );
+        bool mouseOver( (state & State_Active) && enabled && ( state & State_MouseOver ) );
         bool hasFocus( ( enabled && ( state & State_HasFocus ) ) && !( widget && widget->focusProxy()));
         bool sunken( state & ( State_On|State_Sunken ) );
         bool flat( buttonOption->features & QStyleOptionButton::Flat );
@@ -3614,7 +3614,7 @@ namespace Adwaita
         bool enabled( state & State_Enabled );
         bool windowActive( state & State_Active );
         bool sunken( state & (State_On | State_Sunken) );
-        bool mouseOver( enabled && (option->state & State_MouseOver) );
+        bool mouseOver( (state & State_Active) && enabled && (option->state & State_MouseOver) );
         bool hasFocus( enabled && (option->state & (State_HasFocus | State_Sunken)) );
 
         /*
@@ -3789,7 +3789,7 @@ namespace Adwaita
 
         // store flags
         const State& state( option->state );
-        bool mouseOver( ( state & State_MouseOver ) && ( !abstractItemView || abstractItemView->selectionMode() != QAbstractItemView::NoSelection ) );
+        bool mouseOver( (state & State_Active) && ( state & State_MouseOver ) && ( !abstractItemView || abstractItemView->selectionMode() != QAbstractItemView::NoSelection ) );
         bool selected( state & State_Selected );
         bool enabled( state & State_Enabled );
         bool windowActive( state & State_Active );
@@ -3861,7 +3861,7 @@ namespace Adwaita
         // store flags
         const State& state( option->state );
         bool enabled( state & State_Enabled );
-        bool mouseOver( enabled && ( state & State_MouseOver ) );
+        bool mouseOver( (state & State_Active) && enabled && ( state & State_MouseOver ) );
         bool sunken( enabled && ( state & State_Sunken ) );
         bool active( ( state & (State_On|State_NoChange) ) );
         bool windowActive( state & State_Active );
@@ -3917,7 +3917,7 @@ namespace Adwaita
         // store flags
         const State& state( option->state );
         bool enabled( state & State_Enabled );
-        bool mouseOver( enabled && ( state & State_MouseOver ) );
+        bool mouseOver( (state & State_Active) && enabled && ( state & State_MouseOver ) );
         bool sunken( state & State_Sunken );
         bool checked( state & State_On );
         bool windowActive( state & State_Active );
@@ -3984,7 +3984,7 @@ namespace Adwaita
         bool enabled( state & State_Enabled );
         bool windowActive( state & State_Active );
         bool hasFocus( enabled && ( state & ( State_HasFocus | State_Sunken ) ) );
-        bool mouseOver( enabled && ( state & State_MouseOver ) );
+        bool mouseOver( (state & State_Active) && enabled && ( state & State_MouseOver ) );
         bool sunken( enabled && ( state & State_Sunken ) );
 
         // update animation state
@@ -4205,7 +4205,7 @@ namespace Adwaita
             // state
             bool expanderOpen( state & State_Open );
             bool enabled( state & State_Enabled );
-            bool mouseOver( enabled && ( state & State_MouseOver ) );
+            bool mouseOver( (state & State_Active) && enabled && ( state & State_MouseOver ) );
 
             // expander rect
             int expanderSize = qMin( rect.width(), rect.height() );
@@ -4279,7 +4279,7 @@ namespace Adwaita
         const State& state( option->state );
         bool enabled( state & State_Enabled );
         bool sunken( state & (State_On | State_Sunken) );
-        bool mouseOver( enabled && (option->state & State_MouseOver) );
+        bool mouseOver( (state & State_Active) && enabled && (option->state & State_MouseOver) );
         bool hasFocus( enabled && !mouseOver && (option->state & State_HasFocus) );
         bool flat( buttonOption->features & QStyleOptionButton::Flat );
 
@@ -4397,7 +4397,7 @@ namespace Adwaita
         const State& state( option->state );
         bool enabled( state & State_Enabled );
         bool sunken( state & (State_On | State_Sunken) );
-        bool mouseOver( enabled && (option->state & State_MouseOver) );
+        bool mouseOver( (state & State_Active) && enabled && (option->state & State_MouseOver) );
         bool flat( state & State_AutoRaise );
 
         // focus flag is set to match the background color in either renderButtonFrame or renderToolButtonFrame
@@ -4581,7 +4581,7 @@ namespace Adwaita
         const State& state( option->state );
         bool enabled( state & State_Enabled );
         bool sunken( state & (State_On | State_Sunken) );
-        bool mouseOver( enabled && (option->state & State_MouseOver) );
+        bool mouseOver( (state & State_Active) && enabled && (option->state & State_MouseOver) );
         bool hasFocus( enabled && !mouseOver && (option->state & State_HasFocus) );
         bool flat( !comboBoxOption->frame );
 
@@ -5108,7 +5108,7 @@ namespace Adwaita
         bool horizontal( state & State_Horizontal );
 
         bool enabled( state & State_Enabled );
-        bool mouseOver( enabled && ( state & State_MouseOver ) );
+        bool mouseOver( (state & State_Active) && enabled && ( state & State_MouseOver ) );
 
         // check focus from relevant parent
         const QWidget* parent( scrollBarParent( widget ) );
@@ -5370,7 +5370,7 @@ namespace Adwaita
         const QPalette& palette( option->palette );
         const State& state( option->state );
         bool enabled( state & State_Enabled );
-        bool mouseOver( enabled && ( state & State_MouseOver ) );
+        bool mouseOver( (state & State_Active) && enabled && ( state & State_MouseOver ) );
         bool sunken( enabled && ( state & (State_On|State_Sunken) ) );
 
         const QStyleOptionHeader* headerOption( qstyleoption_cast<const QStyleOptionHeader*>( option ) );
@@ -5558,7 +5558,7 @@ namespace Adwaita
             else {
                 if (tabV2.state & State_Selected)
                     painter->setPen(option->palette.brush(QPalette::WindowText).color());
-                else if (tabV2.state & State_MouseOver)
+                else if (tabV2.state & State_Active && tabV2.state & State_MouseOver)
                     painter->setPen(Helper::mix(option->palette.brush(QPalette::Dark).color(), option->palette.brush(QPalette::Text).color(), 0.7));
                 else
                     painter->setPen(Helper::mix(option->palette.brush(QPalette::Dark).color(), option->palette.brush(QPalette::Text).color(), 0.6));
@@ -5662,7 +5662,7 @@ namespace Adwaita
         const State& state( option->state );
         bool enabled( state & State_Enabled );
         bool selected( state & State_Selected );
-        bool mouseOver( !selected && ( state & State_MouseOver ) && enabled );
+        bool mouseOver( (state & State_Active) && !selected && ( state & State_MouseOver ) && enabled );
 
         // check if tab is being dragged
         bool isDragged( widget && selected && painter->device() != widget );
@@ -5853,7 +5853,7 @@ namespace Adwaita
         const State& flags( option->state );
         bool enabled( flags&State_Enabled );
         bool selected( flags&State_Selected );
-        bool mouseOver( enabled && !selected && ( flags&State_MouseOver ) );
+        bool mouseOver( (flags & State_Active) && enabled && !selected && ( flags&State_MouseOver ) );
 
         // update animation state
         /*
@@ -6007,7 +6007,7 @@ namespace Adwaita
         // need to alter palette for focused buttons
         const State& state( option->state );
         bool enabled( state & State_Enabled );
-        bool mouseOver( enabled && (option->state & State_MouseOver) );
+        bool mouseOver( (state & State_Active) && enabled && (option->state & State_MouseOver) );
         bool hasFocus( enabled && (option->state & State_HasFocus) );
         bool sunken( state & (State_On | State_Sunken) );
         bool flat( state & State_AutoRaise );
@@ -6064,7 +6064,7 @@ namespace Adwaita
                 copy.state |= State_Enabled | State_On | State_Sunken;
             }
             if ( button->underMouse() ) {
-                copy.state |= State_Enabled | State_MouseOver;
+                copy.state |= State_Enabled | State_MouseOver | State_Active;
             }
 
         }
@@ -6155,7 +6155,7 @@ namespace Adwaita
                     copy.state |= State_Enabled | State_On | State_Sunken;
                 }
                 if ( button->underMouse() ) {
-                    copy.state |= State_Enabled | State_MouseOver;
+                    copy.state |= State_Enabled | State_MouseOver | State_Active;
                 }
 
             } else if( !inTabBar && hasInlineIndicator ) {
@@ -6202,13 +6202,13 @@ namespace Adwaita
         if (editable)
         {
 
-            mouseOver = arrowActive && enabled && ( state & State_MouseOver );
+            mouseOver = windowActive && arrowActive && enabled && ( state & State_MouseOver );
             hasFocus = enabled && ( state & ( State_HasFocus | State_Sunken ) );
             sunken = arrowActive && enabled && ( state & (State_On|State_Sunken) );
 
         } else {
 
-            mouseOver = enabled && ( state & State_MouseOver );
+            mouseOver = windowActive && enabled && ( state & State_MouseOver );
             hasFocus = enabled && ( state & ( State_HasFocus | State_Sunken ) );
             sunken = enabled && ( state & (State_On|State_Sunken) );
 
@@ -6375,7 +6375,7 @@ namespace Adwaita
         const State& state( option->state );
         bool enabled( state & State_Enabled );
         bool windowActive( state & State_Active );
-        bool mouseOver( enabled && ( state & State_MouseOver ) );
+        bool mouseOver( (state & State_Active) && enabled && ( state & State_MouseOver ) );
         bool hasFocus( enabled && ( state & State_HasFocus ) );
         bool horizontal( sliderOption->orientation == Qt::Horizontal );
         Side tickSide { SideNone };
@@ -6547,7 +6547,7 @@ namespace Adwaita
         const QPalette& palette( option->palette );
         const State& state( option->state );
         bool enabled( state & State_Enabled );
-        bool mouseOver( enabled && ( state & State_MouseOver ) );
+        bool mouseOver( (state & State_Active) && enabled && ( state & State_MouseOver ) );
         bool hasFocus( enabled && ( state & State_HasFocus ) );
         bool horizontal( sliderOption->orientation == Qt::Horizontal );
         Side tickSide { SideNone };
@@ -6630,7 +6630,7 @@ namespace Adwaita
         bool enabled( option->state & State_Enabled );
         qreal opacity( _animations->scrollBarEngine().opacity( widget, QStyle::SC_ScrollBarGroove ) );
         bool animated( StyleConfigData::scrollBarShowOnMouseOver() && _animations->scrollBarEngine().isAnimated( widget,  AnimationHover, QStyle::SC_ScrollBarGroove ) );
-        bool mouseOver( option->state & State_MouseOver );
+        bool mouseOver( (option->state & State_Active) && option->state & State_MouseOver );
 
         if( opacity == AnimationData::OpacityInvalid ) opacity = 1;
 
@@ -6831,7 +6831,7 @@ namespace Adwaita
         enabled &= !atLimit;
 
         // update mouse-over effect
-        bool mouseOver( enabled && ( state & State_MouseOver ) );
+        bool mouseOver( (state & State_Active) && enabled && ( state & State_MouseOver ) );
 
         // check animation state
         bool subControlHover( enabled && ( mouseOver ) && ( option->activeSubControls & subControl ) );
@@ -6955,7 +6955,7 @@ namespace Adwaita
         const QPalette& palette( option->palette );
         QColor color( _helper->arrowColor( palette, QPalette::WindowText ) );
 
-        bool widgetMouseOver( ( option->state & State_MouseOver ) );
+        bool widgetMouseOver( ( option->state & State_MouseOver ) && ( option->state & State_MouseOver ) );
         if( widget ) widgetMouseOver = widget->underMouse();
         #if QT_VERSION >= 0x050000
         // in case this QStyle is used by QQuickControls QStyle wrapper
@@ -6992,7 +6992,7 @@ namespace Adwaita
             return color;
         }
 
-        bool mouseOver( _animations->scrollBarEngine().isHovered( widget, control ) );
+        bool mouseOver( (option->state & State_Active) && _animations->scrollBarEngine().isHovered( widget, control ) );
         bool animated( _animations->scrollBarEngine().isAnimated( widget, AnimationHover, control ) );
         qreal opacity( _animations->scrollBarEngine().opacity( widget, control ) );
 
