@@ -5397,7 +5397,7 @@ namespace Adwaita
             fnt.setBold(true);
             painter->setFont(fnt);
             QPalette palette(header->palette);
-            palette.setColor(QPalette::Text, _helper->frameOutlineColor(palette).darker(150));
+            palette.setColor(QPalette::Text, Helper::mix(palette.color(QPalette::WindowText), palette.color(QPalette::Window), 0.3));
             proxy()->drawItemText(painter, rect, header->textAlignment, palette, (header->state & State_Active), header->text, QPalette::Text);
         }
         return true;
