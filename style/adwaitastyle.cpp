@@ -527,8 +527,8 @@ namespace Adwaita
 
             palette.setColor(QPalette::Disabled, QPalette::Window,          QColor("#2e3436"));
             palette.setColor(QPalette::Disabled, QPalette::WindowText,      QColor("#8d9091"));
-            palette.setColor(QPalette::Disabled, QPalette::Base,            QColor("#2d3234"));
-            palette.setColor(QPalette::Disabled, QPalette::AlternateBase,   QColor("#ededed"));
+            palette.setColor(QPalette::Disabled, QPalette::Base,            QColor("#3d4244"));
+            palette.setColor(QPalette::Disabled, QPalette::AlternateBase,   QColor("#3a3d3e"));
             palette.setColor(QPalette::Disabled, QPalette::Text,            QColor("#8d9091"));
             palette.setColor(QPalette::Disabled, QPalette::Button,          QColor("#33393b"));
             palette.setColor(QPalette::Disabled, QPalette::ButtonText,      QColor("#8d9091"));
@@ -3245,8 +3245,8 @@ namespace Adwaita
 
         if( rect.width() < 10 ) return true;
 
-        QColor outlineColor( palette.color( QPalette::Dark ) );
-        QPen pen(outlineColor.darker(115), 1);
+        QColor outlineColor( Helper::mix(palette.color( QPalette::Window ), palette.color( QPalette::WindowText ), 0.35) );
+        QPen pen(outlineColor, 1);
         pen.setStyle( Qt::CustomDashLine );
         pen.setDashPattern(QVector<qreal>() << 2 << 1);
 
@@ -3377,7 +3377,7 @@ namespace Adwaita
 
         // define colors
         const QPalette& palette( option->palette );
-        QColor background( _helper->frameBackgroundColor( palette ) );
+        QColor background( palette.color(QPalette::AlternateBase) );
         QColor outline( _helper->frameOutlineColor( palette ) );
         _helper->renderTabWidgetFrame( painter, rect, background, outline, corners );
 
@@ -3398,7 +3398,7 @@ namespace Adwaita
         QRect rect( option->rect );
         QColor outline( _helper->frameOutlineColor( option->palette ) );
         //QColor background( option->palette.mid().color().lighter(115) );
-        QColor background( _helper->mix(option->palette.button().color(), option->palette.buttonText().color(), 0.08) );
+        QColor background( _helper->mix(option->palette.base().color(), option->palette.shadow().color(), 0.08) );
 
         // setup painter
         painter->setBrush( background );
