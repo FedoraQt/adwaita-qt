@@ -3398,7 +3398,11 @@ namespace Adwaita
         QRect rect( option->rect );
         QColor outline( _helper->frameOutlineColor( option->palette ) );
         //QColor background( option->palette.mid().color().lighter(115) );
-        QColor background( _helper->mix(option->palette.base().color(), option->palette.shadow().color(), 0.08) );
+        QColor background( _helper->mix(option->palette.window().color(), option->palette.shadow().color(), 0.15) );
+        if (!(option->state & State_Enabled))
+            background = background.lighter(115);
+        if (!(option->state & State_Active))
+            background = background.lighter(115);
 
         // setup painter
         painter->setBrush( background );
