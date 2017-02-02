@@ -5739,7 +5739,7 @@ namespace Adwaita
         }
 
         // underline
-        QColor underline( enabled && selected ? _helper->focusColor( palette ) : selected || mouseOver ? option->palette.brush(QPalette::Mid).color() : Qt::transparent );
+        QColor underline( enabled && selected ? _helper->focusColor( palette ) : selected || mouseOver ? option->palette.color(QPalette::Window).darker() : Qt::transparent );
 
         // outline
         QColor outline = QColor();
