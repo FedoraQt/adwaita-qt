@@ -85,6 +85,9 @@ namespace Adwaita
         using  ParentStyleClass::polish;
         using  ParentStyleClass::unpolish;
 
+        //* application polishing
+        virtual void polish( QApplication* );
+
         //* widget polishing
         virtual void polish( QWidget* );
 
