@@ -35,6 +35,7 @@
 #include <QDial>
 #include <QDBusConnection>
 #include <QDockWidget>
+#include <QFont>
 #include <QFormLayout>
 #include <QGraphicsView>
 #include <QGroupBox>
@@ -43,16 +44,19 @@
 #include <QMdiSubWindow>
 #include <QMenu>
 #include <QPainter>
+#include <QProcess>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QScrollBar>
 #include <QItemDelegate>
 #include <QSplitterHandle>
 #include <QTextEdit>
+#include <QTimer>
 #include <QToolBar>
 #include <QToolBox>
 #include <QToolButton>
 #include <QWidgetAction>
+
 
 namespace AdwaitaPrivate
 {
@@ -142,6 +146,48 @@ namespace AdwaitaPrivate
     };
 
 }
+
+static QString readDconfSetting(const QString &setting)
+{
+    // For some reason, dconf does not seem to terminate correctly when run under some desktops (e.g. KDE)
+    // Destroying the QProcess seems to block, causing the app to appear to hang before starting.
+    // So, create QProcess on the heap - and only wait 1.5s for response. Connect finished to deleteLater
+    // so that the object is destroyed.
+    QString schemeToUse=QLatin1String("/org/gnome/desktop/interface/");
+    QProcess *process=new QProcess();
+    process->start(QLatin1String("dconf"), QStringList() << QLatin1String("read") << schemeToUse+setting);
+    QObject::connect(process, SIGNAL(finished(int)), process, SLOT(deleteLater()));
+
+    if (process->waitForFinished(1500))
+    {
+        QString resp = process->readAllStandardOutput();
+        resp = resp.trimmed();
+        resp.remove('\'');
+
+        if (resp.isEmpty())
+        {
+            // Probably set to the default, and dconf does not store defaults! Therefore, need to read via gsettings...
+            schemeToUse=schemeToUse.mid(1, schemeToUse.length()-2).replace("/", ".");
+            QProcess *gsettingsProc=new QProcess();
+            gsettingsProc->start(QLatin1String("gsettings"), QStringList() << QLatin1String("get") << schemeToUse << setting);
+            QObject::connect(gsettingsProc, SIGNAL(finished(int)), process, SLOT(deleteLater()));
+            if (gsettingsProc->waitForFinished(1500))
+            {
+                resp = gsettingsProc->readAllStandardOutput();
+                resp = resp.trimmed();
+                resp.remove('\'');
+            }
+            else
+            {
+                gsettingsProc->kill();
+            }
+        }
+        return resp;
+    }
+    process->kill();
+    return QString();
+}
+
 
 void tabLayout(const QStyleOptionTabV3 *opt, const QWidget *widget, QRect *textRect, QRect *iconRect, const QStyle *proxyStyle) {
     Q_ASSERT(textRect);
@@ -252,6 +298,33 @@ namespace Adwaita
     Style::~Style( void )
     {
         delete _helper;
+    }
+
+    //______________________________________________________________
+    void Style::polish( QApplication* app )
+    {
+        if( !app ) return;
+
+        QByteArray desktop = qgetenv("XDG_CURRENT_DESKTOP").toLower();
+        QSet<QByteArray> gtkDesktops = QSet<QByteArray>() << "gnome" << "unity" << "pantheon";
+
+        if (gtkDesktops.contains(desktop))
+        {
+            QString fontName=readDconfSetting("font-name");
+            if (!fontName.isEmpty())
+            {
+                QStringList parts=fontName.split(' ', QString::SkipEmptyParts);
+                if (parts.length()>1)
+                {
+                    uint size=parts.takeLast().toUInt();
+                    if (size>5 && size<20)
+                    {
+                        QFont f(parts.join(" "), size);
+                        app->setFont(f);
+                    }
+                }
+            }
+        }
     }
 
     //______________________________________________________________
