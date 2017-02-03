@@ -35,6 +35,7 @@
 #include <QDial>
 #include <QDBusConnection>
 #include <QDockWidget>
+#include <QFont>
 #include <QFormLayout>
 #include <QGraphicsView>
 #include <QGroupBox>
@@ -304,17 +305,23 @@ namespace Adwaita
     {
         if( !app ) return;
 
-        QString fontName=readDconfSetting("font-name");
-        if (!fontName.isEmpty())
+        QByteArray desktop = qgetenv("XDG_CURRENT_DESKTOP").toLower();
+        QSet<QByteArray> gtkDesktops = QSet<QByteArray>() << "gnome" << "unity" << "pantheon";
+
+        if (gtkDesktops.contains(desktop))
         {
-            QStringList parts=fontName.split(' ', QString::SkipEmptyParts);
-            if (parts.length()>1)
+            QString fontName=readDconfSetting("font-name");
+            if (!fontName.isEmpty())
             {
-                uint size=parts.takeLast().toUInt();
-                if (size>5 && size<20)
+                QStringList parts=fontName.split(' ', QString::SkipEmptyParts);
+                if (parts.length()>1)
                 {
-                    QFont f(parts.join(" "), size);
-                    app->setFont(f);
+                    uint size=parts.takeLast().toUInt();
+                    if (size>5 && size<20)
+                    {
+                        QFont f(parts.join(" "), size);
+                        app->setFont(f);
+                    }
                 }
             }
         }
