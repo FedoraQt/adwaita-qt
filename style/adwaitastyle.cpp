@@ -43,6 +43,7 @@
 #include <QMdiSubWindow>
 #include <QMenu>
 #include <QPainter>
+#include <QProxyStyle>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QScrollBar>
@@ -2144,106 +2145,60 @@ namespace Adwaita
     //______________________________________________________________
     QRect Style::groupBoxSubControlRect( const QStyleOptionComplex* option, SubControl subControl, const QWidget* widget ) const
     {
-
-        QRect rect = option->rect;
-        switch( subControl )
+        if (const QStyleOptionGroupBox *groupBox = qstyleoption_cast<const QStyleOptionGroupBox *>(option))
         {
+            QRect rect = ParentStyleClass::subControlRect(CC_GroupBox, option, subControl, widget);
+            int topMargin = 0;
+            int topHeight = 0;
+            int verticalAlignment = proxy()->styleHint(SH_GroupBox_TextLabelVerticalAlignment, groupBox, widget);
 
-            case SC_GroupBoxFrame: return rect;
-
-            case SC_GroupBoxContents:
+            if (!groupBox->text.isEmpty())
             {
-
-                // cast option and check
-                const QStyleOptionGroupBox *groupBoxOption = qstyleoption_cast<const QStyleOptionGroupBox*>( option );
-                if( !groupBoxOption ) break;
-
-                // take out frame width
-                rect = insideMargin( rect, Metrics::Frame_FrameWidth );
-
-                // get state
-                bool checkable( groupBoxOption->subControls & QStyle::SC_GroupBoxCheckBox );
-                bool emptyText( groupBoxOption->text.isEmpty() );
-
-                // calculate title height
-                int titleHeight( 0 );
-                if( !emptyText ) titleHeight = groupBoxOption->fontMetrics.height();
-                if( checkable ) titleHeight = qMax( titleHeight, int(Metrics::CheckBox_Size) );
-
-                // add margin
-                if( titleHeight > 0 ) titleHeight += 2*Metrics::GroupBox_TitleMarginWidth;
-
-                rect.adjust( 0, titleHeight, 0, 0 );
+                topHeight = groupBox->fontMetrics.height();
+                if (verticalAlignment & Qt::AlignVCenter)
+                {
+                    topMargin = topHeight / 2;
+                }
+                else if (verticalAlignment & Qt::AlignTop)
+                {
+                    topMargin = topHeight;
+                }
+            }
+            QRect frameRect = groupBox->rect;
+            frameRect.setTop(topMargin);
+            if (subControl == SC_GroupBoxFrame)
+            {
                 return rect;
-
             }
-
-            case SC_GroupBoxCheckBox:
-            case SC_GroupBoxLabel:
+            else if (subControl == SC_GroupBoxContents)
             {
-
-                // cast option and check
-                const QStyleOptionGroupBox *groupBoxOption = qstyleoption_cast<const QStyleOptionGroupBox*>( option );
-                if( !groupBoxOption ) break;
-
-                // take out frame width
-                rect = insideMargin( rect, Metrics::Frame_FrameWidth );
-
-                bool emptyText( groupBoxOption->text.isEmpty() );
-                bool checkable( groupBoxOption->subControls & QStyle::SC_GroupBoxCheckBox );
-
-                // calculate title height
-                int titleHeight( 0 );
-                int titleWidth( 0 );
-                if( !emptyText )
-                {
-                    QFontMetrics fontMetrics = option->fontMetrics;
-                    titleHeight = qMax( titleHeight, fontMetrics.height() );
-                    titleWidth += fontMetrics.size( _mnemonics->textFlags(), groupBoxOption->text ).width();
-                }
-
-                if( checkable )
-                {
-                    titleHeight = qMax( titleHeight, int(Metrics::CheckBox_Size) );
-                    titleWidth += Metrics::CheckBox_Size;
-                    if( !emptyText ) titleWidth += Metrics::CheckBox_ItemSpacing;
-                }
-
-                // adjust height
-                QRect titleRect( rect );
-                titleRect.setHeight( titleHeight );
-                titleRect.translate( 0, Metrics::GroupBox_TitleMarginWidth );
-
-                // center
-                titleRect = centerRect( titleRect, titleWidth, titleHeight );
-
-                if( subControl == SC_GroupBoxCheckBox )
-                {
-
-                    // vertical centering
-                    titleRect = centerRect( titleRect, titleWidth, Metrics::CheckBox_Size );
-
-                    // horizontal positioning
-                    QRect subRect( titleRect.topLeft(), QSize( Metrics::CheckBox_Size, titleRect.height() ) );
-                    return visualRect( option->direction, titleRect, subRect );
-
-                } else {
-
-                    // vertical centering
-                    QFontMetrics fontMetrics = option->fontMetrics;
-                    titleRect = centerRect( titleRect, titleWidth, fontMetrics.height() );
-
-                    // horizontal positioning
-                    QRect subRect( titleRect );
-                    if( checkable ) subRect.adjust( Metrics::CheckBox_Size + Metrics::CheckBox_ItemSpacing, 0, 0, 0 );
-                    return visualRect( option->direction, titleRect, subRect );
-
-                }
-
+                int margin = 0;
+                int leftMarginExtension = 16;
+                return frameRect.adjusted(leftMarginExtension + margin, margin + topHeight, -margin, -margin);
             }
 
-            default: break;
+            if (const QGroupBox *groupBoxWidget = qobject_cast<const QGroupBox *>(widget))
+            {
+                 //Prepare metrics for a bold font
+                QFont font = widget->font();
+                font.setBold(true);
+                QFontMetrics fontMetrics(font);
 
+                QSize textRect = fontMetrics.boundingRect(groupBoxWidget->title()).size() + QSize(2, 2);
+                if (subControl == SC_GroupBoxCheckBox)
+                {
+                    int indicatorWidth = proxy()->pixelMetric(PM_IndicatorWidth, option, widget);
+                    int indicatorHeight = proxy()->pixelMetric(PM_IndicatorHeight, option, widget);
+                    rect.setWidth(indicatorWidth);
+                    rect.setHeight(indicatorHeight);
+                    rect.moveTop((textRect.height() - indicatorHeight) / 2);
+                }
+                else if (subControl == SC_GroupBoxLabel)
+                {
+                    rect.setSize(textRect);
+                }
+            }
+            return rect;
         }
 
         return ParentStyleClass::subControlRect( CC_GroupBox, option, subControl, widget );
@@ -3292,28 +3247,6 @@ namespace Adwaita
     //______________________________________________________________
     bool Style::drawFrameGroupBoxPrimitive( const QStyleOption* option, QPainter* painter, const QWidget* ) const
     {
-
-        // cast option and check
-        const QStyleOptionFrame *frameOption( qstyleoption_cast<const QStyleOptionFrame*>( option ) );
-        if( !frameOption ) return true;
-
-        // no frame for flat groupboxes
-        QStyleOptionFrameV2 frameOption2( *frameOption );
-        if( frameOption2.features & QStyleOptionFrameV2::Flat ) return true;
-
-        // normal frame
-        const QPalette& palette( option->palette );
-        QColor background( _helper->frameBackgroundColor( palette ) );
-        QColor outline( _helper->frameOutlineColor( palette ) );
-
-        /*
-         * need to reset painter's clip region in order to paint behind textbox label
-         * (was taken out in QCommonStyle)
-         */
-
-        painter->setClipRegion( option->rect );
-        _helper->renderFrame( painter, option->rect, background, outline );
-
         return true;
 
     }
@@ -5958,43 +5891,40 @@ namespace Adwaita
     //______________________________________________________________
     bool Style::drawGroupBoxComplexControl( const QStyleOptionComplex* option, QPainter* painter, const QWidget* widget ) const
     {
+        if (const QStyleOptionGroupBox *groupBox = qstyleoption_cast<const QStyleOptionGroupBox *>(option)) 
+        {
+            painter->save();
 
-        // base class method
-        ParentStyleClass::drawComplexControl( CC_GroupBox, option, painter, widget );
+            QRect textRect = proxy()->subControlRect(CC_GroupBox, groupBox, SC_GroupBoxLabel, widget);
+            QRect checkBoxRect = proxy()->subControlRect(CC_GroupBox, groupBox, SC_GroupBoxCheckBox, widget);
 
-        // cast option and check
-        const QStyleOptionGroupBox *groupBoxOption = qstyleoption_cast<const QStyleOptionGroupBox*>( option );
-        if( !groupBoxOption ) return true;
-
-        // do nothing if either label is not selected or groupbox is empty
-        if( !(option->subControls & QStyle::SC_GroupBoxLabel) || groupBoxOption->text.isEmpty() )
-        { return true; }
-
-        // store palette and rect
-        const QPalette& palette( option->palette );
-
-        // check focus state
-        const State& state( option->state );
-        bool enabled( state & State_Enabled );
-        bool hasFocus( enabled && (option->state & State_HasFocus) );
-        if( !hasFocus ) return true;
-
-        // alignment
-        int textFlags( groupBoxOption->textAlignment | _mnemonics->textFlags() );
-
-        // update animation state
-        _animations->widgetStateEngine().updateState( widget, AnimationFocus, hasFocus );
-        bool isFocusAnimated( _animations->widgetStateEngine().isAnimated( widget, AnimationFocus ) );
-        qreal opacity( _animations->widgetStateEngine().opacity( widget, AnimationFocus ) );
-
-        // get relevant rect
-        QRect textRect = subControlRect( CC_GroupBox, option, SC_GroupBoxLabel, widget );
-        textRect = option->fontMetrics.boundingRect( textRect, textFlags, groupBoxOption->text );
-
-        // focus color
-        QColor focusColor;
-        if( isFocusAnimated ) focusColor = _helper->alphaColor( _helper->focusColor( palette ), opacity );
-        else if( hasFocus ) focusColor =  _helper->focusColor( palette );
+            // Draw title
+            if ((groupBox->subControls & QStyle::SC_GroupBoxLabel) && !groupBox->text.isEmpty())
+            {
+                QColor textColor = groupBox->textColor;
+                if (textColor.isValid())
+                {
+                    painter->setPen(textColor);
+                }
+                int alignment = int(groupBox->textAlignment);
+                if (!styleHint(QStyle::SH_UnderlineShortcut, option, widget))
+                {
+                    alignment |= Qt::TextHideMnemonic;
+                }
+                QFont font = painter->font();
+                font.setBold(true);
+                painter->setFont(font);
+                painter->drawText(textRect, Qt::TextShowMnemonic | Qt::AlignLeft| Qt::AlignVCenter |alignment, groupBox->text);
+            }
+            if (groupBox->subControls & SC_GroupBoxCheckBox)
+            {
+                QStyleOptionButton box;
+                box.QStyleOption::operator=(*groupBox);
+                box.rect = checkBoxRect;
+                proxy()->drawPrimitive(PE_IndicatorCheckBox, &box, painter, widget);
+            }
+            painter->restore();
+        }
 
         return true;
 
