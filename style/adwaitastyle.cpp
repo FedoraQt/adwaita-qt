@@ -7232,7 +7232,7 @@ namespace Adwaita
     //____________________________________________________________________
     bool Style::showIconsInMenuItems( void ) const
     {
-        return Adwaita::Settings::ShowIconsInMenuItems;
+        return Adwaita::Settings::ShowIconsInMenuItems && !QCoreApplication::testAttribute(Qt::AA_DontShowIconsInMenus);
     }
 
     //____________________________________________________________________
