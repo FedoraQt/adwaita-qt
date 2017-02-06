@@ -4670,7 +4670,7 @@ namespace Adwaita
         const QRect& rect( option->rect );
         const QPalette& palette( option->palette );
         const QColor& outline( _helper->frameOutlineColor( palette ) );
-        const QColor& background( palette.base().color() );
+        const QColor& background( palette.color(QPalette::Active, QPalette::Base) );
 
         painter->setPen(Qt::NoPen);
         painter->setBrush(background);
