@@ -6649,11 +6649,11 @@ namespace Adwaita
                 _helper->titleBarColor( active ) != palette.color( QPalette::Window ) &&
                 !( titleBarOption->titleBarState & Qt::WindowMinimized ) );
 
-            if( useSeparator )
+            if( true )
             {
                 painter->setRenderHint( QPainter::Antialiasing, false );
                 painter->setBrush( Qt::NoBrush );
-                painter->setPen( palette.color( QPalette::Highlight ) );
+                painter->setPen( palette.color( QPalette::Button ) );
                 painter->drawLine( rect.bottomLeft(), rect.bottomRight() );
             }
 

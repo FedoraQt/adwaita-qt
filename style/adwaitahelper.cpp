@@ -59,10 +59,10 @@ namespace Adwaita
         _inactiveTitleBarTextColor = group.readEntry( "inactiveForeground", palette.color( QPalette::Disabled, QPalette::HighlightedText ) );
         */
 
-        _activeTitleBarColor = Qt::red;
-        _activeTitleBarTextColor = Qt::red;
-        _inactiveTitleBarColor = Qt::red;
-        _inactiveTitleBarTextColor = Qt::red;
+        _activeTitleBarColor = palette.color(QPalette::Active, QPalette::Window);
+        _activeTitleBarTextColor = palette.color(QPalette::Active, QPalette::WindowText);
+        _inactiveTitleBarColor = palette.color(QPalette::Inactive, QPalette::Window);
+        _inactiveTitleBarTextColor = palette.color(QPalette::Inactive, QPalette::WindowText);
 
     }
 
