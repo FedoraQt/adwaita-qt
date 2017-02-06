@@ -27,6 +27,7 @@
 
 #include <QPainterPath>
 #include <QWidget>
+#include <QStyle>
 
 #if ADWAITA_HAVE_X11
 #include <QX11Info>
@@ -164,6 +165,9 @@ namespace Adwaita
 
         //* separator color
         QColor separatorColor( const QPalette& ) const;
+
+        // TreeView header text color
+        QColor headerTextColor( const QPalette& palette, const QStyle::State state ) const;
 
         //* merge active and inactive palettes based on ratio, for smooth enable state change transition
         QPalette disabledPalette( const QPalette&, qreal ratio ) const;

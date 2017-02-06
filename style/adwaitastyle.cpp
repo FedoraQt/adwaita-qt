@@ -281,6 +281,9 @@ namespace Adwaita
             || qobject_cast<QTabBar*>( widget )
             || qobject_cast<QTextEdit*>( widget )
             || qobject_cast<QToolButton*>( widget )
+            #if QT_VERSION >= 0x050000
+            || qobject_cast<QHeaderView*>( widget )
+            #endif
             || widget->inherits( "KTextEditor::View" )
             )
         { widget->setAttribute( Qt::WA_Hover ); }
@@ -3464,15 +3467,11 @@ namespace Adwaita
         // invert arrows if requested by (hidden) options
         if( StyleConfigData::viewInvertSortIndicator() ) orientation = (orientation == ArrowUp) ? ArrowDown:ArrowUp;
 
-        // state, rect and palette
-        const QRect& rect( option->rect );
-        const QPalette& palette( option->palette );
-
         // define color and polygon for drawing arrow
-        QColor color = _helper->arrowColor( palette, QPalette::ButtonText );
+        QColor color = _helper->headerTextColor( option->palette, state );
 
         // render
-        _helper->renderArrow( painter, rect, color, orientation );
+        _helper->renderArrow( painter, option->rect, color, orientation );
 
         return true;
     }
@@ -5332,7 +5331,7 @@ namespace Adwaita
 
         // outline
         painter->setBrush( Qt::NoBrush );
-        painter->setPen( _helper->alphaColor( palette.color( QPalette::WindowText ), 0.6 ) );
+        painter->setPen( _helper->alphaColor( palette.color( QPalette::WindowText ), 0.2 ) );
 
         if( isCorner )
         {
@@ -5353,8 +5352,6 @@ namespace Adwaita
         }
 
         // separators
-        painter->setPen( _helper->alphaColor( palette.color( QPalette::WindowText ), 0.4 ) );
-
         if( horizontal )
         {
             if( headerOption->section != 0 || isFirst )
@@ -5397,7 +5394,7 @@ namespace Adwaita
             fnt.setBold(true);
             painter->setFont(fnt);
             QPalette palette(header->palette);
-            palette.setColor(QPalette::Text, Helper::mix(palette.color(QPalette::WindowText), palette.color(QPalette::Window), 0.3));
+            palette.setColor(QPalette::Text, _helper->headerTextColor( palette, header->state ) );
             proxy()->drawItemText(painter, rect, header->textAlignment, palette, (header->state & State_Active), header->text, QPalette::Text);
         }
         return true;
