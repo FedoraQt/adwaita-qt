@@ -3561,7 +3561,7 @@ namespace Adwaita
         AnimationMode mode( _animations->widgetStateEngine().buttonAnimationMode( widget ) );
         qreal opacity( _animations->widgetStateEngine().buttonOpacity( widget ) );
 
-        if( !autoRaise || mouseOver )
+        if( !autoRaise || mouseOver || sunken )
         {
 
             // need to check widget for popup mode, because option is not set properly
