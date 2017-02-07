@@ -288,6 +288,21 @@ namespace Adwaita
     QColor Helper::separatorColor( const QPalette& palette ) const
     { return mix( palette.color( QPalette::Window ), palette.color( QPalette::WindowText ), 0.25 ); }
 
+    //____________________________________________________________________
+    QColor Helper::headerTextColor( const QPalette& palette, const QStyle::State state ) const
+    {
+        QColor col(palette.color(QPalette::WindowText));
+
+        if (state & QStyle::State_Enabled)
+        {
+             if (state & QStyle::State_Sunken)
+                return alphaColor( col, 0.9 );
+             else if (state & QStyle::State_MouseOver)
+                return alphaColor( col, 0.7 );
+        }
+        return alphaColor( col, 0.5 );
+    }
+
     //______________________________________________________________________________
     QPalette Helper::disabledPalette( const QPalette& source, qreal ratio ) const
     {
