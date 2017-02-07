@@ -636,7 +636,7 @@ class StyleConfigData
     int mScrollBarAddLineButtons { 0 };
     int mScrollBarSubLineButtons { 0 };
     bool mScrollBarShowOnMouseOver { true };
-    int mMnemonicsMode { 0 };
+    int mMnemonicsMode { MN_AUTO };
     bool mToolBarDrawItemSeparator { 0 };
     bool mViewDrawFocusIndicator { true };
     bool mSliderDrawTickMarks { true };
