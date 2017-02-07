@@ -61,4 +61,4 @@ set_target_properties(${LIBRARY_NAME} PROPERTIES
     OUTPUT_NAME "adwaita"
     PREFIX "")
 
-install(TARGETS ${LIBRARY_NAME} DESTINATION "${QT_STYLE_PATH}/")
+install(TARGETS ${LIBRARY_NAME} DESTINATION "${QT_PLUGINS_DIR}/styles")

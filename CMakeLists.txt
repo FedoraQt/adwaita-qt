@@ -17,21 +17,15 @@ else()
     set(QT_QTDBUS_LIBRARY Qt5::DBus)
     #target_link_libraries(${LIBRARY_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
     set(QT_VERSION_NUMBER "5")
+    get_target_property(REAL_QMAKE_EXECUTABLE ${Qt5Core_QMAKE_EXECUTABLE}
+                       IMPORTED_LOCATION)
+    execute_process(COMMAND "${REAL_QMAKE_EXECUTABLE}" -query QT_INSTALL_PLUGINS
+                    OUTPUT_VARIABLE QT_PLUGINS_DIR
+                    ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
 endif()
 
 if (NOT CMAKE_INSTALL_PREFIX)
     set (CMAKE_INSTALL_PREFIX "/usr/local")
-endif()
-
-if (NOT QT_ROOT)
-    set(QT_ROOT "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/qt${QT_VERSION_NUMBER}")
-endif()
-
-if (NOT QT_PLUGIN_PATH)
-    set(QT_PLUGIN_PATH "${QT_ROOT}/plugins")
-endif()
-if (NOT QT_STYLE_PATH)
-    set(QT_STYLE_PATH "${QT_PLUGIN_PATH}/styles")
 endif()
 
 if (NOT DATA_INSTALL_DIR)
