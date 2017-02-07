@@ -1914,9 +1914,11 @@ namespace Adwaita
         if( verticalTabs )
         {
 
-            tabBarRect.setHeight( qMin( tabBarRect.height(), rect.height() - 2 ) );
-            if( tabBarAlignment == Qt::AlignCenter ) tabBarRect.moveTop( rect.top() + ( rect.height() - tabBarRect.height() )/2 );
-            else tabBarRect.moveTop( rect.top()+1 );
+            tabBarRect.setTop(option->rect.top() + 1);
+            tabBarRect.setBottom(option->rect.bottom() - 1);
+            //tabBarRect.setHeight( qMin( tabBarRect.height(), rect.height() - 2 ) );
+            //if( tabBarAlignment == Qt::AlignCenter ) tabBarRect.moveTop( rect.top() + ( rect.height() - tabBarRect.height() )/2 );
+            //else tabBarRect.moveTop( rect.top()+1 );
 
         } else {
 
