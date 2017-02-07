@@ -6017,8 +6017,10 @@ namespace Adwaita
             copy.rect = buttonRect;
             if( inTabBar ) {
                 QRect rect(option->rect);
-                QColor background( option->palette.mid().color().lighter(115 + 10.0 * mouseOpacity - 20 * pressedOpacity) );
-                QColor outline ( option->palette.mid().color());
+                QColor background( _helper->mix(option->palette.window().color(), option->palette.shadow().color(), 0.15) );
+                background = _helper->mix(background, Qt::white, 0.2 * mouseOpacity);
+                background = _helper->mix(background, Qt::black, 0.15 * pressedOpacity);
+                QColor outline ( _helper->frameOutlineColor(option->palette) );
                 painter->setPen(background);
                 painter->setBrush(background);
                 switch (toolButtonOption->arrowType) {
