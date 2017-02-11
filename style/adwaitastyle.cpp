@@ -652,6 +652,7 @@ namespace Adwaita
 
             // frame width
             case PM_DefaultFrameWidth:
+            if ( widget && widget->inherits("QComboBoxPrivateContainer") ) return 1;
             if( qobject_cast<const QMenu*>( widget ) ) return Metrics::Menu_FrameWidth;
             if( qobject_cast<const QLineEdit*>( widget ) ) return Metrics::LineEdit_FrameWidth;
             #if QT_VERSION >= 0x050000
