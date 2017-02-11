@@ -430,6 +430,10 @@ namespace Adwaita
         // render
         painter->drawRoundedRect( frameRect, radius, radius );
 
+        if (!hasFocus) {
+            renderFrameShadow(painter, rect.adjusted(2, 2, -2, 2), outline);
+        }
+
     }
 
     //______________________________________________________________________________
@@ -473,12 +477,29 @@ namespace Adwaita
         path.addRect( frameRect.adjusted(2 * radius, 0, 0, 0) );
         painter->drawPath( path.simplified() );
 
+        if (!hasFocus) {
+            renderFrameShadow(painter, rect.adjusted(2, 2, -2, 2), outline);
+        }
+
         // render
         //painter->drawRoundedRect( frameRect, radius, radius );
 
     }
 
-    //______________________________________________________________________________
+    void Helper::renderFrameShadow(QPainter *painter, const QRect &rect, QColor shadow ) const
+    {
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing, false);
+        shadow.setAlphaF(0.25);
+        painter->setPen( shadow );
+        painter->drawLine(rect.topLeft(), rect.topRight());
+        shadow.setAlphaF(0.1);
+        painter->setPen( shadow );
+        painter->drawLine(rect.topLeft()+QPoint(0, 1), rect.topRight()+QPoint(0, 1));
+        painter->restore();
+    }
+
+    //______________________________________________________________________________1
     void Helper::renderSidePanelFrame( QPainter* painter, const QRect& rect, const QColor& outline, Side side ) const
     {
 

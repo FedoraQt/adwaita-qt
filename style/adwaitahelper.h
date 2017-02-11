@@ -192,6 +192,8 @@ namespace Adwaita
         //* generic frame flat on right side
         void renderFlatFrame( QPainter*, const QRect&, const QColor& color, const QColor& outline = QColor(), bool hasFocus = false ) const;
 
+        void renderFrameShadow(QPainter *painter, const QRect &rect, QColor shadow ) const;
+
         //* side panel frame
         void renderSidePanelFrame( QPainter*, const QRect&, const QColor& outline, Side ) const;
 
