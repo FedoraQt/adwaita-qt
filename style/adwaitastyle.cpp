@@ -654,6 +654,7 @@ namespace Adwaita
             case PM_DefaultFrameWidth:
             if( qobject_cast<const QMenu*>( widget ) ) return Metrics::Menu_FrameWidth;
             if( qobject_cast<const QLineEdit*>( widget ) ) return Metrics::LineEdit_FrameWidth;
+            if( qobject_cast<const QAbstractScrollArea*>( widget ) ) return Metrics::ScrollArea_FrameWidth;
             #if QT_VERSION >= 0x050000
             else if( isQtQuickControl( option, widget ) )
             {
@@ -3130,6 +3131,9 @@ namespace Adwaita
             Side side( reverseLayout ? SideRight : SideLeft );
             _helper->renderSidePanelFrame( painter, rect, outline, side );
 
+        } else if (qobject_cast<const QAbstractScrollArea *>(widget)) {
+            QColor outline( _helper->frameOutlineColor( palette, mouseOver, hasFocus, opacity, mode ) );
+            _helper->renderSquareFrame( painter, rect, outline, hasFocus );
         } else {
 
             QColor background( isTitleWidget ? palette.color( widget->backgroundRole() ):QColor() );

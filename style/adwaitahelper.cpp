@@ -433,6 +433,20 @@ namespace Adwaita
     }
 
     //______________________________________________________________________________
+    void Helper::renderSquareFrame(
+        QPainter* painter, const QRect& rect,
+        QColor color, bool hasFocus ) const
+    {
+        painter->setPen( color );
+        painter->drawRect( rect.adjusted(1, 1, -2, -2) );
+        if (hasFocus) {
+            color.setAlphaF( 0.5 );
+            painter->setPen( color );
+            painter->drawRect( rect.adjusted(0, 0, -1, -1) );
+        }
+    }
+
+    //______________________________________________________________________________
     void Helper::renderFlatFrame(
         QPainter* painter, const QRect& rect,
         const QColor& color, const QColor& outline, bool hasFocus ) const
