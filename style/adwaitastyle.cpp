@@ -3315,7 +3315,7 @@ namespace Adwaita
 
         // define colors
         const QPalette& palette( option->palette );
-        QColor background( palette.color(QPalette::AlternateBase) );
+        QColor background( palette.color(QPalette::Base) );
         QColor outline( _helper->frameOutlineColor( palette ) );
         _helper->renderTabWidgetFrame( painter, rect, background, outline, corners );
 
