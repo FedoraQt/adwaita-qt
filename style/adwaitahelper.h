@@ -57,9 +57,6 @@ namespace Adwaita
         virtual ~Helper()
         {}
 
-        //* load configuration
-        virtual void loadConfig();
-
         //*@name color utilities
         //@{
 
@@ -103,12 +100,12 @@ namespace Adwaita
         { return alphaColor( palette.color( QPalette::Shadow ), 0.15 ); }
 
         //* titlebar color
-        const QColor& titleBarColor( bool active ) const
-        { return active ? _activeTitleBarColor:_inactiveTitleBarColor; }
+        QColor titleBarColor( const QPalette& palette, bool active ) const
+        { return palette.color(active ? QPalette::Active : QPalette::Inactive, QPalette::Window); }
 
         //* titlebar text color
-        const QColor& titleBarTextColor( bool active ) const
-        { return active ? _activeTitleBarTextColor:_inactiveTitleBarTextColor; }
+        QColor titleBarTextColor( const QPalette& palette, bool active ) const
+        { return palette.color(active ? QPalette::Active : QPalette::Inactive, QPalette::WindowText); }
 
         //* frame outline color, using animations
         QColor frameOutlineColor( const QPalette&, bool mouseOver = false, bool hasFocus = false, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone ) const;
@@ -345,14 +342,6 @@ namespace Adwaita
         QPainterPath roundedPath( const QRectF&, Corners, qreal ) const;
 
         private:
-
-        //*@name windeco colors
-        //@{
-        QColor _activeTitleBarColor;
-        QColor _activeTitleBarTextColor;
-        QColor _inactiveTitleBarColor;
-        QColor _inactiveTitleBarTextColor;
-        //@}
 
         #if ADWAITA_HAVE_X11
 

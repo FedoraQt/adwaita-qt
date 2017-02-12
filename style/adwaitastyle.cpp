@@ -1576,10 +1576,6 @@ namespace Adwaita
     //_____________________________________________________________________
     void Style::loadConfiguration()
     {
-
-        // load helper configuration
-        _helper->loadConfig();
-
         // reinitialize engines
         _animations->setupEngines();
         _windowManager->initialize();
@@ -6641,25 +6637,18 @@ namespace Adwaita
 
             // render background
             painter->setClipRect( rect );
-            QColor outline( active ? QColor():_helper->frameOutlineColor( palette, false, false ) );
-            QColor background( _helper->titleBarColor( active ) );
+            QColor outline( _helper->frameOutlineColor( palette, false, false ) );
+            QColor background( _helper->titleBarColor( palette, active ) );
             _helper->renderTabWidgetFrame( painter, rect.adjusted( -1, -1, 1, 3 ), background, outline, CornersTop );
 
-            const bool useSeparator(
-                active &&
-                _helper->titleBarColor( active ) != palette.color( QPalette::Window ) &&
-                !( titleBarOption->titleBarState & Qt::WindowMinimized ) );
 
-            if( true )
-            {
-                painter->setRenderHint( QPainter::Antialiasing, false );
-                painter->setBrush( Qt::NoBrush );
-                painter->setPen( palette.color( QPalette::Button ) );
-                painter->drawLine( rect.bottomLeft(), rect.bottomRight() );
-            }
+            painter->setRenderHint( QPainter::Antialiasing, false );
+            painter->setBrush( Qt::NoBrush );
+            painter->setPen( outline );
+            painter->drawLine( rect.bottomLeft(), rect.bottomRight() );
 
             // render text
-            palette.setColor( QPalette::WindowText, _helper->titleBarTextColor( active ) );
+            palette.setColor( QPalette::WindowText, _helper->titleBarTextColor( palette, active ) );
             QRect textRect( subControlRect( CC_TitleBar, option, SC_TitleBarLabel, widget ) );
             ParentStyleClass::drawItemText( painter, textRect, Qt::AlignCenter, palette, active, titleBarOption->text, QPalette::WindowText );
 
@@ -6727,7 +6716,7 @@ namespace Adwaita
             } else {
 
                 if( mouseOver ) iconMode = QIcon::Active;
-                else if( active ) iconMode = QIcon::Selected;
+//                else if( active ) iconMode = QIcon::Selected;
                 else iconMode = QIcon::Normal;
 
                 iconState = subControlActive ? QIcon::On : QIcon::Off;
