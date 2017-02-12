@@ -97,6 +97,8 @@ namespace Adwaita
         //* polish scrollarea
         void polishScrollArea( QAbstractScrollArea* );
 
+        void setGtkThemeVariant( QWidget* );
+
         //* pixel metrics
         virtual int pixelMetric(PixelMetric, const QStyleOption* = nullptr, const QWidget* = nullptr) const;
 

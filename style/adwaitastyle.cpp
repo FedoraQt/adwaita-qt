@@ -33,6 +33,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDial>
+#include <QDialog>
 #include <QDBusConnection>
 #include <QDockWidget>
 #include <QFormLayout>
@@ -44,6 +45,7 @@
 #include <QMenu>
 #include <QPainter>
 #include <QProxyStyle>
+#include <QProcess>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QScrollBar>
@@ -407,9 +409,23 @@ namespace Adwaita
 
         }
 
+        if (_dark && (qobject_cast<QDialog *>(widget) || qobject_cast<QMainWindow *>(widget))) {
+            setGtkThemeVariant(widget);
+        }
+
         // base class polishing
         ParentStyleClass::polish( widget );
 
+    }
+
+    //______________________________________________________________
+    void Style::setGtkThemeVariant( QWidget*  widget)
+    {
+        WId id = widget->winId();
+        if (id) {
+            QProcess::startDetached("xprop", QStringList() << "-f" << "_GTK_THEME_VARIANT" << "8u" << "-set" << "_GTK_THEME_VARIANT"
+                                                           << (_dark ? "dark" : "light") << "-id" << QString::number(id));
+        }
     }
 
     //______________________________________________________________
