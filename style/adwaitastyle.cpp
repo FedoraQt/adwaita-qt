@@ -5040,7 +5040,7 @@ namespace Adwaita
         bool horizontal( state & State_Horizontal );
 
         // copy rect and palette
-        const QRect& rect( horizontal ? option->rect.adjusted(0, 4, 0, -4) : option->rect.adjusted(4, 0, -4, 0) );
+        const QRect& rect( horizontal ? option->rect.adjusted(-1, 4, 0, -4) : option->rect.adjusted(4, -1, -4, 0) );
         const QPalette& palette( option->palette );
 
         // define handle rect
