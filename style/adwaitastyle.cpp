@@ -4758,11 +4758,9 @@ namespace Adwaita
             { _helper->renderCheckBoxBackground( painter, checkBoxRect, palette.color( QPalette::Window ), outline, sunken ); }
             */
 
+            QColor color( state&State_Enabled ? state&State_Selected ? palette.highlightedText().color() : palette.foreground().color() : palette.text().color() );
             CheckBoxState state( menuItemOption->checked ? CheckOn : CheckOff );
-            bool active( menuItemOption->checked );
-            QColor shadow( _helper->shadowColor( palette ) );
-            QColor color( _helper->checkBoxIndicatorColor( palette, false, enabled && active ) );
-            _helper->renderCheckBox( painter, checkBoxRect, Qt::transparent, outline, color, sunken, state, enabled && windowActive);
+            _helper->renderCheckBox( painter, checkBoxRect, QColor(QColor::Invalid), color, color, sunken, state, enabled && windowActive);
 
         } else if( menuItemOption->checkType == QStyleOptionMenuItem::Exclusive ) {
 
@@ -4773,10 +4771,9 @@ namespace Adwaita
             { _helper->renderRadioButtonBackground( painter, checkBoxRect, palette.color( QPalette::Window ), outline, sunken ); }
             */
 
+            QColor color( state&State_Enabled ? state&State_Selected ? palette.highlightedText().color() : palette.foreground().color() : palette.text().color() );
             bool active( menuItemOption->checked );
-            QColor shadow( _helper->shadowColor( palette ) );
-            QColor color( _helper->checkBoxIndicatorColor( palette, false, enabled && active ) );
-            _helper->renderRadioButton( painter, checkBoxRect, Qt::transparent, outline, color, sunken, enabled && windowActive, active ? RadioOn:RadioOff );
+            _helper->renderRadioButton( painter, checkBoxRect, QColor(QColor::Invalid), color, color, sunken, enabled && windowActive, active ? RadioOn:RadioOff );
 
         }
 
