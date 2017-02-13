@@ -652,6 +652,7 @@ namespace Adwaita
 
             // frame width
             case PM_DefaultFrameWidth:
+            if ( widget && widget->inherits("QComboBoxPrivateContainer") ) return 1;
             if( qobject_cast<const QMenu*>( widget ) ) return Metrics::Menu_FrameWidth;
             if( qobject_cast<const QLineEdit*>( widget ) ) return Metrics::LineEdit_FrameWidth;
             #if QT_VERSION >= 0x050000
@@ -4524,10 +4525,6 @@ namespace Adwaita
         // change pen color directly
         painter->save();
         painter->setPen( QPen( option->palette.color( textRole ), 1 ) );
-
-        // translate painter for pressed down comboboxes
-        if( sunken && !flat )
-        { painter->translate( 1, 1 ); }
 
         #if QT_VERSION >= 0x050000
         if (const QStyleOptionComboBox *cb = qstyleoption_cast<const QStyleOptionComboBox *>(option)) {

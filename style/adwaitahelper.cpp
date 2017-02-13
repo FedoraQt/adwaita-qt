@@ -448,8 +448,9 @@ namespace Adwaita
 
         QPainterPath path;
         path.setFillRule( Qt::WindingFill );
-        path.addRoundedRect( frameRect.adjusted(0, 0, - 2 *radius, 0), radius, radius);
         path.addRect( frameRect.adjusted(2 * radius, 0, 0, 0) );
+        path.addRoundedRect( frameRect.adjusted(0, 0, - 2 *radius, 0), radius, radius);
+
         painter->drawPath( path.simplified() );
 
         // render
