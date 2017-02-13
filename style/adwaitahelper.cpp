@@ -46,27 +46,6 @@ namespace Adwaita
     #endif
 
     //____________________________________________________________________
-    void Helper::loadConfig()
-    {
-
-        QPalette palette( QApplication::palette() );
-        // ADWAITA TODO
-        /*
-        KConfigGroup group( _config->group( "WM" ) );
-        _activeTitleBarColor = group.readEntry( "activeBackground", palette.color( QPalette::Active, QPalette::Highlight ) );
-        _activeTitleBarTextColor = group.readEntry( "activeForeground", palette.color( QPalette::Active, QPalette::HighlightedText ) );
-        _inactiveTitleBarColor = group.readEntry( "inactiveBackground", palette.color( QPalette::Disabled, QPalette::Highlight ) );
-        _inactiveTitleBarTextColor = group.readEntry( "inactiveForeground", palette.color( QPalette::Disabled, QPalette::HighlightedText ) );
-        */
-
-        _activeTitleBarColor = palette.color(QPalette::Active, QPalette::Window);
-        _activeTitleBarTextColor = palette.color(QPalette::Active, QPalette::WindowText);
-        _inactiveTitleBarColor = palette.color(QPalette::Inactive, QPalette::Window);
-        _inactiveTitleBarTextColor = palette.color(QPalette::Inactive, QPalette::WindowText);
-
-    }
-
-    //____________________________________________________________________
     QColor Helper::frameOutlineColor( const QPalette& palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode ) const
     {
 
