@@ -2427,7 +2427,7 @@ namespace Adwaita
 
             case SC_ScrollBarSubLine:
             case SC_ScrollBarAddLine:
-            return scrollBarInternalSubControlRect( option, subControl );
+            return QRect();
 
             case SC_ScrollBarGroove:
             {
@@ -5032,14 +5032,15 @@ namespace Adwaita
         const QStyleOptionSlider *sliderOption( qstyleoption_cast<const QStyleOptionSlider*>( option ) );
         if( !sliderOption ) return true;
 
+        const State& state( option->state );
+        bool horizontal( state & State_Horizontal );
+
         // copy rect and palette
-        const QRect& rect( option->rect.adjusted(4, 4, -4, -4) );
+        const QRect& rect( horizontal ? option->rect.adjusted(-1, 4, 0, -4) : option->rect.adjusted(4, -1, -4, 0) );
         const QPalette& palette( option->palette );
 
         // define handle rect
         QRect handleRect;
-        const State& state( option->state );
-        bool horizontal( state & State_Horizontal );
 
         bool enabled( state & State_Enabled );
         bool mouseOver( (state & State_Active) && enabled && ( state & State_MouseOver ) );
