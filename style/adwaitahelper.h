@@ -186,6 +186,9 @@ namespace Adwaita
         //* generic frame
         void renderFrame( QPainter*, const QRect&, const QColor& color, const QColor& outline = QColor(), bool hasFocus = false ) const;
 
+        //* square frame
+        void renderSquareFrame( QPainter* painter, const QRect& rect, QColor color, bool hasFocus ) const;
+
         //* generic frame flat on right side
         void renderFlatFrame( QPainter*, const QRect&, const QColor& color, const QColor& outline = QColor(), bool hasFocus = false ) const;
 

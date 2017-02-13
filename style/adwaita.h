@@ -162,6 +162,9 @@ namespace Adwaita
         // tooltips
         ToolTip_FrameWidth = 3,
 
+        // scroll areas
+        ScrollArea_FrameWidth = 2,
+
         // list headers
         Header_MarginWidth = 3,
         Header_ItemSpacing = 2,
