@@ -953,19 +953,23 @@ namespace Adwaita
         // content
         {
 
-            if (enabled) {
-                QLinearGradient gradient( frameRect.topLeft(), frameRect.bottomLeft() );
-                if (sunken) {
-                    gradient.setColorAt( 0, background);
+            if (background.isValid()) {
+                if (enabled) {
+                    QLinearGradient gradient( frameRect.topLeft(), frameRect.bottomLeft() );
+                    if (sunken) {
+                        gradient.setColorAt( 0, background);
+                    }
+                    else {
+                        gradient.setColorAt( 0, mix(background, Qt::white, 0.07) );
+                        gradient.setColorAt( 1, mix(background, Qt::black, 0.1) );
+                    }
+                    painter->setBrush( gradient );
                 }
                 else {
-                    gradient.setColorAt( 0, mix(background, Qt::white, 0.07) );
-                    gradient.setColorAt( 1, mix(background, Qt::black, 0.1) );
+                    painter->setBrush( background );
                 }
-                painter->setBrush( gradient );
-            }
-            else {
-                painter->setBrush( background );
+            } else {
+                painter->setBrush( Qt::NoBrush );
             }
 
             painter->setPen( QPen( outline, 1 ) );
