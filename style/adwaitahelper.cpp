@@ -24,6 +24,7 @@
 
 #include <QApplication>
 #include <QPainter>
+#include <QLibrary>
 
 #if ADWAITA_HAVE_X11 && QT_VERSION < 0x050000
 #include <X11/Xlib-xcb.h>
@@ -1439,17 +1440,12 @@ namespace Adwaita
     //______________________________________________________________________________
     bool Helper::isX11( void )
     {
-        #if ADWAITA_HAVE_X11
         #if QT_VERSION >= 0x050000
-        static const bool s_isX11 = QX11Info::isPlatformX11();
+        static const bool s_isX11 = qApp->platformName()==QLatin1String("xcb");
         return s_isX11;
         #else
-        return true;
-        #endif
-        #endif
-
         return false;
-
+        #endif
     }
 
     bool Helper::isWayland( void )
@@ -1631,6 +1627,87 @@ namespace Adwaita
 
         #endif
 
+    }
+
+    //____________________________________________________________________
+    void Helper::setVariant(QWidget *widget, const QByteArray &variant)
+    {
+        if (isX11() && widget) { //  && !widget->testAttribute(Qt::WA_)) {
+            static const char *_GTK_THEME_VARIANT="_GTK_THEME_VARIANT";
+
+            // Check if already set
+            QVariant var=widget->property("_GTK_THEME_VARIANT");
+            if (var.isValid() && var.toByteArray()==variant) {
+                return;
+            }
+
+            // Typedef's from xcb/xcb.h - copied so that there is no
+            // direct xcb dependency
+            typedef quint32 XcbAtom;
+
+            struct XcbInternAtomCookie {
+                unsigned int sequence;
+            };
+
+            struct XcbInternAtomReply {
+                quint8  response_type;
+                quint8  pad0;
+                quint16 sequence;
+                quint32 length;
+                XcbAtom atom;
+            };
+
+            typedef void * (*XcbConnectFn)(int, int);
+            typedef XcbInternAtomCookie (*XcbInternAtomFn)(void *, int, int, const char *);
+            typedef XcbInternAtomReply * (*XcbInternAtomReplyFn)(void *, XcbInternAtomCookie, int);
+            typedef int (*XcbChangePropertyFn)(void *, int, int, XcbAtom, XcbAtom, int, int, const void *);
+            typedef int (*XcbFlushFn)(void *);
+
+            static QLibrary *lib = 0;
+            static XcbAtom variantAtom = 0;
+            static XcbAtom utf8TypeAtom = 0;
+            static void *xcbConn = 0;
+            static XcbChangePropertyFn XcbChangePropertyFnPtr = 0;
+            static XcbFlushFn XcbFlushFnPtr = 0;
+
+            if (!lib) {
+                lib = new QLibrary("libxcb", qApp);
+
+                if (lib->load()) {
+                    XcbConnectFn XcbConnectFnPtr=(XcbConnectFn)lib->resolve("xcb_connect");
+                    XcbInternAtomFn XcbInternAtomFnPtr=(XcbInternAtomFn)lib->resolve("xcb_intern_atom");
+                    XcbInternAtomReplyFn XcbInternAtomReplyFnPtr=(XcbInternAtomReplyFn)lib->resolve("xcb_intern_atom_reply");
+
+                    XcbChangePropertyFnPtr=(XcbChangePropertyFn)lib->resolve("xcb_change_property");
+                    XcbFlushFnPtr=(XcbFlushFn)lib->resolve("xcb_flush");
+                    if (XcbConnectFnPtr && XcbInternAtomFnPtr && XcbInternAtomReplyFnPtr && XcbChangePropertyFnPtr && XcbFlushFnPtr) {
+                        xcbConn=(*XcbConnectFnPtr)(0, 0);
+                        if (xcbConn) {
+                            XcbInternAtomReply *typeReply = (*XcbInternAtomReplyFnPtr)(xcbConn, (*XcbInternAtomFnPtr)(xcbConn, 0, 11, "UTF8_STRING"), 0);
+
+                            if (typeReply) {
+                                XcbInternAtomReply *gtkVarReply = (*XcbInternAtomReplyFnPtr)(xcbConn,
+                                                                                             (*XcbInternAtomFnPtr)(xcbConn, 0, strlen(_GTK_THEME_VARIANT),
+                                                                                                                   _GTK_THEME_VARIANT), 0);
+                                if (gtkVarReply) {
+                                    utf8TypeAtom = typeReply->atom;
+                                    variantAtom = gtkVarReply->atom;
+                                    free(gtkVarReply);
+                                }
+                                free(typeReply);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (0!=variantAtom) {
+                (*XcbChangePropertyFnPtr)(xcbConn, 0, widget->effectiveWinId(), variantAtom, utf8TypeAtom, 8,
+                                          variant.length(), (const void *)variant.constData());
+                (*XcbFlushFnPtr)(xcbConn);
+                widget->setProperty(_GTK_THEME_VARIANT, variant);
+            }
+        }
     }
 
 }
