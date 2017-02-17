@@ -3911,20 +3911,18 @@ namespace Adwaita
         // store state
         const State& state( option->state );
         bool autoRaise( state & State_AutoRaise );
-
-        // do nothing for autoraise buttons
-        if( autoRaise || !(toolButtonOption->subControls & SC_ToolButtonMenu) ) return true;
-
-        // store palette and rect
-        const QPalette& palette( option->palette );
-        const QRect& rect( option->rect );
-
-        // store state
         bool enabled( state & State_Enabled );
         bool windowActive( state & State_Active );
         bool hasFocus( enabled && ( state & ( State_HasFocus | State_Sunken ) ) );
         bool mouseOver( (state & State_Active) && enabled && ( state & State_MouseOver ) );
         bool sunken( enabled && ( state & State_Sunken ) );
+
+        // do nothing for autoraise buttons
+        if( (autoRaise && !sunken && !mouseOver) || !(toolButtonOption->subControls & SC_ToolButtonMenu) ) return true;
+
+        // store palette and rect
+        const QPalette& palette( option->palette );
+        const QRect& rect( option->rect );
 
         // update animation state
         // mouse over takes precedence over focus
@@ -3937,7 +3935,7 @@ namespace Adwaita
         // render as push button
         QColor shadow( _helper->shadowColor( palette ) );
         QColor outline( _helper->buttonOutlineColor( palette, mouseOver, hasFocus, opacity, mode ) );
-        QColor background( _helper->buttonBackgroundColor( palette, mouseOver, hasFocus, false, opacity, mode ) );
+        QColor background( _helper->buttonBackgroundColor( palette, mouseOver, hasFocus, sunken, opacity, mode ) );
 
         QRect frameRect( rect );
         painter->setClipRect( rect );
@@ -6042,6 +6040,14 @@ namespace Adwaita
                     break;
                 }
             }
+            else if (sunken && hasPopupMenu && !(toolButtonOption->activeSubControls&SC_ToolButton)) {
+                // Only menu button is active. so draw left hand side od button raised
+                QStyleOptionToolButton btn( copy );
+                btn.state|=State_Raised;
+                btn.state&=~State_Sunken;
+                btn.state&=~State_AutoRaise;
+                drawPrimitive( PE_PanelButtonTool, &btn, painter, widget);
+            }
             else {
                 drawPrimitive( PE_PanelButtonTool, &copy, painter, widget);
             }
@@ -6052,7 +6058,7 @@ namespace Adwaita
         {
 
             copy.rect = menuRect;
-            if( !flat ) drawPrimitive( PE_IndicatorButtonDropDown, &copy, painter, widget );
+            if( !flat || mouseOver || sunken ) drawPrimitive( PE_IndicatorButtonDropDown, &copy, painter, widget );
 
             drawPrimitive( PE_IndicatorArrowDown, &copy, painter, widget );
 
