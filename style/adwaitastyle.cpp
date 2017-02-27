@@ -33,6 +33,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDial>
+#include <QDialog>
 #include <QDBusConnection>
 #include <QDockWidget>
 #include <QFormLayout>
@@ -411,6 +412,10 @@ namespace Adwaita
 
         }
 
+        if (qobject_cast<QDialog *>(widget) || qobject_cast<QMainWindow *>(widget)) {
+            addEventFilter( widget );
+        }
+
         // base class polishing
         ParentStyleClass::polish( widget );
 
@@ -498,7 +503,9 @@ namespace Adwaita
         if( qobject_cast<QAbstractScrollArea*>( widget ) ||
             qobject_cast<QDockWidget*>( widget ) ||
             qobject_cast<QMdiSubWindow*>( widget ) ||
-            widget->inherits( "QComboBoxPrivateContainer" ) )
+            widget->inherits( "QComboBoxPrivateContainer" ) ||
+            qobject_cast<QDialog *>(widget) ||
+            qobject_cast<QMainWindow *>(widget))
             { widget->removeEventFilter( this ); }
 
         ParentStyleClass::unpolish( widget );
@@ -1205,6 +1212,11 @@ namespace Adwaita
         QWidget *widget = static_cast<QWidget*>( object );
         if( widget->inherits( "QAbstractScrollArea" ) || widget->inherits( "KTextEditor::View" ) ) { return eventFilterScrollArea( widget, event ); }
         else if( widget->inherits( "QComboBoxPrivateContainer" ) ) { return eventFilterComboBoxContainer( widget, event ); }
+
+        if ((qobject_cast<QDialog *>(widget) || qobject_cast<QMainWindow *>(widget)) &&
+                (QEvent::Show==event->type() || QEvent::StyleChange==event->type())) {
+            _helper->setVariant(widget, _dark ? "dark" : "light");
+        }
 
         // fallback
         return ParentStyleClass::eventFilter( object, event );
