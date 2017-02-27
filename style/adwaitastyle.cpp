@@ -3195,7 +3195,7 @@ namespace Adwaita
 
             // render
             QColor background( palette.color( QPalette::Base ) );
-            QColor outline( _helper->frameOutlineColor( palette, mouseOver, hasFocus, opacity, mode ) );
+            QColor outline( _helper->inputOutlineColor( palette, mouseOver, hasFocus, opacity, mode ) );
             if (qobject_cast<const QComboBox*>(widget))
                 _helper->renderFlatFrame( painter, rect, background, outline, hasFocus );
             else

@@ -72,6 +72,27 @@ namespace Adwaita
 
     }
 
+    QColor Helper::inputOutlineColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode) const
+    {
+        QColor outline( buttonOutlineColor( palette, mouseOver, false ) );
+        QColor focus( palette.color( QPalette::Active, QPalette::Highlight ) );
+
+
+        // focus takes precedence over hover
+        if( mode == AnimationFocus )
+        {
+
+            outline = mix( outline, focus, opacity );
+
+        } else if( hasFocus ) {
+
+            outline = focusColor( palette );
+
+        }
+
+        return outline;
+    }
+
     //____________________________________________________________________
     QColor Helper::focusOutlineColor( const QPalette& palette ) const
     { return mix( focusColor( palette ), palette.color( QPalette::WindowText ), 0.15 ); }

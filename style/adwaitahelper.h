@@ -110,6 +110,9 @@ namespace Adwaita
         //* frame outline color, using animations
         QColor frameOutlineColor( const QPalette&, bool mouseOver = false, bool hasFocus = false, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone ) const;
 
+        //* input outline color, using animations
+        QColor inputOutlineColor( const QPalette& palette, bool mouseOver = false, bool hasFocus = false, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone ) const;
+
         //* focus outline color, using animations
         QColor focusOutlineColor( const QPalette& ) const;
 
