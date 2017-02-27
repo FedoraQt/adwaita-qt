@@ -243,6 +243,10 @@ namespace Adwaita
             QStringLiteral( "org.kde.Adwaita.Style" ),
             QStringLiteral( "reparseConfiguration" ), this, SLOT(configurationChanged()) );
 
+        // Detect if running under KDE, if so set menus, etc, to have translucent background.
+        // For GNOME desktop, dont want translucent backgrounds otherwise no menu shadow is drawn.
+        _isKDE = qgetenv("XDG_CURRENT_DESKTOP").toLower()=="kde";
+
         // call the slot directly; this initial call will set up things that also
         // need to be reset when the system palette changes
         loadConfiguration();
@@ -6969,6 +6973,7 @@ namespace Adwaita
     //____________________________________________________________________________________
     void Style::setTranslucentBackground( QWidget* widget ) const
     {
+        if (!_isKDE) return;
         widget->setAttribute( Qt::WA_TranslucentBackground );
 
         #ifdef Q_WS_WIN

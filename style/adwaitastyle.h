@@ -520,6 +520,8 @@ namespace Adwaita
 
         bool _dark { false };
 
+        bool _isKDE { false };
+
         //@}
 
     };
