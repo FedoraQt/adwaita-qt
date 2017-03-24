@@ -6815,8 +6815,10 @@ namespace Adwaita
             painter->setBrush(background);
             if (hasFocus)
                 painter->drawRect(arrowRect.adjusted(1, 3, -1, -2));
-            else
+            else {
                 painter->drawRect(arrowRect.adjusted(1, 2, -1, -1));
+                _helper->renderFrameShadow(painter, arrowRect.adjusted(1, 2, -1, 2), outline);
+            }
         }
 
         // render
