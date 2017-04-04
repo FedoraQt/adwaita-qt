@@ -749,7 +749,7 @@ namespace Adwaita
             // menu buttons
             case PM_MenuButtonIndicator: return Metrics::MenuButton_IndicatorWidth;
             case PM_MenuVMargin: return 3;
-            case PM_MenuHMargin: return 1;
+            case PM_MenuHMargin: return 0;
 
             // toolbars
             case PM_ToolBarHandleExtent: return Metrics::ToolBar_HandleExtent;
@@ -4688,9 +4688,9 @@ namespace Adwaita
     }
 
     bool Style::drawMenuEmptyAreaControl( const QStyleOption* option, QPainter* painter, const QWidget* widget ) const {
-        painter->setPen(_helper->frameOutlineColor(option->palette));
+        painter->setPen(Qt::NoPen);
         painter->setBrush(option->palette.base().color());
-        painter->drawRect(option->rect.adjusted(0, 0, -1, -1));
+        painter->drawRect(option->rect);
         return true;
     }
 
@@ -4707,7 +4707,6 @@ namespace Adwaita
         // copy rect and palette
         const QRect& rect( option->rect );
         const QPalette& palette( option->palette );
-        const QColor& outline( _helper->frameOutlineColor( palette ) );
         const QColor& background( palette.color(QPalette::Active, QPalette::Base) );
 
         painter->setPen(Qt::NoPen);
@@ -4755,17 +4754,9 @@ namespace Adwaita
         {
 
             QColor color = _helper->focusColor( palette );
-            QColor outlineColor = _helper->focusOutlineColor( palette );
+            QColor outlineColor = Qt::transparent;
 
             Sides sides = 0;
-            if( !menuItemOption->menuRect.isNull() )
-            {
-                if( rect.top() <= menuItemOption->menuRect.top() ) sides |= SideTop;
-                if( rect.bottom() >= menuItemOption->menuRect.bottom() ) sides |= SideBottom;
-                if( rect.left() <= menuItemOption->menuRect.left() ) sides |= SideLeft;
-                if( rect.right() >= menuItemOption->menuRect.right() ) sides |= SideRight;
-            }
-
             _helper->renderFocusRect( painter, rect, color, outlineColor, sides );
 
         }
