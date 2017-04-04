@@ -176,7 +176,10 @@ namespace Adwaita
         { return option->rect; }
 
         QRect pushButtonContentsRect( const QStyleOption*, const QWidget* ) const;
+        QRect pushButtonFocusRect( const QStyleOption*, const QWidget* ) const;
         QRect checkBoxContentsRect( const QStyleOption*, const QWidget* ) const;
+        QRect checkBoxIndicatorRect( const QStyleOption*, const QWidget* ) const;
+        QRect checkBoxFocusRect( const QStyleOption*, const QWidget* ) const;
         QRect lineEditContentsRect( const QStyleOption*, const QWidget* ) const;
         QRect progressBarGrooveRect( const QStyleOption*, const QWidget* ) const;
         QRect progressBarContentsRect( const QStyleOption*, const QWidget* ) const;

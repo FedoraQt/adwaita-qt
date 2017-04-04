@@ -891,8 +891,13 @@ namespace Adwaita
         {
 
             case SE_PushButtonContents: return pushButtonContentsRect( option, widget );
+            case SE_PushButtonFocusRect: return pushButtonFocusRect( option, widget );
             case SE_CheckBoxContents: return checkBoxContentsRect( option, widget );
+            case SE_CheckBoxIndicator: return checkBoxIndicatorRect( option, widget );
+            case SE_CheckBoxFocusRect: return checkBoxFocusRect( option, widget );
             case SE_RadioButtonContents: return checkBoxContentsRect( option, widget );
+            case SE_RadioButtonIndicator: return checkBoxIndicatorRect( option, widget );
+            case SE_RadioButtonFocusRect: return checkBoxFocusRect( option, widget );
             case SE_LineEditContents: return lineEditContentsRect( option, widget );
             case SE_ProgressBarGroove: return progressBarGrooveRect( option, widget );
             case SE_ProgressBarContents: return progressBarContentsRect( option, widget );
@@ -1641,8 +1646,26 @@ namespace Adwaita
     { return insideMargin( option->rect, Metrics::Frame_FrameWidth ); }
 
     //___________________________________________________________________________________________________________________
+    QRect Style::pushButtonFocusRect(const QStyleOption* option, const QWidget* ) const
+    { return insideMargin( option->rect, 3 ); }
+
+    //___________________________________________________________________________________________________________________
     QRect Style::checkBoxContentsRect( const QStyleOption* option, const QWidget* ) const
-    { return visualRect( option, option->rect.adjusted( Metrics::CheckBox_Size + Metrics::CheckBox_ItemSpacing, 0, 0, 0 ) ); }
+    { return visualRect( option, option->rect.adjusted( Metrics::CheckBox_Size + 2 * Metrics::CheckBox_ItemSpacing, 0, 0, 0 ) ); }
+
+    //___________________________________________________________________________________________________________________
+    QRect Style::checkBoxIndicatorRect(const QStyleOption* option, const QWidget* widget ) const
+    { return ParentStyleClass::subElementRect( SE_CheckBoxIndicator, option, widget ).translated( Metrics::CheckBox_ItemSpacing, 0 ); }
+
+    //___________________________________________________________________________________________________________________
+    QRect Style::checkBoxFocusRect(const QStyleOption* option, const QWidget* widget ) const
+    {
+        return QRect( option->rect.left() + 2,
+                      option->rect.top() + 1,
+                      ParentStyleClass::subElementRect( SE_CheckBoxFocusRect, option, widget ).right() - option->rect.left(),
+                      option->rect.height() - 2
+                    );
+    }
 
     //___________________________________________________________________________________________________________________
     QRect Style::lineEditContentsRect( const QStyleOption* option, const QWidget* widget ) const

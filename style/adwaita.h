@@ -105,7 +105,7 @@ namespace Adwaita
 
         // checkboxes and radio buttons
         CheckBox_Size = 20,
-        CheckBox_FocusMarginWidth = 2,
+        CheckBox_FocusMarginWidth = 3,
         CheckBox_ItemSpacing = 4,
 
         // menubar items
