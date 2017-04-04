@@ -2564,7 +2564,7 @@ namespace Adwaita
 
         switch( subControl )
         {
-            case QStyle::SC_DialGroove: return insideMargin( rect, (Metrics::Slider_ControlThickness - Metrics::Slider_GrooveThickness)/2 );
+            case QStyle::SC_DialGroove: return insideMargin( rect, (Metrics::Slider_ControlThickness - Metrics::Slider_GrooveThickness)/2 + 2 );
             case QStyle::SC_DialHandle:
             {
 
@@ -6590,7 +6590,8 @@ namespace Adwaita
             QColor shadow( _helper->shadowColor( palette ) );
 
             // render
-            _helper->renderSliderHandle( painter, handleRect, background, outline, shadow, sunken, enabled, tickSide );
+            qreal angle = 270 - 180 * dialAngle( sliderOption, sliderOption->sliderPosition ) / M_PI;
+            _helper->renderSliderHandle( painter, handleRect, background, outline, shadow, sunken, enabled, tickSide, angle );
 
         }
 

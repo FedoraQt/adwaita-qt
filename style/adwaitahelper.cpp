@@ -1122,7 +1122,8 @@ namespace Adwaita
         const QColor& shadow,
         bool sunken,
         bool enabled,
-        Side ticks) const
+        Side ticks,
+        qreal angle) const
     {
 
         // setup painter
@@ -1206,7 +1207,11 @@ namespace Adwaita
             circle = circle.united(triangle);
         }
 
-        painter->drawPath(circle);
+        QTransform rotate;
+        rotate.translate(frameRect.center().x(), frameRect.center().y());
+        rotate.rotate(angle);
+        rotate.translate(-frameRect.center().x(), -frameRect.center().y());
+        painter->drawPolygon(circle.toFillPolygon(rotate));
 
     }
 

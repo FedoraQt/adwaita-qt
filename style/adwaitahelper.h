@@ -238,7 +238,7 @@ namespace Adwaita
         void renderSliderGroove( QPainter*, const QRect&, const QColor& ) const;
 
         //* slider handle
-        void renderSliderHandle( QPainter*, const QRect&, const QColor&, const QColor& outline, const QColor& shadow, bool sunken, bool enabled, Side ticks) const;
+        void renderSliderHandle( QPainter*, const QRect&, const QColor&, const QColor& outline, const QColor& shadow, bool sunken, bool enabled, Side ticks, qreal angle = 0.0 ) const;
 
         //* dial groove
         void renderDialGroove( QPainter*, const QRect&, const QColor& ) const;
