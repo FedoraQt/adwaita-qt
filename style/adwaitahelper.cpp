@@ -631,6 +631,13 @@ namespace Adwaita
         // render
         painter->drawRoundedRect( frameRect, radius, radius );
 
+        if (!sunken && active) {
+            painter->setPen(color.lighter(140));
+            painter->drawLine(frameRect.topLeft() + QPoint(3, 1), frameRect.topRight() + QPoint(-3, 1));
+            painter->setPen(outline.darker(114));
+            painter->drawLine(frameRect.bottomLeft() + QPointF(2.7, 0), frameRect.bottomRight() + QPointF(-2.7, 0));
+        }
+
     }
 
     //______________________________________________________________________________

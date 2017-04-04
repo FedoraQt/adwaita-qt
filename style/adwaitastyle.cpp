@@ -4347,7 +4347,15 @@ namespace Adwaita
 
         // render text
         if( hasText && textRect.isValid() )
-        { drawItemText( painter, textRect, textFlags, palette, enabled, buttonOption->text, textRole ); }
+        {
+            if ( enabled && !sunken && !mouseOver && !flat ) {
+                if ( _dark )
+                    drawItemText( painter, textRect.adjusted(0, -1, 0, -1), textFlags, palette, false, buttonOption->text, QPalette::Dark );
+                else
+                    drawItemText( painter, textRect.adjusted(0, 1, 0, 1), textFlags, palette, false, buttonOption->text, QPalette::Light );
+            }
+            drawItemText( painter, textRect, textFlags, palette, enabled, buttonOption->text, textRole );
+        }
 
         return true;
 
