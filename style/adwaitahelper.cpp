@@ -676,6 +676,13 @@ namespace Adwaita
         path.addRect( frameRect.adjusted(0, 0, -2*radius, 0) );
         painter->drawPath( path.simplified() );
 
+        if (!sunken && active) {
+            painter->setPen(color.lighter(140));
+            painter->drawLine(frameRect.topLeft() + QPoint(1, 1), frameRect.topRight() + QPoint(-3, 1));
+            painter->setPen(outline.darker(114));
+            painter->drawLine(frameRect.bottomLeft() + QPointF(0.7, 0), frameRect.bottomRight() + QPointF(-2.7, 0));
+        }
+
         // render
         //painter->drawRoundedRect( frameRect, radius, radius );
 
