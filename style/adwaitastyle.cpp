@@ -3375,12 +3375,7 @@ namespace Adwaita
         // get rect, orientation, palette
         QRect rect( option->rect );
         QColor outline( _helper->frameOutlineColor( option->palette ) );
-        //QColor background( option->palette.mid().color().lighter(115) );
-        QColor background( _helper->mix(option->palette.window().color(), option->palette.shadow().color(), 0.15) );
-        if (!(option->state & State_Enabled))
-            background = background.lighter(115);
-        if (!(option->state & State_Active))
-            background = background.lighter(115);
+        QColor background = _helper->tabBarColor( option->palette, option->state );
 
         // setup painter
         painter->setBrush( background );
@@ -5711,10 +5706,13 @@ namespace Adwaita
             outline = _helper->frameOutlineColor( palette );
         }
 
+        // background
+        QColor background = _helper->tabBarColor( option->palette, option->state );
+
         // render
         QRegion oldRegion( painter->clipRegion() );
         painter->setClipRect( option->rect, Qt::IntersectClip );
-        _helper->renderTabBarTab( painter, rect, underline, outline, corners, widget && widget->property("movable").toBool() );
+        _helper->renderTabBarTab( painter, rect, background, underline, outline, corners, widget && widget->property("movable").toBool() );
         painter->setClipRegion( oldRegion );
 
         return true;

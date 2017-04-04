@@ -304,6 +304,18 @@ namespace Adwaita
         return alphaColor( col, 0.5 );
     }
 
+    QColor Helper::tabBarColor(const QPalette &palette, const QStyle::State state) const
+    {
+
+        QColor background( mix(palette.window().color(), palette.shadow().color(), 0.15) );
+        if (!(state & QStyle::State_Enabled))
+            background = background.lighter(115);
+        if (!(state & QStyle::State_Active))
+            background = background.lighter(115);
+        return background;
+
+    }
+
     //______________________________________________________________________________
     QPalette Helper::disabledPalette( const QPalette& source, qreal ratio ) const
     {
@@ -1301,7 +1313,7 @@ namespace Adwaita
     }
 
     //______________________________________________________________________________
-    void Helper::renderTabBarTab( QPainter* painter, const QRect& rect, const QColor& color, const QColor& outline, Corners corners, bool renderFrame ) const
+    void Helper::renderTabBarTab( QPainter* painter, const QRect& rect, const QColor& background, const QColor& color, const QColor& outline, Corners corners, bool renderFrame ) const
     {
 
         // setup painter
@@ -1318,7 +1330,7 @@ namespace Adwaita
             frameRect.adjust( 1.0, 1.0, -1.0, -1.0 );
             adjustment = 0;
 
-            painter->setBrush( Qt::NoBrush );
+            painter->setBrush( background );
 
             // render
             painter->drawRect( frameRect );

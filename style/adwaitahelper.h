@@ -166,8 +166,11 @@ namespace Adwaita
         //* separator color
         QColor separatorColor( const QPalette& ) const;
 
-        // TreeView header text color
+        //* TreeView header text color
         QColor headerTextColor( const QPalette& palette, const QStyle::State state ) const;
+
+        //* TabBar background color
+        QColor tabBarColor( const QPalette& palette, const QStyle::State state ) const;
 
         //* merge active and inactive palettes based on ratio, for smooth enable state change transition
         QPalette disabledPalette( const QPalette&, qreal ratio ) const;
@@ -268,7 +271,7 @@ namespace Adwaita
         { return renderProgressBarGroove( painter, rect, color, Qt::transparent ); }
 
         //* tabbar tab
-        void renderTabBarTab( QPainter*, const QRect&, const QColor& color, const QColor& outline, Corners, bool renderFrame ) const;
+        void renderTabBarTab(QPainter*, const QRect&, const QColor &background, const QColor& color, const QColor& outline, Corners, bool renderFrame ) const;
 
         //* generic arrow
         void renderArrow( QPainter*, const QRect&, const QColor&, ArrowOrientation ) const;
