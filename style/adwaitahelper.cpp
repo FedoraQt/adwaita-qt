@@ -50,25 +50,8 @@ namespace Adwaita
     QColor Helper::frameOutlineColor( const QPalette& palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode ) const
     {
 
-        QColor outline( mix( palette.color( QPalette::Window ), palette.color( QPalette::Shadow ), 0.5 ) );
-
-        // focus takes precedence over hover
-        if( mode == AnimationFocus )
-        {
-
-            QColor focus( focusColor( palette ) );
-            QColor hover( hoverColor( palette ) );
-
-            if( mouseOver ) outline = mix( hover, focus, opacity );
-            else outline = mix( outline, focus, opacity );
-
-        } else if( hasFocus ) {
-
-            outline = focusColor( palette );
-
-        }
-
-        return outline;
+        // I really can't remember why we have differed these two cases. This seems right.
+        return inputOutlineColor(palette, mouseOver, hasFocus, opacity, mode);
 
     }
 
