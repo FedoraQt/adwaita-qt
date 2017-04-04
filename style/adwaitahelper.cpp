@@ -182,7 +182,7 @@ namespace Adwaita
     QColor Helper::toolButtonColor( const QPalette& palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity, AnimationMode mode ) const
     {
 
-        if (sunken || mode != AnimationNone)
+        if (sunken || (mode != AnimationNone && mode != AnimationHover) )
             return buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode);
         return Qt::transparent;
 
