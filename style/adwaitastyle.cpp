@@ -412,7 +412,7 @@ namespace Adwaita
 
         }
 
-        if (qobject_cast<QDialog *>(widget) || qobject_cast<QMainWindow *>(widget)) {
+        if (!widget->parent() || !qobject_cast<QWidget *>(widget->parent())) {
             addEventFilter( widget );
         }
 
@@ -1218,7 +1218,7 @@ namespace Adwaita
         if( widget->inherits( "QAbstractScrollArea" ) || widget->inherits( "KTextEditor::View" ) ) { return eventFilterScrollArea( widget, event ); }
         else if( widget->inherits( "QComboBoxPrivateContainer" ) ) { return eventFilterComboBoxContainer( widget, event ); }
 
-        if ((qobject_cast<QDialog *>(widget) || qobject_cast<QMainWindow *>(widget)) &&
+        if ((!widget->parent() || !qobject_cast<QWidget *>(widget->parent())) &&
                 (QEvent::Show==event->type() || QEvent::StyleChange==event->type())) {
             _helper->setVariant(widget, _dark ? "dark" : "light");
         }
