@@ -4660,6 +4660,11 @@ namespace Adwaita
 
         painter->save();
         painter->setRenderHint( QPainter::Antialiasing, false );
+
+        painter->setBrush( palette.window().color() );
+        painter->setPen( Qt::NoPen );
+        painter->drawRect( rect );
+
         painter->setBrush( Qt::NoBrush );
         painter->setPen( Helper::mix( palette.color( QPalette::Window ), palette.color( QPalette::Shadow ), 0.2 ) );
 
