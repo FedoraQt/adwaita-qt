@@ -6282,9 +6282,6 @@ namespace Adwaita
             // arrow rect
             QRect arrowRect( subControlRect( CC_ComboBox, option, SC_ComboBoxArrow, widget ) );
 
-            // translate for non editable, non flat, sunken comboboxes
-            if( sunken && !flat && !editable ) arrowRect.translate( 1, 1 );
-
             // render
             _helper->renderArrow( painter, arrowRect, arrowColor, ArrowDown );
 
