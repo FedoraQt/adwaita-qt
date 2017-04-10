@@ -748,7 +748,7 @@ namespace Adwaita
 
             // menu buttons
             case PM_MenuButtonIndicator: return Metrics::MenuButton_IndicatorWidth;
-            case PM_MenuVMargin: return 3;
+            case PM_MenuVMargin: return 2;
             case PM_MenuHMargin: return 0;
 
             // toolbars
