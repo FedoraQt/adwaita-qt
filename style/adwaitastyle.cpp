@@ -1853,11 +1853,11 @@ namespace Adwaita
 
         if (sliderOption->orientation == Qt::Vertical) {
             int thickness = Slider_GrooveThickness + 8;
-            return QRect(r.center().x() - thickness / 2, r.top(), thickness + 1, r.height());
+            return QRect(r.center().x() - thickness / 2, r.top() + 1, thickness + 1, r.height() - 1);
         }
         else {
             int thickness = Slider_GrooveThickness + 6;
-            return QRect(r.left(), r.center().y() - thickness / 2, r.width(), thickness + 1);
+            return QRect(r.left() + 1, r.center().y() - thickness / 2, r.width() - 1, thickness + 1);
         }
 
     }
