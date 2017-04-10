@@ -904,6 +904,7 @@ namespace Adwaita
             case SE_ProgressBarLabel: return progressBarLabelRect( option, widget );
             case SE_HeaderArrow: return headerArrowRect( option, widget );
             case SE_HeaderLabel: return headerLabelRect( option, widget );
+            case SE_SliderFocusRect: return sliderFocusRect( option, widget );
             case SE_TabBarTabLeftButton: return tabBarTabLeftButtonRect( option, widget );
             case SE_TabBarTabRightButton: return tabBarTabRightButtonRect( option, widget );
             case SE_TabWidgetTabBar: return tabWidgetTabBarRect( option, widget );
@@ -1839,6 +1840,25 @@ namespace Adwaita
 
         labelRect.adjust( 0, 0, -Metrics::Header_ArrowSize-Metrics::Header_ItemSpacing, 0 );
         return visualRect( option, labelRect );
+
+    }
+
+    //___________________________________________________________________________________________________________________
+    QRect Style::sliderFocusRect(const QStyleOption *option, const QWidget *widget) const
+    {
+
+        const QStyleOptionSlider* sliderOption( qstyleoption_cast<const QStyleOptionSlider*>( option ) );
+
+        QRect r( option->rect );
+
+        if (sliderOption->orientation == Qt::Vertical) {
+            int thickness = Slider_GrooveThickness + 8;
+            return QRect(r.center().x() - thickness / 2, r.top(), thickness + 1, r.height());
+        }
+        else {
+            int thickness = Slider_GrooveThickness + 6;
+            return QRect(r.left(), r.center().y() - thickness / 2, r.width(), thickness + 1);
+        }
 
     }
 
@@ -6416,6 +6436,18 @@ namespace Adwaita
         // groove
         if( sliderOption->subControls & SC_SliderGroove )
         {
+
+            if ( hasFocus ) {
+
+                QRect focusRect = proxy()->subElementRect( SE_SliderFocusRect, option, widget );
+
+                QStyleOptionFocusRect fropt;
+                fropt.QStyleOption::operator=(*option);
+                fropt.rect = focusRect;
+                proxy()->drawPrimitive( PE_FrameFocusRect, &fropt, painter, widget );
+
+            }
+
             // retrieve groove rect
             QRect grooveRect( subControlRect( CC_Slider, sliderOption, SC_SliderGroove, widget ) );
 
