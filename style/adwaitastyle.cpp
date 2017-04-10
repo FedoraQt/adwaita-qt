@@ -5004,7 +5004,7 @@ namespace Adwaita
             qreal progress( _animations->busyIndicatorEngine().value() );
 
             QColor color( palette.color( QPalette::Highlight ) );
-            _helper->renderProgressBarBusyContents( painter, rect, color, outline, horizontal, reverse, progress );
+            _helper->renderProgressBarBusyContents( painter, rect, color, color.darker(), horizontal, reverse, progress );
 
         } else {
 
@@ -5029,8 +5029,7 @@ namespace Adwaita
 
             }
 
-
-            _helper->renderProgressBarContents( painter, rect, palette.color( QPalette::Highlight ), outline );
+            _helper->renderProgressBarContents( painter, rect, palette.color( QPalette::Highlight ), palette.color( QPalette::Highlight ).darker() );
             painter->setClipRegion( oldClipRegion );
 
         }
