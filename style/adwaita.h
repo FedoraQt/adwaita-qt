@@ -137,8 +137,8 @@ namespace Adwaita
         TitleBar_MarginWidth = 4,
 
         // sliders
-        Slider_TickLength = 8,
-        Slider_TickMarginWidth = 2,
+        Slider_TickLength = 4,
+        Slider_TickMarginWidth = 6,
         Slider_GrooveThickness = 3,
         Slider_ControlThickness = 24,
 
