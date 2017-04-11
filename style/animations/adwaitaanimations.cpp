@@ -158,7 +158,7 @@ namespace Adwaita
         }
 
         // spinbox
-        else if( qobject_cast<QSpinBox*>( widget ) ) {
+        else if( qobject_cast<QAbstractSpinBox*>( widget ) ) {
             _spinBoxEngine->registerWidget( widget );
             _inputWidgetEngine->registerWidget( widget, AnimationHover|AnimationFocus|AnimationPressed );
         }
