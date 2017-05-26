@@ -524,6 +524,7 @@ namespace Adwaita
 
         bool _dark { false };
 
+        bool _isGNOME { false };
         bool _isKDE { false };
 
         //@}

@@ -247,6 +247,7 @@ namespace Adwaita
         // Detect if running under KDE, if so set menus, etc, to have translucent background.
         // For GNOME desktop, dont want translucent backgrounds otherwise no menu shadow is drawn.
         _isKDE = qgetenv("XDG_CURRENT_DESKTOP").toLower()=="kde";
+        _isGNOME = qgetenv("XDG_CURRENT_DESKTOP").toLower()=="gnome";
 
         // call the slot directly; this initial call will set up things that also
         // need to be reset when the system palette changes
@@ -749,7 +750,7 @@ namespace Adwaita
             // menu buttons
             case PM_MenuButtonIndicator: return Metrics::MenuButton_IndicatorWidth;
             case PM_MenuVMargin: return 2;
-            case PM_MenuHMargin: return 0;
+            case PM_MenuHMargin: return _isGNOME ? 0 : 1;
 
             // toolbars
             case PM_ToolBarHandleExtent: return Metrics::ToolBar_HandleExtent;
@@ -4713,9 +4714,16 @@ namespace Adwaita
     }
 
     bool Style::drawMenuEmptyAreaControl( const QStyleOption* option, QPainter* painter, const QWidget* widget ) const {
-        painter->setPen(Qt::NoPen);
+        if (_isGNOME)
+            painter->setPen(Qt::transparent);
+        else
+            painter->setPen(option->palette.window().color().darker(150));
+
         painter->setBrush(option->palette.base().color());
-        painter->drawRect(option->rect);
+        if (_isGNOME)
+            painter->drawRect(option->rect);
+        else
+            painter->drawRect(option->rect.adjusted(0, 0, -1, -1));
         return true;
     }
 
