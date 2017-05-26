@@ -2397,33 +2397,53 @@ namespace Adwaita
 
             case SC_SpinBoxUp:
 
+            if (rect.width() > 2 * rect.height() + 24)
                 return QRect(rect.right() - rect.height() - 1,
                              rect.top(),
                              rect.height(),
                              rect.height() - 1
                             );
+            else
+                return QRect(rect.right() - 0.6 * rect.height(),
+                             rect.top(),
+                             rect.height() * 0.6,
+                            rect.height() / 2 + 3 );
 
             case SC_SpinBoxDown:
             {
 
+            if (rect.width() > 2 * rect.height() + 24)
                 return QRect(rect.right() - 2 * rect.height(),
                              rect.top(),
                              rect.height(),
                              rect.height() - 1
                             );
+            else
+                return QRect(rect.right() - 0.6 * rect.height(),
+                             rect.top() + rect.height() / 2 - 2,
+                             rect.height() * 0.6,
+                             rect.height() / 2 + 1 );
 
             }
 
             case SC_SpinBoxEditField:
             {
 
+
                 int frameWidth( pixelMetric( PM_SpinBoxFrameWidth, option, widget ) );
 
                 QRect labelRect;
-                labelRect = QRect(
-                    rect.left(), rect.top(),
-                    rect.width() - 2 * rect.height() - frameWidth ,
-                    rect.height() );
+
+                if (rect.width() > 2 * rect.height() + 24)
+                    labelRect = QRect(
+                        rect.left(), rect.top(),
+                        rect.width() - 2 * rect.height() - frameWidth,
+                        rect.height() );
+                else
+                    labelRect = QRect(
+                        rect.left(), rect.top(),
+                        rect.width() - 0.6 * rect.height() - frameWidth,
+                        rect.height() );
 
                 // remove right side line editor margins
                 if( !flat && labelRect.height() >= option->fontMetrics.height() + 2*frameWidth )
@@ -6867,7 +6887,12 @@ namespace Adwaita
             painter->setPen(outline);
             int highlight = hasFocus ? 1 : 0;
             painter->drawLine(arrowRect.left(), arrowRect.top() + 2 + highlight, arrowRect.left(), arrowRect.bottom() - 1 - highlight);
-            painter->drawLine(arrowRect.right(), arrowRect.top() + 2 + highlight, arrowRect.right(), arrowRect.bottom() - 1 - highlight);
+        }
+        if (subControl == SC_SpinBoxUp) {
+            painter->setBrush(Qt::NoBrush);
+            painter->setPen(outline);
+            int highlight = hasFocus ? 1 : 0;
+            painter->drawLine(arrowRect.left(), arrowRect.top() + 2 + highlight, arrowRect.left(), arrowRect.bottom() - 1 - highlight);
         }
 
         if (true) {
