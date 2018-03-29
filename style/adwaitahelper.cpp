@@ -1339,22 +1339,22 @@ namespace Adwaita
         painter->setPen( QPen( color, 6 ) );
 
         switch (corners) {
-            case CornerTopLeft|CornerTopRight:
+            case CornersTop:
                 painter->drawLine(frameRect.left() + adjustment, frameRect.bottom(), frameRect.right() - adjustment, frameRect.bottom());
                 break;
 
-            case CornerBottomLeft|CornerBottomRight:
+            case CornersBottom:
                 painter->drawLine(frameRect.left() + adjustment, frameRect.top(), frameRect.right() - adjustment, frameRect.top());
                 break;
 
-            case CornerTopLeft|CornerBottomLeft:
+            case CornersLeft:
                 painter->drawLine(frameRect.right(), frameRect.top() + adjustment, frameRect.right(), frameRect.bottom() - adjustment);
                 break;
 
-            case CornerTopRight|CornerBottomRight:
+            case CornersRight:
                 painter->drawLine(frameRect.left(), frameRect.top() + adjustment, frameRect.left(), frameRect.bottom() - adjustment);
                 break;
-    
+
         }
 
 

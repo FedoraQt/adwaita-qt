@@ -5727,22 +5727,22 @@ namespace Adwaita
         {
             case QTabBar::RoundedNorth:
             case QTabBar::TriangularNorth:
-                corners = CornerTopLeft|CornerTopRight;
+                corners = CornersTop;
                 break;
 
             case QTabBar::RoundedSouth:
             case QTabBar::TriangularSouth:
-                corners = CornerBottomLeft|CornerBottomRight;
+                corners = CornersBottom;
                 break;
 
             case QTabBar::RoundedWest:
             case QTabBar::TriangularWest:
-                corners = CornerTopLeft|CornerBottomLeft;
+                corners = CornersLeft;
                 break;
 
             case QTabBar::RoundedEast:
             case QTabBar::TriangularEast:
-                corners = CornerTopRight|CornerBottomRight;
+                corners = CornersRight;
                 break;
 
             default: break;
@@ -5971,7 +5971,7 @@ namespace Adwaita
     //______________________________________________________________
     bool Style::drawGroupBoxComplexControl( const QStyleOptionComplex* option, QPainter* painter, const QWidget* widget ) const
     {
-        if (const QStyleOptionGroupBox *groupBox = qstyleoption_cast<const QStyleOptionGroupBox *>(option)) 
+        if (const QStyleOptionGroupBox *groupBox = qstyleoption_cast<const QStyleOptionGroupBox *>(option))
         {
             painter->save();
 
