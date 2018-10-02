@@ -2960,7 +2960,7 @@ namespace Adwaita
                 if( menuItemOption->text.isEmpty() && menuItemOption->icon.isNull() )
                 {
 
-                    return expandSize( QSize(0,1), Metrics::MenuItem_MarginWidth );
+                    return expandSize( QSize(1,1), Metrics::MenuItem_SeparatorMarginWidth );
 
                 } else {
 
