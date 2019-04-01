@@ -48,4 +48,5 @@ if (BUILD_EXAMPLE)
     endif()
 endif()
 
+add_subdirectory(demo)
 add_subdirectory(style)
