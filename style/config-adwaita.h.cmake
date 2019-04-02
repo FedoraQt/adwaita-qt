@@ -25,12 +25,7 @@
 /* Define to 1 if adwaita is compiled against KDE4 */
 #cmakedefine01 ADWAITA_USE_KDE4
 
-/* Define to 1 if FrameworkIntegration/Kstyle libraries are found */
-#cmakedefine01 ADWAITA_HAVE_KSTYLE
-
 /* Define to 1 if XCB libraries are found */
 #cmakedefine01 ADWAITA_HAVE_X11
-
-#cmakedefine01 ADWAITA_HAVE_KWAYLAND
 
 #endif

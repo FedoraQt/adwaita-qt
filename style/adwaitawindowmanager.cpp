@@ -93,14 +93,6 @@
 
 #endif
 
-#if ADWAITA_HAVE_KWAYLAND
-#include <KWayland/Client/connection_thread.h>
-#include <KWayland/Client/pointer.h>
-#include <KWayland/Client/registry.h>
-#include <KWayland/Client/shell.h>
-#include <KWayland/Client/seat.h>
-#endif
-
 namespace Adwaita
 {
 
@@ -211,11 +203,6 @@ namespace Adwaita
         _dragInProgress( false ),
         _locked( false ),
         _cursorOverride( false )
-        #if ADWAITA_HAVE_KWAYLAND
-        , _seat( Q_NULLPTR )
-        , _pointer( Q_NULLPTR )
-        , _waylandSerial( 0 )
-        #endif
     {
 
         // install application wise event filter
@@ -237,64 +224,6 @@ namespace Adwaita
 
         initializeWhiteList();
         initializeBlackList();
-        initializeWayland();
-
-    }
-
-    //_______________________________________________________
-    void WindowManager::initializeWayland()
-    {
-        #if ADWAITA_HAVE_KWAYLAND
-        if( !Helper::isWayland() ) return;
-
-        if( _seat ) {
-            // already initialized
-            return;
-        }
-
-        using namespace KWayland::Client;
-        auto connection = ConnectionThread::fromApplication( this );
-        if( !connection ) {
-            return;
-        }
-        Registry *registry = new Registry( this );
-        registry->create( connection );
-        connect(registry, &Registry::interfacesAnnounced, this,
-            [registry, this] {
-                auto interface = registry->interface( Registry::Interface::Seat );
-                if( interface.name != 0 ) {
-                    _seat = registry->createSeat( interface.name, interface.version, this );
-                    connect(_seat, &Seat::hasPointerChanged, this, &WindowManager::waylandHasPointerChanged);
-                }
-            }
-        );
-
-        registry->setup();
-        connection->roundtrip();
-        #endif
-    }
-
-    //_______________________________________________________
-    void WindowManager::waylandHasPointerChanged(bool hasPointer)
-    {
-        #if ADWAITA_HAVE_KWAYLAND
-        Q_ASSERT( _seat );
-        if( hasPointer ) {
-            if( !_pointer ) {
-                _pointer = _seat->createPointer(this);
-                connect(_pointer, &KWayland::Client::Pointer::buttonStateChanged, this,
-                    [this] (quint32 serial) {
-                        _waylandSerial = serial;
-                    }
-                );
-            }
-        } else {
-            delete _pointer;
-            _pointer = nullptr;
-        }
-        #else
-        Q_UNUSED( hasPointer );
-        #endif
     }
 
     //_____________________________________________________________
@@ -812,8 +741,6 @@ namespace Adwaita
 
             if( Helper::isX11() ) {
                 startDragX11( widget, position );
-            } else if( Helper::isWayland() ) {
-                startDragWayland( widget, position );
             }
 
         } else if( !_cursorOverride ) {
@@ -869,39 +796,9 @@ namespace Adwaita
         #endif
     }
 
-    //_______________________________________________________
-    void WindowManager::startDragWayland( QWidget* widget, const QPoint& position )
-    {
-        #if ADWAITA_HAVE_KWAYLAND
-        if( !_seat ) {
-            return;
-        }
-        /* TODO RETURN THIS
-        QWindow* windowHandle = widget->window()->windowHandle();
-        auto shellSurface = KWayland::Client::ShellSurface::fromWindow(windowHandle);
-        if( !shellSurface ) {
-            // TODO: also check for xdg-shell in future
-            return;
-        }
-
-        shellSurface->requestMove( _seat, _waylandSerial );
-        */
-        #else
-        Q_UNUSED( widget );
-        Q_UNUSED( position );
-        #endif
-    }
-
     //____________________________________________________________
     bool WindowManager::supportWMMoveResize( void ) const
     {
-
-        #if ADWAITA_HAVE_KWAYLAND
-        if( Helper::isWayland() ) {
-            return true;
-        }
-        #endif
-
         #if ADWAITA_HAVE_X11
         return Helper::isX11();
         #else

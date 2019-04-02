@@ -1,6 +1,6 @@
 /*************************************************************************
  * Copyright (C) 2014 by Hugo Pereira Da Costa <hugo.pereira@free.fr>    *
- * Copyright (C) 2014-2018 Martin Bříza <mbriza@redhat.com>              *
+ * Copyright (C) 2014-2018 Martin Bříza <m@rtinbriza.cz>                 *
  * Copyright (C) 2019 Jan Grulich <jgrulich@redhat.com>                  *
  *                                                                       *
  * This program is free software; you can redistribute it and/or modify  *

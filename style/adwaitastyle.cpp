@@ -1,8 +1,8 @@
 /*************************************************************************
  * Copyright (C) 2014 by Hugo Pereira Da Costa <hugo.pereira@free.fr>    *
- * Copyright (C) 2014-2018 Martin Bříza <mbriza@redhat.com>              *
+ * Copyright (C) 2014-2018 Martin Bříza <m@rtinbriza.cz>                 *
  * Copyright (C) 2019 Jan Grulich <jgrulich@redhat.com>                  *
- *                                                                          *
+ *                                                                       *
  * This program is free software; you can redistribute it and/or modify  *
  * it under the terms of the GNU General Public License as published by  *
  * the Free Software Foundation; either version 2 of the License, or     *
@@ -1167,7 +1167,7 @@ void Style::drawControl(ControlElement element, const QStyleOption *option, QPai
 {
     StyleControl fcn(nullptr);
 
-#if ADWAITA_HAVE_KSTYLE||ADWAITA_USE_KDE4
+#if ADWAITA_USE_KDE4
     if (element == CE_CapacityBar) {
         fcn = &Style::drawProgressBarControl;
     } else

@@ -1,6 +1,4 @@
 
-
-
 configure_file(config-adwaita.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-adwaita.h )
 
 set(Adwaita_SRCS
@@ -37,22 +35,16 @@ set(Adwaita_SRCS
     adwaitasplitterproxy.cpp
     adwaitastyle.cpp
     adwaitastyleplugin.cpp
-    adwaitatileset.cpp
     adwaitawindowmanager.cpp
     fakeadwaitastyleconfigdata.cpp
 )
 add_definitions(-DQT_PLUGIN)
 
-if (MSVC)
-    add_definitions(-D_USE_MATH_DEFINES) # Needed for M_PI on MSVC
-endif()
-
 include_directories(
-    ${QT_INCLUDES}
-    ${CMAKE_CURRENT_BINARY_DIR}
-    .
-    animations
-    debug
+    ${CMAKE_CURRENT_BINARY_DIR} # for adwaita-config.h
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/animations/
+    ${CMAKE_CURRENT_SOURCE_DIR}/debug/
 )
 
 set(LIBRARY_NAME "adwaita-qt${QT_VERSION_NUMBER}")
