@@ -40,6 +40,10 @@ set(Adwaita_SRCS
 )
 add_definitions(-DQT_PLUGIN)
 
+if (MSVC)
+    add_definitions(-D_USE_MATH_DEFINES) # Needed for M_PI on MSVC
+endif()
+
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR} # for adwaita-config.h
     ${CMAKE_CURRENT_SOURCE_DIR}
