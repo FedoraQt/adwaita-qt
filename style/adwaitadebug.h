@@ -1,8 +1,5 @@
-#ifndef adwaitawidgetexplorer_h
-#define adwaitawidgetexplorer_h
-
 /*************************************************************************
- * Copyright (C) 2014 by Hugo Pereira Da Costa <hugo.pereira@free.fr>    *
+ * Copyright (C) 2019 Jan Grulich <jgrulich@redhat.com>                  *
  *                                                                       *
  * This program is free software; you can redistribute it and/or modify  *
  * it under the terms of the GNU General Public License as published by  *
@@ -20,57 +17,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  *************************************************************************/
 
-#include <QEvent>
-#include <QObject>
-#include <QMap>
-#include <QSet>
-#include <QWidget>
+#ifndef ADWAITA_DEBUG_H
+#define ADWAITA_DEBUG_H
 
-namespace Adwaita
-{
+#include <QLoggingCategory>
 
-//* print widget's and parent's information on mouse click
-class WidgetExplorer: public QObject
-{
-    Q_OBJECT
-public:
-    //* constructor
-    explicit WidgetExplorer(QObject *parent);
+Q_DECLARE_LOGGING_CATEGORY(ADWAITA)
 
-    //* enable
-    bool enabled(void) const;
-
-    //* enable
-    void setEnabled(bool);
-
-    //* widget rects
-    void setDrawWidgetRects(bool value)
-    {
-        _drawWidgetRects = value;
-    }
-
-    //* event filter
-    virtual bool eventFilter(QObject *object, QEvent *event);
-
-protected:
-    //* event type
-    QString eventType(const QEvent::Type &type) const;
-
-    //* print widget information
-    QString widgetInformation(const QWidget *widget) const;
-
-private:
-    //* enable state
-    bool _enabled;
-
-    //* widget rects
-    bool _drawWidgetRects;
-
-    //* map event types to string
-    QMap<QEvent::Type, QString > _eventTypes;
-
-};
-
-} // namespace Adwaita
-
-#endif
+#endif // ADWAITA_DEBUG_H
