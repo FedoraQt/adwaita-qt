@@ -48,7 +48,6 @@
 
 #include "adwaitawindowmanager.h"
 #include "adwaitapropertynames.h"
-#include "fakeadwaitastyleconfigdata.h"
 #include "adwaitahelper.h"
 
 #include <QApplication>
@@ -196,7 +195,7 @@ namespace Adwaita
         QObject( parent ),
         _enabled( true ),
         _useWMMoveResize( true ),
-        _dragMode( StyleConfigData::WD_FULL ),
+        _dragMode( Adwaita::WD_FULL ),
         _dragDistance( QApplication::startDragDistance() ),
         _dragDelay( QApplication::startDragTime() ),
         _dragAboutToStart( false ),
@@ -215,9 +214,9 @@ namespace Adwaita
     void WindowManager::initialize( void )
     {
 
-        setEnabled( StyleConfigData::windowDragMode() != StyleConfigData::WD_NONE );
-        setDragMode( StyleConfigData::windowDragMode() );
-        setUseWMMoveResize( StyleConfigData::useWMMoveResize() );
+        setEnabled( Adwaita::Config::WindowDragMode != Adwaita::WD_NONE );
+        setDragMode( Adwaita::Config::WindowDragMode );
+        setUseWMMoveResize( Adwaita::Config::UseWMMoveResize );
 
         setDragDistance( QApplication::startDragDistance() );
         setDragDelay( QApplication::startDragTime() );
@@ -264,7 +263,7 @@ namespace Adwaita
         _whiteList.insert( ExceptionId( QStringLiteral( "ViewSliders@kmix" ) ) );
         _whiteList.insert( ExceptionId( QStringLiteral( "Sidebar_Widget@konqueror" ) ) );
 
-        foreach( const QString& exception, StyleConfigData::windowDragWhiteList() )
+        foreach( const QString& exception, Adwaita::Config::WindowDragWhiteList )
         {
             ExceptionId id( exception );
             if( !id.className().isEmpty() )
@@ -280,7 +279,7 @@ namespace Adwaita
         _blackList.insert( ExceptionId( QStringLiteral( "CustomTrackView@kdenlive" ) ) );
         _blackList.insert( ExceptionId( QStringLiteral( "MuseScore" ) ) );
         _blackList.insert( ExceptionId( QStringLiteral( "KGameCanvasWidget" ) ) );
-        foreach( const QString& exception, StyleConfigData::windowDragBlackList() )
+        foreach( const QString& exception, Adwaita::Config::WindowDragBlackList )
         {
             ExceptionId id( exception );
             if( !id.className().isEmpty() )
@@ -585,7 +584,7 @@ namespace Adwaita
         // tool buttons
         if( QToolButton* toolButton = qobject_cast<QToolButton*>( widget ) )
         {
-            if( dragMode() == StyleConfigData::WD_MINIMAL && !qobject_cast<QToolBar*>(widget->parentWidget() ) ) return false;
+            if( dragMode() == Adwaita::WD_MINIMAL && !qobject_cast<QToolBar*>(widget->parentWidget() ) ) return false;
             return toolButton->autoRaise() && !toolButton->isEnabled();
         }
 
@@ -615,7 +614,7 @@ namespace Adwaita
         in MINIMAL mode, anything that has not been already accepted
         and does not come from a toolbar is rejected
         */
-        if( dragMode() == StyleConfigData::WD_MINIMAL )
+        if( dragMode() == Adwaita::WD_MINIMAL )
         {
             if( qobject_cast<QToolBar*>( widget ) ) return true;
             else return false;

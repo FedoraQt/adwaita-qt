@@ -36,7 +36,6 @@ set(Adwaita_SRCS
     adwaitastyle.cpp
     adwaitastyleplugin.cpp
     adwaitawindowmanager.cpp
-    fakeadwaitastyleconfigdata.cpp
 )
 add_definitions(-DQT_PLUGIN)
 

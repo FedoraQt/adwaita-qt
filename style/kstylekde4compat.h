@@ -34,20 +34,17 @@ class KStyleKDE4Compat : public QCommonStyle
 {
     Q_OBJECT
 
-    public:
-
+public:
     KStyleKDE4Compat();
     ~KStyleKDE4Compat();
     virtual int styleHint(StyleHint hint, const QStyleOption *opt, const QWidget *w, QStyleHintReturn *returnData) const;
 
-    protected:
-
+protected:
     StyleHint newStyleHint(const QString &element);
     ControlElement newControlElement(const QString &element);
     SubElement newSubElement(const QString &element);
 
-    private:
-
+private:
     QHash<QString, int> styleElements;
     int hintCounter;
     int controlCounter;

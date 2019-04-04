@@ -20,7 +20,6 @@
 #include "adwaitasplitterproxy.h"
 
 #include "adwaita.h"
-#include "fakeadwaitastyleconfigdata.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -310,7 +309,7 @@ namespace Adwaita
         _hook = _splitter.data()->mapFromGlobal( position );
 
         // adjust rect
-        QRect rect( 0, 0, 2*StyleConfigData::splitterProxyWidth(), 2*StyleConfigData::splitterProxyWidth() );
+        QRect rect( 0, 0, 2*Adwaita::Config::SplitterProxyWidth, 2*Adwaita::Config::SplitterProxyWidth );
         rect.moveCenter( parentWidget()->mapFromGlobal( position ) );
         setGeometry( rect );
         setCursor( _splitter.data()->cursor().shape() );

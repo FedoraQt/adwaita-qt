@@ -20,7 +20,6 @@
 #include "adwaitahelper.h"
 
 #include "adwaita.h"
-#include "fakeadwaitastyleconfigdata.h"
 
 #include <QApplication>
 #include <QPainter>

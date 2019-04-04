@@ -19,7 +19,6 @@
 
 #include "adwaitaanimations.h"
 #include "adwaitapropertynames.h"
-#include "fakeadwaitastyleconfigdata.h"
 
 #include <QAbstractItemView>
 #include <QComboBox>
@@ -65,10 +64,10 @@ namespace Adwaita
     {
 
         // animation steps
-        AnimationData::setSteps( StyleConfigData::animationSteps() );
+        AnimationData::setSteps( Adwaita::Config::AnimationSteps );
 
-        bool animationsEnabled( StyleConfigData::animationsEnabled() );
-        int animationsDuration( StyleConfigData::animationsDuration() );
+        bool animationsEnabled( Adwaita::Config::AnimationsEnabled );
+        int animationsDuration( Adwaita::Config::AnimationsDuration );
 
         _widgetEnabilityEngine->setEnabled( animationsEnabled );
         _comboBoxEngine->setEnabled( animationsEnabled );
@@ -91,11 +90,11 @@ namespace Adwaita
         }
 
         // stacked widget transition has an extra flag for animations
-        _stackedWidgetEngine->setEnabled( animationsEnabled && StyleConfigData::stackedWidgetTransitionsEnabled() );
+        _stackedWidgetEngine->setEnabled( animationsEnabled && Adwaita::Config::StackedWidgetTransitionsEnabled );
 
         // busy indicator
-        _busyIndicatorEngine->setEnabled( StyleConfigData::progressBarAnimated() );
-        _busyIndicatorEngine->setDuration( StyleConfigData::progressBarBusyStepDuration() );
+        _busyIndicatorEngine->setEnabled( Adwaita::Config::ProgressBarAnimated );
+        _busyIndicatorEngine->setDuration( Adwaita::Config::ProgressBarBusyStepDuration );
 
     }
 

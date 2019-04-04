@@ -1,6 +1,3 @@
-#ifndef adwaitawidgetexplorer_h
-#define adwaitawidgetexplorer_h
-
 /*************************************************************************
  * Copyright (C) 2014 by Hugo Pereira Da Costa <hugo.pereira@free.fr>    *
  *                                                                       *
@@ -19,6 +16,9 @@
  * Free Software Foundation, Inc.,                                       *
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  *************************************************************************/
+
+#ifndef ADWAITAWIDGETEXPLORER_H
+#define ADWAITAWIDGETEXPLORER_H
 
 #include <QEvent>
 #include <QObject>
@@ -68,9 +68,8 @@ private:
 
     //* map event types to string
     QMap<QEvent::Type, QString > _eventTypes;
-
 };
 
 } // namespace Adwaita
 
-#endif
+#endif // ADWAITAWIDGETEXPLORER_H

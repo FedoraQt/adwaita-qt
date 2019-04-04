@@ -27,7 +27,6 @@
 #include "adwaitamnemonics.h"
 #include "adwaitapropertynames.h"
 #include "adwaitasplitterproxy.h"
-#include "fakeadwaitastyleconfigdata.h"
 #include "adwaitawidgetexplorer.h"
 #include "adwaitawindowmanager.h"
 
@@ -327,7 +326,7 @@ void Style::polish(QWidget *widget)
         widget->setAttribute(Qt::WA_Hover);
     } else if (qobject_cast<QFrame *>(widget) && widget->parent() && widget->parent()->inherits("KTitleWidget")) {
         widget->setAutoFillBackground(false);
-        if (!StyleConfigData::titleWidgetDrawFrame()) {
+        if (!Adwaita::Config::TitleWidgetDrawFrame) {
             widget->setBackgroundRole(QPalette::Window);
         }
     }
@@ -427,7 +426,7 @@ void Style::polishScrollArea(QAbstractScrollArea *scrollArea)
         scrollArea->setFont(font);
 
         // adjust background role
-        if (!StyleConfigData::sidePanelDrawFrame()) {
+        if (!Adwaita::Config::SidePanelDrawFrame) {
             scrollArea->setBackgroundRole(QPalette::Window);
             scrollArea->setForegroundRole(QPalette::WindowText);
 
@@ -848,7 +847,7 @@ int Style::styleHint(StyleHint hint, const QStyleOption *option, const QWidget *
 
 #if QT_VERSION >= 0x050000
     case SH_Widget_Animate:
-        return StyleConfigData::animationsEnabled();
+        return Adwaita::Config::AnimationsEnabled;
     case SH_Menu_SupportsSections:
         return true;
 #endif
@@ -859,7 +858,7 @@ int Style::styleHint(StyleHint hint, const QStyleOption *option, const QWidget *
     case SH_GroupBox_TextLabelVerticalAlignment:
         return Qt::AlignVCenter;
     case SH_TabBar_Alignment:
-        return StyleConfigData::tabBarDrawCenteredTabs() ? Qt::AlignCenter : Qt::AlignLeft;
+        return Adwaita::Config::TabBarDrawCenteredTabs ? Qt::AlignCenter : Qt::AlignLeft;
     case SH_ToolBox_SelectedPageTitleBold:
         return false;
     case SH_ScrollBar_MiddleClickAbsolutePosition:
@@ -1540,7 +1539,7 @@ bool Style::eventFilterDockWidget(QDockWidget *dockWidget, QEvent *event)
         // render
         if (dockWidget->isFloating()) {
             _helper->renderMenuFrame(&painter, rect, background, outline, false);
-        } else if (StyleConfigData::dockWidgetDrawFrame() || (dockWidget->features()&QDockWidget::AllDockWidgetFeatures)) {
+        } else if (Adwaita::Config::DockWidgetDrawFrame || (dockWidget->features() & QDockWidget::AllDockWidgetFeatures)) {
             _helper->renderFrame(&painter, rect, background, outline);
         }
     }
@@ -1662,9 +1661,6 @@ bool Style::eventFilterCommandLinkButton(QCommandLinkButton *button, QEvent *eve
 //_____________________________________________________________________
 void Style::configurationChanged(void)
 {
-    // reload
-    StyleConfigData::self();
-
     // reload configuration
     loadConfiguration();
 }
@@ -1716,16 +1712,16 @@ void Style::loadConfiguration()
     _windowManager->initialize();
 
     // mnemonics
-    _mnemonics->setMode(StyleConfigData::mnemonicsMode());
+    _mnemonics->setMode(Adwaita::Config::MnemonicsMode);
 
     // splitter proxy
-    _splitterFactory->setEnabled(StyleConfigData::splitterProxyEnabled());
+    _splitterFactory->setEnabled(Adwaita::Config::SplitterProxyEnabled);
 
     // clear icon cache
     _iconCache.clear();
 
     // scrollbar buttons
-    switch (StyleConfigData::scrollBarAddLineButtons()) {
+    switch (Adwaita::Config::ScrollBarAddLineButtons) {
     case 0:
         _addLineButtons = NoButton;
         break;
@@ -1739,7 +1735,7 @@ void Style::loadConfiguration()
         break;
     }
 
-    switch (StyleConfigData::scrollBarSubLineButtons()) {
+    switch (Adwaita::Config::ScrollBarSubLineButtons) {
     case 0:
         _subLineButtons = NoButton;
         break;
@@ -1754,14 +1750,14 @@ void Style::loadConfiguration()
     }
 
     // frame focus
-    if (StyleConfigData::viewDrawFocusIndicator())
+    if (Adwaita::Config::ViewDrawFocusIndicator)
         _frameFocusPrimitive = &Style::drawFrameFocusRectPrimitive;
     else
         _frameFocusPrimitive = &Style::emptyPrimitive;
 
     // widget explorer
-    _widgetExplorer->setEnabled(StyleConfigData::widgetExplorerEnabled());
-    _widgetExplorer->setDrawWidgetRects(StyleConfigData::drawWidgetRects());
+    _widgetExplorer->setEnabled(Adwaita::Config::WidgetExplorerEnabled);
+    _widgetExplorer->setDrawWidgetRects(Adwaita::Config::DrawWidgetRects);
 }
 
 //___________________________________________________________________________________________________________________
@@ -2821,7 +2817,7 @@ QSize Style::sliderSizeFromContents(const QStyleOption *option, const QSize &con
     // store tick position and orientation
     const QSlider::TickPosition &tickPosition(sliderOption->tickPosition);
     bool horizontal(sliderOption->orientation == Qt::Horizontal);
-    bool disableTicks(!StyleConfigData::sliderDrawTickMarks());
+    bool disableTicks(!Adwaita::Config::SliderDrawTickMarks);
 
     // do nothing if no ticks are requested
     if (tickPosition == QSlider::NoTicks)
@@ -3223,10 +3219,7 @@ bool Style::drawFramePrimitive(const QStyleOption *option, QPainter *painter, co
     const QRect &rect(option->rect);
 
     // detect title widgets
-    const bool isTitleWidget(StyleConfigData::titleWidgetDrawFrame()
-                             && widget
-                             && widget->parent()
-                             && widget->parent()->inherits("KTitleWidget"));
+    const bool isTitleWidget(Adwaita::Config::TitleWidgetDrawFrame && widget && widget->parent() && widget->parent()->inherits("KTitleWidget"));
     // copy state
     const State &state(option->state);
     if (!isTitleWidget && !(state & (State_Sunken | State_Raised)))
@@ -3252,7 +3245,7 @@ bool Style::drawFramePrimitive(const QStyleOption *option, QPainter *painter, co
     qreal opacity(_animations->inputWidgetEngine().frameOpacity(widget));
 
     // render
-    if (!StyleConfigData::sidePanelDrawFrame() && widget && widget->property(PropertyNames::sidePanelView).toBool()) {
+    if (!Adwaita::Config::SidePanelDrawFrame && widget && widget->property(PropertyNames::sidePanelView).toBool()) {
         QColor outline(_helper->sidePanelOutlineColor(palette, hasFocus, opacity, mode));
         bool reverseLayout(option->direction == Qt::RightToLeft);
         Side side(reverseLayout ? SideRight : SideLeft);
@@ -3579,7 +3572,7 @@ bool Style::drawIndicatorHeaderArrowPrimitive(const QStyleOption *option, QPaint
         return true;
 
     // invert arrows if requested by (hidden) options
-    if (StyleConfigData::viewInvertSortIndicator())
+    if (Adwaita::Config::ViewInvertSortIndicator)
         orientation = (orientation == ArrowUp) ? ArrowDown : ArrowUp;
 
     // define color and polygon for drawing arrow
@@ -4137,7 +4130,7 @@ bool Style::drawIndicatorTabTearPrimitive(const QStyleOption *option, QPainter *
 bool Style::drawIndicatorToolBarHandlePrimitive(const QStyleOption *option, QPainter *painter, const QWidget *) const
 {
     // do nothing if disabled from options
-    if (!StyleConfigData::toolBarDrawItemSeparator())
+    if (!Adwaita::Config::ToolBarDrawItemSeparator)
         return true;
 
     // store rect and palette
@@ -4179,7 +4172,7 @@ bool Style::drawIndicatorToolBarSeparatorPrimitive(const QStyleOption *option, Q
      * also need to check if widget is a combobox, because of Qt hack using 'toolbar' separator primitive
      * for rendering separators in comboboxes
      */
-    if (!(StyleConfigData::toolBarDrawItemSeparator() || qobject_cast<const QComboBox *>(widget))) {
+    if (!(Adwaita::Config::ToolBarDrawItemSeparator || qobject_cast<const QComboBox *>(widget))) {
         return true;
     }
 
@@ -4240,7 +4233,7 @@ bool Style::drawIndicatorBranchPrimitive(const QStyleOption *option, QPainter *p
     }
 
     // tree branches
-    if (!StyleConfigData::viewDrawTreeBranchLines())
+    if (!Adwaita::Config::ViewDrawTreeBranchLines)
         return true;
 
     QPoint center(rect.center());
@@ -4687,7 +4680,7 @@ bool Style::drawMenuBarItemControl(const QStyleOption *option, QPainter *painter
     bool enabled(state & State_Enabled);
     bool selected(enabled && (state & State_Selected));
     bool sunken(enabled && (state & State_Sunken));
-    bool useStrongFocus(StyleConfigData::menuItemDrawStrongFocus());
+    bool useStrongFocus(Adwaita::Config::MenuItemDrawStrongFocus);
 
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing, false);
@@ -4779,7 +4772,7 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
     bool selected(enabled && (state & State_Selected));
     bool sunken(enabled && (state & (State_On | State_Sunken)));
     bool reverseLayout(option->direction == Qt::RightToLeft);
-    bool useStrongFocus(StyleConfigData::menuItemDrawStrongFocus());
+    bool useStrongFocus(Adwaita::Config::MenuItemDrawStrongFocus);
 
     // render hover and focus
     if (useStrongFocus && (selected || sunken)) {
@@ -6247,7 +6240,7 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
         tickSide = (Side)((int) tickSide | (int) SideRight);
 
     // tickmarks
-    if (StyleConfigData::sliderDrawTickMarks() && (sliderOption->subControls & SC_SliderTickmarks)) {
+    if (Adwaita::Config::SliderDrawTickMarks && (sliderOption->subControls & SC_SliderTickmarks)) {
         bool upsideDown(sliderOption->upsideDown);
         int tickPosition(sliderOption->tickPosition);
         int available(pixelMetric(PM_SliderSpaceAvailable, option, widget));
@@ -6471,7 +6464,7 @@ bool Style::drawScrollBarComplexControl(const QStyleOptionComplex *option, QPain
     //the opacity of everything else as well, included slider and arrows
     bool enabled(option->state & State_Enabled);
     qreal opacity(_animations->scrollBarEngine().opacity(widget, QStyle::SC_ScrollBarGroove));
-    bool animated(StyleConfigData::scrollBarShowOnMouseOver() && _animations->scrollBarEngine().isAnimated(widget,  AnimationHover, QStyle::SC_ScrollBarGroove));
+    bool animated(Adwaita::Config::ScrollBarShowOnMouseOver && _animations->scrollBarEngine().isAnimated(widget,  AnimationHover, QStyle::SC_ScrollBarGroove));
     bool mouseOver((option->state & State_Active) && option->state & State_MouseOver);
 
     if (opacity == AnimationData::OpacityInvalid)
@@ -6792,7 +6785,7 @@ QColor Style::scrollBarArrowColor(const QStyleOptionSlider *option, const SubCon
     // check enabled state
     bool enabled(option->state & State_Enabled);
     if (!enabled) {
-        if (StyleConfigData::scrollBarShowOnMouseOver()) {
+        if (Adwaita::Config::ScrollBarShowOnMouseOver) {
             // finally, global opacity when ScrollBarShowOnMouseOver
             qreal globalOpacity(_animations->scrollBarEngine().opacity(widget, QStyle::SC_ScrollBarGroove));
             if (globalOpacity >= 0)
@@ -6809,7 +6802,7 @@ QColor Style::scrollBarArrowColor(const QStyleOptionSlider *option, const SubCon
 
         // manually disable arrow, to indicate that scrollbar is at limit
         color = _helper->arrowColor(palette, QPalette::Disabled, QPalette::WindowText);
-        if (StyleConfigData::scrollBarShowOnMouseOver()) {
+        if (Adwaita::Config::ScrollBarShowOnMouseOver) {
             // finally, global opacity when ScrollBarShowOnMouseOver
             qreal globalOpacity(_animations->scrollBarEngine().opacity(widget, QStyle::SC_ScrollBarGroove));
             if (globalOpacity >= 0)
@@ -6844,7 +6837,7 @@ QColor Style::scrollBarArrowColor(const QStyleOptionSlider *option, const SubCon
         }
     }
 
-    if (StyleConfigData::scrollBarShowOnMouseOver()) {
+    if (Adwaita::Config::ScrollBarShowOnMouseOver) {
         // finally, global opacity when ScrollBarShowOnMouseOver
         qreal globalOpacity(_animations->scrollBarEngine().opacity(widget, QStyle::SC_ScrollBarGroove));
         if (globalOpacity >= 0)
@@ -6991,7 +6984,7 @@ QIcon Style::titleBarButtonIcon(StandardPixmap standardPixmap, const QStyleOptio
     else
         palette = QApplication::palette();
 
-    bool isCloseButton(buttonType == ButtonClose && StyleConfigData::outlineCloseButton());
+    bool isCloseButton(buttonType == ButtonClose && Adwaita::Config::OutlineCloseButton);
 
     palette.setCurrentColorGroup(QPalette::Active);
     QColor base(palette.color(QPalette::WindowText));
@@ -7161,7 +7154,7 @@ bool Style::hasAlteredBackground(const QWidget *widget) const
         hasAlteredBackground = !tabWidget->documentMode();
     else if (qobject_cast<const QMenu *>(widget))
         hasAlteredBackground = true;
-    else if (StyleConfigData::dockWidgetDrawFrame() && qobject_cast<const QDockWidget *>(widget))
+    else if (Adwaita::Config::DockWidgetDrawFrame && qobject_cast<const QDockWidget *>(widget))
         hasAlteredBackground = true;
 
     if (widget->parentWidget() && !hasAlteredBackground)
