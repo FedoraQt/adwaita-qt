@@ -25,7 +25,7 @@
 #include "adwaitaanimations.h"
 #include "adwaitahelper.h"
 #include "adwaitamnemonics.h"
-#include "adwaitapropertynames.h"
+// #include "adwaitapropertynames.h"
 #include "adwaitasplitterproxy.h"
 #include "adwaitawidgetexplorer.h"
 #include "adwaitawindowmanager.h"

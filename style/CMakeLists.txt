@@ -31,7 +31,6 @@ set(Adwaita_SRCS
     adwaitaaddeventfilter.cpp
     adwaitahelper.cpp
     adwaitamnemonics.cpp
-    adwaitapropertynames.cpp
     adwaitasplitterproxy.cpp
     adwaitastyle.cpp
     adwaitastyleplugin.cpp

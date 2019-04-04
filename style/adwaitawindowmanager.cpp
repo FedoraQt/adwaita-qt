@@ -47,7 +47,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "adwaitawindowmanager.h"
-#include "adwaitapropertynames.h"
 #include "adwaitahelper.h"
 
 #include <QApplication>

@@ -18,7 +18,6 @@
  *************************************************************************/
 
 #include "adwaitaanimations.h"
-#include "adwaitapropertynames.h"
 
 #include <QAbstractItemView>
 #include <QComboBox>

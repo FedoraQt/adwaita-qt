@@ -111,6 +111,18 @@ namespace Adwaita
         const bool DrawWidgetRects { false };
     }
 
+    namespace PropertyNames
+    {
+        const char noAnimations[] = "_kde_no_animations";
+        const char noWindowGrab[] = "_kde_no_window_grab";
+        const char netWMForceShadow[] = "_KDE_NET_WM_FORCE_SHADOW";
+        const char netWMSkipShadow[] = "_KDE_NET_WM_SKIP_SHADOW";
+        const char sidePanelView[] = "_kde_side_panel_view";
+        const char toolButtonAlignment[] = "_kde_toolButton_alignment";
+        const char menuTitle[] = "_adwaita_toolButton_menutitle";
+        const char alteredBackground[] = "_adwaita_altered_background";
+    }
+
     //* metrics
     enum Metrics {
         // frames
