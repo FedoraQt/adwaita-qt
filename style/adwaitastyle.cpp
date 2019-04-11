@@ -25,7 +25,6 @@
 #include "adwaitaanimations.h"
 #include "adwaitahelper.h"
 #include "adwaitamnemonics.h"
-// #include "adwaitapropertynames.h"
 #include "adwaitasplitterproxy.h"
 #include "adwaitawidgetexplorer.h"
 #include "adwaitawindowmanager.h"
@@ -56,6 +55,8 @@
 #include <QToolBox>
 #include <QToolButton>
 #include <QWidgetAction>
+
+#include <QDebug>
 
 namespace AdwaitaPrivate
 {
@@ -550,15 +551,15 @@ void Style::polish(QPalette &palette)
         palette.setColor(QPalette::Inactive, QPalette::Link,            QColor("#4a90d9"));
         palette.setColor(QPalette::Inactive, QPalette::LinkVisited,     QColor("#4a90d9"));
     } else {
-        palette.setColor(QPalette::All,      QPalette::Window,          QColor("#ededed"));
-        palette.setColor(QPalette::All,      QPalette::WindowText,      QColor("#2e3436"));
-        palette.setColor(QPalette::All,      QPalette::Base,            QColor("white"));
-        palette.setColor(QPalette::All,      QPalette::AlternateBase,   QColor("#ededed"));
+        palette.setColor(QPalette::All,      QPalette::Window,          QColor("#f6f5f4"));  // Adwaita - bg_color
+        palette.setColor(QPalette::All,      QPalette::WindowText,      QColor("#2e3436"));  // Adwaita - fg_color
+        palette.setColor(QPalette::All,      QPalette::Base,            QColor("#ffffff"));  // Adwaita - base_color
+        palette.setColor(QPalette::All,      QPalette::AlternateBase,   QColor("#ffffff"));  // Adwaita - base_color
         palette.setColor(QPalette::All,      QPalette::ToolTipBase,     QColor("#060606"));
-        palette.setColor(QPalette::All,      QPalette::ToolTipText,     QColor("white"));
-        palette.setColor(QPalette::All,      QPalette::Text,            QColor("#2e3436"));
+        palette.setColor(QPalette::All,      QPalette::ToolTipText,     QColor("ffffff"));
+        palette.setColor(QPalette::All,      QPalette::Text,            QColor("#2e3436"));  // Adwaita - fg_color
         palette.setColor(QPalette::All,      QPalette::Button,          QColor("#eeeeee"));
-        palette.setColor(QPalette::All,      QPalette::ButtonText,      QColor("#2e3436"));
+        palette.setColor(QPalette::All,      QPalette::ButtonText,      QColor("#2e3436"));  // Adwaita - fg_color
         palette.setColor(QPalette::All,      QPalette::BrightText,      QColor("white"));
 
         palette.setColor(QPalette::All,      QPalette::Light,           QColor("#fafafa"));
@@ -567,7 +568,7 @@ void Style::polish(QPalette &palette)
         palette.setColor(QPalette::All,      QPalette::Mid,             QColor("#b4b4b4"));
         palette.setColor(QPalette::All,      QPalette::Shadow,          QColor("black"));
 
-        palette.setColor(QPalette::All,      QPalette::Highlight,       QColor("#4a90d9"));
+        palette.setColor(QPalette::All,      QPalette::Highlight,       QColor("#3584e4"));  // Adwaita - selected_bg_color
         palette.setColor(QPalette::All,      QPalette::HighlightedText, QColor("white"));
 
         palette.setColor(QPalette::All,      QPalette::Link,            QColor("#2a76c6"));
@@ -4971,7 +4972,6 @@ bool Style::drawProgressBarContentsControl(const QStyleOption *option, QPainter 
     // copy rect and palette
     QRect rect(option->rect);
     const QPalette &palette(option->palette);
-    QColor outline(_helper->buttonOutlineColor(palette, false, false).darker(250));
 
     // get direction
     const QStyleOptionProgressBarV2 *progressBarOption2(qstyleoption_cast<const QStyleOptionProgressBarV2 *>(option));
@@ -4987,7 +4987,7 @@ bool Style::drawProgressBarContentsControl(const QStyleOption *option, QPainter 
         qreal progress(_animations->busyIndicatorEngine().value());
 
         QColor color(palette.color(QPalette::Highlight));
-        _helper->renderProgressBarBusyContents(painter, rect, color, color.darker(), horizontal, reverse, progress);
+        _helper->renderProgressBarBusyContents(painter, rect, color, _helper->darken(color, 0.15), horizontal, reverse, progress);
     } else {
         QRegion oldClipRegion(painter->clipRegion());
         if (horizontal) {
@@ -5006,7 +5006,7 @@ bool Style::drawProgressBarContentsControl(const QStyleOption *option, QPainter 
             }
         }
 
-        _helper->renderProgressBarContents(painter, rect, palette.color(QPalette::Highlight), palette.color(QPalette::Highlight).darker());
+        _helper->renderProgressBarContents(painter, rect, palette.color(QPalette::Highlight), _helper->darken(palette.color(QPalette::Highlight), 0.15));
         painter->setClipRegion(oldClipRegion);
     }
 
@@ -6308,7 +6308,7 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
         QColor grooveColor(_helper->buttonBackgroundColor(palette, false, false, true));
         QColor outline(_helper->buttonOutlineColor(palette, false, false));
         QColor highlightColor(palette.color(QPalette::Highlight));
-        QColor highlightOutline(_helper->buttonOutlineColor(palette, false, false).darker(250));
+        QColor highlightOutline(_helper->darken(highlightColor, 0.15));
 
         if (!enabled)
             _helper->renderProgressBarGroove(painter, grooveRect, grooveColor, outline);

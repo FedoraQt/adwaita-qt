@@ -83,6 +83,20 @@ public:
         return QColor::fromRgbF(r, g, b, a);
     }
 
+    // Attempts to simulate darken/lighten functions from Gtk, the result it's not completely 1:1, but I think
+    // it's better than hardcoding the exact colors
+    static QColor lighten(const QColor &color, qreal amount = 0.1)
+    {
+        const qreal lightness = color.lightnessF() + amount;
+        return QColor::fromHslF(color.hueF(), color.saturationF(), lightness, color.alphaF());
+    }
+
+    static QColor darken(const QColor &color, qreal amount = 0.1)
+    {
+        const qreal lightness = color.lightnessF() - amount;
+        return QColor::fromHslF(color.hueF(), color.saturationF(), lightness, color.alphaF());
+    }
+
     //* add alpha channel multiplier to color
     QColor alphaColor(QColor color, qreal alpha) const;
 
