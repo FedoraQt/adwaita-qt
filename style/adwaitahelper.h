@@ -1,8 +1,7 @@
-#ifndef adwaita_helper_h
-#define adwaita_helper_h
-
 /*************************************************************************
  * Copyright (C) 2014 by Hugo Pereira Da Costa <hugo.pereira@free.fr>    *
+ * Copyright (C) 2014-2018 Martin Bříza <m@rtinbriza.cz>                 *
+ * Copyright (C) 2019 Jan Grulich <jgrulich@redhat.com>                  *
  *                                                                       *
  * This program is free software; you can redistribute it and/or modify  *
  * it under the terms of the GNU General Public License as published by  *
@@ -20,6 +19,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  *************************************************************************/
 
+#ifndef ADWAITA_HELPER_H
+#define ADWAITA_HELPER_H
 
 #include "adwaita.h"
 #include "adwaitaanimationdata.h"
@@ -39,329 +40,363 @@
 namespace Adwaita
 {
 
-    //* adwaita style helper class.
-    /** contains utility functions used at multiple places in both adwaita style and adwaita window decoration */
-    class Helper
+//* adwaita style helper class.
+/** contains utility functions used at multiple places in both adwaita style and adwaita window decoration */
+class Helper
+{
+public:
+
+    //* constructor
+    explicit Helper();
+
+#if ADWAITA_USE_KDE4
+    //* constructor
+    explicit Helper(const QByteArray &);
+#endif
+
+    //* destructor
+    virtual ~Helper()
+    {}
+
+    //*@name color utilities
+    //@{
+
+    // Borrowed from the KColorUtils code
+    static QColor mix(const QColor &c1, const QColor &c2, qreal bias = 0.5)
     {
-        public:
+        auto mixQreal = [](qreal a, qreal b, qreal bias) {
+            return a + (b - a) * bias;
+        };
+
+        if (bias <= 0.0)
+            return c1;
+        if (bias >= 1.0)
+            return c2;
+        if (std::isnan(bias))
+            return c1;
+
+        qreal r = mixQreal(c1.redF(),   c2.redF(),   bias);
+        qreal g = mixQreal(c1.greenF(), c2.greenF(), bias);
+        qreal b = mixQreal(c1.blueF(),  c2.blueF(),  bias);
+        qreal a = mixQreal(c1.alphaF(), c2.alphaF(), bias);
+
+        return QColor::fromRgbF(r, g, b, a);
+    }
+
+    //* add alpha channel multiplier to color
+    QColor alphaColor(QColor color, qreal alpha) const;
+
+    // ADWAITA TODO
+
+    //* mouse over color
+    QColor hoverColor(const QPalette &palette) const
+    {
+        return palette.highlight().color();
+    }
+
+    //* focus color
+    QColor focusColor(const QPalette &palette) const
+    {
+        return palette.highlight().color();
+    }
 
-        //* constructor
-        explicit Helper( );
+    //* negative text color (used for close button)
+    QColor negativeText(const QPalette &palette) const
+    // { return _viewNegativeTextBrush.brush( palette ).color(); }
+    {
+        Q_UNUSED(palette);
+        return Qt::red;
+    }
 
-        #if ADWAITA_USE_KDE4
-        //* constructor
-        explicit Helper( const QByteArray& );
-        #endif
+    //* shadow
+    QColor shadowColor(const QPalette &palette) const
+    {
+        return alphaColor(palette.color(QPalette::Shadow), 0.15);
+    }
 
-        //* destructor
-        virtual ~Helper()
-        {}
+    //* titlebar color
+    QColor titleBarColor(const QPalette &palette, bool active) const
+    {
+        return palette.color(active ? QPalette::Active : QPalette::Inactive, QPalette::Window);
+    }
 
-        //*@name color utilities
-        //@{
+    //* titlebar text color
+    QColor titleBarTextColor(const QPalette &palette, bool active) const
+    {
+        return palette.color(active ? QPalette::Active : QPalette::Inactive, QPalette::WindowText);
+    }
 
-        // Borrowed from the KColorUtils code
-        static QColor mix(const QColor &c1, const QColor &c2, qreal bias = 0.5)
-        {
-            auto mixQreal = [](qreal a, qreal b, qreal bias) { return a + (b - a) * bias; };
+    //* frame outline color, using animations
+    QColor frameOutlineColor(const QPalette &palette, bool mouseOver = false, bool hasFocus = false, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone) const;
 
-            if (bias <= 0.0) return c1;
-            if (bias >= 1.0) return c2;
-            if (std::isnan(bias)) return c1;
+    //* input outline color, using animations
+    QColor inputOutlineColor(const QPalette &palette, bool mouseOver = false, bool hasFocus = false, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone) const;
 
-            qreal r = mixQreal(c1.redF(),   c2.redF(),   bias);
-            qreal g = mixQreal(c1.greenF(), c2.greenF(), bias);
-            qreal b = mixQreal(c1.blueF(),  c2.blueF(),  bias);
-            qreal a = mixQreal(c1.alphaF(), c2.alphaF(), bias);
+    //* focus outline color, using animations
+    QColor focusOutlineColor(const QPalette &palette) const;
 
-            return QColor::fromRgbF(r, g, b, a);
-        }
+    //* hover outline color, using animations
+    QColor hoverOutlineColor(const QPalette &palette) const;
 
-        //* add alpha channel multiplier to color
-        QColor alphaColor( QColor color, qreal alpha ) const;
+    //* focus outline color, using animations
+    QColor buttonFocusOutlineColor(const QPalette &palette) const;
 
-        // ADWAITA TODO
+    //* hover outline color, using animations
+    QColor buttonHoverOutlineColor(const QPalette &palette) const;
 
-        //* mouse over color
-        QColor hoverColor( const QPalette& palette ) const
-        { return palette.highlight().color(); }
+    //* side panel outline color, using animations
+    QColor sidePanelOutlineColor(const QPalette &palette, bool hasFocus = false, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone) const;
 
-        //* focus color
-        QColor focusColor( const QPalette& palette ) const
-        { return palette.highlight().color(); }
+    //* frame background color
+    QColor frameBackgroundColor(const QPalette &palette) const
+    {
+        return frameBackgroundColor(palette, palette.currentColorGroup());
+    }
 
-        //* negative text color (used for close button)
-        QColor negativeText( const QPalette& palette ) const
-        // { return _viewNegativeTextBrush.brush( palette ).color(); }
-        { Q_UNUSED(palette); return Qt::red; }
+    //* frame background color
+    QColor frameBackgroundColor(const QPalette &palette, QPalette::ColorGroup) const;
 
-        //* shadow
-        QColor shadowColor( const QPalette& palette ) const
-        { return alphaColor( palette.color( QPalette::Shadow ), 0.15 ); }
+    //* arrow outline color
+    QColor arrowColor(const QPalette &palette, QPalette::ColorGroup, QPalette::ColorRole) const;
 
-        //* titlebar color
-        QColor titleBarColor( const QPalette& palette, bool active ) const
-        { return palette.color(active ? QPalette::Active : QPalette::Inactive, QPalette::Window); }
+    //* arrow outline color
+    QColor arrowColor(const QPalette &palette, QPalette::ColorRole role) const
+    {
+        return arrowColor(palette, palette.currentColorGroup(), role);
+    }
 
-        //* titlebar text color
-        QColor titleBarTextColor( const QPalette& palette, bool active ) const
-        { return palette.color(active ? QPalette::Active : QPalette::Inactive, QPalette::WindowText); }
+    //* arrow outline color, using animations
+    QColor arrowColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone) const;
 
-        //* frame outline color, using animations
-        QColor frameOutlineColor( const QPalette&, bool mouseOver = false, bool hasFocus = false, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone ) const;
+    //* button outline color, using animations
+    QColor buttonOutlineColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone) const;
 
-        //* input outline color, using animations
-        QColor inputOutlineColor( const QPalette& palette, bool mouseOver = false, bool hasFocus = false, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone ) const;
+    //* button panel color, using animations
+    QColor buttonBackgroundColor(const QPalette &palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone) const;
 
-        //* focus outline color, using animations
-        QColor focusOutlineColor( const QPalette& ) const;
+    //* tool button color
+    QColor toolButtonColor(const QPalette &palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone) const;
 
-        //* hover outline color, using animations
-        QColor hoverOutlineColor( const QPalette& ) const;
+    //* slider outline color, using animations
+    QColor sliderOutlineColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone) const;
 
-        //* focus outline color, using animations
-        QColor buttonFocusOutlineColor( const QPalette& ) const;
+    //* scrollbar handle color, using animations
+    QColor scrollBarHandleColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone) const;
 
-        //* hover outline color, using animations
-        QColor buttonHoverOutlineColor( const QPalette& ) const;
+    //* checkbox indicator, using animations
+    QColor checkBoxIndicatorColor(const QPalette &palette, bool mouseOver, bool active, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone) const;
 
-        //* side panel outline color, using animations
-        QColor sidePanelOutlineColor( const QPalette&, bool hasFocus = false, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone ) const;
+    //* separator color
+    QColor separatorColor(const QPalette &palette) const;
 
-        //* frame background color
-        QColor frameBackgroundColor( const QPalette& palette ) const
-        { return frameBackgroundColor( palette, palette.currentColorGroup() ); }
+    //* TreeView header text color
+    QColor headerTextColor(const QPalette &palette, const QStyle::State state) const;
 
-        //* frame background color
-        QColor frameBackgroundColor( const QPalette&, QPalette::ColorGroup ) const;
+    //* TabBar background color
+    QColor tabBarColor(const QPalette &palette, const QStyle::State state) const;
 
-        //* arrow outline color
-        QColor arrowColor( const QPalette&, QPalette::ColorGroup, QPalette::ColorRole ) const;
+    //* merge active and inactive palettes based on ratio, for smooth enable state change transition
+    QPalette disabledPalette(const QPalette &palette, qreal ratio) const;
 
-        //* arrow outline color
-        QColor arrowColor( const QPalette& palette, QPalette::ColorRole role ) const
-        { return arrowColor( palette, palette.currentColorGroup(), role ); }
+    //@}
 
-        //* arrow outline color, using animations
-        QColor arrowColor( const QPalette&, bool mouseOver, bool hasFocus, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone ) const;
+    //*@name rendering utilities
+    //@{
 
-        //* button outline color, using animations
-        QColor buttonOutlineColor( const QPalette&, bool mouseOver, bool hasFocus, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone ) const;
+    //* debug frame
+    void renderDebugFrame(QPainter *painter, const QRect &) const;
 
-        //* button panel color, using animations
-        QColor buttonBackgroundColor( const QPalette&, bool mouseOver, bool hasFocus, bool sunken, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone ) const;
+    //* focus rect
+    void renderFocusRect(QPainter *painter, const QRect &rect, const QColor &, const QColor &outline = QColor(), Sides = 0) const;
 
-        //* tool button color
-        QColor toolButtonColor( const QPalette&, bool mouseOver, bool hasFocus, bool sunken, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone ) const;
+    //* focus line
+    void renderFocusLine(QPainter *painter, const QRect &rect, const QColor &) const;
 
-        //* slider outline color, using animations
-        QColor sliderOutlineColor( const QPalette&, bool mouseOver, bool hasFocus, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone ) const;
+    //* generic frame
+    void renderFrame(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline = QColor(), bool hasFocus = false) const;
 
-        //* scrollbar handle color, using animations
-        QColor scrollBarHandleColor( const QPalette&, bool mouseOver, bool hasFocus, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone ) const;
+    //* square frame
+    void renderSquareFrame(QPainter *painter, const QRect &rect, QColor color, bool hasFocus) const;
 
-        //* checkbox indicator, using animations
-        QColor checkBoxIndicatorColor( const QPalette&, bool mouseOver, bool active, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone ) const;
+    //* generic frame flat on right side
+    void renderFlatFrame(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline = QColor(), bool hasFocus = false) const;
 
-        //* separator color
-        QColor separatorColor( const QPalette& ) const;
+    //* side panel frame
+    void renderSidePanelFrame(QPainter *painter, const QRect &rect, const QColor &outline, Side) const;
 
-        //* TreeView header text color
-        QColor headerTextColor( const QPalette& palette, const QStyle::State state ) const;
+    //* menu frame
+    void renderMenuFrame(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, bool roundCorners = true) const;
 
-        //* TabBar background color
-        QColor tabBarColor( const QPalette& palette, const QStyle::State state ) const;
+    //* button frame
+    void renderButtonFrame(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, const QColor &shadow, bool focus, bool sunken, bool mouseOver, bool active) const;
 
-        //* merge active and inactive palettes based on ratio, for smooth enable state change transition
-        QPalette disabledPalette( const QPalette&, qreal ratio ) const;
+    //* button frame
+    void renderFlatButtonFrame(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, const QColor &shadow, bool focus, bool sunken, bool mouseOver, bool active) const;
 
-        //@}
+    //* toolbutton frame
+    void renderToolButtonFrame(QPainter *painter, const QRect &rect, const QColor &color, bool sunken) const;
 
-        //*@name rendering utilities
-        //@{
+    //* toolbutton frame
+    void renderToolBoxFrame(QPainter *painter, const QRect &rect, int tabWidth, const QColor &color) const;
 
-        //* debug frame
-        void renderDebugFrame( QPainter*, const QRect& ) const;
+    //* tab widget frame
+    void renderTabWidgetFrame(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, Corners) const;
 
-        //* focus rect
-        void renderFocusRect( QPainter*, const QRect&, const QColor&, const QColor& outline = QColor(), Sides = 0 ) const;
+    //* selection frame
+    void renderSelection(QPainter *painter, const QRect &rect, const QColor &) const;
 
-        //* focus line
-        void renderFocusLine( QPainter*, const QRect&, const QColor& ) const;
+    //* separator
+    void renderSeparator(QPainter *painter, const QRect &rect, const QColor &, bool vertical = false) const;
 
-        //* generic frame
-        void renderFrame( QPainter*, const QRect&, const QColor& color, const QColor& outline = QColor(), bool hasFocus = false ) const;
+    //* checkbox
+    void renderCheckBoxBackground(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, bool sunken) const;
 
-        //* square frame
-        void renderSquareFrame( QPainter* painter, const QRect& rect, QColor color, bool hasFocus ) const;
+    //* checkbox
+    void renderCheckBox(QPainter *painter, const QRect &rect, const QColor &background, const QColor &outline, const QColor &tickColor, bool sunken, CheckBoxState state, qreal animation = AnimationData::OpacityInvalid, bool active = true) const;
 
-        //* generic frame flat on right side
-        void renderFlatFrame( QPainter*, const QRect&, const QColor& color, const QColor& outline = QColor(), bool hasFocus = false ) const;
+    //* radio button
+    void renderRadioButtonBackground(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, bool sunken) const;
 
-        //* side panel frame
-        void renderSidePanelFrame( QPainter*, const QRect&, const QColor& outline, Side ) const;
+    //* radio button
+    void renderRadioButton(QPainter *painter, const QRect &rect, const QColor &background, const QColor &outline, const QColor &tickColor, bool sunken, bool enabled, RadioButtonState state, qreal animation = AnimationData::OpacityInvalid) const;
 
-        //* menu frame
-        void renderMenuFrame( QPainter*, const QRect&, const QColor& color, const QColor& outline, bool roundCorners = true ) const;
+    //* slider groove
+    void renderSliderGroove(QPainter *painter, const QRect &rect, const QColor &) const;
 
-        //* button frame
-        void renderButtonFrame(QPainter*, const QRect&, const QColor& color, const QColor& outline, const QColor& shadow, bool focus, bool sunken, bool mouseOver , bool active) const;
+    //* slider handle
+    void renderSliderHandle(QPainter *painter, const QRect &rect, const QColor &, const QColor &outline, const QColor &shadow, bool sunken, bool enabled, Side ticks, qreal angle = 0.0) const;
 
-        //* button frame
-        void renderFlatButtonFrame(QPainter*, const QRect&, const QColor& color, const QColor& outline, const QColor& shadow, bool focus, bool sunken, bool mouseOver , bool active) const;
+    //* dial groove
+    void renderDialGroove(QPainter *painter, const QRect &rect, const QColor &) const;
 
-        //* toolbutton frame
-        void renderToolButtonFrame( QPainter*, const QRect&, const QColor& color, bool sunken ) const;
+    //* dial groove
+    void renderDialContents(QPainter *painter, const QRect &rect, const QColor &, qreal first, qreal second) const;
 
-        //* toolbutton frame
-        void renderToolBoxFrame( QPainter*, const QRect&, int tabWidth, const QColor& color ) const;
+    //* progress bar groove
+    void renderProgressBarGroove(QPainter *painter, const QRect &rect, const QColor &, const QColor &) const;
 
-        //* tab widget frame
-        void renderTabWidgetFrame( QPainter*, const QRect&, const QColor& color, const QColor& outline, Corners ) const;
+    //* progress bar contents
+    void renderProgressBarContents(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline) const
+    {
+        return renderProgressBarGroove(painter, rect, color, outline);
+    }
 
-        //* selection frame
-        void renderSelection( QPainter*, const QRect&, const QColor& ) const;
+    //* progress bar contents (animated)
+    void renderProgressBarBusyContents(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, bool horizontal, bool reverse, int progress) const;
 
-        //* separator
-        void renderSeparator( QPainter*, const QRect&, const QColor&, bool vertical = false ) const;
+    //* scrollbar groove
+    void renderScrollBarGroove(QPainter *painter, const QRect &rect, const QColor &color) const
+    {
+        return renderScrollBarHandle(painter, rect, color);
+    }
 
-        //* checkbox
-        void renderCheckBoxBackground( QPainter*, const QRect&, const QColor& color, const QColor& outline, bool sunken ) const;
+    //* scrollbar handle
+    void renderScrollBarHandle(QPainter *painter, const QRect &rect, const QColor &) const;
 
-        //* checkbox
-        void renderCheckBox( QPainter*, const QRect&, const QColor& background, const QColor& outline, const QColor& tickColor, bool sunken, CheckBoxState state, qreal animation = AnimationData::OpacityInvalid, bool active = true ) const;
+    //* toolbar handle
+    void renderToolBarHandle(QPainter *painter, const QRect &rect, const QColor &color) const
+    {
+        return renderProgressBarGroove(painter, rect, color, Qt::transparent);
+    }
 
-        //* radio button
-        void renderRadioButtonBackground( QPainter*, const QRect&, const QColor& color, const QColor& outline, bool sunken ) const;
+    //* tabbar tab
+    void renderTabBarTab(QPainter *painter, const QRect &rect, const QColor &background, const QColor &color, const QColor &outline, Corners, bool renderFrame) const;
 
-        //* radio button
-        void renderRadioButton(QPainter*, const QRect&, const QColor& background, const QColor& outline, const QColor& tickColor, bool sunken, bool enabled, RadioButtonState state, qreal animation = AnimationData::OpacityInvalid ) const;
+    //* generic arrow
+    void renderArrow(QPainter *painter, const QRect &rect, const QColor &, ArrowOrientation) const;
 
-        //* slider groove
-        void renderSliderGroove( QPainter*, const QRect&, const QColor& ) const;
+    //* generic sign (+-)
+    void renderSign(QPainter *painter, const QRect &rect, const QColor &color, bool orientation) const;
 
-        //* slider handle
-        void renderSliderHandle( QPainter*, const QRect&, const QColor&, const QColor& outline, const QColor& shadow, bool sunken, bool enabled, Side ticks, qreal angle = 0.0 ) const;
+    //* generic button (for mdi decorations, tabs and dock widgets)
+    void renderDecorationButton(QPainter *painter, const QRect &rect, const QColor &, ButtonType, bool inverted) const;
 
-        //* dial groove
-        void renderDialGroove( QPainter*, const QRect&, const QColor& ) const;
+    //@}
 
-        //* dial groove
-        void renderDialContents( QPainter*, const QRect&, const QColor&, qreal first, qreal second ) const;
+    //*@name compositing utilities
+    //@{
 
-        //* progress bar groove
-        void renderProgressBarGroove( QPainter*, const QRect&, const QColor&, const QColor& ) const;
+    //* true if style was compiled for and is running on X11
+    static bool isX11(void);
 
-        //* progress bar contents
-        void renderProgressBarContents( QPainter* painter, const QRect& rect, const QColor& color, const QColor& outline ) const
-        { return renderProgressBarGroove( painter, rect, color, outline ); }
+    //* true if running on platform Wayland
+    static bool isWayland(void);
 
-        //* progress bar contents (animated)
-        void renderProgressBarBusyContents( QPainter* painter, const QRect& rect, const QColor& color, const QColor& outline, bool horizontal, bool reverse, int progress  ) const;
+    //* returns true if compositing is active
+    bool compositingActive(void) const;
 
-        //* scrollbar groove
-        void renderScrollBarGroove( QPainter* painter, const QRect& rect, const QColor& color ) const
-        { return renderScrollBarHandle( painter, rect, color ); }
+    //* returns true if a given widget supports alpha channel
+    bool hasAlphaChannel(const QWidget *) const;
 
-        //* scrollbar handle
-        void renderScrollBarHandle( QPainter*, const QRect&, const QColor& ) const;
+    //@}
 
-        //* toolbar handle
-        void renderToolBarHandle( QPainter* painter, const QRect& rect, const QColor& color ) const
-        { return renderProgressBarGroove( painter, rect, color, Qt::transparent ); }
+    //@name high dpi utility functions
+    //@{
 
-        //* tabbar tab
-        void renderTabBarTab(QPainter*, const QRect&, const QColor &background, const QColor& color, const QColor& outline, Corners, bool renderFrame ) const;
+    //* return dpi-aware pixmap of given size
+    virtual QPixmap highDpiPixmap(const QSize &size) const
+    {
+        return highDpiPixmap(size.width(), size.height());
+    }
 
-        //* generic arrow
-        void renderArrow( QPainter*, const QRect&, const QColor&, ArrowOrientation ) const;
+    //* return dpi-aware pixmap of given size
+    virtual QPixmap highDpiPixmap(int width) const
+    {
+        return highDpiPixmap(width, width);
+    }
 
-        //* generic sign (+-)
-        void renderSign(QPainter*painter, const QRect&rect, const QColor&color, bool orientation ) const;
+    //* return dpi-aware pixmap of given size
+    virtual QPixmap highDpiPixmap(int width, int height) const;
 
-        //* generic button (for mdi decorations, tabs and dock widgets)
-        void renderDecorationButton( QPainter*, const QRect&, const QColor&, ButtonType, bool inverted ) const;
+    //* return device pixel ratio for a given pixmap
+    virtual qreal devicePixelRatio(const QPixmap &) const;
 
-        //@}
+    //@}
 
-        //*@name compositing utilities
-        //@{
+    //*@name X11 utilities
+    //@{
 
-        //* true if style was compiled for and is running on X11
-        static bool isX11( void );
+#if ADWAITA_HAVE_X11
 
-        //* true if running on platform Wayland
-        static bool isWayland( void );
+    //* get xcb connection
+    static xcb_connection_t *connection(void);
 
-        //* returns true if compositing is active
-        bool compositingActive( void ) const;
+    //* create xcb atom
+    xcb_atom_t createAtom(const QString &) const;
 
-        //* returns true if a given widget supports alpha channel
-        bool hasAlphaChannel( const QWidget* ) const;
+#endif
 
-        //@}
+    //@}
 
-        //@name high dpi utility functions
-        //@{
+    //* frame radius
+    qreal frameRadius(qreal bias = 0) const
+    {
+        return qMax(qreal(Metrics::Frame_FrameRadius) - 0.5 + bias, 0.0);
+    }
 
-        //* return dpi-aware pixmap of given size
-        virtual QPixmap highDpiPixmap( const QSize& size ) const
-        { return highDpiPixmap( size.width(), size.height() ); }
+    void setVariant(QWidget *widget, const QByteArray &variant);
 
-        //* return dpi-aware pixmap of given size
-        virtual QPixmap highDpiPixmap( int width ) const
-        { return highDpiPixmap( width, width ); }
+protected:
 
-        //* return dpi-aware pixmap of given size
-        virtual QPixmap highDpiPixmap( int width, int height ) const;
+    //* initialize
+    void init(void);
 
-        //* return device pixel ratio for a given pixmap
-        virtual qreal devicePixelRatio( const QPixmap& ) const;
+    //* return rectangle for widgets shadow, offset depending on light source
+    QRectF shadowRect(const QRectF &) const;
 
-        //@}
+    //* return rounded path in a given rect, with only selected corners rounded, and for a given radius
+    QPainterPath roundedPath(const QRectF &, Corners, qreal) const;
 
-        //*@name X11 utilities
-        //@{
+private:
 
-        #if ADWAITA_HAVE_X11
+#if ADWAITA_HAVE_X11
 
-        //* get xcb connection
-        static xcb_connection_t* connection( void );
+    //* atom used for compositing manager
+    xcb_atom_t _compositingManagerAtom;
 
-        //* create xcb atom
-        xcb_atom_t createAtom( const QString& ) const;
+#endif
 
-        #endif
-
-        //@}
-
-        //* frame radius
-        qreal frameRadius( qreal bias = 0 ) const
-        { return qMax( qreal( Metrics::Frame_FrameRadius ) - 0.5 + bias, 0.0 ); }
-
-        void setVariant(QWidget *widget, const QByteArray &variant);
-
-        protected:
-
-        //* initialize
-        void init( void );
-
-        //* return rectangle for widgets shadow, offset depending on light source
-        QRectF shadowRect( const QRectF& ) const;
-
-        //* return rounded path in a given rect, with only selected corners rounded, and for a given radius
-        QPainterPath roundedPath( const QRectF&, Corners, qreal ) const;
-
-        private:
-
-        #if ADWAITA_HAVE_X11
-
-        //* atom used for compositing manager
-        xcb_atom_t _compositingManagerAtom;
-
-        #endif
-
-    };
+};
 
 }
 
