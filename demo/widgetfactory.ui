@@ -288,6 +288,9 @@
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
+         <property name="invertedAppearance">
+          <bool>true</bool>
+         </property>
          <property name="tickPosition">
           <enum>QSlider::TicksAbove</enum>
          </property>
@@ -303,6 +306,9 @@
          </property>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
+         </property>
+         <property name="invertedAppearance">
+          <bool>true</bool>
          </property>
          <property name="tickPosition">
           <enum>QSlider::TicksBelow</enum>
@@ -923,7 +929,8 @@ p, li { white-space: pre-wrap; }
        <string/>
       </property>
       <property name="icon">
-       <iconset theme="emblem-default-symbolic"/>
+       <iconset theme="emblem-default-symbolic">
+        <normaloff>.</normaloff>.</iconset>
       </property>
       <property name="text">
        <string>Andrea</string>
@@ -943,7 +950,8 @@ p, li { white-space: pre-wrap; }
        <string/>
       </property>
       <property name="icon">
-       <iconset theme="emblem-important-symbolic"/>
+       <iconset theme="emblem-important-symbolic">
+        <normaloff>.</normaloff>.</iconset>
       </property>
       <property name="text">
        <string>Otto</string>
@@ -966,7 +974,8 @@ p, li { white-space: pre-wrap; }
        <string/>
       </property>
       <property name="icon">
-       <iconset theme="weather-clear-night-symbolic"/>
+       <iconset theme="weather-clear-night-symbolic">
+        <normaloff>.</normaloff>.</iconset>
       </property>
       <property name="text">
        <string>Orville</string>
@@ -986,7 +995,8 @@ p, li { white-space: pre-wrap; }
        <string/>
       </property>
       <property name="icon">
-       <iconset theme="user-home-symbolic"/>
+       <iconset theme="user-home-symbolic">
+        <normaloff>.</normaloff>.</iconset>
       </property>
       <property name="text">
        <string>Benjamin</string>
