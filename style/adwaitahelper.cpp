@@ -144,34 +144,57 @@ QColor Helper::arrowColor(const QPalette &palette, bool mouseOver, bool hasFocus
 }
 
 //____________________________________________________________________
-QColor Helper::buttonOutlineColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode) const
+QColor Helper::buttonOutlineColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode, bool darkMode) const
 {
-    QColor outline(mix(palette.color(QPalette::Button), palette.color(QPalette::Shadow), 0.3));
-
-    return outline;
+    if (darkMode) {
+        return darken(palette.color(QPalette::Window), 0.1);
+    } else {
+        return darken(palette.color(QPalette::Window), 0.18);
+    }
 }
 
 //____________________________________________________________________
-QColor Helper::buttonBackgroundColor(const QPalette &palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity, AnimationMode mode) const
+QColor Helper::buttonBackgroundColor(const QPalette &palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity, AnimationMode mode, bool darkMode) const
 {
     QColor background(palette.color(QPalette::Button));
 
     if (mode == AnimationPressed) {
-        background = background.darker(100 + 15.0 * opacity);
+        if (darkMode) {
+            // Active button for dark mode is darken(bg_color, 0.09), but starting color is already darked by 0.01
+            return darken(background, 0.08);
+        } else {
+            // Active button for normal mode is darken(bg_color, 0.14), but starting color is already darked by 0.04
+            return darken(background, 0.1);
+        }
     } else if (sunken) {
-        background = background.darker(115);
+        if (darkMode) {
+            // Active button for dark mode is darken(bg_color, 0.09), but starting color is already darked by 0.01
+            return darken(background, 0.08);
+        } else {
+            // Active button for normal mode is darken(bg_color, 0.14), but starting color is already darked by 0.04
+            return darken(background, 0.1);
+        }
     } else if (mode == AnimationHover) {
-        background = mix(background, background.lighter(120), opacity);
-        //if( hasFocus ) background = mix( focus, hover, opacity );
-
+        if (darkMode) {
+            // Hovered button for dark mode is darken(bg_color, 0.01) so it's our starting color
+            return background;
+        } else {
+            // Hovered button for normal mode is bg_color, but starting color is darked by 0.04 so we need to lighten it back
+            return lighten(background, 0.04);
+        }
     } else if (mouseOver) {
-
-        background = background.lighter(120);
-        //background = hoverColor( palette );
+        if (darkMode) {
+            // Hovered button for dark mode is darken(bg_color, 0.01), but starting color is darked by 0.04 so we need to lighten it back a bit
+            return lighten(background, 0.03);
+        } else {
+            // Hovered button for normal mode is bg_color, but starting color is darked by 0.04 so we need to lighten it back
+            return lighten(background, 0.04);
+        }
     }
 
     return background;
 }
+
 
 //____________________________________________________________________
 QColor Helper::toolButtonColor(const QPalette &palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity, AnimationMode mode) const
@@ -511,7 +534,7 @@ void Helper::renderMenuFrame(QPainter *painter, const QRect &rect, const QColor 
 
 //______________________________________________________________________________
 void Helper::renderButtonFrame(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, const QColor &shadow,
-                               bool hasFocus, bool sunken, bool mouseOver, bool active) const
+                               bool hasFocus, bool sunken, bool mouseOver, bool active, bool darkMode) const
 {
     // setup painter
     painter->setRenderHint(QPainter::Antialiasing, true);
@@ -530,21 +553,48 @@ void Helper::renderButtonFrame(QPainter *painter, const QRect &rect, const QColo
         painter->setPen(Qt::NoPen);
 
     // content
-    if (color.isValid()) {
-        QLinearGradient gradient(frameRect.topLeft(), frameRect.bottomLeft());
-        //gradient.setColorAt( 0, color.darker( sunken ? 110 : (hasFocus|mouseOver) ? 85 : 100 ) );
-        //gradient.setColorAt( 1, color.darker( sunken ? 130 : (hasFocus|mouseOver) ? 95 : 110 ) );
-        if (!active) {
-            gradient.setColorAt(0, color);
-        } else if (sunken) {
-            gradient.setColorAt(0, color);
+    if (color.isValid() && active) {
+        QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
+        if (sunken) {
+                // Pressed button in dark mode is not a gradient, just an image consting from same $color
+            if (darkMode) {
+                gradient.setColorAt(0, color);
+                gradient.setColorAt(1, color);
+            } else {
+                // Pressed button in normal mode is not a gradient, just an image consting from same $color
+                gradient.setColorAt(0, color);
+                gradient.setColorAt(1, color);
+            }
+        } else if (mouseOver) {
+            if (darkMode) {
+                // Hovered button in dark mode is a gradient from $color to lighten(bg_color, 0.01) so we need to lighten it by 0.02 as our starting
+                // collor is darken(bg_color, 0.01)
+                gradient.setColorAt(0, color);
+                gradient.setColorAt(1, lighten(color, 0.02));
+            } else {
+                // Hovered button in normal mode is a gradient from $color to lighten(bg_color, 0.01)
+                gradient.setColorAt(0, color);
+                gradient.setColorAt(1, lighten(color, 0.01));
+            }
         } else {
-            gradient.setColorAt(0, mix(color, Qt::white, 0.07));
-            gradient.setColorAt(1, mix(color, Qt::black, 0.1));
+            if (darkMode) {
+                // Normal button in dark mode is a gradient from $color to bg_color so we need to lighten it by 0.01 as we are starting from our base
+                // button color which is darken(bg_color, 0.01)
+                gradient.setColorAt(0, color);
+                gradient.setColorAt(1, lighten(color, 0.01));
+            } else {
+                // Normal button in normal mode is a gradient from $color to bg_color so we need to lighten it by 0.04 as we are starting from our base
+                // button color which is darken(bg_color, 0.04)
+                gradient.setColorAt(0, color);
+                gradient.setColorAt(1, lighten(color, 0.04));
+            }
         }
         painter->setBrush(gradient);
-    } else
+    } else if (!active) {
+        painter->setBrush(color);
+    } else {
         painter->setBrush(Qt::NoBrush);
+    }
 
     // render
     painter->drawRoundedRect(frameRect, radius, radius);

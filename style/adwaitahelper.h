@@ -83,18 +83,49 @@ public:
         return QColor::fromRgbF(r, g, b, a);
     }
 
-    // Attempts to simulate darken/lighten functions from Gtk, the result it's not completely 1:1, but I think
-    // it's better than hardcoding the exact colors
     static QColor lighten(const QColor &color, qreal amount = 0.1)
     {
-        const qreal lightness = color.lightnessF() + amount;
-        return QColor::fromHslF(color.hueF(), color.saturationF(), lightness, color.alphaF());
+        qreal h, s, l, a;
+        color.getHslF(&h, &s, &l, &a);
+
+        qreal lightness = l + amount;
+        if (lightness > 1)
+            lightness = 1;
+        return QColor::fromHslF(h, s, lightness, a);
     }
 
     static QColor darken(const QColor &color, qreal amount = 0.1)
     {
-        const qreal lightness = color.lightnessF() - amount;
-        return QColor::fromHslF(color.hueF(), color.saturationF(), lightness, color.alphaF());
+        qreal h, s, l, a;
+        color.getHslF(&h, &s, &l, &a);
+
+        qreal lightness = l - amount;
+        if (lightness < 0)
+            lightness = 0;
+
+        return QColor::fromHslF(h, s, lightness, a);
+    }
+
+    static QColor desaturate(const QColor &color, qreal amount = 0.1)
+    {
+        qreal h, s, l, a;
+        color.getHslF(&h, &s, &l, &a);
+
+        qreal saturation = s - amount;
+        if (saturation < 0)
+            saturation = 0;
+        return QColor::fromHslF(h, saturation, l, a);
+    }
+
+    static QColor transparentize(const QColor &color, qreal amount = 0.1)
+    {
+        qreal h, s, l, a;
+        color.getHslF(&h, &s, &l, &a);
+
+        qreal alpha = a - amount;
+        if (alpha < 0)
+            alpha = 0;
+        return QColor::fromHslF(h, s, l, alpha);
     }
 
     //* add alpha channel multiplier to color
@@ -183,10 +214,10 @@ public:
     QColor arrowColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone) const;
 
     //* button outline color, using animations
-    QColor buttonOutlineColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone) const;
+    QColor buttonOutlineColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone, bool darkMode = false) const;
 
     //* button panel color, using animations
-    QColor buttonBackgroundColor(const QPalette &palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone) const;
+    QColor buttonBackgroundColor(const QPalette &palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone, bool darkMode = false) const;
 
     //* tool button color
     QColor toolButtonColor(const QPalette &palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone) const;
@@ -242,7 +273,7 @@ public:
     void renderMenuFrame(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, bool roundCorners = true) const;
 
     //* button frame
-    void renderButtonFrame(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, const QColor &shadow, bool focus, bool sunken, bool mouseOver, bool active) const;
+    void renderButtonFrame(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, const QColor &shadow, bool focus, bool sunken, bool mouseOver, bool active, bool darkMode = false) const;
 
     //* button frame
     void renderFlatButtonFrame(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, const QColor &shadow, bool focus, bool sunken, bool mouseOver, bool active) const;

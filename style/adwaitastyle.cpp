@@ -56,8 +56,6 @@
 #include <QToolButton>
 #include <QWidgetAction>
 
-#include <QDebug>
-
 namespace AdwaitaPrivate
 {
 
@@ -396,7 +394,6 @@ void Style::polish(QWidget *widget)
 //______________________________________________________________
 void Style::polishScrollArea(QAbstractScrollArea *scrollArea)
 {
-
     // check argument
     if (!scrollArea)
         return;
@@ -484,30 +481,50 @@ void Style::unpolish(QWidget *widget)
 void Style::polish(QPalette &palette)
 {
     if (_dark) {
-        palette.setColor(QPalette::All,      QPalette::Window,          QColor("#33393b"));
-        palette.setColor(QPalette::All,      QPalette::WindowText,      QColor("white"));
-        palette.setColor(QPalette::All,      QPalette::Base,            QColor("#232729"));
-        palette.setColor(QPalette::All,      QPalette::AlternateBase,   QColor("#1c1f20"));
-        palette.setColor(QPalette::All,      QPalette::ToolTipBase,     QColor("#1c1f20"));
-        palette.setColor(QPalette::All,      QPalette::ToolTipText,     QColor("white"));
-        palette.setColor(QPalette::All,      QPalette::Text,            QColor("white"));
-        palette.setColor(QPalette::All,      QPalette::Button,          QColor("#25292b"));
-        palette.setColor(QPalette::All,      QPalette::ButtonText,      QColor("white"));
-        palette.setColor(QPalette::All,      QPalette::BrightText,      QColor("black"));
+        // Colors defined in GTK adwaita style in _colors.scss
+        QColor base_color = _helper->lighten(_helper->desaturate(QColor("#241f31"), 1.0), 0.02);
+        QColor text_color = QColor("white");
+        QColor bg_color = _helper->darken(_helper->desaturate(QColor("#3d3846"), 1.0), 0.04);
+        QColor fg_color = QColor("#eeeeec");
+        QColor selected_bg_color = _helper->darken(QColor("#3584e4"), 0.2);
+        QColor selected_fg_color = QColor("white");
+        QColor osd_text_color = QColor("white");
+        QColor osd_bg_color = QColor("black");
+        QColor shadow = _helper->transparentize(QColor("black"), 0.9);
+
+        QColor backdrop_fg_color = _helper->mix(fg_color, bg_color);
+        QColor backdrop_base_color = _helper->lighten(base_color, 0.01);
+        QColor backdrop_selected_fg_color = _helper->mix(text_color, backdrop_base_color, 0.8);
+
+        // This is the color we use as initial color for the gradient in normal state
+        // Defined in _drawing.scss button(normal)
+        QColor button_base_color = _helper->darken(bg_color, 0.01);
+
+        palette.setColor(QPalette::All,      QPalette::Window,          bg_color);
+        palette.setColor(QPalette::All,      QPalette::WindowText,      fg_color);
+        palette.setColor(QPalette::All,      QPalette::Base,            base_color);
+        palette.setColor(QPalette::All,      QPalette::AlternateBase,   base_color);
+        palette.setColor(QPalette::All,      QPalette::ToolTipBase,     osd_bg_color);
+        palette.setColor(QPalette::All,      QPalette::ToolTipText,     osd_text_color);
+        palette.setColor(QPalette::All,      QPalette::Text,            fg_color);
+        palette.setColor(QPalette::All,      QPalette::Button,          button_base_color);
+        palette.setColor(QPalette::All,      QPalette::ButtonText,      fg_color);
+        palette.setColor(QPalette::All,      QPalette::BrightText,      text_color);
 
         palette.setColor(QPalette::All,      QPalette::Light,           QColor("white"));
         palette.setColor(QPalette::All,      QPalette::Midlight,        QColor("#d7d7d7"));
         palette.setColor(QPalette::All,      QPalette::Mid,             QColor("#b4b4b4"));
         palette.setColor(QPalette::All,      QPalette::Dark,            QColor("#1a1a1a"));
-        palette.setColor(QPalette::All,      QPalette::Shadow,          QColor("black"));
+        palette.setColor(QPalette::All,      QPalette::Shadow,          shadow);
 
-        palette.setColor(QPalette::All,      QPalette::Highlight,       QColor("#4a90d9"));
-        palette.setColor(QPalette::All,      QPalette::HighlightedText, QColor("white"));
+        palette.setColor(QPalette::All,      QPalette::Highlight,       selected_bg_color);
+        palette.setColor(QPalette::All,      QPalette::HighlightedText, selected_fg_color);
 
         palette.setColor(QPalette::All,      QPalette::Link,            QColor("#2a76c6"));
         palette.setColor(QPalette::All,      QPalette::LinkVisited,     QColor("#2a76c6"));
 
 
+        // TODO
         palette.setColor(QPalette::Disabled, QPalette::Window,          QColor("#2e3436"));
         palette.setColor(QPalette::Disabled, QPalette::WindowText,      QColor("#8d9091"));
         palette.setColor(QPalette::Disabled, QPalette::Base,            QColor("#3d4244"));
@@ -530,51 +547,70 @@ void Style::polish(QPalette &palette)
         palette.setColor(QPalette::Disabled, QPalette::LinkVisited,     QColor("#4a90d9"));
 
 
-        palette.setColor(QPalette::Inactive, QPalette::Window,          QColor("#33393b"));
-        palette.setColor(QPalette::Inactive, QPalette::WindowText,      QColor("#d3d4d5"));
-        palette.setColor(QPalette::Inactive, QPalette::Base,            QColor("#252a2c"));
-        palette.setColor(QPalette::Inactive, QPalette::AlternateBase,   QColor("#1d2021"));
-        palette.setColor(QPalette::Inactive, QPalette::Text,            QColor("#d3d4d5"));
-        palette.setColor(QPalette::Inactive, QPalette::Button,          QColor("#33393b"));
-        palette.setColor(QPalette::Inactive, QPalette::ButtonText,      QColor("#eeeeec"));
-        palette.setColor(QPalette::Inactive, QPalette::BrightText,      QColor("#d3d4d5"));
+        palette.setColor(QPalette::Inactive, QPalette::Window,          bg_color);
+        palette.setColor(QPalette::Inactive, QPalette::WindowText,      bg_color);
+        palette.setColor(QPalette::Inactive, QPalette::Base,            backdrop_base_color);
+        palette.setColor(QPalette::Inactive, QPalette::AlternateBase,   backdrop_base_color);
+        palette.setColor(QPalette::Inactive, QPalette::Text,            backdrop_fg_color);
+        palette.setColor(QPalette::Inactive, QPalette::Button,          button_base_color);
+        palette.setColor(QPalette::Inactive, QPalette::ButtonText,      backdrop_fg_color);
+        palette.setColor(QPalette::Inactive, QPalette::BrightText,      text_color);
 
         palette.setColor(QPalette::Inactive, QPalette::Light,           QColor("white"));
         palette.setColor(QPalette::Inactive, QPalette::Midlight,        QColor("#d7d7d7"));
         palette.setColor(QPalette::Inactive, QPalette::Mid,             QColor("#b4b4b4"));
         palette.setColor(QPalette::Inactive, QPalette::Dark,            QColor("#33393b"));
-        palette.setColor(QPalette::Inactive, QPalette::Shadow,          QColor("black"));
+        palette.setColor(QPalette::Inactive, QPalette::Shadow,          shadow);
 
-        palette.setColor(QPalette::Inactive, QPalette::Highlight,       QColor("#4a90d9"));
-        palette.setColor(QPalette::Inactive, QPalette::HighlightedText, QColor("white"));
+        palette.setColor(QPalette::Inactive, QPalette::Highlight,       selected_bg_color);
+        palette.setColor(QPalette::Inactive, QPalette::HighlightedText, backdrop_selected_fg_color);
 
         palette.setColor(QPalette::Inactive, QPalette::Link,            QColor("#4a90d9"));
         palette.setColor(QPalette::Inactive, QPalette::LinkVisited,     QColor("#4a90d9"));
     } else {
-        palette.setColor(QPalette::All,      QPalette::Window,          QColor("#f6f5f4"));  // Adwaita - bg_color
-        palette.setColor(QPalette::All,      QPalette::WindowText,      QColor("#2e3436"));  // Adwaita - fg_color
-        palette.setColor(QPalette::All,      QPalette::Base,            QColor("#ffffff"));  // Adwaita - base_color
-        palette.setColor(QPalette::All,      QPalette::AlternateBase,   QColor("#ffffff"));  // Adwaita - base_color
-        palette.setColor(QPalette::All,      QPalette::ToolTipBase,     QColor("#060606"));
-        palette.setColor(QPalette::All,      QPalette::ToolTipText,     QColor("ffffff"));
-        palette.setColor(QPalette::All,      QPalette::Text,            QColor("#2e3436"));  // Adwaita - fg_color
-        palette.setColor(QPalette::All,      QPalette::Button,          QColor("#eeeeee"));
-        palette.setColor(QPalette::All,      QPalette::ButtonText,      QColor("#2e3436"));  // Adwaita - fg_color
-        palette.setColor(QPalette::All,      QPalette::BrightText,      QColor("white"));
+        // Colors defined in GTK adwaita style in _colors.scss
+        QColor base_color = QColor("white");
+        QColor text_color = QColor("black");
+        QColor bg_color = QColor("#f6f5f4");
+        QColor fg_color = QColor("#2e3436");
+        QColor selected_bg_color = QColor("#3584e4");
+        QColor selected_fg_color = QColor("white");
+        QColor osd_text_color = QColor("white");
+        QColor osd_bg_color = QColor("black");
+        QColor shadow = _helper->transparentize(QColor("black"), 0.9);
 
-        palette.setColor(QPalette::All,      QPalette::Light,           QColor("#fafafa"));
-        palette.setColor(QPalette::All,      QPalette::Midlight,        QColor("#f3f3f3"));
-        palette.setColor(QPalette::All,      QPalette::Dark,            QColor("#d3d3d3"));
+        QColor backdrop_fg_color = _helper->mix(fg_color, bg_color);
+        QColor backdrop_base_color = _helper->darken(base_color, 0.01);
+        QColor backdrop_selected_fg_color = backdrop_base_color;
+
+        // This is the color we use as initial color for the gradient in normal state
+        // Defined in _drawing.scss button(normal)
+        QColor button_base_color = _helper->darken(bg_color, 0.04);
+
+        palette.setColor(QPalette::All,      QPalette::Window,          bg_color);
+        palette.setColor(QPalette::All,      QPalette::WindowText,      fg_color);
+        palette.setColor(QPalette::All,      QPalette::Base,            base_color);
+        palette.setColor(QPalette::All,      QPalette::AlternateBase,   base_color);
+        palette.setColor(QPalette::All,      QPalette::ToolTipBase,     osd_bg_color);
+        palette.setColor(QPalette::All,      QPalette::ToolTipText,     osd_text_color);
+        palette.setColor(QPalette::All,      QPalette::Text,            fg_color);
+        palette.setColor(QPalette::All,      QPalette::Button,          button_base_color);
+        palette.setColor(QPalette::All,      QPalette::ButtonText,      fg_color);
+        palette.setColor(QPalette::All,      QPalette::BrightText,      text_color);
+
+        palette.setColor(QPalette::All,      QPalette::Light,           QColor("white"));
+        palette.setColor(QPalette::All,      QPalette::Midlight,        QColor("#d7d7d7"));
         palette.setColor(QPalette::All,      QPalette::Mid,             QColor("#b4b4b4"));
-        palette.setColor(QPalette::All,      QPalette::Shadow,          QColor("black"));
+        palette.setColor(QPalette::All,      QPalette::Dark,            QColor("#1a1a1a"));
+        palette.setColor(QPalette::All,      QPalette::Shadow,          shadow);
 
-        palette.setColor(QPalette::All,      QPalette::Highlight,       QColor("#3584e4"));  // Adwaita - selected_bg_color
-        palette.setColor(QPalette::All,      QPalette::HighlightedText, QColor("white"));
+        palette.setColor(QPalette::All,      QPalette::Highlight,       selected_bg_color);
+        palette.setColor(QPalette::All,      QPalette::HighlightedText, selected_fg_color);
 
         palette.setColor(QPalette::All,      QPalette::Link,            QColor("#2a76c6"));
         palette.setColor(QPalette::All,      QPalette::LinkVisited,     QColor("#2a76c6"));
 
-
+        // TODO
         palette.setColor(QPalette::Disabled, QPalette::Window,          QColor("#f4f4f4"));
         palette.setColor(QPalette::Disabled, QPalette::WindowText,      QColor("#8d9091"));
         palette.setColor(QPalette::Disabled, QPalette::Base,            QColor("white"));
@@ -597,23 +633,23 @@ void Style::polish(QPalette &palette)
         palette.setColor(QPalette::Disabled, QPalette::LinkVisited,     QColor("#4a90d9"));
 
 
-        palette.setColor(QPalette::Inactive, QPalette::Window,          QColor("#ededed"));
-        palette.setColor(QPalette::Inactive, QPalette::WindowText,      QColor("#54595a"));
-        palette.setColor(QPalette::Inactive, QPalette::Base,            QColor("#fcfcfc"));
-        palette.setColor(QPalette::Inactive, QPalette::AlternateBase,   QColor("#ededed"));
-        palette.setColor(QPalette::Inactive, QPalette::Text,            QColor("#54595a"));
-        palette.setColor(QPalette::Inactive, QPalette::Button,          QColor("#ededed"));
-        palette.setColor(QPalette::Inactive, QPalette::ButtonText,      QColor("#54595a"));
-        palette.setColor(QPalette::Inactive, QPalette::BrightText,      QColor("#ededed"));
+        palette.setColor(QPalette::Inactive, QPalette::Window,          bg_color);
+        palette.setColor(QPalette::Inactive, QPalette::WindowText,      fg_color);
+        palette.setColor(QPalette::Inactive, QPalette::Base,            backdrop_base_color);
+        palette.setColor(QPalette::Inactive, QPalette::AlternateBase,   backdrop_base_color);
+        palette.setColor(QPalette::Inactive, QPalette::Text,            backdrop_fg_color);
+        palette.setColor(QPalette::Inactive, QPalette::Button,          button_base_color);
+        palette.setColor(QPalette::Inactive, QPalette::ButtonText,      backdrop_fg_color);
+        palette.setColor(QPalette::Inactive, QPalette::BrightText,      text_color);
 
-        palette.setColor(QPalette::Inactive, QPalette::Light,           QColor("#ededed"));
-        palette.setColor(QPalette::Inactive, QPalette::Midlight,        QColor("#ededed"));
-        palette.setColor(QPalette::Inactive, QPalette::Dark,            QColor("#ededed"));
-        palette.setColor(QPalette::Inactive, QPalette::Mid,             QColor("#c3c3c3"));
-        palette.setColor(QPalette::Inactive, QPalette::Shadow,          QColor("black"));
+        palette.setColor(QPalette::Inactive, QPalette::Light,           QColor("white"));
+        palette.setColor(QPalette::Inactive, QPalette::Midlight,        QColor("#d7d7d7"));
+        palette.setColor(QPalette::Inactive, QPalette::Mid,             QColor("#b4b4b4"));
+        palette.setColor(QPalette::Inactive, QPalette::Dark,            QColor("#33393b"));
+        palette.setColor(QPalette::Inactive, QPalette::Shadow,          shadow);
 
-        palette.setColor(QPalette::Inactive, QPalette::Highlight,       QColor("#4a90d9"));
-        palette.setColor(QPalette::Inactive, QPalette::HighlightedText, QColor("white"));
+        palette.setColor(QPalette::Inactive, QPalette::Highlight,       selected_bg_color);
+        palette.setColor(QPalette::Inactive, QPalette::HighlightedText, backdrop_selected_fg_color);
 
         palette.setColor(QPalette::Inactive, QPalette::Link,            QColor("#4a90d9"));
         palette.setColor(QPalette::Inactive, QPalette::LinkVisited,     QColor("#4a90d9"));
@@ -880,13 +916,14 @@ int Style::styleHint(StyleHint hint, const QStyleOption *option, const QWidget *
         return false;
     case SH_MessageBox_CenterButtons:
         return false;
-
     case SH_RequestSoftwareInputPanel:
         return RSIP_OnMouseClick;
     case SH_TitleBar_NoBorder:
         return true;
     case SH_DockWidget_ButtonsHaveFrame:
         return false;
+    case SH_ToolTipLabel_Opacity:
+        return 204 ;// Should have 30% transparency
     default:
         return ParentStyleClass::styleHint(hint, option, widget, returnData);
     }
@@ -3627,12 +3664,12 @@ bool Style::drawPanelButtonCommandPrimitive(const QStyleOption *option, QPainter
             palette.setColor(QPalette::Button, Helper::mix(button, base, 0.7));
         }
 
-        QColor shadow(_helper->shadowColor(palette));
-        QColor outline(_helper->buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode));
-        QColor background(_helper->buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode));
+        QColor shadow(palette.color(QPalette::Shadow));
+        QColor outline(_helper->buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode, _dark));
+        QColor background(_helper->buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode, _dark));
 
         // render
-        _helper->renderButtonFrame(painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver, enabled && windowActive);
+        _helper->renderButtonFrame(painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver, enabled && windowActive, _dark);
     }
 
     return true;
@@ -3785,8 +3822,15 @@ bool Style::drawPanelTipLabelPrimitive(const QStyleOption *option, QPainter *pai
 {
     const QPalette &palette(option->palette);
     QColor background(palette.color(QPalette::ToolTipBase));
-    QColor outline(Helper::mix(palette.color(QPalette::ToolTipBase), palette.color(QPalette::ToolTipText), 0.25));
+    QColor outline(Helper::transparentize(QColor("black"), 0.3));
     bool hasAlpha(_helper->hasAlphaChannel(widget));
+
+    if (hasAlpha) {
+        int alpha = styleHint(SH_ToolTipLabel_Opacity, option, widget);
+        int h, s, l, a;
+        background.getHsl(&h, &s, &l, &a);
+        background = QColor::fromHsl(h, s, l, alpha);
+    }
 
     _helper->renderMenuFrame(painter, option->rect, background, outline, hasAlpha);
     return true;
@@ -6119,7 +6163,7 @@ bool Style::drawComboBoxComplexControl(const QStyleOptionComplex *option, QPaint
                 AnimationMode mode(_animations->inputWidgetEngine().buttonAnimationMode(widget));
                 qreal opacity(_animations->inputWidgetEngine().buttonOpacity(widget));
 
-                QColor shadow(_helper->shadowColor(palette));
+                QColor shadow(palette.color(QPalette::Shadow));
                 QColor outline(_helper->buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode));
                 QColor background(_helper->buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode));
 
@@ -6364,7 +6408,7 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
         qreal opacity(_animations->widgetStateEngine().buttonOpacity(widget));
 
         // define colors
-        QColor background(_helper->buttonBackgroundColor(palette, mouseOver, false, sunken, opacity, mode));
+        QColor background(_helper->buttonBackgroundColor(palette, mouseOver, false, sunken, opacity, mode, _dark));
         QColor outline(_helper->sliderOutlineColor(palette, handleActive && mouseOver, hasFocus, opacity, mode));
         QColor shadow(_helper->shadowColor(palette));
 
