@@ -381,6 +381,8 @@ void Style::polish(QWidget *widget)
         setTranslucentBackground(widget);
     } else if (widget->inherits("QTipLabel")) {
         setTranslucentBackground(widget);
+    } else if (QLineEdit *lineEdit = qobject_cast<QLineEdit *>(widget)) {
+        lineEdit->setTextMargins(Metrics::LineEdit_MarginWidth, Metrics::LineEdit_MarginHeight, Metrics::LineEdit_MarginWidth, Metrics::LineEdit_MarginHeight);
     }
 
     if (!widget->parent() || !qobject_cast<QWidget *>(widget->parent()) || qobject_cast<QDialog *>(widget) || qobject_cast<QMainWindow *>(widget)) {
@@ -2501,7 +2503,6 @@ QRect Style::comboBoxSubControlRect(const QStyleOptionComplex *option, SubContro
 //___________________________________________________________________________________________________________________
 QRect Style::spinBoxSubControlRect(const QStyleOptionComplex *option, SubControl subControl, const QWidget *widget) const
 {
-
     // cast option and check
     const QStyleOptionSpinBox *spinBoxOption(qstyleoption_cast<const QStyleOptionSpinBox *>(option));
     if (!spinBoxOption)
@@ -2811,11 +2812,20 @@ QSize Style::comboBoxSizeFromContents(const QStyleOption *option, const QSize &c
     if (!flat)
         size = expandSize(size, frameWidth);
 
+    size.rwidth() += Metrics::MenuButton_IndicatorWidth;
+    size.rwidth() += Metrics::Button_ItemSpacing;
+
+    // FIXME this shouldn't be needed but apparently some width is still missing
+    size.rwidth() += size.height();
+
     // make sure there is enough height for the button
     size.setHeight(qMax(size.height(), int(Metrics::MenuButton_IndicatorWidth)));
 
-    // add button width and spacing
-    size.rwidth() += size.height() + 4;
+    size = expandSize(size, Metrics::ComboBox_MarginWidth, Metrics::ComboBox_MarginHeight);
+
+    // set minimum size
+    size.setHeight(qMax(size.height(), int(Metrics::ComboBox_MinHeight)));
+    size.setWidth(qMax(size.width(), int(Metrics::ComboBox_MinWidth)));
 
     return size;
 }
@@ -2838,8 +2848,15 @@ QSize Style::spinBoxSizeFromContents(const QStyleOption *option, const QSize &co
     if (!flat)
         size = expandSize(size, frameWidth);
 
-    // add button width and spacing
-    size.rwidth() += 2 * size.height() - 1;
+    size.rwidth() += 2 * Metrics::SpinBox_MinHeight;
+    size.rwidth() += Metrics::Button_ItemSpacing;
+
+    // FIXME this shouldn't be needed but apparently some width is still missing
+    size.rwidth() += size.height() / 2;
+
+    // set minimum size
+    size.setHeight(qMax(size.height(), int(Metrics::SpinBox_MinHeight)));
+    size.setWidth(qMax(size.width(), int(Metrics::SpinBox_MinWidth)));
 
     return size;
 }
@@ -2949,15 +2966,20 @@ QSize Style::pushButtonSizeFromContents(const QStyleOption *option, const QSize 
     }
 
     // expand with buttons margin
-    size = expandSize(size, Metrics::Button_MarginWidth);
+    size = expandSize(size, Metrics::Button_MarginWidth, Button_MarginHeight);
+
+    // finally add frame margins
+    size = expandSize(size, Metrics::Frame_FrameWidth);
 
     // make sure buttons have a minimum width
     if (hasText) {
         size.setWidth(qMax(size.width(), int(Metrics::Button_MinWidth)));
     }
 
-    // finally add frame margins
-    return expandSize(size, Metrics::Frame_FrameWidth);
+    // make sure buttons have a minimum height
+    size.setHeight(qMax(size.height(), int(Metrics::Button_MinHeight)));
+
+    return size;
 }
 
 //______________________________________________________________
@@ -3337,7 +3359,6 @@ bool Style::drawFrameLineEditPrimitive(const QStyleOption *option, QPainter *pai
             _helper->renderFlatFrame(painter, rect, background, outline, hasFocus);
         else
             _helper->renderFrame(painter, rect, background, outline, hasFocus);
-
     }
 
     return true;
@@ -3933,7 +3954,7 @@ bool Style::drawIndicatorCheckBoxPrimitive(const QStyleOption *option, QPainter 
     bool windowActive(state & State_Active);
 
     const QColor &outline(_helper->frameOutlineColor(palette));
-    const QColor &background(_helper->buttonBackgroundColor(palette, mouseOver, false, sunken));
+    const QColor &background(_helper->indicatorBackgroundColor(palette, mouseOver, false, sunken));
 
     // checkbox state
     CheckBoxState checkBoxState(CheckOff);
@@ -3986,7 +4007,7 @@ bool Style::drawIndicatorRadioButtonPrimitive(const QStyleOption *option, QPaint
     bool windowActive(state & State_Active);
 
     const QColor &outline(_helper->frameOutlineColor(palette));
-    const QColor &background(_helper->buttonBackgroundColor(palette, mouseOver, false, sunken));
+    const QColor &background(_helper->indicatorBackgroundColor(palette, mouseOver, false, sunken));
 
     // radio button state
     RadioButtonState radioButtonState(state & State_On ? RadioOn : RadioOff);
@@ -4673,7 +4694,7 @@ bool Style::drawComboBoxLabelControl(const QStyleOption *option, QPainter *paint
                 editRect.translate(cb->iconSize.width() + 4, 0);
         }
         if (!cb->currentText.isEmpty() && !cb->editable) {
-            proxy()->drawItemText(painter, editRect.adjusted(1, 0, -1, 0),
+            proxy()->drawItemText(painter, editRect.adjusted(Metrics::ComboBox_MarginWidth, 0, -1, 0),
                                   visualAlignment(cb->direction, Qt::AlignLeft | Qt::AlignVCenter),
                                   cb->palette, cb->state & State_Enabled, cb->currentText);
         }

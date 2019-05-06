@@ -184,8 +184,8 @@ QColor Helper::buttonBackgroundColor(const QPalette &palette, bool mouseOver, bo
         }
     } else if (mouseOver) {
         if (darkMode) {
-            // Hovered button for dark mode is darken(bg_color, 0.01), but starting color is darked by 0.04 so we need to lighten it back a bit
-            return lighten(background, 0.03);
+            // Hovered button for dark mode is darken(bg_color, 0.01) so it's our starting color
+            return background;
         } else {
             // Hovered button for normal mode is bg_color, but starting color is darked by 0.04 so we need to lighten it back
             return lighten(background, 0.04);
@@ -195,6 +195,48 @@ QColor Helper::buttonBackgroundColor(const QPalette &palette, bool mouseOver, bo
     return background;
 }
 
+//
+QColor Helper::indicatorBackgroundColor(const QPalette &palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity, AnimationMode mode, bool darkMode) const
+{
+    QColor background(palette.color(QPalette::Base));
+    QColor buttonBackground(palette.color(QPalette::Button));
+
+    if (mode == AnimationPressed) {
+        if (darkMode) {
+            // Active button for dark mode is darken(bg_color, 0.09), but starting color is already darked by 0.01
+            return darken(buttonBackground, 0.08);
+        } else {
+            // Active button for normal mode is darken(bg_color, 0.14), but starting color is already darked by 0.04
+            return darken(buttonBackground, 0.1);
+        }
+    } else if (sunken) {
+        if (darkMode) {
+            // Active button for dark mode is darken(bg_color, 0.09), but starting color is already darked by 0.01
+            return darken(buttonBackground, 0.08);
+        } else {
+            // Active button for normal mode is darken(bg_color, 0.14), but starting color is already darked by 0.04
+            return darken(buttonBackground, 0.1);
+        }
+    } else if (mode == AnimationHover) {
+        if (darkMode) {
+            // Hovered button for dark-alt mode is darken(bg_color, 0.04), but starting color is already darked by 0.01
+            return darken(background, 0.03);
+        } else {
+            // Hovered button for normal-alt mode is lighten(bg_color, 0.09), but starting color is lighten by 0.04
+            return lighten(background, 0.05);
+        }
+    } else if (mouseOver) {
+        if (darkMode) {
+            // Hovered button for dark-alt mode is darken(bg_color, 0.04), but starting color is already darked by 0.01
+            return darken(background, 0.03);
+        } else {
+            // Hovered button for normal-alt mode is lighten(bg_color, 0.09), but starting color is lighten by 0.04
+            return lighten(background, 0.05);
+        }
+    }
+
+    return background;
+}
 
 //____________________________________________________________________
 QColor Helper::toolButtonColor(const QPalette &palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity, AnimationMode mode) const
@@ -912,12 +954,8 @@ void Helper::renderRadioButton(QPainter *painter, const QRect &rect, const QColo
         if (background.isValid()) {
             if (enabled) {
                 QLinearGradient gradient(frameRect.topLeft(), frameRect.bottomLeft());
-                if (sunken) {
-                    gradient.setColorAt(0, background);
-                } else {
-                    gradient.setColorAt(0, mix(background, Qt::white, 0.07));
-                    gradient.setColorAt(1, mix(background, Qt::black, 0.1));
-                }
+                gradient.setColorAt(0, background);
+                gradient.setColorAt(1, background);
                 painter->setBrush(gradient);
             } else {
                 painter->setBrush(background);

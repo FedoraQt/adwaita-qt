@@ -135,7 +135,9 @@ namespace Adwaita
         Layout_DefaultSpacing = 6,
 
         // line editors
-        LineEdit_FrameWidth = 7,
+        LineEdit_FrameWidth = 4,
+        LineEdit_MarginHeight = 4,
+        LineEdit_MarginWidth = 8,
 
         // menu items
         Menu_FrameWidth = 0,
@@ -145,19 +147,29 @@ namespace Adwaita
         MenuButton_IndicatorWidth = 20,
 
         // combobox
-        ComboBox_FrameWidth = 7,
+        ComboBox_FrameWidth = 4,
+        ComboBox_MarginHeight = 4,
+        ComboBox_MarginWidth = 8,
+        ComboBox_MinHeight = 35,
+        ComboBox_MinWidth = 80,
 
         // spinbox
         SpinBox_FrameWidth = LineEdit_FrameWidth,
         SpinBox_ArrowButtonWidth = 20,
+        SpinBox_MinHeight = 35,
+        SpinBox_MinWidth = 80,
+        SpinBox_MarginHeight = 4,
+        SpinBox_MarginWidth = 8,
 
         // groupbox title margin
         GroupBox_TitleMarginWidth = 4,
 
         // buttons
+        Button_MinHeight = 35,
         Button_MinWidth = 80,
-        Button_MarginWidth = 4,
-        Button_ItemSpacing = 3,
+        Button_MarginHeight = 4,
+        Button_MarginWidth = 8,
+        Button_ItemSpacing = 4,
 
         // tool buttons
         ToolButton_MarginWidth = 6,
