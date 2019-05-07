@@ -3726,8 +3726,8 @@ bool Style::drawPanelButtonToolPrimitive(const QStyleOption *option, QPainter *p
 
         // render as push button
         QColor shadow(_helper->shadowColor(palette));
-        QColor outline(_helper->buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode));
-        QColor background(_helper->buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode));
+        QColor outline(_helper->buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode, _dark));
+        QColor background(_helper->buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode, _dark));
 
         // adjust frame in case of menu
         if (hasPopupMenu) {
@@ -4075,8 +4075,8 @@ bool Style::drawIndicatorButtonDropDownPrimitive(const QStyleOption *option, QPa
 
     // render as push button
     QColor shadow(_helper->shadowColor(palette));
-    QColor outline(_helper->buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode));
-    QColor background(_helper->buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode));
+    QColor outline(_helper->buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode, _dark));
+    QColor background(_helper->buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode, _dark));
 
     QRect frameRect(rect);
     painter->setClipRect(rect);
@@ -4624,7 +4624,7 @@ bool Style::drawCheckBoxLabelControl(const QStyleOption *option, QPainter *paint
     // render text
     if (!buttonOption->text.isEmpty()) {
         textRect = option->fontMetrics.boundingRect(textRect, textFlags, buttonOption->text);
-        drawItemText(painter, textRect, textFlags, palette, enabled, buttonOption->text, QPalette::WindowText);
+        drawItemText(painter, textRect, textFlags, palette, enabled, buttonOption->text, QPalette::Text);
 
         // check focus state
         bool hasFocus(enabled && (state & State_HasFocus));
@@ -5052,7 +5052,7 @@ bool Style::drawProgressBarContentsControl(const QStyleOption *option, QPainter 
         qreal progress(_animations->busyIndicatorEngine().value());
 
         QColor color(palette.color(QPalette::Highlight));
-        _helper->renderProgressBarBusyContents(painter, rect, color, _helper->darken(color, 0.15), horizontal, reverse, progress);
+        _helper->renderProgressBarBusyContents(painter, rect, color, _dark ? _helper->darken(color, 0.3) : _helper->darken(color, 0.15), horizontal, reverse, progress);
     } else {
         QRegion oldClipRegion(painter->clipRegion());
         if (horizontal) {
@@ -5071,7 +5071,7 @@ bool Style::drawProgressBarContentsControl(const QStyleOption *option, QPainter 
             }
         }
 
-        _helper->renderProgressBarContents(painter, rect, palette.color(QPalette::Highlight), _helper->darken(palette.color(QPalette::Highlight), 0.15));
+        _helper->renderProgressBarContents(painter, rect, palette.color(QPalette::Highlight), _dark ? _helper->darken(palette.color(QPalette::Highlight), 0.3) : _helper->darken(palette.color(QPalette::Highlight), 0.15));
         painter->setClipRegion(oldClipRegion);
     }
 
@@ -5082,8 +5082,8 @@ bool Style::drawProgressBarContentsControl(const QStyleOption *option, QPainter 
 bool Style::drawProgressBarGrooveControl(const QStyleOption *option, QPainter *painter, const QWidget *) const
 {
     const QPalette &palette(option->palette);
-    QColor color(_helper->buttonBackgroundColor(palette, false, false, true));
-    QColor outline(_helper->buttonOutlineColor(palette, false, false));
+    QColor outline(_helper->buttonOutlineColor(palette, false, false, AnimationData::OpacityInvalid, AnimationNone, _dark));
+    QColor color(_helper->mix(outline, palette.color(QPalette::Window)));
     _helper->renderProgressBarGroove(painter, option->rect, color, outline);
     return true;
 }
@@ -6185,8 +6185,8 @@ bool Style::drawComboBoxComplexControl(const QStyleOptionComplex *option, QPaint
                 qreal opacity(_animations->inputWidgetEngine().buttonOpacity(widget));
 
                 QColor shadow(palette.color(QPalette::Shadow));
-                QColor outline(_helper->buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode));
-                QColor background(_helper->buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode));
+                QColor outline(_helper->buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode, _dark));
+                QColor background(_helper->buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode, _dark));
 
                 _helper->renderFlatButtonFrame(painter, subControlRect(CC_ComboBox, option, SC_ComboBoxArrow, widget), background, outline, shadow, hasFocus, sunken, mouseOver, enabled && windowActive);
 
@@ -6370,10 +6370,10 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
         QRect grooveRect(subControlRect(CC_Slider, sliderOption, SC_SliderGroove, widget));
 
         // base color
-        QColor grooveColor(_helper->buttonBackgroundColor(palette, false, false, true));
-        QColor outline(_helper->buttonOutlineColor(palette, false, false));
+        QColor grooveColor(_helper->buttonBackgroundColor(palette, false, false, true, AnimationData::OpacityInvalid, AnimationNone, _dark));
+        QColor outline(_helper->buttonOutlineColor(palette, false, false, AnimationData::OpacityInvalid, AnimationNone, _dark));
         QColor highlightColor(palette.color(QPalette::Highlight));
-        QColor highlightOutline(_helper->darken(highlightColor, 0.15));
+        QColor highlightOutline(_dark ? _helper->darken(highlightColor, 0.3) : _helper->darken(highlightColor, 0.15));
 
         if (!enabled)
             _helper->renderProgressBarGroove(painter, grooveRect, grooveColor, outline);
