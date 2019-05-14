@@ -52,21 +52,18 @@ Helper::Helper(const QByteArray &name)
 #endif
 
 //____________________________________________________________________
-QColor Helper::frameOutlineColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode) const
+QColor Helper::frameOutlineColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode, bool darkMode) const
 {
     // I really can't remember why we have differed these two cases. This seems right.
-    return inputOutlineColor(palette, mouseOver, hasFocus, opacity, mode);
+    return inputOutlineColor(palette, mouseOver, hasFocus, opacity, mode, darkMode);
 }
 
-QColor Helper::inputOutlineColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode) const
+QColor Helper::inputOutlineColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode, bool darkMode) const
 {
-    QColor outline(buttonOutlineColor(palette, mouseOver, false));
-    QColor focus(palette.color(QPalette::Active, QPalette::Highlight));
+    QColor outline(buttonOutlineColor(palette, mouseOver, false, opacity, mode, darkMode));
 
     // focus takes precedence over hover
-    if (mode == AnimationFocus) {
-        outline = mix(outline, focus, opacity);
-    } else if (hasFocus) {
+    if (mode == AnimationFocus || hasFocus) {
         outline = focusColor(palette);
     }
 
@@ -156,7 +153,16 @@ QColor Helper::buttonOutlineColor(const QPalette &palette, bool mouseOver, bool 
 //____________________________________________________________________
 QColor Helper::buttonBackgroundColor(const QPalette &palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity, AnimationMode mode, bool darkMode) const
 {
+    bool isDisabled = palette.currentColorGroup() == QPalette::Disabled;
     QColor background(palette.color(QPalette::Button));
+
+    if (isDisabled && (mode == AnimationPressed || sunken)) {
+        // Defined in drawing.css - insensitive-active button
+        // if($variant == 'light', darken(mix($c, $base_color, 85%), 8%), darken(mix($c, $base_color, 85%), 6%));
+        // FIXME: doesn't seem to be correct color
+        return darkMode ? darken(mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.15), 0.06) :
+                          darken(mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.15), 0.08);
+    }
 
     if (mode == AnimationPressed) {
         if (darkMode) {
@@ -198,44 +204,54 @@ QColor Helper::buttonBackgroundColor(const QPalette &palette, bool mouseOver, bo
 //
 QColor Helper::indicatorBackgroundColor(const QPalette &palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity, AnimationMode mode, bool darkMode) const
 {
-    QColor background(palette.color(QPalette::Base));
-    QColor buttonBackground(palette.color(QPalette::Button));
+    bool isDisabled = palette.currentColorGroup() == QPalette::Disabled;
+    QColor background(palette.color(QPalette::Button));
+
+    if (isDisabled && (mode == AnimationPressed || sunken)) {
+        // Defined in drawing.css - insensitive-active button
+        // if($variant == 'light', darken(mix($c, $base_color, 85%), 8%), darken(mix($c, $base_color, 85%), 6%));
+        // FIXME: doesn't seem to be correct color
+        return darkMode ? darken(mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.15), 0.06) :
+                          darken(mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.15), 0.08);
+    }
 
     if (mode == AnimationPressed) {
         if (darkMode) {
             // Active button for dark mode is darken(bg_color, 0.09), but starting color is already darked by 0.01
-            return darken(buttonBackground, 0.08);
+            return darken(background, 0.08);
         } else {
             // Active button for normal mode is darken(bg_color, 0.14), but starting color is already darked by 0.04
-            return darken(buttonBackground, 0.1);
+            return darken(background, 0.1);
         }
     } else if (sunken) {
         if (darkMode) {
             // Active button for dark mode is darken(bg_color, 0.09), but starting color is already darked by 0.01
-            return darken(buttonBackground, 0.08);
+            return darken(background, 0.08);
         } else {
             // Active button for normal mode is darken(bg_color, 0.14), but starting color is already darked by 0.04
-            return darken(buttonBackground, 0.1);
+            return darken(background, 0.1);
         }
     } else if (mode == AnimationHover) {
         if (darkMode) {
-            // Hovered button for dark-alt mode is darken(bg_color, 0.04), but starting color is already darked by 0.01
-            return darken(background, 0.03);
+            // Hovered-alt button for dark mode is bg_color, but our color is darked by 0.01
+            return lighten(background, 0.01);
         } else {
-            // Hovered button for normal-alt mode is lighten(bg_color, 0.09), but starting color is lighten by 0.04
-            return lighten(background, 0.05);
+            // Hovered-alt button for normal mode is lighten(bg_color, 0.09), but starting color is darked by 0.04 so we need to lighten it back
+            return lighten(background, 0.13);
         }
     } else if (mouseOver) {
         if (darkMode) {
-            // Hovered button for dark-alt mode is darken(bg_color, 0.04), but starting color is already darked by 0.01
-            return darken(background, 0.03);
+            // Hovered button for dark mode is darken(bg_color, 0.01) so it's our starting color
+            return background;
         } else {
-            // Hovered button for normal-alt mode is lighten(bg_color, 0.09), but starting color is lighten by 0.04
-            return lighten(background, 0.05);
+            // Hovered button for normal mode is bg_color, but starting color is darked by 0.04 so we need to lighten it back
+            return lighten(background, 0.04);
         }
     }
 
-    return background;
+    // Normal-alt button for dark mode is darken(bg_color, 0.03), but starting color is already darked by 0.01
+    // Normal-alt button for normal mode is lighten(bg_color, 0.05), but starting color is already darked by 0.04
+    return darkMode ? darken(background, 0.02) : lighten(background, 0.09);
 }
 
 //____________________________________________________________________

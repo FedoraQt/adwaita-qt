@@ -48,6 +48,7 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QScrollBar>
+#include <QSpinBox>
 #include <QItemDelegate>
 #include <QSplitterHandle>
 #include <QTextEdit>
@@ -375,6 +376,15 @@ void Style::polish(QWidget *widget)
             if (itemView && itemView->itemDelegate() && itemView->itemDelegate()->inherits("QComboBoxDelegate")) {
                 itemView->setItemDelegate(new AdwaitaPrivate::ComboBoxItemDelegate(itemView));
             }
+            if (comboBox->isEditable()) {
+                QLineEdit *lineEdit = comboBox->lineEdit();
+                if (lineEdit && !comboBox->isEnabled()) {
+                    QPalette pal = lineEdit->palette();
+                    pal.setColor(QPalette::Base, comboBox->palette().color(QPalette::Window));
+                    lineEdit->setPalette(pal);
+                    lineEdit->setAutoFillBackground(true);
+                }
+            }
         }
     } else if (widget->inherits("QComboBoxPrivateContainer")) {
         addEventFilter(widget);
@@ -383,6 +393,13 @@ void Style::polish(QWidget *widget)
         setTranslucentBackground(widget);
     } else if (QLineEdit *lineEdit = qobject_cast<QLineEdit *>(widget)) {
         lineEdit->setTextMargins(Metrics::LineEdit_MarginWidth, Metrics::LineEdit_MarginHeight, Metrics::LineEdit_MarginWidth, Metrics::LineEdit_MarginHeight);
+    } else if (QSpinBox *spinBox = qobject_cast<QSpinBox *>(widget)) {
+        if (!spinBox->isEnabled()) {
+            QPalette pal = spinBox->palette();
+            pal.setColor(QPalette::Base, spinBox->palette().color(QPalette::Window));
+            spinBox->setPalette(pal);
+            spinBox->setAutoFillBackground(true);
+        }
     }
 
     if (!widget->parent() || !qobject_cast<QWidget *>(widget->parent()) || qobject_cast<QDialog *>(widget) || qobject_cast<QMainWindow *>(widget)) {
@@ -496,11 +513,14 @@ void Style::polish(QPalette &palette)
 
         QColor backdrop_fg_color = _helper->mix(fg_color, bg_color);
         QColor backdrop_base_color = _helper->lighten(base_color, 0.01);
-        QColor backdrop_selected_fg_color = _helper->mix(text_color, backdrop_base_color, 0.8);
+        QColor backdrop_selected_fg_color = _helper->mix(text_color, backdrop_base_color, 0.2);
 
         // This is the color we use as initial color for the gradient in normal state
         // Defined in _drawing.scss button(normal)
         QColor button_base_color = _helper->darken(bg_color, 0.01);
+
+        QColor link_color = _helper->lighten(selected_bg_color, 0.2);
+        QColor link_visited_color = _helper->lighten(selected_bg_color, 0.1);
 
         palette.setColor(QPalette::All,      QPalette::Window,          bg_color);
         palette.setColor(QPalette::All,      QPalette::WindowText,      fg_color);
@@ -522,35 +542,37 @@ void Style::polish(QPalette &palette)
         palette.setColor(QPalette::All,      QPalette::Highlight,       selected_bg_color);
         palette.setColor(QPalette::All,      QPalette::HighlightedText, selected_fg_color);
 
-        palette.setColor(QPalette::All,      QPalette::Link,            QColor("#2a76c6"));
-        palette.setColor(QPalette::All,      QPalette::LinkVisited,     QColor("#2a76c6"));
+        palette.setColor(QPalette::All,      QPalette::Link,            link_color);
+        palette.setColor(QPalette::All,      QPalette::LinkVisited,     link_visited_color);
 
 
-        // TODO
-        palette.setColor(QPalette::Disabled, QPalette::Window,          QColor("#2e3436"));
-        palette.setColor(QPalette::Disabled, QPalette::WindowText,      QColor("#8d9091"));
-        palette.setColor(QPalette::Disabled, QPalette::Base,            QColor("#3d4244"));
-        palette.setColor(QPalette::Disabled, QPalette::AlternateBase,   QColor("#3a3d3e"));
-        palette.setColor(QPalette::Disabled, QPalette::Text,            QColor("#8d9091"));
-        palette.setColor(QPalette::Disabled, QPalette::Button,          QColor("#33393b"));
-        palette.setColor(QPalette::Disabled, QPalette::ButtonText,      QColor("#8d9091"));
-        palette.setColor(QPalette::Disabled, QPalette::BrightText,      QColor("#ededed"));
+        QColor insensitive_fg_color = _helper->mix(fg_color, bg_color);
+        QColor insensitive_bg_color = _helper->mix(bg_color, base_color, 0.4);
+
+        palette.setColor(QPalette::Disabled, QPalette::Window,          insensitive_bg_color);
+        palette.setColor(QPalette::Disabled, QPalette::WindowText,      insensitive_fg_color);
+        palette.setColor(QPalette::Disabled, QPalette::Base,            base_color);
+        palette.setColor(QPalette::Disabled, QPalette::AlternateBase,   base_color);
+        palette.setColor(QPalette::Disabled, QPalette::Text,            insensitive_fg_color);
+        palette.setColor(QPalette::Disabled, QPalette::Button,          insensitive_bg_color);
+        palette.setColor(QPalette::Disabled, QPalette::ButtonText,      insensitive_fg_color);
+        palette.setColor(QPalette::Disabled, QPalette::BrightText,      text_color);
 
         palette.setColor(QPalette::Disabled, QPalette::Light,           QColor("#f4f4f4"));
         palette.setColor(QPalette::Disabled, QPalette::Midlight,        QColor("#f4f4f4"));
         palette.setColor(QPalette::Disabled, QPalette::Dark,            QColor("#f4f4f4"));
         palette.setColor(QPalette::Disabled, QPalette::Mid,             QColor("#c3c3c3"));
-        palette.setColor(QPalette::Disabled, QPalette::Shadow,          QColor("black"));
+        palette.setColor(QPalette::Disabled, QPalette::Shadow,          shadow);
 
-        palette.setColor(QPalette::Disabled, QPalette::Highlight,       QColor("#4a90d9"));
-        palette.setColor(QPalette::Disabled, QPalette::HighlightedText, QColor("white"));
+        palette.setColor(QPalette::Disabled, QPalette::Highlight,       selected_bg_color);
+        palette.setColor(QPalette::Disabled, QPalette::HighlightedText, selected_fg_color);
 
-        palette.setColor(QPalette::Disabled, QPalette::Link,            QColor("#4a90d9"));
-        palette.setColor(QPalette::Disabled, QPalette::LinkVisited,     QColor("#4a90d9"));
+        palette.setColor(QPalette::Disabled, QPalette::Link,            link_color);
+        palette.setColor(QPalette::Disabled, QPalette::LinkVisited,     link_visited_color);
 
 
         palette.setColor(QPalette::Inactive, QPalette::Window,          bg_color);
-        palette.setColor(QPalette::Inactive, QPalette::WindowText,      bg_color);
+        palette.setColor(QPalette::Inactive, QPalette::WindowText,      backdrop_fg_color);
         palette.setColor(QPalette::Inactive, QPalette::Base,            backdrop_base_color);
         palette.setColor(QPalette::Inactive, QPalette::AlternateBase,   backdrop_base_color);
         palette.setColor(QPalette::Inactive, QPalette::Text,            backdrop_fg_color);
@@ -589,6 +611,9 @@ void Style::polish(QPalette &palette)
         // Defined in _drawing.scss button(normal)
         QColor button_base_color = _helper->darken(bg_color, 0.04);
 
+        QColor link_color = _helper->darken(selected_bg_color, 0.1);
+        QColor link_visited_color = _helper->darken(selected_bg_color, 0.2);
+
         palette.setColor(QPalette::All,      QPalette::Window,          bg_color);
         palette.setColor(QPalette::All,      QPalette::WindowText,      fg_color);
         palette.setColor(QPalette::All,      QPalette::Base,            base_color);
@@ -609,34 +634,36 @@ void Style::polish(QPalette &palette)
         palette.setColor(QPalette::All,      QPalette::Highlight,       selected_bg_color);
         palette.setColor(QPalette::All,      QPalette::HighlightedText, selected_fg_color);
 
-        palette.setColor(QPalette::All,      QPalette::Link,            QColor("#2a76c6"));
-        palette.setColor(QPalette::All,      QPalette::LinkVisited,     QColor("#2a76c6"));
+        palette.setColor(QPalette::All,      QPalette::Link,            link_color);
+        palette.setColor(QPalette::All,      QPalette::LinkVisited,     link_visited_color);
 
-        // TODO
-        palette.setColor(QPalette::Disabled, QPalette::Window,          QColor("#f4f4f4"));
-        palette.setColor(QPalette::Disabled, QPalette::WindowText,      QColor("#8d9091"));
-        palette.setColor(QPalette::Disabled, QPalette::Base,            QColor("white"));
-        palette.setColor(QPalette::Disabled, QPalette::AlternateBase,   QColor("#ededed"));
-        palette.setColor(QPalette::Disabled, QPalette::Text,            QColor("#8d9091"));
-        palette.setColor(QPalette::Disabled, QPalette::Button,          QColor("#f4f4f4"));
-        palette.setColor(QPalette::Disabled, QPalette::ButtonText,      QColor("#8d9091"));
-        palette.setColor(QPalette::Disabled, QPalette::BrightText,      QColor("#ededed"));
+        QColor insensitive_fg_color = _helper->mix(fg_color, bg_color);
+        QColor insensitive_bg_color = _helper->mix(bg_color, base_color, 0.4);
+
+        palette.setColor(QPalette::Disabled, QPalette::Window,          insensitive_bg_color);
+        palette.setColor(QPalette::Disabled, QPalette::WindowText,      insensitive_fg_color);
+        palette.setColor(QPalette::Disabled, QPalette::Base,            base_color);
+        palette.setColor(QPalette::Disabled, QPalette::AlternateBase,   base_color);
+        palette.setColor(QPalette::Disabled, QPalette::Text,            insensitive_fg_color);
+        palette.setColor(QPalette::Disabled, QPalette::Button,          insensitive_bg_color);
+        palette.setColor(QPalette::Disabled, QPalette::ButtonText,      insensitive_fg_color);
+        palette.setColor(QPalette::Disabled, QPalette::BrightText,      text_color);
 
         palette.setColor(QPalette::Disabled, QPalette::Light,           QColor("#f4f4f4"));
         palette.setColor(QPalette::Disabled, QPalette::Midlight,        QColor("#f4f4f4"));
         palette.setColor(QPalette::Disabled, QPalette::Dark,            QColor("#f4f4f4"));
         palette.setColor(QPalette::Disabled, QPalette::Mid,             QColor("#c3c3c3"));
-        palette.setColor(QPalette::Disabled, QPalette::Shadow,          QColor("black"));
+        palette.setColor(QPalette::Disabled, QPalette::Shadow,          shadow);
 
-        palette.setColor(QPalette::Disabled, QPalette::Highlight,       QColor("#4a90d9"));
-        palette.setColor(QPalette::Disabled, QPalette::HighlightedText, QColor("white"));
+        palette.setColor(QPalette::Disabled, QPalette::Highlight,       selected_bg_color);
+        palette.setColor(QPalette::Disabled, QPalette::HighlightedText, selected_fg_color);
 
-        palette.setColor(QPalette::Disabled, QPalette::Link,            QColor("#4a90d9"));
-        palette.setColor(QPalette::Disabled, QPalette::LinkVisited,     QColor("#4a90d9"));
+        palette.setColor(QPalette::Disabled, QPalette::Link,            link_color);
+        palette.setColor(QPalette::Disabled, QPalette::LinkVisited,     link_visited_color);
 
 
         palette.setColor(QPalette::Inactive, QPalette::Window,          bg_color);
-        palette.setColor(QPalette::Inactive, QPalette::WindowText,      fg_color);
+        palette.setColor(QPalette::Inactive, QPalette::WindowText,      backdrop_fg_color);
         palette.setColor(QPalette::Inactive, QPalette::Base,            backdrop_base_color);
         palette.setColor(QPalette::Inactive, QPalette::AlternateBase,   backdrop_base_color);
         palette.setColor(QPalette::Inactive, QPalette::Text,            backdrop_fg_color);
@@ -3331,7 +3358,7 @@ bool Style::drawFrameLineEditPrimitive(const QStyleOption *option, QPainter *pai
 
     // make sure there is enough room to render frame
     if (rect.height() < 2 * Metrics::LineEdit_FrameWidth + option->fontMetrics.height()) {
-        QColor background(palette.color(QPalette::Base));
+        QColor background(palette.currentColorGroup() == QPalette::Disabled ? palette.color(QPalette::Window) : palette.color(QPalette::Base));
 
         painter->setPen(Qt::NoPen);
         painter->setBrush(background);
@@ -3353,8 +3380,8 @@ bool Style::drawFrameLineEditPrimitive(const QStyleOption *option, QPainter *pai
         qreal opacity(_animations->inputWidgetEngine().frameOpacity(widget));
 
         // render
-        QColor background(palette.color(QPalette::Base));
-        QColor outline(_helper->inputOutlineColor(palette, mouseOver, hasFocus, opacity, mode));
+        QColor background(palette.currentColorGroup() == QPalette::Disabled ? palette.color(QPalette::Window) : palette.color(QPalette::Base));
+        QColor outline(_helper->inputOutlineColor(palette, mouseOver, hasFocus, opacity, mode, _dark));
         if (qobject_cast<const QComboBox *>(widget))
             _helper->renderFlatFrame(painter, rect, background, outline, hasFocus);
         else
@@ -3953,8 +3980,8 @@ bool Style::drawIndicatorCheckBoxPrimitive(const QStyleOption *option, QPainter 
     bool active((state & (State_On | State_NoChange)));
     bool windowActive(state & State_Active);
 
-    const QColor &outline(_helper->frameOutlineColor(palette));
-    const QColor &background(_helper->indicatorBackgroundColor(palette, mouseOver, false, sunken));
+    const QColor &outline(_helper->frameOutlineColor(palette, mouseOver, false, AnimationData::OpacityInvalid, AnimationNone, _dark));
+    const QColor &background(_helper->indicatorBackgroundColor(palette, mouseOver, false, sunken, AnimationData::OpacityInvalid, AnimationNone, _dark));
 
     // checkbox state
     CheckBoxState checkBoxState(CheckOff);
@@ -4006,8 +4033,8 @@ bool Style::drawIndicatorRadioButtonPrimitive(const QStyleOption *option, QPaint
     bool checked(state & State_On);
     bool windowActive(state & State_Active);
 
-    const QColor &outline(_helper->frameOutlineColor(palette));
-    const QColor &background(_helper->indicatorBackgroundColor(palette, mouseOver, false, sunken));
+    const QColor &outline(_helper->frameOutlineColor(palette, mouseOver, false, AnimationData::OpacityInvalid, AnimationNone, _dark));
+    const QColor &background(_helper->indicatorBackgroundColor(palette, mouseOver, false, sunken, AnimationData::OpacityInvalid, AnimationNone, _dark));
 
     // radio button state
     RadioButtonState radioButtonState(state & State_On ? RadioOn : RadioOff);
