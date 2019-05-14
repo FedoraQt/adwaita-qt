@@ -589,8 +589,8 @@ void Style::polish(QPalette &palette)
         palette.setColor(QPalette::Inactive, QPalette::Highlight,       selected_bg_color);
         palette.setColor(QPalette::Inactive, QPalette::HighlightedText, backdrop_selected_fg_color);
 
-        palette.setColor(QPalette::Inactive, QPalette::Link,            QColor("#4a90d9"));
-        palette.setColor(QPalette::Inactive, QPalette::LinkVisited,     QColor("#4a90d9"));
+        palette.setColor(QPalette::Inactive, QPalette::Link,            link_color);
+        palette.setColor(QPalette::Inactive, QPalette::LinkVisited,     link_visited_color);
     } else {
         // Colors defined in GTK adwaita style in _colors.scss
         QColor base_color = QColor("white");
@@ -680,8 +680,8 @@ void Style::polish(QPalette &palette)
         palette.setColor(QPalette::Inactive, QPalette::Highlight,       selected_bg_color);
         palette.setColor(QPalette::Inactive, QPalette::HighlightedText, backdrop_selected_fg_color);
 
-        palette.setColor(QPalette::Inactive, QPalette::Link,            QColor("#4a90d9"));
-        palette.setColor(QPalette::Inactive, QPalette::LinkVisited,     QColor("#4a90d9"));
+        palette.setColor(QPalette::Inactive, QPalette::Link,            link_color);
+        palette.setColor(QPalette::Inactive, QPalette::LinkVisited,     link_visited_color);
     }
 }
 
@@ -5110,7 +5110,7 @@ bool Style::drawProgressBarGrooveControl(const QStyleOption *option, QPainter *p
 {
     const QPalette &palette(option->palette);
     QColor outline(_helper->buttonOutlineColor(palette, false, false, AnimationData::OpacityInvalid, AnimationNone, _dark));
-    QColor color(_helper->mix(outline, palette.color(QPalette::Window)));
+    QColor color(palette.currentColorGroup() ? palette.color(QPalette::Window) : _helper->mix(outline, palette.color(QPalette::Window)));
     _helper->renderProgressBarGroove(painter, option->rect, color, outline);
     return true;
 }
@@ -6397,8 +6397,8 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
         QRect grooveRect(subControlRect(CC_Slider, sliderOption, SC_SliderGroove, widget));
 
         // base color
-        QColor grooveColor(_helper->buttonBackgroundColor(palette, false, false, true, AnimationData::OpacityInvalid, AnimationNone, _dark));
         QColor outline(_helper->buttonOutlineColor(palette, false, false, AnimationData::OpacityInvalid, AnimationNone, _dark));
+        QColor grooveColor(palette.currentColorGroup() ? palette.color(QPalette::Window) : _helper->mix(outline, palette.color(QPalette::Window)));
         QColor highlightColor(palette.color(QPalette::Highlight));
         QColor highlightOutline(_dark ? _helper->darken(highlightColor, 0.3) : _helper->darken(highlightColor, 0.15));
 
