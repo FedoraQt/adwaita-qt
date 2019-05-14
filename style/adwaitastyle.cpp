@@ -6360,11 +6360,10 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
 
             // colors
             QColor base(_helper->separatorColor(palette));
-            QColor highlight(palette.color(QPalette::Highlight));
 
             while (current <= sliderOption->maximum) {
                 // adjust color
-                QColor color((enabled && current <= sliderOption->sliderPosition) ? highlight : base);
+                QColor color(base);
                 painter->setPen(color);
 
                 // calculate positions and draw lines
