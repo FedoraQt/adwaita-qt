@@ -3980,7 +3980,7 @@ bool Style::drawIndicatorCheckBoxPrimitive(const QStyleOption *option, QPainter 
     bool active((state & (State_On | State_NoChange)));
     bool windowActive(state & State_Active);
 
-    const QColor &outline(_helper->frameOutlineColor(palette, mouseOver, false, AnimationData::OpacityInvalid, AnimationNone, _dark));
+    const QColor &outline(_helper->indicatorOutlineColor(palette, mouseOver, false, AnimationData::OpacityInvalid, AnimationNone, _dark));
     const QColor &background(_helper->indicatorBackgroundColor(palette, mouseOver, false, sunken, AnimationData::OpacityInvalid, AnimationNone, _dark));
 
     // checkbox state
@@ -4014,7 +4014,7 @@ bool Style::drawIndicatorCheckBoxPrimitive(const QStyleOption *option, QPainter 
 
     // render
     QColor shadow(_helper->shadowColor(palette));
-    _helper->renderCheckBox(painter, rect, background, outline, tickColor, sunken, checkBoxState, animation, enabled && windowActive);
+    _helper->renderCheckBox(painter, rect, background, outline, tickColor, sunken, checkBoxState, mouseOver, animation, enabled && windowActive, _dark);
     return true;
 }
 
@@ -4033,7 +4033,7 @@ bool Style::drawIndicatorRadioButtonPrimitive(const QStyleOption *option, QPaint
     bool checked(state & State_On);
     bool windowActive(state & State_Active);
 
-    const QColor &outline(_helper->frameOutlineColor(palette, mouseOver, false, AnimationData::OpacityInvalid, AnimationNone, _dark));
+    const QColor &outline(_helper->indicatorOutlineColor(palette, mouseOver, false, AnimationData::OpacityInvalid, AnimationNone, _dark));
     const QColor &background(_helper->indicatorBackgroundColor(palette, mouseOver, false, sunken, AnimationData::OpacityInvalid, AnimationNone, _dark));
 
     // radio button state
@@ -4062,7 +4062,7 @@ bool Style::drawIndicatorRadioButtonPrimitive(const QStyleOption *option, QPaint
     }
 
     // render
-    _helper->renderRadioButton(painter, rect, background, outline, tickColor, sunken, enabled && windowActive, radioButtonState, animation);
+    _helper->renderRadioButton(painter, rect, background, outline, tickColor, sunken, enabled && windowActive, radioButtonState, animation, mouseOver, _dark);
 
     return true;
 }
@@ -4863,6 +4863,7 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
     bool enabled(state & State_Enabled);
     bool windowActive(state & State_Active);
     bool selected(enabled && (state & State_Selected));
+    bool mouseOver((state & State_Active) && enabled && (state & State_MouseOver));
     bool sunken(enabled && (state & (State_On | State_Sunken)));
     bool reverseLayout(option->direction == Qt::RightToLeft);
     bool useStrongFocus(Adwaita::Config::MenuItemDrawStrongFocus);
@@ -4900,7 +4901,7 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
 
         QColor color(state & State_Enabled ? state & State_Selected ? palette.highlightedText().color() : palette.foreground().color() : palette.text().color());
         CheckBoxState state(menuItemOption->checked ? CheckOn : CheckOff);
-        _helper->renderCheckBox(painter, checkBoxRect, QColor(QColor::Invalid), color, color, sunken, state, enabled && windowActive);
+        _helper->renderCheckBox(painter, checkBoxRect, QColor(QColor::Invalid), color, color, sunken, state, mouseOver, enabled && windowActive, _dark);
     } else if (menuItemOption->checkType == QStyleOptionMenuItem::Exclusive) {
         checkBoxRect = visualRect(option, checkBoxRect);
 
