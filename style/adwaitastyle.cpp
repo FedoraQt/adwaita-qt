@@ -6233,11 +6233,11 @@ bool Style::drawComboBoxComplexControl(const QStyleOptionComplex *option, QPaint
             } else {
                 // define colors
                 QColor shadow(_helper->shadowColor(palette));
-                QColor outline(_helper->buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode));
-                QColor background(_helper->buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode));
+                QColor outline(_helper->buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode, _dark));
+                QColor background(_helper->buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode, _dark));
 
                 // render
-                _helper->renderButtonFrame(painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver, enabled && windowActive);
+                _helper->renderButtonFrame(painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver, enabled && windowActive, _dark);
 
                 if (hasFocus) {
                     QStyleOption copy(*option);
