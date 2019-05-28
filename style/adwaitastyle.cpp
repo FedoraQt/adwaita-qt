@@ -5131,7 +5131,9 @@ bool Style::drawProgressBarLabelControl(const QStyleOption *option, QPainter *pa
 
     // store rect and palette
     const QRect &rect(option->rect);
-    const QPalette &palette(option->palette);
+
+    QPalette palette(option->palette);
+    palette.setColor(QPalette::WindowText, _helper->transparentize(palette.color(QPalette::Active, QPalette::WindowText), 0.6));
 
     // store state and direction
     const State &state(option->state);
