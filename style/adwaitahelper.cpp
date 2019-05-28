@@ -627,7 +627,7 @@ void Helper::renderButtonFrame(QPainter *painter, const QRect &rect, const QColo
             if (darkMode) {
                 // Hovered button in dark mode is a gradient from $color to lighten(bg_color, 0.01) so we need to lighten it by 0.02 as our starting
                 // collor is darken(bg_color, 0.01)
-                gradient.setColorAt(0, color);
+                gradient.setColorAt(1, lighten(color, 0.02)); // FIXME not correct according to adwaita's _drawing.scss file, but looks more close than before
                 gradient.setColorAt(1, lighten(color, 0.02));
             } else {
                 // Hovered button in normal mode is a gradient from $color to lighten(bg_color, 0.01)
