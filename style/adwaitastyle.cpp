@@ -1332,6 +1332,9 @@ void Style::drawControl(ControlElement element, const QStyleOption *option, QPai
         case CE_DockWidgetTitle:
             fcn = &Style::drawDockWidgetTitleControl;
             break;
+        case CE_ItemViewItem:
+            fcn = &Style::drawItemViewItemControl;
+            break;
         // fallback
         default:
             break;
@@ -4737,6 +4740,26 @@ bool Style::drawComboBoxLabelControl(const QStyleOption *option, QPainter *paint
     return true;
 }
 
+//
+bool Style::drawItemViewItemControl(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+{
+    const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option);
+    if (!vopt)
+        return true;
+
+    QStyleOptionViewItem op = QStyleOptionViewItem(*vopt);
+
+    QPalette palette = op.palette;
+    if ((vopt->state & QStyle::State_Enabled) && !(vopt->state & QStyle::State_Active)) {
+        palette.setColor(QPalette::Inactive, QPalette::Text, palette.color(QPalette::Active, QPalette::Text));
+    }
+
+    op.palette = palette;
+
+    ParentStyleClass::drawControl(CE_ItemViewItem, &op, painter, widget);
+
+    return true;
+}
 
 //___________________________________________________________________________________
 bool Style::drawMenuBarEmptyArea(const QStyleOption *option, QPainter *painter, const QWidget *) const
