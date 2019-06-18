@@ -3914,7 +3914,7 @@ bool Style::drawPanelItemViewItemPrimitive(const QStyleOption *option, QPainter 
     bool hasAlternateBackground(viewItemOption->features & QStyleOptionViewItemV2::Alternate);
 
     // do nothing if no background is to be rendered
-    if (!(mouseOver || selected || hasCustomBackground || hasAlternateBackground)) {
+    if (!(selected || hasCustomBackground || hasAlternateBackground)) {
         return true;
     }
 
@@ -3933,7 +3933,7 @@ bool Style::drawPanelItemViewItemPrimitive(const QStyleOption *option, QPainter 
     }
 
     // stop here if no highlight is needed
-    if (!(mouseOver || selected || hasCustomBackground)) {
+    if (!(selected || hasCustomBackground)) {
         return true;
     }
 
@@ -3953,14 +3953,6 @@ bool Style::drawPanelItemViewItemPrimitive(const QStyleOption *option, QPainter 
         color = viewItemOption->backgroundBrush.color();
     else
         color = palette.color(colorGroup, QPalette::Highlight);
-
-    // change color to implement mouse over
-    if (mouseOver && !hasCustomBackground) {
-        if (!selected)
-            color.setAlphaF(0.2);
-        else
-            color = color.lighter(110);
-    }
 
     // render
     _helper->renderSelection(painter, rect, color);
