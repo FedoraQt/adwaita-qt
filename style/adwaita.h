@@ -142,7 +142,7 @@ namespace Adwaita
         // menu items
         Menu_FrameWidth = 0,
         MenuItem_MarginWidth = 5,
-        MenuItem_ItemSpacing = 4,
+        MenuItem_ItemSpacing = 6,
         MenuItem_AcceleratorSpace = 16,
         MenuButton_IndicatorWidth = 20,
 

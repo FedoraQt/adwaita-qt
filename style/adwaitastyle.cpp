@@ -57,6 +57,8 @@
 #include <QToolButton>
 #include <QWidgetAction>
 
+#include <QDebug>
+
 namespace AdwaitaPrivate
 {
 
@@ -3095,9 +3097,14 @@ QSize Style::menuItemSizeFromContents(const QStyleOption *option, const QSize &c
         size.rwidth() += leftColumnWidth + rightColumnWidth;
 
         // make sure height is large enough for icon and arrow
-        size.setHeight(qMax(size.height(), int(Metrics::MenuButton_IndicatorWidth)));
-        size.setHeight(qMax(size.height(), int(Metrics::CheckBox_Size)));
-        size.setHeight(qMax(size.height(), iconWidth));
+        // FIXME most likely not needed, current height seems to be enough
+        // size.setHeight(qMax(size.height(), int(Metrics::MenuButton_IndicatorWidth)));
+        // size.setHeight(qMax(size.height(), int(Metrics::CheckBox_Size)));
+        // size.setHeight(qMax(size.height(), iconWidth));
+
+        // Looks Gtk adds some additional space to the right
+        size.rwidth() += Metrics::MenuItem_MarginWidth * 4;
+
         return expandSize(size, Metrics::MenuItem_MarginWidth);
     }
 
@@ -4900,8 +4907,13 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
     QRect checkBoxRect;
     if (menuItemOption->menuHasCheckableItems) {
         checkBoxRect = QRect(contentsRect.left(), contentsRect.top() + (contentsRect.height() - Metrics::CheckBox_Size) / 2, Metrics::CheckBox_Size, Metrics::CheckBox_Size);
-        contentsRect.setLeft(checkBoxRect.right() + Metrics::MenuItem_ItemSpacing + 1);
     }
+
+    // We want to always to keep the space for checkbox
+    contentsRect.setLeft(Metrics::CheckBox_Size + Metrics::MenuItem_ItemSpacing);
+
+    const QColor &outline(palette.foreground().color());
+    const QColor &indicatorBackground(_helper->indicatorBackgroundColor(palette, mouseOver, false, false, AnimationData::OpacityInvalid, AnimationNone, _dark));
 
     // render checkbox indicator
     if (menuItemOption->checkType == QStyleOptionMenuItem::NonExclusive) {
@@ -4914,9 +4926,12 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
         { _helper->renderCheckBoxBackground( painter, checkBoxRect, palette.color( QPalette::Window ), outline, sunken ); }
         */
 
-        QColor color(state & State_Enabled ? state & State_Selected ? palette.highlightedText().color() : palette.foreground().color() : palette.text().color());
+        bool active(menuItemOption->checked);
+        AnimationMode mode(_animations->widgetStateEngine().isAnimated(widget, AnimationHover) ? AnimationHover : AnimationNone);
+        qreal opacity(_animations->widgetStateEngine().opacity(widget, AnimationHover));
+        QColor tickColor = _helper->checkBoxIndicatorColor(palette, mouseOver, enabled && active, opacity, mode);
         CheckBoxState state(menuItemOption->checked ? CheckOn : CheckOff);
-        _helper->renderCheckBox(painter, checkBoxRect, QColor(QColor::Invalid), color, color, sunken, state, mouseOver, enabled && windowActive, _dark);
+        _helper->renderCheckBox(painter, checkBoxRect, indicatorBackground, outline, tickColor, false, state, mouseOver, enabled && windowActive, _dark);
     } else if (menuItemOption->checkType == QStyleOptionMenuItem::Exclusive) {
         checkBoxRect = visualRect(option, checkBoxRect);
 
@@ -4925,9 +4940,12 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
         { _helper->renderRadioButtonBackground( painter, checkBoxRect, palette.color( QPalette::Window ), outline, sunken ); }
         */
 
-        QColor color(state & State_Enabled ? state & State_Selected ? palette.highlightedText().color() : palette.foreground().color() : palette.text().color());
         bool active(menuItemOption->checked);
-        _helper->renderRadioButton(painter, checkBoxRect, QColor(QColor::Invalid), color, color, sunken, enabled && windowActive, active ? RadioOn : RadioOff);
+        AnimationMode mode(_animations->widgetStateEngine().isAnimated(widget, AnimationHover) ? AnimationHover : AnimationNone);
+        qreal opacity(_animations->widgetStateEngine().opacity(widget, AnimationHover));
+        QColor tickColor = _helper->checkBoxIndicatorColor(palette, mouseOver, enabled && active, opacity, mode);
+        CheckBoxState state(menuItemOption->checked ? CheckOn : CheckOff);
+        _helper->renderRadioButton(painter, checkBoxRect, indicatorBackground, outline, tickColor, false, enabled && windowActive, active ? RadioOn : RadioOff);
     }
 
     // icon
@@ -4963,7 +4981,6 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
 
     // arrow
     QRect arrowRect(contentsRect.right() - Metrics::MenuButton_IndicatorWidth + 1, contentsRect.top() + (contentsRect.height() - Metrics::MenuButton_IndicatorWidth) / 2, Metrics::MenuButton_IndicatorWidth, Metrics::MenuButton_IndicatorWidth);
-    contentsRect.setRight(arrowRect.left() -  Metrics::MenuItem_ItemSpacing - 1);
 
     if (menuItemOption->menuItemType == QStyleOptionMenuItem::SubMenu) {
         // apply right-to-left layout
