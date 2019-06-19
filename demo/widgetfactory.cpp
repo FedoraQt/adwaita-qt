@@ -92,16 +92,54 @@ WidgetFactory::WidgetFactory(QWidget *parent)
     });
 
     setMenuBar(new QMenuBar);
-    QMenu *file = new QMenu("File");
-    file->addAction(new QAction("Load", file));
-    QMenu *save = new QMenu("Save");
-    save->addAction(new QAction("Save as", save));
-    save->addAction(new QAction("Save", save));
-    file->addMenu(save);
-    file->addAction(new QAction("Quit", file));
-    menuBar()->insertMenu(nullptr, file);
-    menuBar()->insertMenu(nullptr, new QMenu("Edit"));
+    // Inspired by Kondike (a gtk game)
+    QMenu *game = new QMenu("Game");
+    QAction *newGame = new QAction("New game");
+    newGame->setShortcut(QKeySequence::New);
+    game->addAction(newGame);
+    QAction *restart = new QAction("Restart");
+    restart->setDisabled(true);
+    game->addAction(restart);
+    QAction *statistics = new QAction("Statistics");
+    game->addAction(statistics);
+    QAction *selectGame = new QAction("Select game...");
+    selectGame->setShortcut(QKeySequence::Open);
+    game->addAction(selectGame);
+    QMenu *recentlyPlayed = new QMenu("Recently played");
+    recentlyPlayed->addAction(new QAction("Game 1", recentlyPlayed));
+    recentlyPlayed->addAction(new QAction("Game 1", recentlyPlayed));
+    game->addMenu(recentlyPlayed);
+    game->addSeparator();
+    QAction *close = new QAction("Close");
+    close->setShortcut(QKeySequence::Quit);
+    game->addAction(close);
+    menuBar()->insertMenu(nullptr, game);
+
+    QMenu *edit = new QMenu("Edit");
+    QAction *act1 = new QAction("Pick me");
+    act1->setCheckable(true);
+    act1->setChecked(true);
+    QAction *act2 = new QAction("No, pick me instead");
+    act2->setCheckable(true);
+    QAction *act3 = new QAction("Don't pick me");
+    act3->setCheckable(true);
+    act3->setDisabled(true);
+    edit->addAction(act1);
+    edit->addAction(act2);
+    edit->addAction(act3);
+    QActionGroup *actionGroup = new QActionGroup(edit);
+    actionGroup->setExclusive(true);
+    actionGroup->addAction(act1);
+    actionGroup->addAction(act2);
+    actionGroup->addAction(act3);
+    menuBar()->insertMenu(nullptr, edit);
+
     menuBar()->insertMenu(nullptr, new QMenu("View"));
+    QAction *testAction = new QAction(QStringLiteral("Test 1"));
+    testAction->setCheckable(true);
+
+    edit->addAction(testAction);
+    menuBar()->insertMenu(nullptr, edit);
     menuBar()->insertMenu(nullptr, new QMenu("Help"));
 
     QToolBar *toolbar = new QToolBar();
