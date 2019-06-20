@@ -5215,9 +5215,7 @@ bool Style::drawScrollBarSliderControl(const QStyleOption *option, QPainter *pai
     AnimationMode mode(_animations->scrollBarEngine().animationMode(widget, SC_ScrollBarSlider));
     qreal opacity(_animations->scrollBarEngine().opacity(widget, SC_ScrollBarSlider));
     QColor color = _helper->scrollBarHandleColor(palette, mouseOver, hasFocus, opacity, mode);
-    if (mode == AnimationHover)
-        opacity = opacity;
-    else if (mouseOver)
+    if (mouseOver)
         opacity = 1;
     else
         opacity = 0;
