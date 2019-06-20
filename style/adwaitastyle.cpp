@@ -57,8 +57,6 @@
 #include <QToolButton>
 #include <QWidgetAction>
 
-#include <QDebug>
-
 namespace AdwaitaPrivate
 {
 
@@ -3097,15 +3095,14 @@ QSize Style::menuItemSizeFromContents(const QStyleOption *option, const QSize &c
         size.rwidth() += leftColumnWidth + rightColumnWidth;
 
         // make sure height is large enough for icon and arrow
-        // FIXME most likely not needed, current height seems to be enough
-        // size.setHeight(qMax(size.height(), int(Metrics::MenuButton_IndicatorWidth)));
-        // size.setHeight(qMax(size.height(), int(Metrics::CheckBox_Size)));
-        // size.setHeight(qMax(size.height(), iconWidth));
+        size.setHeight(qMax(size.height(), int(Metrics::MenuButton_IndicatorWidth)));
+        size.setHeight(qMax(size.height(), int(Metrics::CheckBox_Size)));
+        size.setHeight(qMax(size.height(), iconWidth));
 
         // Looks Gtk adds some additional space to the right
         size.rwidth() += Metrics::MenuItem_MarginWidth * 4;
 
-        return expandSize(size, Metrics::MenuItem_MarginWidth);
+        return expandSize(size, Metrics::MenuItem_MarginWidth, 1);
     }
 
     case QStyleOptionMenuItem::Separator: {
