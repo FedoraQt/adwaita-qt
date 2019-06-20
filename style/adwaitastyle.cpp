@@ -5012,6 +5012,8 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
         textRect = centerRect(textRect, textRect.width(), option->fontMetrics.size(_mnemonics->textFlags(), text).height());
         textRect = visualRect(option, textRect);
 
+        textRect.setRight(textRect.right() - Metrics::MenuItem_MarginWidth);
+
         // set font
         painter->setFont(menuItemOption->font);
 
