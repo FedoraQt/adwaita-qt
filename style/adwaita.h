@@ -183,7 +183,7 @@ namespace Adwaita
 
         // menubar items
         MenuBarItem_MarginWidth = 8,
-        MenuBarItem_MarginHeight = 4,
+        MenuBarItem_MarginHeight = 5,
 
         // scrollbars
         ScrollBar_Extend = 14,
