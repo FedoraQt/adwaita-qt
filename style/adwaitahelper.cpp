@@ -54,6 +54,12 @@ Helper::Helper(const QByteArray &name)
 //____________________________________________________________________
 QColor Helper::indicatorOutlineColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode, bool darkMode) const
 {
+    bool isDisabled = palette.currentColorGroup() == QPalette::Disabled;
+
+    if (isDisabled) {
+        return buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode, darkMode);
+    }
+
     if (darkMode) {
         return darken(palette.color(QPalette::Window), 0.18);
     } else {
@@ -1161,7 +1167,7 @@ void Helper::renderDialContents(QPainter *painter, const QRect &rect, const QCol
 
 //______________________________________________________________________________
 void Helper::renderSliderHandle(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, const QColor &shadow,
-                                bool sunken, bool enabled, Side ticks, qreal angle) const
+                                bool sunken, bool enabled, Side ticks, qreal angle, bool darkMode) const
 {
     // setup painter
     painter->setRenderHint(QPainter::Antialiasing, true);
@@ -1183,20 +1189,22 @@ void Helper::renderSliderHandle(QPainter *painter, const QRect &rect, const QCol
 
     // set brush
     if (color.isValid()) {
-        if (enabled) {
-            QLinearGradient gradient(frameRect.topLeft(), frameRect.bottomLeft());
-            if (sunken) {
-                gradient.setColorAt(0, color);
-            } else {
-                gradient.setColorAt(0, mix(color, Qt::white, 0.07));
-                gradient.setColorAt(1, mix(color, Qt::black, 0.1));
-            }
-            painter->setBrush(gradient);
+        QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
+        if (darkMode) {
+            QColor baseColor = lighten(color, 0.03);
+            // Normal-alt button in dark mode is a gradient from $color to darken(bg_background, 0.06)
+            gradient.setColorAt(0, darken(baseColor, 0.06));
+            gradient.setColorAt(1, color);
         } else {
-            painter->setBrush(color);
+            QColor baseColor = darken(color, 0.05);
+            // Normal-alt button in normal mode is a gradient from $color to bg_background
+            gradient.setColorAt(0, baseColor);
+            gradient.setColorAt(1, color);
         }
-    } else
+        painter->setBrush(gradient);
+    } else {
         painter->setBrush(Qt::NoBrush);
+    }
 
     QRect r(rect.right() - rect.height(), rect.top(), rect.height(), rect.height());
     r.adjust(4.5, 3.5, -2.5, -3.5);

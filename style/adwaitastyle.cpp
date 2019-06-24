@@ -6487,8 +6487,8 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
         qreal opacity(_animations->widgetStateEngine().buttonOpacity(widget));
 
         // define colors
-        QColor background(_helper->buttonBackgroundColor(palette, mouseOver, false, sunken, opacity, mode, _dark));
-        QColor outline(_helper->sliderOutlineColor(palette, handleActive && mouseOver, hasFocus, opacity, mode));
+        QColor background(_helper->indicatorBackgroundColor(palette, mouseOver, false, false, opacity, AnimationNone, _dark));
+        QColor outline(_helper->indicatorOutlineColor(palette, handleActive && mouseOver, hasFocus, opacity, mode, _dark));
         QColor shadow(_helper->shadowColor(palette));
 
         // render

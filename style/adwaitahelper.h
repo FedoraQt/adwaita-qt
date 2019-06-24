@@ -318,7 +318,7 @@ public:
     void renderSliderGroove(QPainter *painter, const QRect &rect, const QColor &) const;
 
     //* slider handle
-    void renderSliderHandle(QPainter *painter, const QRect &rect, const QColor &, const QColor &outline, const QColor &shadow, bool sunken, bool enabled, Side ticks, qreal angle = 0.0) const;
+    void renderSliderHandle(QPainter *painter, const QRect &rect, const QColor &, const QColor &outline, const QColor &shadow, bool sunken, bool enabled, Side ticks, qreal angle = 0.0, bool darkMode = false) const;
 
     //* dial groove
     void renderDialGroove(QPainter *painter, const QRect &rect, const QColor &) const;
