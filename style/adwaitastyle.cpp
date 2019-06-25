@@ -3031,11 +3031,14 @@ QSize Style::toolButtonSizeFromContents(const QStyleOption *option, const QSize 
                                   && toolButtonOption->features & QStyleOptionToolButton::PopupDelay
                                   && !hasPopupMenu);
 
-    int marginWidth(Metrics::Button_MarginWidth + Metrics::Frame_FrameWidth);
+    int marginWidth(Metrics::ToolButton_MarginWidth);
 
     if (hasInlineIndicator)
         size.rwidth() += Metrics::ToolButton_InlineIndicatorWidth;
     size = expandSize(size, marginWidth);
+
+    // We need to add 1px as the toolbutton is smaller by 1px when rendering button frame
+    size = expandSize(size, 1);
 
     return size;
 }
