@@ -3102,7 +3102,7 @@ QSize Style::menuItemSizeFromContents(const QStyleOption *option, const QSize &c
         // Looks Gtk adds some additional space to the right
         size.rwidth() += Metrics::MenuItem_MarginWidth * 4;
 
-        return expandSize(size, Metrics::MenuItem_MarginWidth);
+        return expandSize(size, Metrics::MenuItem_MarginWidth, 2);
     }
 
     case QStyleOptionMenuItem::Separator: {
