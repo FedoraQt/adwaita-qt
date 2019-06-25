@@ -78,7 +78,9 @@ QColor Helper::inputOutlineColor(const QPalette &palette, bool mouseOver, bool h
     QColor outline(buttonOutlineColor(palette, mouseOver, false, opacity, mode, darkMode));
 
     // focus takes precedence over hover
-    if (mode == AnimationFocus || hasFocus) {
+    if (mode == AnimationFocus) {
+        outline = mix(outline, focusColor(palette), opacity);
+    } else if (hasFocus) {
         outline = focusColor(palette);
     }
 
@@ -180,7 +182,15 @@ QColor Helper::buttonBackgroundColor(const QPalette &palette, bool mouseOver, bo
                           darken(mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.15), 0.08);
     }
 
-    if (mode == AnimationPressed || sunken) {
+    if (mode == AnimationPressed) {
+        if (darkMode) {
+            // Active button for dark mode is darken(bg_color, 0.09)
+            return mix(darken(background, 0.01), darken(background, 0.09), opacity);
+        } else {
+            // Active button for normal mode is darken(bg_color, 0.14)
+            return mix(buttonBackground, darken(background, 0.14), opacity);
+        }
+    } else if (sunken) {
         if (darkMode) {
             // Active button for dark mode is darken(bg_color, 0.09)
             return darken(background, 0.09);
@@ -188,7 +198,15 @@ QColor Helper::buttonBackgroundColor(const QPalette &palette, bool mouseOver, bo
             // Active button for normal mode is darken(bg_color, 0.14)
             return darken(background, 0.14);
         }
-    } else if (mode == AnimationHover || mouseOver) {
+    } else if (mode == AnimationHover) {
+        if (darkMode) {
+            // Hovered button for dark mode is darken(bg_color, 0.01)
+            return mix(buttonBackground, darken(background, 0.01), opacity);
+        } else {
+            // Hovered button for normal mode is bg_color
+            return background;
+        }
+    } else if(mouseOver) {
         if (darkMode) {
             // Hovered button for dark mode is darken(bg_color, 0.01)
             return darken(background, 0.01);
@@ -206,14 +224,24 @@ QColor Helper::indicatorBackgroundColor(const QPalette &palette, bool mouseOver,
 {
     bool isDisabled = palette.currentColorGroup() == QPalette::Disabled;
     QColor background(palette.color(QPalette::Window));
-
+    // Normal-alt button for dark mode is darken(bg_color, 0.03)
+    // Normal-alt button for normal mode is lighten(bg_color, 0.05)
+    QColor indicatorColor(darkMode ? darken(background, 0.03) : lighten(background, 0.05));
     if (isDisabled) {
         // Defined in drawing.css - insensitive button
         // $insensitive_bg_color: mix($bg_color, $base_color, 60%);
         return mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.6);
     }
 
-    if (mode == AnimationPressed || sunken) {
+    if (mode == AnimationPressed) {
+        if (darkMode) {
+            // Active button for dark mode is darken(bg_color, 0.09)
+            return mix(background, darken(background, 0.09), opacity);
+        } else {
+            // Active button for normal mode is darken(bg_color, 0.14)
+            return mix(lighten(background, 0.0), darken(background, 0.14), opacity);
+        }
+    } else if (sunken) {
         if (darkMode) {
             // Active button for dark mode is darken(bg_color, 0.09)
             return darken(background, 0.09);
@@ -221,7 +249,15 @@ QColor Helper::indicatorBackgroundColor(const QPalette &palette, bool mouseOver,
             // Active button for normal mode is darken(bg_color, 0.14)
             return darken(background, 0.14);
         }
-    } else if (mode == AnimationHover || mouseOver) {
+    } else if (mode == AnimationHover) {
+        if (darkMode) {
+            // Hovered-alt button for dark mode is bg_color
+            return mix(indicatorColor, background, opacity);
+        } else {
+            // Hovered-alt button for normal mode is lighten(bg_color, 0.09)
+            return mix(indicatorColor, lighten(background, 0.09), opacity);
+        }
+    } else if (mouseOver) {
         if (darkMode) {
             // Hovered-alt button for dark mode is bg_color
             return background;
@@ -231,9 +267,7 @@ QColor Helper::indicatorBackgroundColor(const QPalette &palette, bool mouseOver,
         }
     }
 
-    // Normal-alt button for dark mode is darken(bg_color, 0.03)
-    // Normal-alt button for normal mode is lighten(bg_color, 0.05)
-    return darkMode ? darken(background, 0.03) : lighten(background, 0.05);
+    return indicatorColor;
 }
 
 //____________________________________________________________________
