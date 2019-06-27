@@ -1,5 +1,5 @@
 /*************************************************************************
- * Copyright (C) 2014 by Hugo Pereira Da Costa <hugo.pereira@free.fr>    *
+ * Copyright (C) 2019 Jan Grulich <jgrulich@redhat.com>                  *
  *                                                                       *
  * This program is free software; you can redistribute it and/or modify  *
  * it under the terms of the GNU General Public License as published by  *
@@ -17,19 +17,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  *************************************************************************/
 
+#ifndef ADWAITA_DEBUG_H
+#define ADWAITA_DEBUG_H
 
-#include "adwaitapropertynames.h"
+#include <QLoggingCategory>
 
-namespace Adwaita
-{
+Q_DECLARE_LOGGING_CATEGORY(ADWAITA)
 
-    const char PropertyNames::noAnimations[] = "_kde_no_animations";
-    const char PropertyNames::noWindowGrab[] = "_kde_no_window_grab";
-    const char PropertyNames::netWMForceShadow[] = "_KDE_NET_WM_FORCE_SHADOW";
-    const char PropertyNames::netWMSkipShadow[] = "_KDE_NET_WM_SKIP_SHADOW";
-    const char PropertyNames::sidePanelView[] = "_kde_side_panel_view";
-    const char PropertyNames::toolButtonAlignment[] = "_kde_toolButton_alignment";
-    const char PropertyNames::menuTitle[] = "_adwaita_toolButton_menutitle";
-    const char PropertyNames::alteredBackground[] = "_adwaita_altered_background";
-
-}
+#endif // ADWAITA_DEBUG_H

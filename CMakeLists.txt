@@ -1,5 +1,7 @@
 project(Adwaita)
+
 cmake_minimum_required(VERSION 2.8.11)
+
 set(CMAKE_AUTOMOC ON)
 add_definitions(-std=c++11)
 
@@ -42,9 +44,9 @@ set(ADWAITA_THEME_DIR "${THEME_INSTALL_DIR}/Adwaita/qt")
 option(BUILD_EXAMPLE "Build an example widget factory app" OFF)
 if (BUILD_EXAMPLE)
     if (USE_QT4)
-        find_package(KDE4)
+        error("It's not possible to build the example using Qt4 yet, sorry.")
     else()
-        error("It's not possible to build the example using Qt5 yet, sorry.")
+        add_subdirectory(demo)
     endif()
 endif()
 

@@ -47,8 +47,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "adwaitawindowmanager.h"
-#include "adwaitapropertynames.h"
-#include "fakeadwaitastyleconfigdata.h"
 #include "adwaitahelper.h"
 
 #include <QApplication>
@@ -91,14 +89,6 @@
 #include <NETWM>
 #endif
 
-#endif
-
-#if ADWAITA_HAVE_KWAYLAND
-#include <KWayland/Client/connection_thread.h>
-#include <KWayland/Client/pointer.h>
-#include <KWayland/Client/registry.h>
-#include <KWayland/Client/shell.h>
-#include <KWayland/Client/seat.h>
 #endif
 
 namespace Adwaita
@@ -204,18 +194,13 @@ namespace Adwaita
         QObject( parent ),
         _enabled( true ),
         _useWMMoveResize( true ),
-        _dragMode( StyleConfigData::WD_FULL ),
+        _dragMode( Adwaita::WD_FULL ),
         _dragDistance( QApplication::startDragDistance() ),
         _dragDelay( QApplication::startDragTime() ),
         _dragAboutToStart( false ),
         _dragInProgress( false ),
         _locked( false ),
         _cursorOverride( false )
-        #if ADWAITA_HAVE_KWAYLAND
-        , _seat( Q_NULLPTR )
-        , _pointer( Q_NULLPTR )
-        , _waylandSerial( 0 )
-        #endif
     {
 
         // install application wise event filter
@@ -228,73 +213,15 @@ namespace Adwaita
     void WindowManager::initialize( void )
     {
 
-        setEnabled( StyleConfigData::windowDragMode() != StyleConfigData::WD_NONE );
-        setDragMode( StyleConfigData::windowDragMode() );
-        setUseWMMoveResize( StyleConfigData::useWMMoveResize() );
+        setEnabled( Adwaita::Config::WindowDragMode != Adwaita::WD_NONE );
+        setDragMode( Adwaita::Config::WindowDragMode );
+        setUseWMMoveResize( Adwaita::Config::UseWMMoveResize );
 
         setDragDistance( QApplication::startDragDistance() );
         setDragDelay( QApplication::startDragTime() );
 
         initializeWhiteList();
         initializeBlackList();
-        initializeWayland();
-
-    }
-
-    //_______________________________________________________
-    void WindowManager::initializeWayland()
-    {
-        #if ADWAITA_HAVE_KWAYLAND
-        if( !Helper::isWayland() ) return;
-
-        if( _seat ) {
-            // already initialized
-            return;
-        }
-
-        using namespace KWayland::Client;
-        auto connection = ConnectionThread::fromApplication( this );
-        if( !connection ) {
-            return;
-        }
-        Registry *registry = new Registry( this );
-        registry->create( connection );
-        connect(registry, &Registry::interfacesAnnounced, this,
-            [registry, this] {
-                auto interface = registry->interface( Registry::Interface::Seat );
-                if( interface.name != 0 ) {
-                    _seat = registry->createSeat( interface.name, interface.version, this );
-                    connect(_seat, &Seat::hasPointerChanged, this, &WindowManager::waylandHasPointerChanged);
-                }
-            }
-        );
-
-        registry->setup();
-        connection->roundtrip();
-        #endif
-    }
-
-    //_______________________________________________________
-    void WindowManager::waylandHasPointerChanged(bool hasPointer)
-    {
-        #if ADWAITA_HAVE_KWAYLAND
-        Q_ASSERT( _seat );
-        if( hasPointer ) {
-            if( !_pointer ) {
-                _pointer = _seat->createPointer(this);
-                connect(_pointer, &KWayland::Client::Pointer::buttonStateChanged, this,
-                    [this] (quint32 serial) {
-                        _waylandSerial = serial;
-                    }
-                );
-            }
-        } else {
-            delete _pointer;
-            _pointer = nullptr;
-        }
-        #else
-        Q_UNUSED( hasPointer );
-        #endif
     }
 
     //_____________________________________________________________
@@ -335,7 +262,7 @@ namespace Adwaita
         _whiteList.insert( ExceptionId( QStringLiteral( "ViewSliders@kmix" ) ) );
         _whiteList.insert( ExceptionId( QStringLiteral( "Sidebar_Widget@konqueror" ) ) );
 
-        foreach( const QString& exception, StyleConfigData::windowDragWhiteList() )
+        foreach( const QString& exception, Adwaita::Config::WindowDragWhiteList )
         {
             ExceptionId id( exception );
             if( !id.className().isEmpty() )
@@ -351,7 +278,7 @@ namespace Adwaita
         _blackList.insert( ExceptionId( QStringLiteral( "CustomTrackView@kdenlive" ) ) );
         _blackList.insert( ExceptionId( QStringLiteral( "MuseScore" ) ) );
         _blackList.insert( ExceptionId( QStringLiteral( "KGameCanvasWidget" ) ) );
-        foreach( const QString& exception, StyleConfigData::windowDragBlackList() )
+        foreach( const QString& exception, Adwaita::Config::WindowDragBlackList )
         {
             ExceptionId id( exception );
             if( !id.className().isEmpty() )
@@ -656,7 +583,7 @@ namespace Adwaita
         // tool buttons
         if( QToolButton* toolButton = qobject_cast<QToolButton*>( widget ) )
         {
-            if( dragMode() == StyleConfigData::WD_MINIMAL && !qobject_cast<QToolBar*>(widget->parentWidget() ) ) return false;
+            if( dragMode() == Adwaita::WD_MINIMAL && !qobject_cast<QToolBar*>(widget->parentWidget() ) ) return false;
             return toolButton->autoRaise() && !toolButton->isEnabled();
         }
 
@@ -686,7 +613,7 @@ namespace Adwaita
         in MINIMAL mode, anything that has not been already accepted
         and does not come from a toolbar is rejected
         */
-        if( dragMode() == StyleConfigData::WD_MINIMAL )
+        if( dragMode() == Adwaita::WD_MINIMAL )
         {
             if( qobject_cast<QToolBar*>( widget ) ) return true;
             else return false;
@@ -812,8 +739,6 @@ namespace Adwaita
 
             if( Helper::isX11() ) {
                 startDragX11( widget, position );
-            } else if( Helper::isWayland() ) {
-                startDragWayland( widget, position );
             }
 
         } else if( !_cursorOverride ) {
@@ -869,39 +794,9 @@ namespace Adwaita
         #endif
     }
 
-    //_______________________________________________________
-    void WindowManager::startDragWayland( QWidget* widget, const QPoint& position )
-    {
-        #if ADWAITA_HAVE_KWAYLAND
-        if( !_seat ) {
-            return;
-        }
-        /* TODO RETURN THIS
-        QWindow* windowHandle = widget->window()->windowHandle();
-        auto shellSurface = KWayland::Client::ShellSurface::fromWindow(windowHandle);
-        if( !shellSurface ) {
-            // TODO: also check for xdg-shell in future
-            return;
-        }
-
-        shellSurface->requestMove( _seat, _waylandSerial );
-        */
-        #else
-        Q_UNUSED( widget );
-        Q_UNUSED( position );
-        #endif
-    }
-
     //____________________________________________________________
     bool WindowManager::supportWMMoveResize( void ) const
     {
-
-        #if ADWAITA_HAVE_KWAYLAND
-        if( Helper::isWayland() ) {
-            return true;
-        }
-        #endif
-
         #if ADWAITA_HAVE_X11
         return Helper::isX11();
         #else

@@ -1,6 +1,3 @@
-#ifndef adwaitawidgetexplorer_h
-#define adwaitawidgetexplorer_h
-
 /*************************************************************************
  * Copyright (C) 2014 by Hugo Pereira Da Costa <hugo.pereira@free.fr>    *
  *                                                                       *
@@ -20,6 +17,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  *************************************************************************/
 
+#ifndef ADWAITAWIDGETEXPLORER_H
+#define ADWAITAWIDGETEXPLORER_H
+
 #include <QEvent>
 #include <QObject>
 #include <QMap>
@@ -29,51 +29,47 @@
 namespace Adwaita
 {
 
-    //* print widget's and parent's information on mouse click
-    class WidgetExplorer: public QObject
+//* print widget's and parent's information on mouse click
+class WidgetExplorer: public QObject
+{
+    Q_OBJECT
+public:
+    //* constructor
+    explicit WidgetExplorer(QObject *parent);
+
+    //* enable
+    bool enabled(void) const;
+
+    //* enable
+    void setEnabled(bool);
+
+    //* widget rects
+    void setDrawWidgetRects(bool value)
     {
+        _drawWidgetRects = value;
+    }
 
-        Q_OBJECT
+    //* event filter
+    virtual bool eventFilter(QObject *object, QEvent *event);
 
-        public:
+protected:
+    //* event type
+    QString eventType(const QEvent::Type &type) const;
 
-        //* constructor
-        explicit WidgetExplorer( QObject* );
+    //* print widget information
+    QString widgetInformation(const QWidget *widget) const;
 
-        //* enable
-        bool enabled( void ) const;
+private:
+    //* enable state
+    bool _enabled;
 
-        //* enable
-        void setEnabled( bool );
+    //* widget rects
+    bool _drawWidgetRects;
 
-        //* widget rects
-        void setDrawWidgetRects( bool value )
-        { _drawWidgetRects = value; }
+    //* map event types to string
+    QMap<QEvent::Type, QString > _eventTypes;
+};
 
-        //* event filter
-        virtual bool eventFilter( QObject*, QEvent* );
+} // namespace Adwaita
 
-        protected:
-
-        //* event type
-        QString eventType( const QEvent::Type& ) const;
-
-        //* print widget information
-        QString widgetInformation( const QWidget* ) const;
-
-        private:
-
-        //* enable state
-        bool _enabled;
-
-        //* widget rects
-        bool _drawWidgetRects;
-
-        //* map event types to string
-        QMap<QEvent::Type, QString > _eventTypes;
-
-    };
-
-}
-
-#endif
+#endif // ADWAITAWIDGETEXPLORER_H

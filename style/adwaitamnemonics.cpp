@@ -18,6 +18,7 @@
  *************************************************************************/
 
 #include "adwaitamnemonics.h"
+#include "adwaita.h"
 
 #include <QKeyEvent>
 #include <QWidget>
@@ -31,18 +32,18 @@ namespace Adwaita
 
         switch( mode )
         {
-            case StyleConfigData::MN_NEVER:
+            case Adwaita::MN_NEVER:
             qApp->removeEventFilter( this );
             setEnabled( false );
             break;
 
             default:
-            case StyleConfigData::MN_ALWAYS:
+            case Adwaita::MN_ALWAYS:
             qApp->removeEventFilter( this );
             setEnabled( true );
             break;
 
-            case StyleConfigData::MN_AUTO:
+            case Adwaita::MN_AUTO:
             qApp->removeEventFilter( this );
             qApp->installEventFilter( this );
             setEnabled( false );

@@ -1,8 +1,6 @@
-#ifndef adwaita_h
-#define adwaita_h
-
 /*************************************************************************
  * Copyright (C) 2014 by Hugo Pereira Da Costa <hugo.pereira@free.fr>    *
+ * Copyright (C) 2019 Jan Grulich <jgrulich@redhat.com>                  *
  *                                                                       *
  * This program is free software; you can redistribute it and/or modify  *
  * it under the terms of the GNU General Public License as published by  *
@@ -20,6 +18,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  *************************************************************************/
 
+#ifndef ADWAITA_H
+#define ADWAITA_H
+
+#include <QColor>
 #include <QFlags>
 #include <QPointer>
 #include <QScopedPointer>
@@ -27,46 +29,105 @@
 
 namespace Adwaita
 {
-
     //*@name convenience typedef
     //@{
 
-    #if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000
     //* scoped pointer convenience typedef
     template <typename T> using WeakPointer = QPointer<T>;
-    #else
+#else
     //* scoped pointer convenience typedef
     template <typename T> using WeakPointer = QWeakPointer<T>;
-    #endif
+#endif
 
     //* scoped pointer convenience typedef
     template <typename T> using ScopedPointer = QScopedPointer<T, QScopedPointerPodDeleter>;
 
     //* disable QStringLiteral for older Qt version
-    #if QT_VERSION < 0x050000
+#if QT_VERSION < 0x050000
     using QStringLiteral = QString;
-    #endif
+#endif
 
     //@}
 
     //* Settings
     namespace Settings
     {
-
         const bool SingleClick { true };
         const bool ShowIconsOnPushButtons { true };
         const int ToolButtonStyle { Qt::ToolButtonTextBesideIcon };
         const bool ShowIconsInMenuItems { true };
+    }
 
+    enum EnumMnemonicsMode {
+        MN_NEVER,
+        MN_AUTO,
+        MN_ALWAYS
+    };
+
+    enum EnumWindowDragMode {
+        WD_NONE,
+        WD_MINIMAL,
+        WD_FULL
+    };
+
+    //* Config
+    namespace Config
+    {
+        // Common
+        const int ShadowStrength { 0 };
+        const int ShadowSize { 0 };
+        const QColor ShadowColor { Qt::transparent };
+        const bool OutlineCloseButton { false };
+
+        // Style
+        const bool AnimationsEnabled { true };
+        const int AnimationSteps { 100 };
+        const int AnimationsDuration { 180 };
+        const bool StackedWidgetTransitionsEnabled { false };
+        const bool ProgressBarAnimated { true };
+        const int ProgressBarBusyStepDuration { 600 };
+        const int ScrollBarAddLineButtons { 0 };
+        const int ScrollBarSubLineButtons { 0 };
+        const bool ScrollBarShowOnMouseOver { true };
+        const int MnemonicsMode { MN_AUTO };
+        const bool ToolBarDrawItemSeparator { 0 };
+        const bool ViewDrawFocusIndicator { true };
+        const bool SliderDrawTickMarks { true };
+        const bool ViewDrawTreeBranchLines { true };
+        const bool ViewInvertSortIndicator { true };
+        const bool TabBarDrawCenteredTabs { false };
+        const bool TitleWidgetDrawFrame { true };
+        const bool DockWidgetDrawFrame { true };
+        const bool SidePanelDrawFrame { false };
+        const bool MenuItemDrawStrongFocus { true };
+        const int WindowDragMode { 0 };
+        const QStringList WindowDragWhiteList { };
+        const QStringList WindowDragBlackList { };
+        const bool UseWMMoveResize { true };
+        const bool SplitterProxyEnabled { true };
+        const int SplitterProxyWidth { 3 };
+        const bool WidgetExplorerEnabled { false };
+        const bool DrawWidgetRects { false };
+    }
+
+    namespace PropertyNames
+    {
+        const char noAnimations[] = "_kde_no_animations";
+        const char noWindowGrab[] = "_kde_no_window_grab";
+        const char netWMForceShadow[] = "_KDE_NET_WM_FORCE_SHADOW";
+        const char netWMSkipShadow[] = "_KDE_NET_WM_SKIP_SHADOW";
+        const char sidePanelView[] = "_kde_side_panel_view";
+        const char toolButtonAlignment[] = "_kde_toolButton_alignment";
+        const char menuTitle[] = "_adwaita_toolButton_menutitle";
+        const char alteredBackground[] = "_adwaita_altered_background";
     }
 
     //* metrics
-    enum Metrics
-    {
-
+    enum Metrics {
         // frames
         Frame_FrameWidth = 4,
-        Frame_FrameRadius = 4,
+        Frame_FrameRadius = 5,
 
         // layout
         Layout_TopLevelMarginWidth = 10,
@@ -74,29 +135,41 @@ namespace Adwaita
         Layout_DefaultSpacing = 6,
 
         // line editors
-        LineEdit_FrameWidth = 7,
+        LineEdit_FrameWidth = 4,
+        LineEdit_MarginHeight = 4,
+        LineEdit_MarginWidth = 8,
 
         // menu items
         Menu_FrameWidth = 0,
         MenuItem_MarginWidth = 5,
-        MenuItem_ItemSpacing = 4,
+        MenuItem_ItemSpacing = 6,
         MenuItem_AcceleratorSpace = 16,
         MenuButton_IndicatorWidth = 20,
 
         // combobox
-        ComboBox_FrameWidth = 7,
+        ComboBox_FrameWidth = 4,
+        ComboBox_MarginHeight = 4,
+        ComboBox_MarginWidth = 8,
+        ComboBox_MinHeight = 35,
+        ComboBox_MinWidth = 80,
 
         // spinbox
         SpinBox_FrameWidth = LineEdit_FrameWidth,
         SpinBox_ArrowButtonWidth = 20,
+        SpinBox_MinHeight = 35,
+        SpinBox_MinWidth = 80,
+        SpinBox_MarginHeight = 4,
+        SpinBox_MarginWidth = 8,
 
         // groupbox title margin
         GroupBox_TitleMarginWidth = 4,
 
         // buttons
+        Button_MinHeight = 35,
         Button_MinWidth = 80,
-        Button_MarginWidth = 4,
-        Button_ItemSpacing = 3,
+        Button_MarginHeight = 4,
+        Button_MarginWidth = 8,
+        Button_ItemSpacing = 4,
 
         // tool buttons
         ToolButton_MarginWidth = 6,
@@ -110,13 +183,13 @@ namespace Adwaita
 
         // menubar items
         MenuBarItem_MarginWidth = 8,
-        MenuBarItem_MarginHeight = 4,
+        MenuBarItem_MarginHeight = 5,
 
         // scrollbars
         ScrollBar_Extend = 14,
         ScrollBar_SliderWidth = 8,
         ScrollBar_MinSliderHeight = 24,
-        ScrollBar_NoButtonHeight = (ScrollBar_Extend-ScrollBar_SliderWidth)/2,
+        ScrollBar_NoButtonHeight = (ScrollBar_Extend - ScrollBar_SliderWidth) / 2,
         ScrollBar_SingleButtonHeight = 0,
         ScrollBar_DoubleButtonHeight = 0,
 
@@ -184,49 +257,42 @@ namespace Adwaita
     };
 
     //* animation mode
-    enum AnimationMode
-    {
+    enum AnimationMode {
         AnimationNone = 0,
         AnimationHover = 0x1,
         AnimationFocus = 0x2,
         AnimationEnable = 0x4,
         AnimationPressed = 0x8
     };
-
     Q_DECLARE_FLAGS(AnimationModes, AnimationMode)
 
     //* corners
-    enum Corner
-    {
+    enum Corner {
         CornerTopLeft = 0x1,
         CornerTopRight = 0x2,
         CornerBottomLeft = 0x4,
         CornerBottomRight = 0x8,
-        CornersTop = CornerTopLeft|CornerTopRight,
-        CornersBottom = CornerBottomLeft|CornerBottomRight,
-        CornersLeft = CornerTopLeft|CornerBottomLeft,
-        CornersRight = CornerTopRight|CornerBottomRight,
-        AllCorners = CornerTopLeft|CornerTopRight|CornerBottomLeft|CornerBottomRight
+        CornersTop = CornerTopLeft | CornerTopRight,
+        CornersBottom = CornerBottomLeft | CornerBottomRight,
+        CornersLeft = CornerTopLeft | CornerBottomLeft,
+        CornersRight = CornerTopRight | CornerBottomRight,
+        AllCorners = CornerTopLeft | CornerTopRight | CornerBottomLeft | CornerBottomRight
     };
-
-    Q_DECLARE_FLAGS( Corners, Corner )
+    Q_DECLARE_FLAGS(Corners, Corner)
 
     //* sides
-    enum Side
-    {
+    enum Side {
         SideNone = 0x0,
         SideLeft = 0x1,
         SideTop = 0x2,
         SideRight = 0x4,
         SideBottom = 0x8,
-        AllSides = SideLeft|SideTop|SideRight|SideBottom
+        AllSides = SideLeft | SideTop | SideRight | SideBottom
     };
-
-    Q_DECLARE_FLAGS( Sides, Side )
+    Q_DECLARE_FLAGS(Sides, Side)
 
     //* checkbox state
-    enum CheckBoxState
-    {
+    enum CheckBoxState {
         CheckOff,
         CheckPartial,
         CheckOn,
@@ -234,16 +300,14 @@ namespace Adwaita
     };
 
     //* radio button state
-    enum RadioButtonState
-    {
+    enum RadioButtonState {
         RadioOff,
         RadioOn,
         RadioAnimated
     };
 
     //* arrow orientation
-    enum ArrowOrientation
-    {
+    enum ArrowOrientation {
         ArrowNone,
         ArrowUp,
         ArrowDown,
@@ -252,18 +316,18 @@ namespace Adwaita
     };
 
     //* button type
-    enum ButtonType
-    {
+    enum ButtonType {
         ButtonClose,
         ButtonMaximize,
         ButtonMinimize,
         ButtonRestore
     };
 
-}
+} // namespace Adwaita
 
-Q_DECLARE_OPERATORS_FOR_FLAGS( Adwaita::AnimationModes )
-Q_DECLARE_OPERATORS_FOR_FLAGS( Adwaita::Corners )
-Q_DECLARE_OPERATORS_FOR_FLAGS( Adwaita::Sides )
+Q_DECLARE_OPERATORS_FOR_FLAGS(Adwaita::AnimationModes)
+Q_DECLARE_OPERATORS_FOR_FLAGS(Adwaita::Corners)
+Q_DECLARE_OPERATORS_FOR_FLAGS(Adwaita::Sides)
 
-#endif
+#endif // ADWAITA_H
+
