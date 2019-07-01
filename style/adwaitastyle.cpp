@@ -2822,7 +2822,12 @@ QSize Style::lineEditSizeFromContents(const QStyleOption *option, const QSize &c
 
     bool flat(frameOption->lineWidth == 0);
     int frameWidth(pixelMetric(PM_DefaultFrameWidth, option, widget));
-    return flat ? contentsSize : expandSize(contentsSize, frameWidth);
+    QSize size = flat ? contentsSize : expandSize(contentsSize, frameWidth);
+
+    size.setHeight(qMax(size.height(), int(Metrics::LineEdit_MinHeight)));
+    size.setWidth(qMax(size.width(), int(Metrics::LineEdit_MinWidth)));
+
+    return size;
 }
 
 //______________________________________________________________
@@ -3105,7 +3110,7 @@ QSize Style::menuItemSizeFromContents(const QStyleOption *option, const QSize &c
         // Looks Gtk adds some additional space to the right
         size.rwidth() += Metrics::MenuItem_MarginWidth * 4;
 
-        return expandSize(size, Metrics::MenuItem_MarginWidth, 2);
+        return expandSize(size, Metrics::MenuItem_MarginWidth);
     }
 
     case QStyleOptionMenuItem::Separator: {
