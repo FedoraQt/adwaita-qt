@@ -43,6 +43,7 @@ if (MSVC)
 endif()
 
 include_directories(
+    ${QT_INCLUDES}
     ${CMAKE_CURRENT_BINARY_DIR} # for adwaita-config.h
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/animations/

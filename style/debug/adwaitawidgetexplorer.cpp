@@ -21,14 +21,20 @@
 #include "adwaitawidgetexplorer.h"
 
 #include "adwaita.h"
+#if QT_VERSION >= 0x050000
 #include "adwaitadebug.h"
+#else
+#include <QDebug>
+#endif
 
 #include <QTextStream>
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPainter>
 
+#if QT_VERSION >= 0x050000
 Q_LOGGING_CATEGORY(ADWAITA, "adwaita.widgetexplorer")
+#endif
 
 namespace Adwaita
 {
@@ -108,8 +114,11 @@ bool WidgetExplorer::eventFilter(QObject *object, QEvent *event)
         QWidget *widget(qobject_cast<QWidget *>(object));
         if (!widget)
             return false;
-
+#if QT_VERSION >= 0x050000
         qCDebug(ADWAITA)
+#else
+        qDebug()
+#endif
                 << "Adwaita::WidgetExplorer::eventFilter -"
                 << " event: " << event << " type: " << eventType(event->type())
                 << " widget: " << widgetInformation(widget);
@@ -117,7 +126,12 @@ bool WidgetExplorer::eventFilter(QObject *object, QEvent *event)
         // print parent information
         QWidget *parent(widget->parentWidget());
         while (parent) {
-            qCDebug(ADWAITA) << "    parent: " << widgetInformation(parent);
+#if QT_VERSION >= 0x050000
+        qCDebug(ADWAITA)
+#else
+        qDebug()
+#endif
+            << "    parent: " << widgetInformation(parent);
             parent = parent->parentWidget();
         }
     }

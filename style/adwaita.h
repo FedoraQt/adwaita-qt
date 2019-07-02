@@ -102,8 +102,8 @@ namespace Adwaita
         const bool SidePanelDrawFrame { false };
         const bool MenuItemDrawStrongFocus { true };
         const int WindowDragMode { 0 };
-        const QStringList WindowDragWhiteList { };
-        const QStringList WindowDragBlackList { };
+        const QStringList WindowDragWhiteList;
+        const QStringList WindowDragBlackList;
         const bool UseWMMoveResize { true };
         const bool SplitterProxyEnabled { true };
         const int SplitterProxyWidth { 3 };
