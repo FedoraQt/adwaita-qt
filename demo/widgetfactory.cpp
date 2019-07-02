@@ -91,9 +91,10 @@ WidgetFactory::WidgetFactory(QWidget *parent)
         d->ui.verticalslider2->setValue(value);
     });
 
-    setMenuBar(new QMenuBar);
+    QMenuBar *menubar = new QMenuBar(this);
+    setMenuBar(menubar);
     // Inspired by Kondike (a gtk game)
-    QMenu *game = new QMenu("Game");
+    QMenu *game = new QMenu("Game", menubar);
     QAction *newGame = new QAction("New game");
     newGame->setShortcut(QKeySequence::New);
     game->addAction(newGame);
@@ -115,7 +116,7 @@ WidgetFactory::WidgetFactory(QWidget *parent)
     game->addAction(close);
     menuBar()->insertMenu(nullptr, game);
 
-    QMenu *edit = new QMenu("Edit");
+    QMenu *edit = new QMenu("Edit", menubar);
     QAction *act1 = new QAction("Pick me");
     act1->setCheckable(true);
     act1->setChecked(true);
@@ -134,7 +135,7 @@ WidgetFactory::WidgetFactory(QWidget *parent)
     actionGroup->addAction(act3);
     menuBar()->insertMenu(nullptr, edit);
 
-    menuBar()->insertMenu(nullptr, new QMenu("View"));
+    menuBar()->insertMenu(nullptr, new QMenu("View", menubar));
     QAction *testAction = new QAction(QStringLiteral("Test 1"));
     testAction->setCheckable(true);
 
