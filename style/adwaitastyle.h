@@ -284,6 +284,7 @@ protected:
     bool drawPanelScrollAreaCornerPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
     bool drawPanelMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
     bool drawPanelTipLabelPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
+    bool drawPanelItemViewRowPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
     bool drawPanelItemViewItemPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
     bool drawIndicatorCheckBoxPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
     bool drawIndicatorRadioButtonPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;

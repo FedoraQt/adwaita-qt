@@ -1144,6 +1144,9 @@ void Style::drawPrimitive(PrimitiveElement element, const QStyleOption *option, 
     case PE_PanelTipLabel:
         fcn = &Style::drawPanelTipLabelPrimitive;
         break;
+    case PE_PanelItemViewRow:
+        fcn = &Style::drawPanelItemViewRowPrimitive;
+        break;
     case PE_PanelItemViewItem:
         fcn = &Style::drawPanelItemViewItemPrimitive;
         break;
@@ -3899,6 +3902,23 @@ bool Style::drawPanelTipLabelPrimitive(const QStyleOption *option, QPainter *pai
     return true;
 }
 
+//__________________________________________________________________________________
+bool Style::drawPanelItemViewRowPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+{
+    const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option);
+    if (!vopt)
+        return false;
+
+    QPalette::ColorGroup cg = (widget ? widget->isEnabled() : (vopt->state & QStyle::State_Enabled))
+                            ? QPalette::Normal : QPalette::Disabled;
+    if (cg == QPalette::Normal && !(vopt->state & QStyle::State_Active))
+        cg = QPalette::Inactive;
+    if ((vopt->state & QStyle::State_Selected) &&  proxy()->styleHint(QStyle::SH_ItemView_ShowDecorationSelected, option, widget))
+        painter->fillRect(vopt->rect, vopt->palette.color(cg, QPalette::Highlight));
+
+    return true;
+}
+
 //___________________________________________________________________________________
 bool Style::drawPanelItemViewItemPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
@@ -3923,10 +3943,9 @@ bool Style::drawPanelItemViewItemPrimitive(const QStyleOption *option, QPainter 
 
     bool hasCustomBackground = viewItemOption->backgroundBrush.style() != Qt::NoBrush && !(state & State_Selected);
     bool hasSolidBackground = !hasCustomBackground || viewItemOption->backgroundBrush.style() == Qt::SolidPattern;
-    bool hasAlternateBackground(viewItemOption->features & QStyleOptionViewItemV2::Alternate);
 
     // do nothing if no background is to be rendered
-    if (!(selected || hasCustomBackground || hasAlternateBackground)) {
+    if (!(selected || hasCustomBackground)) {
         return true;
     }
 
@@ -3936,18 +3955,6 @@ bool Style::drawPanelItemViewItemPrimitive(const QStyleOption *option, QPainter 
         colorGroup = windowActive ? QPalette::Active : QPalette::Inactive;
     else
         colorGroup = QPalette::Disabled;
-
-    // render alternate background
-    if (viewItemOption && (viewItemOption->features & QStyleOptionViewItemV2::Alternate)) {
-        painter->setPen(Qt::NoPen);
-        painter->setBrush(palette.brush(colorGroup, QPalette::AlternateBase));
-        painter->drawRect(rect);
-    }
-
-    // stop here if no highlight is needed
-    if (!(selected || hasCustomBackground)) {
-        return true;
-    }
 
     // render custom background
     if (hasCustomBackground && !hasSolidBackground) {
