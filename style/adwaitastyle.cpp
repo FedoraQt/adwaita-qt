@@ -3905,7 +3905,11 @@ bool Style::drawPanelTipLabelPrimitive(const QStyleOption *option, QPainter *pai
 //__________________________________________________________________________________
 bool Style::drawPanelItemViewRowPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
+#if QT_VERSION >= 0x050000
     const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option);
+#else
+    const QStyleOptionViewItemV4 *vopt = qstyleoption_cast<const QStyleOptionViewItemV4 *>(option)
+#endif
     if (!vopt)
         return false;
 
@@ -4754,12 +4758,19 @@ bool Style::drawComboBoxLabelControl(const QStyleOption *option, QPainter *paint
 //
 bool Style::drawItemViewItemControl(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
+#if QT_VERSION >= 0x050000
     const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option);
+#else
+    const QStyleOptionViewItemV4 *vopt = qstyleoption_cast<const QStyleOptionViewItemV4 *>(option);
+#endif
     if (!vopt)
         return true;
 
-    QStyleOptionViewItem op = QStyleOptionViewItem(*vopt);
-
+#if QT_VERSION >= 0x050000
+    QStyleOptionViewItem op(*vopt);
+#else
+    QStyleOptionViewItemV4 op(*vopt);
+#endif
     QPalette palette = op.palette;
     if ((vopt->state & QStyle::State_Enabled) && !(vopt->state & QStyle::State_Active)) {
         palette.setColor(QPalette::Inactive, QPalette::Text, palette.color(QPalette::Active, QPalette::Text));
