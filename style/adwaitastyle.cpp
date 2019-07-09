@@ -5049,7 +5049,10 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
             int textFlags(Qt::AlignVCenter | Qt::AlignRight);
             QString accelerator(text.mid(tabPosition + 1));
             text = text.left(tabPosition);
-            drawItemText(painter, textRect, textFlags, palette, enabled, accelerator, role);
+            QPalette copy(palette);
+            copy.setColor(QPalette::Active, QPalette::WindowText, _helper->transparentize(copy.color(QPalette::Active, QPalette::WindowText), 0.55));
+            copy.setColor(QPalette::Active, QPalette::HighlightedText, _helper->transparentize(copy.color(QPalette::Active, QPalette::HighlightedText), 0.55));
+            drawItemText(painter, textRect, textFlags, copy, enabled, accelerator, role);
         }
 
         // render text
