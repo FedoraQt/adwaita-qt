@@ -5227,6 +5227,7 @@ bool Style::drawScrollBarSliderControl(const QStyleOption *option, QPainter *pai
 
     bool enabled(state & State_Enabled);
     bool mouseOver((state & State_Active) && enabled && (state & State_MouseOver));
+    bool sunken(enabled && (state & (State_On | State_Sunken)));
 
     // check focus from relevant parent
     const QWidget *parent(scrollBarParent(widget));
@@ -5235,12 +5236,12 @@ bool Style::drawScrollBarSliderControl(const QStyleOption *option, QPainter *pai
     // enable animation state
     bool handleActive(sliderOption->activeSubControls & SC_ScrollBarSlider);
     _animations->scrollBarEngine().updateState(widget, AnimationFocus, hasFocus);
-
+    _animations->scrollBarEngine().updateState(widget, AnimationPressed, sunken);
     _animations->scrollBarEngine().updateState(widget, AnimationHover, mouseOver);
 
     AnimationMode mode(_animations->scrollBarEngine().animationMode(widget, SC_ScrollBarSlider));
     qreal opacity(_animations->scrollBarEngine().opacity(widget, SC_ScrollBarSlider));
-    QColor color = _helper->scrollBarHandleColor(palette, mouseOver, hasFocus, opacity, mode);
+    QColor color = _helper->scrollBarHandleColor(palette, mouseOver, hasFocus, sunken, opacity, mode, _dark);
     if (mouseOver)
         opacity = 1;
     else

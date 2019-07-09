@@ -280,25 +280,28 @@ QColor Helper::sliderOutlineColor(const QPalette &palette, bool mouseOver, bool 
 }
 
 //____________________________________________________________________
-QColor Helper::scrollBarHandleColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode) const
+QColor Helper::scrollBarHandleColor(const QPalette &palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity, AnimationMode mode, bool darkMode) const
 {
-    QColor color(alphaColor(palette.color(QPalette::WindowText), 0.5));
+    QColor fgColor = palette.color(QPalette::Text);
+    QColor bgColor = palette.color(QPalette::Window);
+    QColor selectedBgColor = palette.color(QPalette::Highlight);
+
+    QColor color(mix(fgColor, bgColor, 0.6));
+    QColor hoverColor(mix(fgColor, bgColor, 0.8));
+    QColor activeColor(darkMode ? lighten(selectedBgColor, 0.1) : darken(selectedBgColor, 0.1));
 
     // hover takes precedence over focus
-    if (mode == AnimationHover) {
-        QColor hover(hoverColor(palette));
-        QColor focus(focusColor(palette));
-        if (hasFocus)
-            color = mix(focus, hover, opacity);
+    if (mode == AnimationPressed) {
+        if (mouseOver)
+            color = mix(hoverColor, activeColor, opacity);
         else
-            color = mix(color, hover, opacity);
+            color = mix(color, activeColor, opacity);
+    } else if (sunken) {
+        color = activeColor;
+    } else if (mode == AnimationHover) {
+        color = mix(color, hoverColor, opacity);
     } else if (mouseOver) {
-        color = hoverColor(palette);
-    } else if (mode == AnimationFocus) {
-        QColor focus(focusColor(palette));
-        color = mix(color, focus, opacity);
-    } else if (hasFocus) {
-        color = focusColor(palette);
+        color = hoverColor;
     }
 
     return color;
