@@ -98,7 +98,7 @@ namespace Adwaita
         const bool ViewInvertSortIndicator { true };
         const bool TabBarDrawCenteredTabs { false };
         const bool TitleWidgetDrawFrame { true };
-        const bool DockWidgetDrawFrame { true };
+        const bool DockWidgetDrawFrame { false };
         const bool SidePanelDrawFrame { false };
         const bool MenuItemDrawStrongFocus { true };
         const int WindowDragMode { 0 };

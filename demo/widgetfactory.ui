@@ -60,6 +60,14 @@
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
+         <widget class="QDockWidget" name="dockWidget">
+          <property name="features">
+           <set>QDockWidget::NoDockWidgetFeatures</set>
+          </property>
+          <widget class="QWidget" name="dockWidgetContents"/>
+         </widget>
+        </item>
+        <item row="2" column="0">
          <widget class="QLabel" name="label_4">
           <property name="minimumSize">
            <size>
@@ -70,6 +78,14 @@
           <property name="text">
            <string>Plain</string>
           </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QDockWidget" name="dockWidget_2">
+          <property name="features">
+           <set>QDockWidget::DockWidgetMovable</set>
+          </property>
+          <widget class="QWidget" name="dockWidgetContents_2"/>
          </widget>
         </item>
        </layout>
