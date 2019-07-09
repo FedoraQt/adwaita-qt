@@ -180,18 +180,6 @@ public:
     //* input outline color, using animations
     QColor inputOutlineColor(const QPalette &palette, bool mouseOver = false, bool hasFocus = false, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone, bool darkMode = false) const;
 
-    //* focus outline color, using animations
-    QColor focusOutlineColor(const QPalette &palette) const;
-
-    //* hover outline color, using animations
-    QColor hoverOutlineColor(const QPalette &palette) const;
-
-    //* focus outline color, using animations
-    QColor buttonFocusOutlineColor(const QPalette &palette) const;
-
-    //* hover outline color, using animations
-    QColor buttonHoverOutlineColor(const QPalette &palette) const;
-
     //* side panel outline color, using animations
     QColor sidePanelOutlineColor(const QPalette &palette, bool hasFocus = false, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone) const;
 
@@ -238,7 +226,7 @@ public:
     QColor checkBoxIndicatorColor(const QPalette &palette, bool mouseOver, bool active, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone) const;
 
     //* separator color
-    QColor separatorColor(const QPalette &palette) const;
+    QColor separatorColor(const QPalette &palette, bool darkMode = false) const;
 
     //* TreeView header text color
     QColor headerTextColor(const QPalette &palette, const QStyle::State state) const;

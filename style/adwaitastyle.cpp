@@ -3118,7 +3118,7 @@ QSize Style::menuItemSizeFromContents(const QStyleOption *option, const QSize &c
 
     case QStyleOptionMenuItem::Separator: {
         if (menuItemOption->text.isEmpty() && menuItemOption->icon.isNull()) {
-            return expandSize(QSize(0, 1), Metrics::MenuItem_MarginWidth);
+            return expandSize(QSize(0, 1), Metrics::MenuItem_MarginWidth, 0);
         } else {
             // build toolbutton option
             QStyleOptionToolButton toolButtonOption(separatorMenuItemOption(menuItemOption, widget));
@@ -4253,7 +4253,7 @@ bool Style::drawIndicatorToolBarHandlePrimitive(const QStyleOption *option, QPai
     bool separatorIsVertical(state & State_Horizontal);
 
     // define color and render
-    QColor color(_helper->separatorColor(palette));
+    QColor color(_helper->separatorColor(palette, _dark));
     if (separatorIsVertical) {
         rect.setWidth(Metrics::ToolBar_HandleWidth);
         rect = centerRect(option->rect, rect.size());
@@ -4296,7 +4296,7 @@ bool Style::drawIndicatorToolBarSeparatorPrimitive(const QStyleOption *option, Q
     bool separatorIsVertical(state & State_Horizontal);
 
     // define color and render
-    QColor color(_helper->separatorColor(palette));
+    QColor color(_helper->separatorColor(palette, _dark));
     _helper->renderSeparator(painter, rect, color, separatorIsVertical);
 
     return true;
@@ -4888,7 +4888,7 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
     if (menuItemOption->menuItemType == QStyleOptionMenuItem::Separator) {
         // normal separator
         if (menuItemOption->text.isEmpty() && menuItemOption->icon.isNull()) {
-            QColor color(_helper->separatorColor(palette));
+            QColor color(_helper->separatorColor(palette, _dark));
             _helper->renderSeparator(painter, rect, color);
             return true;
         } else {
@@ -5413,7 +5413,7 @@ bool Style::drawShapedFrameControl(const QStyleOption *option, QPainter *painter
     case QFrame::HLine:
     case QFrame::VLine: {
         const QRect &rect(option->rect);
-        QColor color(_helper->separatorColor(option->palette));
+        QColor color(_helper->separatorColor(option->palette, _dark));
         bool isVertical(frameOpt->frameShape == QFrame::VLine);
         _helper->renderSeparator(painter, rect, color, isVertical);
         return true;
@@ -6420,7 +6420,7 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
             }
 
             // colors
-            QColor base(_helper->separatorColor(palette));
+            QColor base(_helper->separatorColor(palette, _dark));
 
             while (current <= sliderOption->maximum) {
                 // adjust color
@@ -6866,7 +6866,7 @@ void Style::renderMenuTitle(const QStyleOptionToolButton *option, QPainter *pain
 {
     // render a separator at the bottom
     const QPalette &palette(option->palette);
-    QColor color(_helper->separatorColor(palette));
+    QColor color(_helper->separatorColor(palette, _dark));
     _helper->renderSeparator(painter, QRect(option->rect.bottomLeft() - QPoint(0, Metrics::MenuItem_MarginWidth), QSize(option->rect.width(), 1)), color);
 
     // render text in the center of the rect

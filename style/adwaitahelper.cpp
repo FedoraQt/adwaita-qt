@@ -88,30 +88,6 @@ QColor Helper::inputOutlineColor(const QPalette &palette, bool mouseOver, bool h
 }
 
 //____________________________________________________________________
-QColor Helper::focusOutlineColor(const QPalette &palette) const
-{
-    return mix(focusColor(palette), palette.color(QPalette::WindowText), 0.15);
-}
-
-//____________________________________________________________________
-QColor Helper::hoverOutlineColor(const QPalette &palette) const
-{
-    return mix(hoverColor(palette), palette.color(QPalette::WindowText), 0.15);
-}
-
-//____________________________________________________________________
-QColor Helper::buttonFocusOutlineColor(const QPalette &palette) const
-{
-    return mix(focusColor(palette), palette.color(QPalette::ButtonText), 0.15);
-}
-
-//____________________________________________________________________
-QColor Helper::buttonHoverOutlineColor(const QPalette &palette) const
-{
-    return mix(hoverColor(palette), palette.color(QPalette::ButtonText), 0.15);
-}
-
-//____________________________________________________________________
 QColor Helper::sidePanelOutlineColor(const QPalette &palette, bool hasFocus, qreal opacity, AnimationMode mode) const
 {
     QColor outline(palette.color(QPalette::Inactive, QPalette::Highlight));
@@ -339,9 +315,9 @@ QColor Helper::checkBoxIndicatorColor(const QPalette &palette, bool mouseOver, b
 }
 
 //______________________________________________________________________________
-QColor Helper::separatorColor(const QPalette &palette) const
+QColor Helper::separatorColor(const QPalette &palette, bool darkMode) const
 {
-    return mix(palette.color(QPalette::Window), palette.color(QPalette::WindowText), 0.25);
+    return buttonOutlineColor(palette, false, false, AnimationData::OpacityInvalid, AnimationNone, darkMode);
 }
 
 //____________________________________________________________________
