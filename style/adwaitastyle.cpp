@@ -6629,7 +6629,13 @@ bool Style::drawScrollBarComplexControl(const QStyleOptionComplex *option, QPain
         QRect grooveRect(subControlRect(CC_ScrollBar, option, SC_ScrollBarGroove, widget));
 
         const QPalette &palette(option->palette);
-        QColor color(_helper->alphaColor(palette.color(QPalette::Window).darker(), (animated ? 0.3 * opacity : 0.3)));
+        QColor color;
+        if (_dark) {
+            color = _helper->mix(palette.color(QPalette::Window), _helper->mix(palette.color(QPalette::Base), palette.color(QPalette::Window), 0.5), opacity);
+        } else {
+            color = _helper->mix(palette.color(QPalette::Window), _helper->mix(palette.color(QPalette::Window), palette.color(QPalette::Text), 0.2), opacity);
+        }
+
         const State &state(option->state);
         bool horizontal(state & State_Horizontal);
 

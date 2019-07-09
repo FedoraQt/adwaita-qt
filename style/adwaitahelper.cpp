@@ -286,8 +286,8 @@ QColor Helper::scrollBarHandleColor(const QPalette &palette, bool mouseOver, boo
     QColor bgColor = palette.color(QPalette::Window);
     QColor selectedBgColor = palette.color(QPalette::Highlight);
 
-    QColor color(mix(fgColor, bgColor, 0.6));
-    QColor hoverColor(mix(fgColor, bgColor, 0.8));
+    QColor color(mix(fgColor, bgColor, 0.4));
+    QColor hoverColor(mix(fgColor, bgColor, 0.2));
     QColor activeColor(darkMode ? lighten(selectedBgColor, 0.1) : darken(selectedBgColor, 0.1));
 
     // hover takes precedence over focus
