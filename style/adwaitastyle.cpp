@@ -3908,7 +3908,7 @@ bool Style::drawPanelItemViewRowPrimitive(const QStyleOption *option, QPainter *
 #if QT_VERSION >= 0x050000
     const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option);
 #else
-    const QStyleOptionViewItemV4 *vopt = qstyleoption_cast<const QStyleOptionViewItemV4 *>(option)
+    const QStyleOptionViewItemV4 *vopt = qstyleoption_cast<const QStyleOptionViewItemV4 *>(option);
 #endif
     if (!vopt)
         return false;
