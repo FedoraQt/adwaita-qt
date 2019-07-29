@@ -56,7 +56,7 @@ namespace Adwaita
         const bool SingleClick { true };
         const bool ShowIconsOnPushButtons { true };
         const int ToolButtonStyle { Qt::ToolButtonTextBesideIcon };
-        const bool ShowIconsInMenuItems { true };
+        const bool ShowIconsInMenuItems { false };
     }
 
     enum EnumMnemonicsMode {
