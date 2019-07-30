@@ -392,6 +392,10 @@ void Style::polish(QWidget *widget)
     } else if (widget->inherits("QTipLabel")) {
         setTranslucentBackground(widget);
     } else if (QLineEdit *lineEdit = qobject_cast<QLineEdit *>(widget)) {
+        // Do not use additional margin if the QLineEdit is really small
+        const bool useMarginWidth = lineEdit->width() > lineEdit->fontMetrics().width("#####");
+        const int marginWidth = useMarginWidth ? Metrics::LineEdit_MarginWidth : 0;
+        lineEdit->setTextMargins(marginWidth, Metrics::LineEdit_MarginHeight, marginWidth, Metrics::LineEdit_MarginHeight);
         lineEdit->setTextMargins(Metrics::LineEdit_MarginWidth, Metrics::LineEdit_MarginHeight, Metrics::LineEdit_MarginWidth, Metrics::LineEdit_MarginHeight);
     } else if (QSpinBox *spinBox = qobject_cast<QSpinBox *>(widget)) {
         if (!spinBox->isEnabled()) {
