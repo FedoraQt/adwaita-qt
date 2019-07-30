@@ -4848,7 +4848,7 @@ bool Style::drawMenuBarItemControl(const QStyleOption *option, QPainter *painter
     QRect textRect = option->fontMetrics.boundingRect(rect, textFlags, menuItemOption->text);
 
     // render text
-    const QPalette::ColorRole role = (useStrongFocus && sunken) ? QPalette::Highlight : QPalette::WindowText;
+    const QPalette::ColorRole role = (useStrongFocus && sunken) ? QPalette::Link : QPalette::WindowText;
     drawItemText(painter, textRect, textFlags, palette, enabled, menuItemOption->text, role);
 
     return true;
