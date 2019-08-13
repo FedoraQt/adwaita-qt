@@ -182,7 +182,7 @@ QColor Helper::buttonBackgroundColor(const QPalette &palette, bool mouseOver, bo
             // Hovered button for normal mode is bg_color
             return mix(buttonBackground, background, opacity);
         }
-    } else if(mouseOver) {
+    } else if (mouseOver) {
         if (darkMode) {
             // Hovered button for dark mode is darken(bg_color, 0.01)
             return darken(background, 0.01);

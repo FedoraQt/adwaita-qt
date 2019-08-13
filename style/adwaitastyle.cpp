@@ -3396,7 +3396,6 @@ bool Style::drawFrameLineEditPrimitive(const QStyleOption *option, QPainter *pai
 
         // focus takes precedence over mouse over
         _animations->inputWidgetEngine().updateState(widget, AnimationFocus, hasFocus);
-        _animations->inputWidgetEngine().updateState(widget, AnimationHover, mouseOver && !hasFocus);
 
         // retrieve animation mode and opacity
         AnimationMode mode(_animations->inputWidgetEngine().frameAnimationMode(widget));
@@ -6278,11 +6277,13 @@ bool Style::drawComboBoxComplexControl(const QStyleOptionComplex *option, QPaint
                 AnimationMode mode(_animations->inputWidgetEngine().buttonAnimationMode(widget));
                 qreal opacity(_animations->inputWidgetEngine().buttonOpacity(widget));
 
-                QColor shadow(palette.color(QPalette::Shadow));
+                // define colors
+                QColor shadow(_helper->shadowColor(palette));
                 QColor outline(_helper->buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode, _dark));
                 QColor background(_helper->buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode, _dark));
 
-                _helper->renderFlatButtonFrame(painter, subControlRect(CC_ComboBox, option, SC_ComboBoxArrow, widget), background, outline, shadow, hasFocus, sunken, mouseOver, enabled && windowActive);
+                // render
+                _helper->renderButtonFrame(painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver, enabled && windowActive, _dark);
 
                 QStyleOptionComplex tmpOpt(*option);
                 tmpOpt.rect.setWidth(tmpOpt.rect.width() - subControlRect(CC_ComboBox, option, SC_ComboBoxArrow, widget).width() + 3);
