@@ -394,9 +394,10 @@ void Style::polish(QWidget *widget)
     } else if (QLineEdit *lineEdit = qobject_cast<QLineEdit *>(widget)) {
         // Do not use additional margin if the QLineEdit is really small
         const bool useMarginWidth = lineEdit->width() > lineEdit->fontMetrics().width("#####");
+        const bool useMarginHeight = lineEdit->height() > lineEdit->fontMetrics().height() + (2 * Metrics::LineEdit_MarginHeight);
+        const int marginHeight = useMarginHeight ? Metrics::LineEdit_MarginHeight : 0;
         const int marginWidth = useMarginWidth ? Metrics::LineEdit_MarginWidth : 0;
-        lineEdit->setTextMargins(marginWidth, Metrics::LineEdit_MarginHeight, marginWidth, Metrics::LineEdit_MarginHeight);
-        lineEdit->setTextMargins(Metrics::LineEdit_MarginWidth, Metrics::LineEdit_MarginHeight, Metrics::LineEdit_MarginWidth, Metrics::LineEdit_MarginHeight);
+        lineEdit->setTextMargins(marginWidth, marginHeight, marginWidth, marginHeight);
     } else if (QSpinBox *spinBox = qobject_cast<QSpinBox *>(widget)) {
         if (!spinBox->isEnabled()) {
             QPalette pal = spinBox->palette();

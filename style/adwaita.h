@@ -136,7 +136,7 @@ namespace Adwaita
 
         // line editors
         LineEdit_FrameWidth = 3,
-        LineEdit_MarginHeight = 4,
+        LineEdit_MarginHeight = 2,
         LineEdit_MarginWidth = 8,
         LineEdit_MinHeight = 36,
         LineEdit_MinWidth = 80,
