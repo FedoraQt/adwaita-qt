@@ -1271,9 +1271,6 @@ void Style::drawControl(ControlElement element, const QStyleOption *option, QPai
         case CE_MenuBarItem:
             fcn = &Style::drawMenuBarItemControl;
             break;
-        case CE_MenuEmptyArea:
-            fcn = &Style::drawMenuEmptyAreaControl;
-            break;
         case CE_MenuItem:
             fcn = &Style::drawMenuItemControl;
             break;
@@ -4854,21 +4851,6 @@ bool Style::drawMenuBarItemControl(const QStyleOption *option, QPainter *painter
     return true;
 }
 
-bool Style::drawMenuEmptyAreaControl(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
-{
-    if (_isGNOME)
-        painter->setPen(Qt::transparent);
-    else
-        painter->setPen(option->palette.window().color().darker(150));
-
-    painter->setBrush(option->palette.base().color());
-    if (_isGNOME)
-        painter->drawRect(option->rect);
-    else
-        painter->drawRect(option->rect.adjusted(0, 0, -1, -1));
-    return true;
-}
-
 //___________________________________________________________________________________
 bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
@@ -4882,11 +4864,6 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
     // copy rect and palette
     const QRect &rect(option->rect);
     const QPalette &palette(option->palette);
-    const QColor &background(palette.color(QPalette::Active, QPalette::Base));
-
-    painter->setPen(Qt::NoPen);
-    painter->setBrush(background);
-    painter->drawRect(rect);
 
     // deal with separators
     if (menuItemOption->menuItemType == QStyleOptionMenuItem::Separator) {

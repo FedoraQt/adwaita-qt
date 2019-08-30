@@ -312,7 +312,6 @@ protected:
     virtual bool drawItemViewItemControl(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
     virtual bool drawMenuBarEmptyArea(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
     virtual bool drawMenuBarItemControl(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
-    virtual bool drawMenuEmptyAreaControl(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
     virtual bool drawMenuItemControl(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
     virtual bool drawProgressBarControl(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
     virtual bool drawProgressBarContentsControl(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;

@@ -575,10 +575,10 @@ void Helper::renderMenuFrame(QPainter *painter, const QRect &rect, const QColor 
         painter->setBrush(Qt::NoBrush);
 
     painter->setRenderHint(QPainter::Antialiasing, false);
-    QRect frameRect(rect);
+    QRectF frameRect(rect);
     if (outline.isValid()) {
         painter->setPen(outline);
-        frameRect.adjust(0, 0, -1, -1);
+        frameRect.adjust(0.5, 0.5, -0.5, -0.5);
     } else
         painter->setPen(Qt::NoPen);
 
