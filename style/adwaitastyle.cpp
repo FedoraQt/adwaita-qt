@@ -4713,7 +4713,7 @@ bool Style::drawComboBoxLabelControl(const QStyleOption *option, QPainter *paint
         QRect editRect = proxy()->subControlRect(CC_ComboBox, cb, SC_ComboBoxEditField, widget);
         painter->save();
         painter->setClipRect(editRect);
-        if (!cb->currentIcon.isNull()) {
+        if (!cb->currentIcon.isNull() && qobject_cast<const QComboBox *>(widget)) {
             QIcon::Mode mode;
 
             if ((cb->state & QStyle::State_Selected) && (cb->state & QStyle::State_Active)) {
