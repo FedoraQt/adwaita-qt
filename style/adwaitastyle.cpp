@@ -538,10 +538,10 @@ void Style::polish(QPalette &palette)
         palette.setColor(QPalette::All,      QPalette::ButtonText,      fg_color);
         palette.setColor(QPalette::All,      QPalette::BrightText,      text_color);
 
-        palette.setColor(QPalette::All,      QPalette::Light,           QColor("white"));
-        palette.setColor(QPalette::All,      QPalette::Midlight,        QColor("#d7d7d7"));
-        palette.setColor(QPalette::All,      QPalette::Mid,             QColor("#b4b4b4"));
-        palette.setColor(QPalette::All,      QPalette::Dark,            QColor("#1a1a1a"));
+        palette.setColor(QPalette::All,      QPalette::Light,           _helper->lighten(button_base_color));
+        palette.setColor(QPalette::All,      QPalette::Midlight,        _helper->mix(_helper->lighten(button_base_color), button_base_color));
+        palette.setColor(QPalette::All,      QPalette::Mid,             _helper->mix(_helper->darken(button_base_color), button_base_color));
+        palette.setColor(QPalette::All,      QPalette::Dark,            _helper->darken(button_base_color));
         palette.setColor(QPalette::All,      QPalette::Shadow,          shadow);
 
         palette.setColor(QPalette::All,      QPalette::Highlight,       selected_bg_color);
@@ -563,10 +563,10 @@ void Style::polish(QPalette &palette)
         palette.setColor(QPalette::Disabled, QPalette::ButtonText,      insensitive_fg_color);
         palette.setColor(QPalette::Disabled, QPalette::BrightText,      text_color);
 
-        palette.setColor(QPalette::Disabled, QPalette::Light,           QColor("#f4f4f4"));
-        palette.setColor(QPalette::Disabled, QPalette::Midlight,        QColor("#f4f4f4"));
-        palette.setColor(QPalette::Disabled, QPalette::Dark,            QColor("#f4f4f4"));
-        palette.setColor(QPalette::Disabled, QPalette::Mid,             QColor("#c3c3c3"));
+        palette.setColor(QPalette::Disabled, QPalette::Light,           _helper->lighten(insensitive_bg_color));
+        palette.setColor(QPalette::Disabled, QPalette::Midlight,        _helper->mix(_helper->lighten(insensitive_bg_color), insensitive_bg_color));
+        palette.setColor(QPalette::Disabled, QPalette::Mid,             _helper->mix(_helper->darken(insensitive_bg_color), insensitive_bg_color));
+        palette.setColor(QPalette::Disabled, QPalette::Dark,            _helper->darken(insensitive_bg_color));
         palette.setColor(QPalette::Disabled, QPalette::Shadow,          shadow);
 
         palette.setColor(QPalette::Disabled, QPalette::Highlight,       selected_bg_color);
@@ -585,10 +585,10 @@ void Style::polish(QPalette &palette)
         palette.setColor(QPalette::Inactive, QPalette::ButtonText,      backdrop_fg_color);
         palette.setColor(QPalette::Inactive, QPalette::BrightText,      text_color);
 
-        palette.setColor(QPalette::Inactive, QPalette::Light,           QColor("white"));
-        palette.setColor(QPalette::Inactive, QPalette::Midlight,        QColor("#d7d7d7"));
-        palette.setColor(QPalette::Inactive, QPalette::Mid,             QColor("#b4b4b4"));
-        palette.setColor(QPalette::Inactive, QPalette::Dark,            QColor("#33393b"));
+        palette.setColor(QPalette::Inactive, QPalette::Light,           _helper->lighten(insensitive_bg_color));
+        palette.setColor(QPalette::Inactive, QPalette::Midlight,        _helper->mix(_helper->lighten(insensitive_bg_color), insensitive_bg_color));
+        palette.setColor(QPalette::Inactive, QPalette::Mid,             _helper->mix(_helper->darken(insensitive_bg_color), insensitive_bg_color));
+        palette.setColor(QPalette::Inactive, QPalette::Dark,            _helper->darken(insensitive_bg_color));
         palette.setColor(QPalette::Inactive, QPalette::Shadow,          shadow);
 
         palette.setColor(QPalette::Inactive, QPalette::Highlight,       selected_bg_color);
@@ -630,10 +630,10 @@ void Style::polish(QPalette &palette)
         palette.setColor(QPalette::All,      QPalette::ButtonText,      fg_color);
         palette.setColor(QPalette::All,      QPalette::BrightText,      text_color);
 
-        palette.setColor(QPalette::All,      QPalette::Light,           QColor("white"));
-        palette.setColor(QPalette::All,      QPalette::Midlight,        QColor("#d7d7d7"));
-        palette.setColor(QPalette::All,      QPalette::Mid,             QColor("#b4b4b4"));
-        palette.setColor(QPalette::All,      QPalette::Dark,            QColor("#1a1a1a"));
+        palette.setColor(QPalette::All,      QPalette::Light,           _helper->lighten(button_base_color));
+        palette.setColor(QPalette::All,      QPalette::Midlight,        _helper->mix(_helper->lighten(button_base_color), button_base_color));
+        palette.setColor(QPalette::All,      QPalette::Mid,             _helper->mix(_helper->darken(button_base_color), button_base_color));
+        palette.setColor(QPalette::All,      QPalette::Dark,            _helper->darken(button_base_color));
         palette.setColor(QPalette::All,      QPalette::Shadow,          shadow);
 
         palette.setColor(QPalette::All,      QPalette::Highlight,       selected_bg_color);
@@ -654,10 +654,10 @@ void Style::polish(QPalette &palette)
         palette.setColor(QPalette::Disabled, QPalette::ButtonText,      insensitive_fg_color);
         palette.setColor(QPalette::Disabled, QPalette::BrightText,      text_color);
 
-        palette.setColor(QPalette::Disabled, QPalette::Light,           QColor("#f4f4f4"));
-        palette.setColor(QPalette::Disabled, QPalette::Midlight,        QColor("#f4f4f4"));
-        palette.setColor(QPalette::Disabled, QPalette::Dark,            QColor("#f4f4f4"));
-        palette.setColor(QPalette::Disabled, QPalette::Mid,             QColor("#c3c3c3"));
+        palette.setColor(QPalette::Disabled, QPalette::Light,           _helper->lighten(insensitive_bg_color));
+        palette.setColor(QPalette::Disabled, QPalette::Midlight,        _helper->mix(_helper->lighten(insensitive_bg_color), insensitive_bg_color));
+        palette.setColor(QPalette::Disabled, QPalette::Mid,             _helper->mix(_helper->darken(insensitive_bg_color), insensitive_bg_color));
+        palette.setColor(QPalette::Disabled, QPalette::Dark,            _helper->darken(insensitive_bg_color));
         palette.setColor(QPalette::Disabled, QPalette::Shadow,          shadow);
 
         palette.setColor(QPalette::Disabled, QPalette::Highlight,       selected_bg_color);
@@ -676,10 +676,10 @@ void Style::polish(QPalette &palette)
         palette.setColor(QPalette::Inactive, QPalette::ButtonText,      backdrop_fg_color);
         palette.setColor(QPalette::Inactive, QPalette::BrightText,      text_color);
 
-        palette.setColor(QPalette::Inactive, QPalette::Light,           QColor("white"));
-        palette.setColor(QPalette::Inactive, QPalette::Midlight,        QColor("#d7d7d7"));
-        palette.setColor(QPalette::Inactive, QPalette::Mid,             QColor("#b4b4b4"));
-        palette.setColor(QPalette::Inactive, QPalette::Dark,            QColor("#33393b"));
+        palette.setColor(QPalette::Inactive, QPalette::Light,           _helper->lighten(insensitive_bg_color));
+        palette.setColor(QPalette::Inactive, QPalette::Midlight,        _helper->mix(_helper->lighten(insensitive_bg_color), insensitive_bg_color));
+        palette.setColor(QPalette::Inactive, QPalette::Mid,             _helper->mix(_helper->darken(insensitive_bg_color), insensitive_bg_color));
+        palette.setColor(QPalette::Inactive, QPalette::Dark,            _helper->darken(insensitive_bg_color));
         palette.setColor(QPalette::Inactive, QPalette::Shadow,          shadow);
 
         palette.setColor(QPalette::Inactive, QPalette::Highlight,       selected_bg_color);
