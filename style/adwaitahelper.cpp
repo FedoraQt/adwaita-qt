@@ -1694,10 +1694,14 @@ void Helper::setVariant(QWidget *widget, const QByteArray &variant)
             XcbAtom atom;
         };
 
-        typedef void *(*XcbConnectFn)(int, int);
-        typedef XcbInternAtomCookie(*XcbInternAtomFn)(void *, int, int, const char *);
-        typedef XcbInternAtomReply * (*XcbInternAtomReplyFn)(void *, XcbInternAtomCookie, int);
-        typedef int (*XcbChangePropertyFn)(void *, int, int, XcbAtom, XcbAtom, int, int, const void *);
+        struct XcbVoidCookie {
+            unsigned int sequence;
+        };
+
+        typedef void *(*XcbConnectFn)(const char *, int *);
+        typedef XcbInternAtomCookie(*XcbInternAtomFn)(void *, quint8, quint16, const char *);
+        typedef XcbInternAtomReply * (*XcbInternAtomReplyFn)(void *, XcbInternAtomCookie, void *);
+        typedef XcbVoidCookie (*XcbChangePropertyFn)(void *, quint8, quint32, XcbAtom, XcbAtom, quint8, quint32, const void *);
         typedef int (*XcbFlushFn)(void *);
 
         static QLibrary *lib = 0;
