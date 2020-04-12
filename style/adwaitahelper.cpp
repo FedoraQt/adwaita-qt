@@ -609,15 +609,9 @@ void Helper::renderButtonFrame(QPainter *painter, const QRect &rect, const QColo
     if (color.isValid() && active) {
         QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
         if (sunken) {
-                // Pressed button in dark mode is not a gradient, just an image consting from same $color
-            if (darkMode) {
-                gradient.setColorAt(0, color);
-                gradient.setColorAt(1, color);
-            } else {
-                // Pressed button in normal mode is not a gradient, just an image consting from same $color
-                gradient.setColorAt(0, color);
-                gradient.setColorAt(1, color);
-            }
+            // Pressed button in normal and dark mode is not a gradient, just an image consting from same $color
+            gradient.setColorAt(0, color);
+            gradient.setColorAt(1, color);
         } else if (mouseOver) {
             if (darkMode) {
                 QColor baseColor = lighten(color, 0.01);
@@ -1042,15 +1036,9 @@ void Helper::renderRadioButton(QPainter *painter, const QRect &rect, const QColo
         if (background.isValid() && enabled) {
             QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
             if (sunken) {
-                    // Pressed-alt button in dark mode is not a gradient, just an image consting from same $background
-                if (darkMode) {
-                    gradient.setColorAt(0, background);
-                    gradient.setColorAt(1, background);
-                } else {
-                    // Pressed-alt button in normal mode is not a gradient, just an image consting from same $background
-                    gradient.setColorAt(0, background);
-                    gradient.setColorAt(1, background);
-                }
+                // Pressed-alt button in normal and dark mode is not a gradient, just an image consting from same $background
+                gradient.setColorAt(0, background);
+                gradient.setColorAt(1, background);
             } else if (mouseOver) {
                 if (darkMode) {
                     QColor baseColor = background;
@@ -1204,15 +1192,9 @@ void Helper::renderSliderHandle(QPainter *painter, const QRect &rect, const QCol
     if (color.isValid() && enabled) {
         QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
         if (sunken) {
-                // Pressed-alt button in dark mode is not a gradient, just an image consting from same $background
-            if (darkMode) {
-                gradient.setColorAt(0, color);
-                gradient.setColorAt(1, color);
-            } else {
-                // Pressed-alt button in normal mode is not a gradient, just an image consting from same $color
-                gradient.setColorAt(0, color);
-                gradient.setColorAt(1, color);
-            }
+            // Pressed-alt button in normal and dark mode is not a gradient, just an image consting from same $background
+            gradient.setColorAt(0, color);
+            gradient.setColorAt(1, color);
         } else {
             if (darkMode) {
                 QColor baseColor = lighten(color, 0.03);

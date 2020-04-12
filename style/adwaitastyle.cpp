@@ -4407,15 +4407,16 @@ bool Style::drawPushButtonLabelControl(const QStyleOption *option, QPainter *pai
     // color role
     QPalette::ColorRole textRole;
     if (flat) {
-        if (hasFocus && sunken)
+        if (hasFocus && sunken) {
             textRole = QPalette::ButtonText;
-        else
+        } else {
             textRole = QPalette::WindowText;
-
-    } else if
-        (hasFocus) textRole = QPalette::ButtonText;
-    else
+        }
+    } else if (hasFocus) {
         textRole = QPalette::ButtonText;
+    } else {
+        textRole = QPalette::ButtonText;
+    }
 
     // menu arrow
     if (buttonOption->features & QStyleOptionButton::HasMenu) {
