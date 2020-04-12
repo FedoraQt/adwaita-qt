@@ -5013,10 +5013,12 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
     if (!menuItemOption->text.isEmpty()) {
         // adjust textRect
         QString text = menuItemOption->text;
+
         textRect = centerRect(textRect, textRect.width(), option->fontMetrics.size(_mnemonics->textFlags(), text).height());
         textRect = visualRect(option, textRect);
 
-        textRect.setRight(textRect.right() - Metrics::MenuItem_MarginWidth);
+        const int arrowWidth = menuItemOption->menuItemType == QStyleOptionMenuItem::SubMenu ? Metrics::MenuButton_IndicatorWidth : 0;
+        textRect.setRight(textRect.right() - Metrics::MenuItem_MarginWidth - arrowWidth);
 
         // set font
         painter->setFont(menuItemOption->font);
