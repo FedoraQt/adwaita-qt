@@ -4773,12 +4773,11 @@ bool Style::drawItemViewItemControl(const QStyleOption *option, QPainter *painte
 #else
     QStyleOptionViewItemV4 op(*vopt);
 #endif
-    QPalette palette = op.palette;
-    if ((vopt->state & QStyle::State_Enabled) && !(vopt->state & QStyle::State_Active)) {
+    if (_helper->isWindowActive(widget)) {
+        QPalette palette = op.palette;
         palette.setColor(QPalette::Inactive, QPalette::Text, palette.color(QPalette::Active, QPalette::Text));
+        op.palette = palette;
     }
-
-    op.palette = palette;
 
     ParentStyleClass::drawControl(CE_ItemViewItem, &op, painter, widget);
 

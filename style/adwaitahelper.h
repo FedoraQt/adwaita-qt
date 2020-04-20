@@ -27,8 +27,9 @@
 #include "config-adwaita.h"
 
 #include <QPainterPath>
-#include <QWidget>
 #include <QStyle>
+#include <QWidget>
+#include <QWindow>
 
 #if ADWAITA_HAVE_X11
 #include <QX11Info>
@@ -57,6 +58,15 @@ public:
     //* destructor
     virtual ~Helper()
     {}
+
+    static bool isWindowActive(const QWidget *widget)
+    {
+        const QWindow *win = widget ? widget->window()->windowHandle() : nullptr;
+        if (win) {
+            return win->isActive();
+        }
+        return false;
+    }
 
     //*@name color utilities
     //@{
