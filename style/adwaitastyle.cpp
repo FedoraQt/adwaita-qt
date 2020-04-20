@@ -407,6 +407,27 @@ void Style::polish(QWidget *widget)
         }
     }
 
+    // HACK to avoid different text color in unfocused views
+    if (QAbstractItemView *view = qobject_cast<QAbstractItemView *>(widget)) {
+         QWindow *win = widget ? widget->window()->windowHandle() : nullptr;
+        if (win) {
+            connect(win, &QWindow::activeChanged, this, [=] () {
+                QPalette pal = view->palette();
+                if (win->isActive()) {
+                    pal.setColor(QPalette::Inactive, QPalette::Text, pal.color(QPalette::Active, QPalette::Text));
+                } else {
+                    polish(pal);
+                }
+                view->setPalette(pal);
+            });
+
+            if (win->isActive()) {
+                QMetaObject::invokeMethod(win, "activeChanged", Qt::QueuedConnection);
+            }
+        }
+
+    }
+
     if (!widget->parent() || !qobject_cast<QWidget *>(widget->parent()) || qobject_cast<QDialog *>(widget) || qobject_cast<QMainWindow *>(widget)) {
         addEventFilter(widget);
     }
