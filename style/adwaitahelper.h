@@ -138,10 +138,11 @@ public:
         return QColor::fromHslF(h, s, l, alpha);
     }
 
+    //* returns adwaita color palette
+    QPalette palette(bool dark) const;
+
     //* add alpha channel multiplier to color
     QColor alphaColor(QColor color, qreal alpha) const;
-
-    // ADWAITA TODO
 
     //* mouse over color
     QColor hoverColor(const QPalette &palette) const
