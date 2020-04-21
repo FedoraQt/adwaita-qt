@@ -962,9 +962,9 @@ void Helper::renderCheckBox(QPainter *painter, const QRect &rect, const QColor &
         QRectF markerRect(frameRect);
 
         QPainterPath path;
-        path.moveTo(markerRect.right(), markerRect.top() + markerRect.height() / 4);
+        path.moveTo(markerRect.right() - markerRect.width() / 4, markerRect.top() + markerRect.height() / 3);
         path.lineTo(markerRect.center().x(), markerRect.bottom() - markerRect.height() / 3.0);
-        path.lineTo(markerRect.left() + markerRect.width() / 3.0, markerRect.center().y());
+        path.lineTo(markerRect.left() + markerRect.width() / 4, markerRect.center().y());
 
         painter->setClipRect(markerRect);
         painter->drawPath(path);
@@ -988,9 +988,9 @@ void Helper::renderCheckBox(QPainter *painter, const QRect &rect, const QColor &
         QRectF markerRect(frameRect);
 
         QPainterPath path;
-        path.moveTo(markerRect.right(), markerRect.top() + markerRect.height() / 4);
+        path.moveTo(markerRect.right() - markerRect.width() / 4, markerRect.top() + markerRect.height() / 3);
         path.lineTo(markerRect.center().x(), markerRect.bottom() - markerRect.height() / 3.0);
-        path.lineTo(markerRect.left() + markerRect.width() / 3.0, markerRect.center().y());
+        path.lineTo(markerRect.left() + markerRect.width() / 4, markerRect.center().y());
         path.translate(-markerRect.right(), -markerRect.top());
 
         painter->setClipRect(markerRect.adjusted(1, 1, -1, -1));

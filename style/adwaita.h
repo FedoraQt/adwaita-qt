@@ -179,9 +179,9 @@ namespace Adwaita
         ToolButton_InlineIndicatorWidth = 12,
 
         // checkboxes and radio buttons
-        CheckBox_Size = 20,
+        CheckBox_Size = 22,
         CheckBox_FocusMarginWidth = 3,
-        CheckBox_ItemSpacing = 4,
+        CheckBox_ItemSpacing = 8,
 
         // menubar items
         MenuBarItem_MarginWidth = 8,

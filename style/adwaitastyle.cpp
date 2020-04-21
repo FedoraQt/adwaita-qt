@@ -1871,7 +1871,7 @@ QRect Style::pushButtonFocusRect(const QStyleOption *option, const QWidget *) co
 //___________________________________________________________________________________________________________________
 QRect Style::checkBoxContentsRect(const QStyleOption *option, const QWidget *) const
 {
-    return visualRect(option, option->rect.adjusted(Metrics::CheckBox_Size + 2 * Metrics::CheckBox_ItemSpacing, 0, 0, 0));
+    return visualRect(option, option->rect.adjusted(Metrics::CheckBox_Size + Metrics::CheckBox_ItemSpacing, 0, 0, 0));
 }
 
 //___________________________________________________________________________________________________________________
@@ -4037,7 +4037,7 @@ bool Style::drawIndicatorCheckBoxPrimitive(const QStyleOption *option, QPainter 
     _animations->widgetStateEngine().updateState(widget, AnimationHover, mouseOver);
     if (checkBoxState != CheckPartial) {
         _animations->widgetStateEngine().updateState(widget, AnimationPressed, checkBoxState != CheckOff);
-        if (_animations->widgetStateEngine().isAnimated(widget, AnimationPressed))
+        if (_animations->widgetStateEngine().isAnimated(widget, AnimationPressed) && checkBoxState == CheckOn)
             checkBoxState = CheckAnimated;
     }
     qreal animation(_animations->widgetStateEngine().opacity(widget, AnimationPressed));
@@ -4931,7 +4931,7 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
     // checkbox
     QRect checkBoxRect;
     if (menuItemOption->menuHasCheckableItems) {
-        checkBoxRect = QRect(contentsRect.left(), contentsRect.top() + (contentsRect.height() - Metrics::CheckBox_Size) / 2, Metrics::CheckBox_Size, Metrics::CheckBox_Size);
+        checkBoxRect = QRect(contentsRect.left(), contentsRect.top() + (contentsRect.height() - Metrics::CheckBox_Size) / 2, Metrics::CheckBox_Size, Metrics::CheckBox_Size).adjusted(1, 1, -1, -1);
     }
 
     // We want to always to keep the space for checkbox
