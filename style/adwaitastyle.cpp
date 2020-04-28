@@ -3842,8 +3842,6 @@ bool Style::drawIndicatorCheckBoxPrimitive(const QStyleOption *option, QPainter 
     bool active((state & (State_On | State_NoChange)));
     bool windowActive(state & State_Active);
 
-    const QColor &outline(_helper->indicatorOutlineColor(palette, mouseOver, false, AnimationData::OpacityInvalid, AnimationNone, _dark));
-    const QColor &background(_helper->indicatorBackgroundColor(palette, mouseOver, false, sunken, AnimationData::OpacityInvalid, AnimationNone, _dark));
 
     // checkbox state
     CheckBoxState checkBoxState(CheckOff);
@@ -3851,6 +3849,9 @@ bool Style::drawIndicatorCheckBoxPrimitive(const QStyleOption *option, QPainter 
         checkBoxState = CheckPartial;
     else if (state & State_On)
         checkBoxState = CheckOn;
+
+    const QColor &outline(_helper->indicatorOutlineColor(palette, mouseOver, false, AnimationData::OpacityInvalid, AnimationNone, checkBoxState, _dark));
+    const QColor &background(_helper->indicatorBackgroundColor(palette, mouseOver, false, sunken, AnimationData::OpacityInvalid, AnimationNone, checkBoxState, _dark));
 
     // detect checkboxes in lists
     bool isSelectedItem(this->isSelectedItem(widget, rect.center()));
@@ -3895,8 +3896,8 @@ bool Style::drawIndicatorRadioButtonPrimitive(const QStyleOption *option, QPaint
     bool checked(state & State_On);
     bool windowActive(state & State_Active);
 
-    const QColor &outline(_helper->indicatorOutlineColor(palette, mouseOver, false, AnimationData::OpacityInvalid, AnimationNone, _dark));
-    const QColor &background(_helper->indicatorBackgroundColor(palette, mouseOver, false, sunken, AnimationData::OpacityInvalid, AnimationNone, _dark));
+    const QColor &outline(_helper->indicatorOutlineColor(palette, mouseOver, false, AnimationData::OpacityInvalid, AnimationNone, checked ? CheckOn : CheckOff, _dark));
+    const QColor &background(_helper->indicatorBackgroundColor(palette, mouseOver, false, sunken, AnimationData::OpacityInvalid, AnimationNone, checked ? CheckOn : CheckOff,_dark));
 
     // radio button state
     RadioButtonState radioButtonState(state & State_On ? RadioOn : RadioOff);
@@ -3924,7 +3925,7 @@ bool Style::drawIndicatorRadioButtonPrimitive(const QStyleOption *option, QPaint
     }
 
     // render
-    _helper->renderRadioButton(painter, rect, background, outline, tickColor, sunken, enabled && windowActive, radioButtonState, animation, mouseOver, _dark);
+    _helper->renderRadioButton(painter, rect, background, outline, tickColor, sunken, enabled && windowActive, radioButtonState, animation, mouseOver, _dark, false);
 
     return true;
 }
@@ -4759,9 +4760,9 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
     // We want to always to keep the space for checkbox
     contentsRect.setLeft(Metrics::CheckBox_Size + Metrics::MenuItem_ItemSpacing);
 
+    CheckBoxState checkState(menuItemOption->checked ? CheckOn : CheckOff);
     const QColor &outline(palette.foreground().color());
-    const QColor &indicatorBackground(_helper->indicatorBackgroundColor(palette, mouseOver, false, false, AnimationData::OpacityInvalid, AnimationNone, _dark));
-
+    const QColor &indicatorBackground(_helper->indicatorBackgroundColor(palette, mouseOver, false, false, AnimationData::OpacityInvalid, AnimationNone, checkState, _dark, true));
     // render checkbox indicator
     if (menuItemOption->checkType == QStyleOptionMenuItem::NonExclusive) {
         checkBoxRect = visualRect(option, checkBoxRect);
@@ -4776,9 +4777,8 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
         bool active(menuItemOption->checked);
         AnimationMode mode(_animations->widgetStateEngine().isAnimated(widget, AnimationHover) ? AnimationHover : AnimationNone);
         qreal opacity(_animations->widgetStateEngine().opacity(widget, AnimationHover));
-        QColor tickColor = _helper->checkBoxIndicatorColor(palette, mouseOver, enabled && active, opacity, mode);
-        CheckBoxState state(menuItemOption->checked ? CheckOn : CheckOff);
-        _helper->renderCheckBox(painter, checkBoxRect, indicatorBackground, outline, tickColor, false, state, mouseOver, enabled && windowActive, _dark);
+        QColor tickColor = _helper->checkBoxIndicatorColor(palette, mouseOver, enabled && active, opacity, mode, _dark, true);
+        _helper->renderCheckBox(painter, checkBoxRect, indicatorBackground, outline, tickColor, false, checkState, mouseOver, enabled && windowActive, _dark, true);
     } else if (menuItemOption->checkType == QStyleOptionMenuItem::Exclusive) {
         checkBoxRect = visualRect(option, checkBoxRect);
 
@@ -4790,9 +4790,8 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
         bool active(menuItemOption->checked);
         AnimationMode mode(_animations->widgetStateEngine().isAnimated(widget, AnimationHover) ? AnimationHover : AnimationNone);
         qreal opacity(_animations->widgetStateEngine().opacity(widget, AnimationHover));
-        QColor tickColor = _helper->checkBoxIndicatorColor(palette, mouseOver, enabled && active, opacity, mode);
-        CheckBoxState state(menuItemOption->checked ? CheckOn : CheckOff);
-        _helper->renderRadioButton(painter, checkBoxRect, indicatorBackground, outline, tickColor, false, enabled && windowActive, active ? RadioOn : RadioOff);
+        QColor tickColor = _helper->checkBoxIndicatorColor(palette, mouseOver, enabled && active, opacity, mode, _dark, true);
+        _helper->renderRadioButton(painter, checkBoxRect, indicatorBackground, outline, tickColor, false, enabled && windowActive, active ? RadioOn : RadioOff, _dark, true);
     }
 
     // icon
@@ -6345,8 +6344,8 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
         qreal opacity(_animations->widgetStateEngine().buttonOpacity(widget));
 
         // define colors
-        QColor background(_helper->indicatorBackgroundColor(palette, mouseOver, false, false, opacity, AnimationNone, _dark));
-        QColor outline(_helper->indicatorOutlineColor(palette, handleActive && mouseOver, hasFocus, opacity, mode, _dark));
+        QColor background(_helper->indicatorBackgroundColor(palette, mouseOver, false, false, opacity, AnimationNone, CheckOff, _dark, true));
+        QColor outline(_helper->indicatorOutlineColor(palette, handleActive && mouseOver, hasFocus, opacity, mode, CheckOff, _dark, true));
         QColor shadow(_helper->shadowColor(palette));
 
         // render

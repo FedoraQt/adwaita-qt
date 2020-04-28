@@ -245,18 +245,22 @@ QPalette Helper::palette(bool dark) const
 }
 
 //____________________________________________________________________
-QColor Helper::indicatorOutlineColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode, bool darkMode) const
+QColor Helper::indicatorOutlineColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode, CheckBoxState state, bool darkMode, bool inMenu) const
 {
     bool isDisabled = palette.currentColorGroup() == QPalette::Disabled;
+    if (inMenu || state == CheckBoxState::CheckOff) {
 
-    if (isDisabled) {
-        return buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode, darkMode);
-    }
+        if (isDisabled) {
+            return buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode, darkMode);
+        }
 
-    if (darkMode) {
-        return darken(palette.color(QPalette::Window), 0.18);
+        if (darkMode) {
+            return darken(palette.color(QPalette::Window), 0.18);
+        } else {
+            return darken(palette.color(QPalette::Window), 0.24);
+        }
     } else {
-        return darken(palette.color(QPalette::Window), 0.24);
+        return palette.color(QPalette::Highlight);
     }
 }
 
@@ -389,50 +393,59 @@ QColor Helper::buttonBackgroundColor(const QPalette &palette, bool mouseOver, bo
 }
 
 //
-QColor Helper::indicatorBackgroundColor(const QPalette &palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity, AnimationMode mode, bool darkMode) const
+QColor Helper::indicatorBackgroundColor(const QPalette &palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity, AnimationMode mode, CheckBoxState state, bool darkMode, bool inMenu) const
 {
     bool isDisabled = palette.currentColorGroup() == QPalette::Disabled;
     QColor background(palette.color(QPalette::Window));
     // Normal-alt button for dark mode is darken(bg_color, 0.03)
     // Normal-alt button for normal mode is lighten(bg_color, 0.05)
     QColor indicatorColor(darkMode ? darken(background, 0.03) : lighten(background, 0.05));
-    if (isDisabled) {
-        // Defined in drawing.css - insensitive button
-        // $insensitive_bg_color: mix($bg_color, $base_color, 60%);
-        return mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.6);
-    }
 
-    if (mode == AnimationPressed) {
-        if (darkMode) {
-            // Active button for dark mode is darken(bg_color, 0.09)
-            return mix(background, darken(background, 0.09), opacity);
-        } else {
-            // Active button for normal mode is darken(bg_color, 0.14)
-            return mix(lighten(background, 0.0), darken(background, 0.14), opacity);
+    if (inMenu || state == CheckOff) {
+        if (isDisabled) {
+            // Defined in drawing.css - insensitive button
+            // $insensitive_bg_color: mix($bg_color, $base_color, 60%);
+            return mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.6);
         }
-    } else if (sunken) {
-        if (darkMode) {
-            // Active button for dark mode is darken(bg_color, 0.09)
-            return darken(background, 0.09);
-        } else {
-            // Active button for normal mode is darken(bg_color, 0.14)
-            return darken(background, 0.14);
+
+        if (mode == AnimationPressed) {
+            if (darkMode) {
+                // Active button for dark mode is darken(bg_color, 0.09)
+                return mix(background, darken(background, 0.09), opacity);
+            } else {
+                // Active button for normal mode is darken(bg_color, 0.14)
+                return mix(lighten(background, 0.0), darken(background, 0.14), opacity);
+            }
+        } else if (sunken) {
+            if (darkMode) {
+                // Active button for dark mode is darken(bg_color, 0.09)
+                return darken(background, 0.09);
+            } else {
+                // Active button for normal mode is darken(bg_color, 0.14)
+                return darken(background, 0.14);
+            }
+        } else if (mode == AnimationHover) {
+            if (darkMode) {
+                // Hovered-alt button for dark mode is bg_color
+                return mix(indicatorColor, background, opacity);
+            } else {
+                // Hovered-alt button for normal mode is lighten(bg_color, 0.09)
+                return mix(indicatorColor, lighten(background, 0.09), opacity);
+            }
+        } else if (mouseOver) {
+            if (darkMode) {
+                // Hovered-alt button for dark mode is bg_color
+                return background;
+            } else {
+                // Hovered-alt button for normal mode is lighten(bg_color, 0.09)
+                return lighten(background, 0.09);
+            }
         }
-    } else if (mode == AnimationHover) {
+    } else {
         if (darkMode) {
-            // Hovered-alt button for dark mode is bg_color
-            return mix(indicatorColor, background, opacity);
+            return lighten(palette.color(QPalette::Highlight));
         } else {
-            // Hovered-alt button for normal mode is lighten(bg_color, 0.09)
-            return mix(indicatorColor, lighten(background, 0.09), opacity);
-        }
-    } else if (mouseOver) {
-        if (darkMode) {
-            // Hovered-alt button for dark mode is bg_color
-            return background;
-        } else {
-            // Hovered-alt button for normal mode is lighten(bg_color, 0.09)
-            return lighten(background, 0.09);
+            return palette.color(QPalette::Highlight);
         }
     }
 
@@ -501,13 +514,22 @@ QColor Helper::scrollBarHandleColor(const QPalette &palette, bool mouseOver, boo
 }
 
 //______________________________________________________________________________
-QColor Helper::checkBoxIndicatorColor(const QPalette &palette, bool mouseOver, bool active, qreal opacity, AnimationMode mode) const
+QColor Helper::checkBoxIndicatorColor(const QPalette &palette, bool mouseOver, bool active, qreal opacity, AnimationMode mode, bool darkMode, bool inMenu) const
 {
     Q_UNUSED(mouseOver);
     Q_UNUSED(active);
     Q_UNUSED(opacity);
     Q_UNUSED(mode);
-    return palette.text().color();
+
+    if (inMenu) {
+        return palette.color(QPalette::Text);
+    } else {
+        if (active) {
+            return palette.color(QPalette::HighlightedText);
+        } else {
+            return transparentize(palette.color(QPalette::ToolTipText), 0.2);
+        }
+    }
 }
 
 //______________________________________________________________________________
@@ -850,7 +872,7 @@ void Helper::renderButtonFrame(QPainter *painter, const QRect &rect, const QColo
 
 //______________________________________________________________________________
 void Helper::renderCheckBoxFrame(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, const QColor &shadow,
-                               bool hasFocus, bool sunken, bool mouseOver, bool active, bool darkMode) const
+                               bool hasFocus, bool sunken, bool mouseOver, bool active, CheckBoxState state, bool darkMode, bool inMenu) const
 {
     // setup painter
     painter->setRenderHint(QPainter::Antialiasing, true);
@@ -868,60 +890,64 @@ void Helper::renderCheckBoxFrame(QPainter *painter, const QRect &rect, const QCo
     } else
         painter->setPen(Qt::NoPen);
 
-    // content
-    if (color.isValid() && active) {
-        QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
-        if (sunken) {
-                // Pressed-alt button in dark mode is not a gradient, just an image consting from same $color
-            if (darkMode) {
-                gradient.setColorAt(0, color);
-                gradient.setColorAt(1, color);
+    if (inMenu || state == CheckOff) {
+        // content
+        if (color.isValid() && active) {
+            QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
+            if (sunken) {
+                    // Pressed-alt button in dark mode is not a gradient, just an image consting from same $color
+                if (darkMode) {
+                    gradient.setColorAt(0, color);
+                    gradient.setColorAt(1, color);
+                } else {
+                    // Pressed-alt button in normal mode is not a gradient, just an image consting from same $color
+                    gradient.setColorAt(0, color);
+                    gradient.setColorAt(1, color);
+                }
+            } else if (mouseOver) {
+                if (darkMode) {
+                    QColor baseColor = color;
+                    // Hovered-alt button in dark mode is a gradient from $color to darken(bg_color, 0.04)
+                    gradient.setColorAt(0, darken(baseColor, 0.04));
+                    gradient.setColorAt(1, color);
+                } else {
+                    QColor baseColor = darken(color, 0.09);
+                    // Hovered-alt button in normal mode is a gradient from $color to lighten(bg_color, 0.04)
+                    gradient.setColorAt(0, color);                      // FIXME:
+                    gradient.setColorAt(1, lighten(baseColor, 0.04));   // should be vice-versa, but this way it seems to be more accurate
+                }
             } else {
-                // Pressed-alt button in normal mode is not a gradient, just an image consting from same $color
-                gradient.setColorAt(0, color);
-                gradient.setColorAt(1, color);
+                if (darkMode) {
+                    QColor baseColor = lighten(color, 0.03);
+                    // Normal-alt button in dark mode is a gradient from $color to darken(bg_color, 0.06)
+                    gradient.setColorAt(0, darken(baseColor, 0.06));
+                    gradient.setColorAt(1, color);
+                } else {
+                    QColor baseColor = darken(color, 0.05);
+                    // Normal-alt button in normal mode is a gradient from $color to bg_color
+                    gradient.setColorAt(0, baseColor);
+                    gradient.setColorAt(1, color);
+                }
             }
-        } else if (mouseOver) {
-            if (darkMode) {
-                QColor baseColor = color;
-                // Hovered-alt button in dark mode is a gradient from $color to darken(bg_color, 0.04)
-                gradient.setColorAt(0, darken(baseColor, 0.04));
-                gradient.setColorAt(1, color);
-            } else {
-                QColor baseColor = darken(color, 0.09);
-                // Hovered-alt button in normal mode is a gradient from $color to lighten(bg_color, 0.04)
-                gradient.setColorAt(0, color);                      // FIXME:
-                gradient.setColorAt(1, lighten(baseColor, 0.04));   // should be vice-versa, but this way it seems to be more accurate
-            }
+            painter->setBrush(gradient);
+        } else if (!active) {
+            painter->setBrush(color);
         } else {
-            if (darkMode) {
-                QColor baseColor = lighten(color, 0.03);
-                // Normal-alt button in dark mode is a gradient from $color to darken(bg_color, 0.06)
-                gradient.setColorAt(0, darken(baseColor, 0.06));
-                gradient.setColorAt(1, color);
-            } else {
-                QColor baseColor = darken(color, 0.05);
-                // Normal-alt button in normal mode is a gradient from $color to bg_color
-                gradient.setColorAt(0, baseColor);
-                gradient.setColorAt(1, color);
-            }
+            painter->setBrush(Qt::NoBrush);
         }
-        painter->setBrush(gradient);
-    } else if (!active) {
-        painter->setBrush(color);
     } else {
-        painter->setBrush(Qt::NoBrush);
+        if (color.isValid()) {
+            QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
+            gradient.setColorAt(0, color);
+            gradient.setColorAt(1, lighten(color, 0.04));
+            painter->setBrush(gradient);
+        } else {
+            painter->setBrush(Qt::NoBrush);
+        }
     }
 
     // render
     painter->drawRoundedRect(frameRect, radius, radius);
-
-    if (!sunken && active && color.isValid()) {
-        painter->setPen(color.lighter(140));
-        painter->drawLine(frameRect.topLeft() + QPoint(3, 1), frameRect.topRight() + QPoint(-3, 1));
-        painter->setPen(outline.darker(114));
-        painter->drawLine(frameRect.bottomLeft() + QPointF(2.7, 0), frameRect.bottomRight() + QPointF(-2.7, 0));
-    }
 }
 
 //______________________________________________________________________________
@@ -1127,7 +1153,7 @@ void Helper::renderCheckBoxBackground(QPainter *painter, const QRect &rect, cons
 
 //______________________________________________________________________________
 void Helper::renderCheckBox(QPainter *painter, const QRect &rect, const QColor &background, const QColor &outline, const QColor &tickColor,
-                            bool sunken, CheckBoxState state, bool mouseOver, qreal animation, bool active, bool darkMode) const
+                            bool sunken, CheckBoxState state, bool mouseOver, qreal animation, bool active, bool darkMode, bool inMenu) const
 {
     // setup painter
     painter->save();
@@ -1140,7 +1166,7 @@ void Helper::renderCheckBox(QPainter *painter, const QRect &rect, const QColor &
 
     // content
     {
-        renderCheckBoxFrame(painter, rect, background, outline, Qt::transparent, false, sunken, mouseOver, active, darkMode);
+        renderCheckBoxFrame(painter, rect, background, outline, Qt::transparent, false, sunken, mouseOver, active, state, darkMode, inMenu);
     }
 
     // mark
@@ -1215,7 +1241,7 @@ void Helper::renderRadioButtonBackground(QPainter *painter, const QRect &rect, c
 
 //______________________________________________________________________________
 void Helper::renderRadioButton(QPainter *painter, const QRect &rect, const QColor &background, const QColor &outline, const QColor &tickColor,
-                               bool sunken, bool enabled, RadioButtonState state, qreal animation, bool mouseOver, bool darkMode) const
+                               bool sunken, bool enabled, RadioButtonState state, qreal animation, bool mouseOver, bool darkMode, bool inMenu) const
 {
     // setup painter
     painter->setRenderHint(QPainter::Antialiasing, true);
@@ -1224,8 +1250,7 @@ void Helper::renderRadioButton(QPainter *painter, const QRect &rect, const QColo
     QRectF frameRect(rect);
     frameRect.adjust(2, 2, -2, -2);
 
-    // content
-    {
+    if (inMenu || state == RadioOff) {
         if (background.isValid() && enabled) {
             QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
             if (sunken) {
@@ -1260,6 +1285,20 @@ void Helper::renderRadioButton(QPainter *painter, const QRect &rect, const QColo
             painter->setBrush(gradient);
         } else if (!enabled) {
             painter->setBrush(background);
+        } else {
+            painter->setBrush(Qt::NoBrush);
+        }
+
+        painter->setPen(QPen(outline, 1));
+
+        QRectF contentRect(frameRect.adjusted(0.5, 0.5, -0.5, -0.5));
+        painter->drawEllipse(contentRect);
+    } else {
+        if (background.isValid()) {
+            QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
+            gradient.setColorAt(0, background);
+            gradient.setColorAt(1, lighten(background, 0.04));
+            painter->setBrush(gradient);
         } else {
             painter->setBrush(Qt::NoBrush);
         }
