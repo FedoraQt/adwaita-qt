@@ -29,7 +29,10 @@
 #include <QPainterPath>
 #include <QStyle>
 #include <QWidget>
+
+#if QT_VERSION > 0x050000
 #include <QWindow>
+#endif
 
 #if ADWAITA_HAVE_X11
 #include <QX11Info>
@@ -59,6 +62,7 @@ public:
     virtual ~Helper()
     {}
 
+#if QT_VERSION > 0x050000
     static bool isWindowActive(const QWidget *widget)
     {
         const QWindow *win = widget ? widget->window()->windowHandle() : nullptr;
@@ -67,6 +71,7 @@ public:
         }
         return false;
     }
+#endif
 
     //*@name color utilities
     //@{

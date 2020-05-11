@@ -407,6 +407,7 @@ void Style::polish(QWidget *widget)
         }
     }
 
+#if QT_VERSION > 0x050000
     // HACK to avoid different text color in unfocused views
     if (QAbstractItemView *view = qobject_cast<QAbstractItemView *>(widget)) {
          QWindow *win = widget ? widget->window()->windowHandle() : nullptr;
@@ -427,6 +428,7 @@ void Style::polish(QWidget *widget)
         }
 
     }
+#endif
 
     if (!widget->parent() || !qobject_cast<QWidget *>(widget->parent()) || qobject_cast<QDialog *>(widget) || qobject_cast<QMainWindow *>(widget)) {
         addEventFilter(widget);
@@ -4617,12 +4619,13 @@ bool Style::drawItemViewItemControl(const QStyleOption *option, QPainter *painte
 #else
     QStyleOptionViewItemV4 op(*vopt);
 #endif
+#if QT_VERSION > 0x050000
     if (_helper->isWindowActive(widget)) {
         QPalette palette = op.palette;
         palette.setColor(QPalette::Inactive, QPalette::Text, palette.color(QPalette::Active, QPalette::Text));
         op.palette = palette;
     }
-
+#endif
     ParentStyleClass::drawControl(CE_ItemViewItem, &op, painter, widget);
 
     return true;
