@@ -409,10 +409,14 @@ void Style::polish(QWidget *widget)
 
 #if QT_VERSION > 0x050000
     // HACK to avoid different text color in unfocused views
-    if (QAbstractItemView *view = qobject_cast<QAbstractItemView *>(widget)) {
-         QWindow *win = widget ? widget->window()->windowHandle() : nullptr;
+    if (QPointer<QAbstractItemView> view = qobject_cast<QAbstractItemView *>(widget)) {
+        QWindow *win = widget ? widget->window()->windowHandle() : nullptr;
         if (win) {
             connect(win, &QWindow::activeChanged, this, [=] () {
+                if (view.isNull()) {
+                    return;
+                }
+
                 QPalette pal = view->palette();
                 if (win->isActive()) {
                     pal.setColor(QPalette::Inactive, QPalette::Text, pal.color(QPalette::Active, QPalette::Text));
