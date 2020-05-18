@@ -409,28 +409,19 @@ void Style::polish(QWidget *widget)
 
 #if QT_VERSION > 0x050000
     // HACK to avoid different text color in unfocused views
+    // This has a side effect that the view will never grey out, but it's still better then having
+    // views greyed out when the application is active
     if (QPointer<QAbstractItemView> view = qobject_cast<QAbstractItemView *>(widget)) {
-        QWindow *win = widget ? widget->window()->windowHandle() : nullptr;
-        if (win) {
-            connect(win, &QWindow::activeChanged, this, [=] () {
-                if (view.isNull()) {
-                    return;
-                }
-
-                QPalette pal = view->palette();
-                if (win->isActive()) {
-                    pal.setColor(QPalette::Inactive, QPalette::Text, pal.color(QPalette::Active, QPalette::Text));
-                } else {
-                    polish(pal);
-                }
-                view->setPalette(pal);
-            });
-
-            if (win->isActive()) {
-                QMetaObject::invokeMethod(win, "activeChanged", Qt::QueuedConnection);
-            }
+        QPalette pal = view->palette();
+        // TODO keep synced with the standard palette
+        const QColor activeTextColor = _dark ? QColor("#eeeeec") : QColor("#2e3436");
+        const QColor inactiveTextColor = _dark ? _helper->mix(QColor("#eeeeec"), _helper->darken(_helper->desaturate(QColor("#3d3846"), 1.0), 0.04)) :
+                                                 _helper->mix(QColor("#2e3436"), QColor("#f6f5f4"));
+        // No custom text color used, we can do our HACK
+        if (inactiveTextColor == pal.color(QPalette::Inactive, QPalette::Text) && activeTextColor == pal.color(QPalette::Active, QPalette::Text)) {
+            pal.setColor(QPalette::Inactive, QPalette::Text, pal.color(QPalette::Active, QPalette::Text));
+            view->setPalette(pal);
         }
-
     }
 #endif
 
@@ -4625,9 +4616,15 @@ bool Style::drawItemViewItemControl(const QStyleOption *option, QPainter *painte
 #endif
 #if QT_VERSION > 0x050000
     if (_helper->isWindowActive(widget)) {
+        const QColor activeTextColor = _dark ? QColor("#eeeeec") : QColor("#2e3436");
+        const QColor inactiveTextColor = _dark ? _helper->mix(QColor("#eeeeec"), _helper->darken(_helper->desaturate(QColor("#3d3846"), 1.0), 0.04)) :
+                                                 _helper->mix(QColor("#2e3436"), QColor("#f6f5f4"));
+        // No custom text color used, we can do our HACK
         QPalette palette = op.palette;
-        palette.setColor(QPalette::Inactive, QPalette::Text, palette.color(QPalette::Active, QPalette::Text));
-        op.palette = palette;
+        if (inactiveTextColor == palette.color(QPalette::Inactive, QPalette::Text) && activeTextColor == palette.color(QPalette::Active, QPalette::Text)) {
+            palette.setColor(QPalette::Inactive, QPalette::Text, palette.color(QPalette::Active, QPalette::Text));
+            op.palette = palette;
+        }
     }
 #endif
     ParentStyleClass::drawControl(CE_ItemViewItem, &op, painter, widget);
