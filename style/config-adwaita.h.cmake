@@ -22,9 +22,6 @@
 #ifndef config_adwaita_h
 #define config_adwaita_h
 
-/* Define to 1 if adwaita is compiled against KDE4 */
-#cmakedefine01 ADWAITA_USE_KDE4
-
 /* Define to 1 if XCB libraries are found */
 #cmakedefine01 ADWAITA_HAVE_X11
 

@@ -30,9 +30,7 @@
 #include <QStyle>
 #include <QWidget>
 
-#if QT_VERSION > 0x050000
 #include <QWindow>
-#endif
 
 #if ADWAITA_HAVE_X11
 #include <QX11Info>
@@ -53,16 +51,10 @@ public:
     //* constructor
     explicit Helper();
 
-#if ADWAITA_USE_KDE4
-    //* constructor
-    explicit Helper(const QByteArray &);
-#endif
-
     //* destructor
     virtual ~Helper()
     {}
 
-#if QT_VERSION > 0x050000
     static bool isWindowActive(const QWidget *widget)
     {
         const QWindow *win = widget ? widget->window()->windowHandle() : nullptr;
@@ -71,7 +63,6 @@ public:
         }
         return false;
     }
-#endif
 
     //*@name color utilities
     //@{

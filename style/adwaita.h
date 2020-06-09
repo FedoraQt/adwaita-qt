@@ -32,21 +32,14 @@ namespace Adwaita
     //*@name convenience typedef
     //@{
 
-#if QT_VERSION >= 0x050000
     //* scoped pointer convenience typedef
     template <typename T> using WeakPointer = QPointer<T>;
-#else
-    //* scoped pointer convenience typedef
-    template <typename T> using WeakPointer = QWeakPointer<T>;
-#endif
 
     //* scoped pointer convenience typedef
     template <typename T> using ScopedPointer = QScopedPointer<T, QScopedPointerPodDeleter>;
 
     //* disable QStringLiteral for older Qt version
-#if QT_VERSION < 0x050000
     using QStringLiteral = QString;
-#endif
 
     //@}
 

@@ -27,7 +27,7 @@
 #include <QPainter>
 #include <QLibrary>
 
-#if ADWAITA_HAVE_X11 && QT_VERSION < 0x050000
+#if ADWAITA_HAVE_X11
 #include <X11/Xlib-xcb.h>
 #endif
 
@@ -42,14 +42,6 @@ Helper::Helper()
 {
     init();
 }
-
-//____________________________________________________________________
-#if ADWAITA_USE_KDE4
-Helper::Helper(const QByteArray &name)
-{
-    init();
-}
-#endif
 
 //
 QPalette Helper::palette(bool dark) const
@@ -1713,22 +1705,14 @@ void Helper::renderDecorationButton(QPainter *painter, const QRect &rect, const 
 //______________________________________________________________________________
 bool Helper::isX11(void)
 {
-#if QT_VERSION >= 0x050000
     static const bool s_isX11 = qApp->platformName() == QLatin1String("xcb");
     return s_isX11;
-#else
-    return false;
-#endif
 }
 
 bool Helper::isWayland(void)
 {
-#if QT_VERSION >= 0x050000
     static const bool s_isWayland = qApp->platformName().startsWith(QLatin1String("wayland"));
     return s_isWayland;
-#else
-    return false;
-#endif
 }
 
 //______________________________________________________________________________
@@ -1815,25 +1799,17 @@ bool Helper::hasAlphaChannel(const QWidget *widget) const
 //______________________________________________________________________________________
 QPixmap Helper::highDpiPixmap(int width, int height) const
 {
-#if QT_VERSION >= 0x050300
     qreal dpiRatio(qApp->devicePixelRatio());
     QPixmap pixmap(width * dpiRatio, height * dpiRatio);
     pixmap.setDevicePixelRatio(dpiRatio);
     return pixmap;
-#else
-    return QPixmap(width, height);
-#endif
 }
 
 //______________________________________________________________________________________
 qreal Helper::devicePixelRatio(const QPixmap &pixmap) const
 {
-#if QT_VERSION >= 0x050300
-    return pixmap.devicePixelRatio();
-#else
     Q_UNUSED(pixmap);
     return 1;
-#endif
 }
 
 #if ADWAITA_HAVE_X11
@@ -1842,16 +1818,7 @@ qreal Helper::devicePixelRatio(const QPixmap &pixmap) const
 xcb_connection_t *Helper::connection(void)
 {
 
-#if QT_VERSION >= 0x050000
     return QX11Info::connection();
-#else
-    static xcb_connection_t *connection = nullptr;
-    if (!connection) {
-        Display *display = QX11Info::display();
-        if (display) connection = XGetXCBConnection(display);
-    }
-    return connection;
-#endif
 }
 
 //____________________________________________________________________

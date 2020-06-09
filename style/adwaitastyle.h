@@ -25,10 +25,6 @@
 #include "adwaita.h"
 #include "config-adwaita.h"
 
-#if ADWAITA_USE_KDE4
-#include "kstylekde4compat.h"
-#endif
-
 #include <QAbstractItemView>
 #include <QAbstractScrollArea>
 
@@ -40,9 +36,7 @@
 #include <QStyleOption>
 #include <QWidget>
 
-#if QT_VERSION >= 0x050000
 #include <QCommandLinkButton>
-#endif
 
 namespace AdwaitaPrivate
 {
@@ -59,11 +53,7 @@ class WidgetExplorer;
 class WindowManager;
 
 //* convenience typedef for base class
-#if ADWAITA_USE_KDE4
-using ParentStyleClass = KStyleKDE4Compat;
-#else
 using ParentStyleClass = QCommonStyle;
-#endif
 
 //* base class for adwaita style
 /** it is responsible to draw all the primitives to be displayed on screen, on request from Qt paint engine */
@@ -139,9 +129,7 @@ public:
     bool eventFilterDockWidget(QDockWidget *dockWidget, QEvent *event);
     bool eventFilterMdiSubWindow(QMdiSubWindow *subWindow, QEvent *event);
 
-#if QT_VERSION >= 0x050000
     bool eventFilterCommandLinkButton(QCommandLinkButton *button, QEvent *event);
-#endif
 
     //* install event filter to object, in a unique way
     void addEventFilter(QObject *object)
