@@ -77,14 +77,6 @@
 // needed to deal with device pixel ratio
 #include <QWindow>
 
-#if ADWAITA_HAVE_X11
-#include <QX11Info>
-#include <xcb/xcb.h>
-
-#include <NETWM>
-
-#endif
-
 namespace Adwaita
 {
 
@@ -730,44 +722,14 @@ namespace Adwaita
     //_______________________________________________________
     void WindowManager::startDragX11( QWidget* widget, const QPoint& position )
     {
-        #if ADWAITA_HAVE_X11
-        // connection
-        xcb_connection_t* connection( Helper::connection() );
-
-        // window
-        WId window( widget->window()->winId() );
-
-        qreal dpiRatio = 1;
-        QWindow* windowHandle = widget->window()->windowHandle();
-        if( windowHandle ) dpiRatio = windowHandle->devicePixelRatio();
-        else dpiRatio = qApp->devicePixelRatio();
-        dpiRatio = qApp->devicePixelRatio();
-
-        xcb_connection_t* net_connection = connection;
-
-        xcb_ungrab_pointer( connection, XCB_TIME_CURRENT_TIME );
-        NETRootInfo( net_connection, NET::WMMoveResize ).moveResizeRequest(
-            window, position.x() * dpiRatio,
-            position.y() * dpiRatio,
-            NET::Move );
-
-        #else
-
         Q_UNUSED( widget );
         Q_UNUSED( position );
-
-        #endif
     }
 
     //____________________________________________________________
     bool WindowManager::supportWMMoveResize( void ) const
     {
-        #if ADWAITA_HAVE_X11
-        return Helper::isX11();
-        #else
         return false;
-        #endif
-
     }
 
     //____________________________________________________________
