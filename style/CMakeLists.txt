@@ -56,10 +56,12 @@ set(LIBRARY_NAME "adwaita-qt")
 
 add_library(${LIBRARY_NAME} MODULE ${Adwaita_SRCS})
 target_link_libraries(${LIBRARY_NAME}
+    ${XCB_LIBRARIES}
     Qt5::Core
     Qt5::DBus
     Qt5::Gui
     Qt5::Widgets
+    Qt5::X11Extras
 )
 
 set_target_properties(${LIBRARY_NAME} PROPERTIES
