@@ -1,19 +1,25 @@
 project(Adwaita)
 
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.0)
 
+set(QT_MIN_VERSION "5.12.0")
 set(CMAKE_AUTOMOC ON)
+
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH})
+
 add_definitions(-std=c++11)
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5DBus REQUIRED)
-set(QT_QTGUI_LIBRARY Qt5::Gui Qt5::Widgets)
-set(QT_QTCORE_LIBRARY Qt5::Core)
-set(QT_QTDBUS_LIBRARY Qt5::DBus)
-#target_link_libraries(${LIBRARY_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
-set(QT_VERSION_NUMBER "5")
+find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
+    Core
+    DBus
+    Gui
+    Widgets
+)
+
+find_package(XCB 1.10 COMPONENTS XCB)
+
+set(ADWAITA_HAVE_X11 ${XCB_FOUND})
+
 get_target_property(REAL_QMAKE_EXECUTABLE ${Qt5Core_QMAKE_EXECUTABLE}
                     IMPORTED_LOCATION)
 if (NOT QT_PLUGINS_DIR)
@@ -21,19 +27,6 @@ if (NOT QT_PLUGINS_DIR)
                     OUTPUT_VARIABLE QT_PLUGINS_DIR
                     ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
 endif()
-
-if (NOT CMAKE_INSTALL_PREFIX)
-    set (CMAKE_INSTALL_PREFIX "/usr/local")
-endif()
-
-if (NOT DATA_INSTALL_DIR)
-    set (DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share")
-endif()
-if (NOT THEME_INSTALL_DIR)
-    set (THEME_INSTALL_DIR "${DATA_INSTALL_DIR}/themes")
-endif()
-
-set(ADWAITA_THEME_DIR "${THEME_INSTALL_DIR}/Adwaita/qt")
 
 option(BUILD_EXAMPLE "Build an example widget factory app" OFF)
 if (BUILD_EXAMPLE)

@@ -1,6 +1,13 @@
 
 configure_file(config-adwaita.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-adwaita.h )
 
+include_directories(
+    ${CMAKE_CURRENT_BINARY_DIR} # for adwaita-config.h
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/animations/
+    ${CMAKE_CURRENT_SOURCE_DIR}/debug/
+)
+
 set(Adwaita_SRCS
     animations/adwaitaanimation.cpp
     animations/adwaitaanimations.cpp
@@ -27,7 +34,9 @@ set(Adwaita_SRCS
     animations/adwaitatransitionwidget.cpp
     animations/adwaitawidgetstateengine.cpp
     animations/adwaitawidgetstatedata.cpp
+
     debug/adwaitawidgetexplorer.cpp
+
     adwaitaaddeventfilter.cpp
     adwaitahelper.cpp
     adwaitamnemonics.cpp
@@ -36,24 +45,23 @@ set(Adwaita_SRCS
     adwaitastyleplugin.cpp
     adwaitawindowmanager.cpp
 )
+
 add_definitions(-DQT_PLUGIN)
 
 if (MSVC)
     add_definitions(-D_USE_MATH_DEFINES) # Needed for M_PI on MSVC
 endif()
 
-include_directories(
-    ${QT_INCLUDES}
-    ${CMAKE_CURRENT_BINARY_DIR} # for adwaita-config.h
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/animations/
-    ${CMAKE_CURRENT_SOURCE_DIR}/debug/
-)
-
-set(LIBRARY_NAME "adwaita-qt${QT_VERSION_NUMBER}")
+set(LIBRARY_NAME "adwaita-qt")
 
 add_library(${LIBRARY_NAME} MODULE ${Adwaita_SRCS})
-target_link_libraries(${LIBRARY_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY})
+target_link_libraries(${LIBRARY_NAME}
+    Qt5::Core
+    Qt5::DBus
+    Qt5::Gui
+    Qt5::Widgets
+)
+
 set_target_properties(${LIBRARY_NAME} PROPERTIES
     LINK_FLAGS "-Wl,--no-undefined"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
