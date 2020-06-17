@@ -2,10 +2,15 @@ project(Adwaita)
 
 cmake_minimum_required(VERSION 3.0)
 
+set(ADWAITAQT_VERSION_MAJOR 1)
+set(ADWAITAQT_VERSION "1.2.0")
+
 set(QT_MIN_VERSION "5.12.0")
 set(CMAKE_AUTOMOC ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH})
+
+include(GNUInstallDirs)
 
 add_definitions(-std=c++11)
 
@@ -29,9 +34,4 @@ if (NOT QT_PLUGINS_DIR)
                     ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
 endif()
 
-option(BUILD_EXAMPLE "Build an example widget factory app" OFF)
-if (BUILD_EXAMPLE)
-    add_subdirectory(demo)
-endif()
-
-add_subdirectory(style)
+add_subdirectory(src)
