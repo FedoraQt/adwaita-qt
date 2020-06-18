@@ -4,8 +4,6 @@ include_directories(
 )
 
 configure_file(adwaita-qt.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/adwaita-qt.pc @ONLY)
-configure_file(cmake/AdwaitaQtConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/AdwaitaQtConfig.cmake @ONLY)
-configure_file(cmake/AdwaitaQtConfigVersion.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/AdwaitaQtConfigVersion.cmake @ONLY)
 
 set(libadwaitaqt_SRCS
     animations/adwaitaanimation.cpp
@@ -67,6 +65,7 @@ set(libadwaitaqt_HEADERS
 )
 
 add_library(adwaitaqt SHARED ${libadwaitaqt_SRCS})
+add_library(AdwaitaQt ALIAS adwaitaqt)
 
 target_link_libraries(adwaitaqt
     Qt5::Core
@@ -77,12 +76,36 @@ target_link_libraries(adwaitaqt
 )
 
 set_target_properties(adwaitaqt PROPERTIES VERSION ${ADWAITAQT_VERSION} SOVERSION 1)
+target_include_directories(adwaitaqt PUBLIC ${Qt5Core_INCLUDE_DIRS} ${Qt5Gui_INCLUDE_DIRS} ${Qt5DBus_INCLUDE_DIRS} ${Qt5Widgets_INCLUDE_DIRS} ${Qt5X11Extras_INCLUDE_DIRS})
 
 install(TARGETS adwaitaqt DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})
+install(TARGETS adwaitaqt EXPORT AdwaitaQtTargets)
+
 install(FILES ${libadwaitaqt_HEADERS} DESTINATION ${CMAKE_INSTALL_FULL_INCLUDEDIR}/AdwaitaQt)
-install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/AdwaitaQtConfig.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/AdwaitaQtConfigVersion.cmake
-        DESTINATION
-        ${CMAKE_INSTALL_FULL_LIBDIR}/cmake/AdwaitaQt)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/adwaita-qt.pc DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig)
+
+# create a Config.cmake and a ConfigVersion.cmake file and install them
+set(CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_FULL_LIBDIR}/cmake/AdwaitaQt")
+
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/AdwaitaQtConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/AdwaitaQtConfig.cmake"
+  INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
+)
+
+write_basic_package_version_file(
+  ${CMAKE_CURRENT_BINARY_DIR}/AdwaitaQtConfigVersion.cmake
+  VERSION ${ADWAITAQT_VERSION}
+  COMPATIBILITY SameMinorVersion
+)
+
+install(FILES
+  "${CMAKE_CURRENT_BINARY_DIR}/AdwaitaQtConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/AdwaitaQtConfigVersion.cmake"
+  DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
+  COMPONENT Devel
+)
+
+install(EXPORT AdwaitaQtTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE AdwaitaQtTargets.cmake)
