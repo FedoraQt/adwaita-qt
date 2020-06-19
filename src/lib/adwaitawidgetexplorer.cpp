@@ -59,13 +59,16 @@ WidgetExplorer::WidgetExplorer(QObject *parent)
 //________________________________________________
 void WidgetExplorer::setEnabled(bool value)
 {
-    if (value == _enabled)
+    if (value == _enabled) {
         return;
+    }
+
     _enabled = value;
 
     qApp->removeEventFilter(this);
-    if (_enabled)
+    if (_enabled) {
         qApp->installEventFilter(this);
+    }
 }
 
 //________________________________________________
@@ -101,13 +104,15 @@ bool WidgetExplorer::eventFilter(QObject *object, QEvent *event)
     case QEvent::MouseButtonPress: {
         // cast event and check button
         QMouseEvent *mouseEvent(static_cast<QMouseEvent *>(event));
-        if (mouseEvent->button() != Qt::LeftButton)
+        if (mouseEvent->button() != Qt::LeftButton) {
             break;
+        }
 
         // case widget and check (should not be necessary)
         QWidget *widget(qobject_cast<QWidget *>(object));
-        if (!widget)
+        if (!widget) {
             return false;
+        }
 
         qCDebug(ADWAITA)
                 << "Adwaita::WidgetExplorer::eventFilter -"
@@ -117,12 +122,12 @@ bool WidgetExplorer::eventFilter(QObject *object, QEvent *event)
         // print parent information
         QWidget *parent(widget->parentWidget());
         while (parent) {
-        qCDebug(ADWAITA)
-            << "    parent: " << widgetInformation(parent);
+            qCDebug(ADWAITA)
+                    << "    parent: " << widgetInformation(parent);
             parent = parent->parentWidget();
         }
     }
-        break;
+    break;
 
     default:
         break;
@@ -164,4 +169,4 @@ QString WidgetExplorer::widgetInformation(const QWidget *widget) const
     return out;
 }
 
-}
+} // namespace Adwaita

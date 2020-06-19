@@ -22,7 +22,7 @@
 #include "adwaitastyle.h"
 
 #include "adwaita.h"
-#include "../lib/animations/adwaitaanimations.h"
+#include "animations/adwaitaanimations.h"
 #include "adwaitahelper.h"
 #include "adwaitamnemonics.h"
 #include "adwaitasplitterproxy.h"

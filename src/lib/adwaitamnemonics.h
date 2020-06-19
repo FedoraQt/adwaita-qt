@@ -17,59 +17,60 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  *************************************************************************/
 
-#ifndef ADWAITAWIDGETEXPLORER_H
-#define ADWAITAWIDGETEXPLORER_H
+#ifndef ADWAITA_MNEMONICS_H
+#define ADWAITA_MNEMONICS_H
 
+#include "adwaitaqt_export.h"
+
+#include <QApplication>
 #include <QEvent>
 #include <QObject>
-#include <QMap>
-#include <QSet>
-#include <QWidget>
 
 namespace Adwaita
 {
-
-//* print widget's and parent's information on mouse click
-class WidgetExplorer: public QObject
+class ADWAITAQT_EXPORT Mnemonics : public QObject
 {
     Q_OBJECT
 public:
     //* constructor
-    explicit WidgetExplorer(QObject *parent);
-
-    //* enable
-    bool enabled(void) const;
-
-    //* enable
-    void setEnabled(bool);
-
-    //* widget rects
-    void setDrawWidgetRects(bool value)
+    explicit Mnemonics(QObject *parent)
+        : QObject(parent)
+        , _enabled(true)
     {
-        _drawWidgetRects = value;
     }
 
+    //* destructor
+    virtual ~Mnemonics()
+    {
+    }
+
+    //* set mode
+    void setMode(int);
+
     //* event filter
-    virtual bool eventFilter(QObject *object, QEvent *event);
+    virtual bool eventFilter(QObject *, QEvent *);
+
+    //* true if mnemonics are enabled
+    const bool &enabled() const
+    {
+        return _enabled;
+    }
+
+    //* alignment flag
+    int textFlags() const
+    {
+        return _enabled ? Qt::TextShowMnemonic : Qt::TextHideMnemonic;
+    }
 
 protected:
-    //* event type
-    QString eventType(const QEvent::Type &type) const;
-
-    //* print widget information
-    QString widgetInformation(const QWidget *widget) const;
+    //* set enable state
+    void setEnabled(bool);
 
 private:
     //* enable state
     bool _enabled;
-
-    //* widget rects
-    bool _drawWidgetRects;
-
-    //* map event types to string
-    QMap<QEvent::Type, QString > _eventTypes;
 };
 
 } // namespace Adwaita
 
-#endif // ADWAITAWIDGETEXPLORER_H
+#endif // ADWAITA_MNEMONICS_H

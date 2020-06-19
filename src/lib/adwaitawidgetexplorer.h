@@ -1,6 +1,3 @@
-#ifndef adwaitamnemonics_h
-#define adwaitamnemonics_h
-
 /*************************************************************************
  * Copyright (C) 2014 by Hugo Pereira Da Costa <hugo.pereira@free.fr>    *
  *                                                                       *
@@ -20,56 +17,60 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  *************************************************************************/
 
+#ifndef ADWAITA_WIDGET_EXPLORER_H
+#define ADWAITA_WIDGET_EXPLORER_H
+
+#include "adwaitaqt_export.h"
+
 #include <QEvent>
+#include <QMap>
 #include <QObject>
-#include <QApplication>
+#include <QSet>
+#include <QWidget>
 
 namespace Adwaita
 {
+//* print widget's and parent's information on mouse click
+class ADWAITAQT_EXPORT WidgetExplorer : public QObject
+{
+    Q_OBJECT
+public:
+    //* constructor
+    explicit WidgetExplorer(QObject *parent);
 
-    class Mnemonics: public QObject
+    //* enable
+    bool enabled() const;
+
+    //* enable
+    void setEnabled(bool);
+
+    //* widget rects
+    void setDrawWidgetRects(bool value)
     {
+        _drawWidgetRects = value;
+    }
 
-        Q_OBJECT
+    //* event filter
+    virtual bool eventFilter(QObject *object, QEvent *event);
 
-        public:
+protected:
+    //* event type
+    QString eventType(const QEvent::Type &type) const;
 
-        //* constructor
-        explicit Mnemonics( QObject* parent ):
-            QObject( parent ),
-            _enabled( true )
-            {}
+    //* print widget information
+    QString widgetInformation(const QWidget *widget) const;
 
-        //* destructor
-        virtual ~Mnemonics( void )
-        {}
+private:
+    //* enable state
+    bool _enabled;
 
-        //* set mode
-        void setMode( int );
+    //* widget rects
+    bool _drawWidgetRects;
 
-        //* event filter
-        virtual bool eventFilter( QObject*, QEvent* );
+    //* map event types to string
+    QMap<QEvent::Type, QString> _eventTypes;
+};
 
-        //* true if mnemonics are enabled
-        const bool& enabled( void ) const
-        { return _enabled; }
+} // namespace Adwaita
 
-        //* alignment flag
-        int textFlags( void ) const
-        { return _enabled ? Qt::TextShowMnemonic : Qt::TextHideMnemonic; }
-
-        protected:
-
-        //* set enable state
-        void setEnabled( bool );
-
-        private:
-
-        //* enable state
-        bool _enabled;
-
-    };
-
-}
-
-#endif
+#endif // ADWAITA_WIDGET_EXPLORER_H

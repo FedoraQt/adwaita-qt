@@ -5,15 +5,11 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR} # for adwaita-config.h
     ${CMAKE_SOURCE_DIR}/src/lib
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/debug/
 )
 
 set(Adwaita_SRCS
-    debug/adwaitawidgetexplorer.cpp
-
     adwaitaaddeventfilter.cpp
     adwaitahelper.cpp
-    adwaitamnemonics.cpp
     adwaitasplitterproxy.cpp
     adwaitastyle.cpp
     adwaitastyleplugin.cpp

@@ -6,6 +6,7 @@ include_directories(
 configure_file(adwaita-qt.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/adwaita-qt.pc @ONLY)
 
 set(libadwaitaqt_SRCS
+    # Animations
     animations/adwaitaanimation.cpp
     animations/adwaitaanimations.cpp
     animations/adwaitaanimationdata.cpp
@@ -31,9 +32,14 @@ set(libadwaitaqt_SRCS
     animations/adwaitatransitionwidget.cpp
     animations/adwaitawidgetstateengine.cpp
     animations/adwaitawidgetstatedata.cpp
+
+    # Others
+    adwaitamnemonics.cpp
+    adwaitawidgetexplorer.cpp
 )
 
 set(libadwaitaqt_HEADERS
+    # Animations
     animations/adwaitaanimation.h
     animations/adwaitaanimations.h
     animations/adwaitaanimationdata.h
@@ -60,8 +66,12 @@ set(libadwaitaqt_HEADERS
     animations/adwaitatransitionwidget.h
     animations/adwaitawidgetstateengine.h
     animations/adwaitawidgetstatedata.h
+
+    # Others
     adwaita.h
     adwaitaqt_export.h
+    adwaitamnemonics.h
+    adwaitawidgetexplorer.h
 )
 
 add_library(adwaitaqt SHARED ${libadwaitaqt_SRCS})
