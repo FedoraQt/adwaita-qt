@@ -1,6 +1,4 @@
 
-configure_file(config-adwaita.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-adwaita.h )
-
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR} # for adwaita-config.h
     ${CMAKE_SOURCE_DIR}/src/lib
@@ -11,7 +9,6 @@ set(Adwaita_SRCS
     adwaitahelper.cpp
     adwaitastyle.cpp
     adwaitastyleplugin.cpp
-    adwaitawindowmanager.cpp
 )
 
 add_definitions(-DQT_PLUGIN)

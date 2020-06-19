@@ -1,8 +1,10 @@
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
 )
 
+configure_file(config-adwaita.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-adwaita.h )
 configure_file(adwaita-qt.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/adwaita-qt.pc @ONLY)
 
 set(libadwaitaqt_SRCS
@@ -38,6 +40,7 @@ set(libadwaitaqt_SRCS
     adwaitamnemonics.cpp
     adwaitasplitterproxy.cpp
     adwaitawidgetexplorer.cpp
+    adwaitawindowmanager.cpp
 )
 
 set(libadwaitaqt_HEADERS
@@ -76,6 +79,7 @@ set(libadwaitaqt_HEADERS
     adwaitamnemonics.h
     adwaitasplitterproxy.h
     adwaitawidgetexplorer.h
+    adwaitawindowmanager.h
 )
 
 add_library(adwaitaqt SHARED ${libadwaitaqt_SRCS})
