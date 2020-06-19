@@ -9,7 +9,6 @@ include_directories(
 
 set(Adwaita_SRCS
     adwaitahelper.cpp
-    adwaitasplitterproxy.cpp
     adwaitastyle.cpp
     adwaitastyleplugin.cpp
     adwaitawindowmanager.cpp
