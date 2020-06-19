@@ -8,7 +8,6 @@ include_directories(
 )
 
 set(Adwaita_SRCS
-    adwaitaaddeventfilter.cpp
     adwaitahelper.cpp
     adwaitasplitterproxy.cpp
     adwaitastyle.cpp

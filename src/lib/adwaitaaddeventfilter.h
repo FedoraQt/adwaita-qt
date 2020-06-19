@@ -1,6 +1,3 @@
-#ifndef adwaitaaddeventfilter_h
-#define adwaitaaddeventfilter_h
-
 /*************************************************************************
  * Copyright (C) 2014 by Hugo Pereira Da Costa <hugo.pereira@free.fr>    *
  *                                                                       *
@@ -20,35 +17,38 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  *************************************************************************/
 
-#include <QObject>
+#ifndef ADWAITA_ADD_EVENT_FILTER_H
+#define ADWAITA_ADD_EVENT_FILTER_H
+
 #include <QEvent>
+#include <QObject>
 
 namespace Adwaita
 {
 
-    class AddEventFilter: public QObject
+class AddEventFilter : public QObject
+{
+    Q_OBJECT
+public:
+    //* constructor
+    AddEventFilter()
+        : QObject()
     {
+    }
 
-        Q_OBJECT
+    //* destructor
+    virtual ~AddEventFilter()
+    {
+    }
 
-        public:
+    //* event filter
+    /** blocks all AddChild events */
+    virtual bool eventFilter(QObject *, QEvent *event)
+    {
+        return event->type() == QEvent::ChildAdded;
+    }
+};
 
-        //* constructor
-        AddEventFilter( void ):
-            QObject()
-            {}
+} // namespace Adwaita
 
-        //* destructor
-        virtual ~AddEventFilter( void )
-        {}
-
-        //* event filter
-        /** blocks all AddChild events */
-        virtual bool eventFilter( QObject*, QEvent* event )
-        { return event->type() == QEvent::ChildAdded; }
-
-    };
-
-}
-
-#endif
+#endif // ADWAITA_ADD_EVENT_FILTER_H

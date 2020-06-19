@@ -34,6 +34,7 @@ set(libadwaitaqt_SRCS
     animations/adwaitawidgetstatedata.cpp
 
     # Others
+    adwaitaaddeventfilter.cpp
     adwaitamnemonics.cpp
     adwaitawidgetexplorer.cpp
 )
@@ -70,6 +71,7 @@ set(libadwaitaqt_HEADERS
     # Others
     adwaita.h
     adwaitaqt_export.h
+    adwaitaaddeventfilter.h
     adwaitamnemonics.h
     adwaitawidgetexplorer.h
 )
