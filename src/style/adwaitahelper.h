@@ -23,7 +23,7 @@
 #define ADWAITA_HELPER_H
 
 #include "adwaita.h"
-#include "../lib/animations/adwaitaanimationdata.h"
+#include "animations/adwaitaanimationdata.h"
 #include "config-adwaita.h"
 
 #include <QPainterPath>
