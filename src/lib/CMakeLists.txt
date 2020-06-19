@@ -92,8 +92,7 @@ target_link_libraries(adwaitaqt
 set_target_properties(adwaitaqt PROPERTIES VERSION ${ADWAITAQT_VERSION} SOVERSION 1)
 target_include_directories(adwaitaqt PUBLIC ${Qt5Core_INCLUDE_DIRS} ${Qt5Gui_INCLUDE_DIRS} ${Qt5DBus_INCLUDE_DIRS} ${Qt5Widgets_INCLUDE_DIRS} ${Qt5X11Extras_INCLUDE_DIRS})
 
-install(TARGETS adwaitaqt DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})
-install(TARGETS adwaitaqt EXPORT AdwaitaQtTargets)
+install(TARGETS adwaitaqt DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR} EXPORT AdwaitaQtTargets)
 
 install(FILES ${libadwaitaqt_HEADERS} DESTINATION ${CMAKE_INSTALL_FULL_INCLUDEDIR}/AdwaitaQt)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/adwaita-qt.pc DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig)
