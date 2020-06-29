@@ -36,7 +36,7 @@ namespace Adwaita
 class SplitterProxy;
 
 //* factory
-class SplitterFactory : public QObject
+class ADWAITAQT_EXPORT SplitterFactory : public QObject
 {
     Q_OBJECT
 

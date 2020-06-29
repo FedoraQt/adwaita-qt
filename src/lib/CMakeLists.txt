@@ -37,6 +37,7 @@ set(libadwaitaqt_SRCS
 
     # Others
     adwaitaaddeventfilter.cpp
+    adwaitacolors.cpp
     adwaitamnemonics.cpp
     adwaitasplitterproxy.cpp
     adwaitawidgetexplorer.cpp
@@ -76,6 +77,7 @@ set(libadwaitaqt_HEADERS
     adwaita.h
     adwaitaqt_export.h
     adwaitaaddeventfilter.h
+    adwaitacolors.h
     adwaitamnemonics.h
     adwaitasplitterproxy.h
     adwaitawidgetexplorer.h

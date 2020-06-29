@@ -23,10 +23,12 @@
 #include <QEvent>
 #include <QObject>
 
+#include "adwaitaqt_export.h"
+
 namespace Adwaita
 {
 
-class AddEventFilter : public QObject
+class ADWAITAQT_EXPORT AddEventFilter : public QObject
 {
     Q_OBJECT
 public:

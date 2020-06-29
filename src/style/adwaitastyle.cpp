@@ -23,6 +23,7 @@
 
 #include "adwaita.h"
 #include "animations/adwaitaanimations.h"
+#include "adwaitacolors.h"
 #include "adwaitahelper.h"
 #include "adwaitamnemonics.h"
 #include "adwaitasplitterproxy.h"
@@ -400,8 +401,8 @@ void Style::polish(QWidget *widget)
         QPalette pal = view->palette();
         // TODO keep synced with the standard palette
         const QColor activeTextColor = _dark ? QColor("#eeeeec") : QColor("#2e3436");
-        const QColor inactiveTextColor = _dark ? _helper->mix(QColor("#eeeeec"), _helper->darken(_helper->desaturate(QColor("#3d3846"), 1.0), 0.04)) :
-                                                 _helper->mix(QColor("#2e3436"), QColor("#f6f5f4"));
+        const QColor inactiveTextColor = _dark ? Colors::mix(QColor("#eeeeec"), Colors::darken(Colors::desaturate(QColor("#3d3846"), 1.0), 0.04)) :
+                                                 Colors::mix(QColor("#2e3436"), QColor("#f6f5f4"));
         // No custom text color used, we can do our HACK
         if (inactiveTextColor == pal.color(QPalette::Inactive, QPalette::Text) && activeTextColor == pal.color(QPalette::Active, QPalette::Text)) {
             pal.setColor(QPalette::Inactive, QPalette::Text, pal.color(QPalette::Active, QPalette::Text));
@@ -506,12 +507,14 @@ void Style::unpolish(QWidget *widget)
 
 void Style::polish(QPalette &palette)
 {
-    palette = _helper->palette(_dark);
+    // TODO: highcontrast
+    palette = Colors::palette(_dark ? ColorRequestOptions::AdwaitaDark : ColorRequestOptions::Adwaita);
 }
 
 QPalette Style::standardPalette() const
 {
-    return _helper->palette(_dark);
+    // TODO: highcontrast
+    return Colors::palette(_dark ? ColorRequestOptions::AdwaitaDark : ColorRequestOptions::Adwaita);
 }
 
 //______________________________________________________________
@@ -3221,7 +3224,7 @@ bool Style::drawFrameFocusRectPrimitive(const QStyleOption *option, QPainter *pa
     if (rect.width() < 10)
         return true;
 
-    QColor outlineColor(Helper::mix(palette.color(QPalette::Window), palette.color(QPalette::WindowText), 0.35));
+    QColor outlineColor(Colors::mix(palette.color(QPalette::Window), palette.color(QPalette::WindowText), 0.35));
     QPen pen(outlineColor, 1);
     pen.setStyle(Qt::CustomDashLine);
     pen.setDashPattern(QVector<qreal>() << 2 << 1);
@@ -3524,7 +3527,7 @@ bool Style::drawPanelButtonCommandPrimitive(const QStyleOption *option, QPainter
         if (enabled && buttonOption->features & QStyleOptionButton::DefaultButton) {
             QColor button(palette.color(QPalette::Button));
             QColor base(palette.color(QPalette::Base));
-            palette.setColor(QPalette::Button, Helper::mix(button, base, 0.7));
+            palette.setColor(QPalette::Button, Colors::mix(button, base, 0.7));
         }
 
         QColor shadow(palette.color(QPalette::Shadow));
@@ -3685,7 +3688,7 @@ bool Style::drawPanelTipLabelPrimitive(const QStyleOption *option, QPainter *pai
 {
     const QPalette &palette(option->palette);
     QColor background(palette.color(QPalette::ToolTipBase));
-    QColor outline(Helper::transparentize(QColor("black"), 0.3));
+    QColor outline(Colors::transparentize(QColor("black"), 0.3));
     bool hasAlpha(_helper->hasAlphaChannel(widget));
 
     if (hasAlpha) {
@@ -3990,7 +3993,7 @@ bool Style::drawIndicatorTabTearPrimitive(const QStyleOption *option, QPainter *
 
     bool reverseLayout(option->direction == Qt::RightToLeft);
 
-    QColor color(_helper->alphaColor(palette.color(QPalette::WindowText), 0.2));
+    QColor color(Colors::alphaColor(palette.color(QPalette::WindowText), 0.2));
     painter->setRenderHint(QPainter::Antialiasing, false);
     painter->setPen(color);
     painter->setBrush(Qt::NoBrush);
@@ -4143,7 +4146,7 @@ bool Style::drawIndicatorBranchPrimitive(const QStyleOption *option, QPainter *p
         return true;
 
     QPoint center(rect.center());
-    QColor lineColor(Helper::mix(palette.color(QPalette::Base), palette.color(QPalette::Text), 0.25));
+    QColor lineColor(Colors::mix(palette.color(QPalette::Base), palette.color(QPalette::Text), 0.25));
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing, true);
     painter->translate(0.5, 0.5);
@@ -4557,8 +4560,8 @@ bool Style::drawItemViewItemControl(const QStyleOption *option, QPainter *painte
 
     if (_helper->isWindowActive(widget)) {
         const QColor activeTextColor = _dark ? QColor("#eeeeec") : QColor("#2e3436");
-        const QColor inactiveTextColor = _dark ? _helper->mix(QColor("#eeeeec"), _helper->darken(_helper->desaturate(QColor("#3d3846"), 1.0), 0.04)) :
-                                                 _helper->mix(QColor("#2e3436"), QColor("#f6f5f4"));
+        const QColor inactiveTextColor = _dark ? Colors::mix(QColor("#eeeeec"), Colors::darken(Colors::desaturate(QColor("#3d3846"), 1.0), 0.04)) :
+                                                 Colors::mix(QColor("#2e3436"), QColor("#f6f5f4"));
         // No custom text color used, we can do our HACK
         QPalette palette = op.palette;
         if (inactiveTextColor == palette.color(QPalette::Inactive, QPalette::Text) && activeTextColor == palette.color(QPalette::Active, QPalette::Text)) {
@@ -4581,7 +4584,7 @@ bool Style::drawMenuBarEmptyArea(const QStyleOption *option, QPainter *painter, 
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing, false);
     painter->setBrush(Qt::NoBrush);
-    painter->setPen(Helper::mix(palette.color(QPalette::Window), palette.color(QPalette::Shadow), 0.2));
+    painter->setPen(Colors::mix(palette.color(QPalette::Window), palette.color(QPalette::Shadow), 0.2));
 
     painter->drawLine(rect.bottomLeft(), rect.bottomRight());
     painter->restore();
@@ -4617,7 +4620,7 @@ bool Style::drawMenuBarItemControl(const QStyleOption *option, QPainter *painter
     painter->drawRect(rect);
 
     painter->setBrush(Qt::NoBrush);
-    painter->setPen(Helper::mix(palette.color(QPalette::Window), palette.color(QPalette::Shadow), 0.2));
+    painter->setPen(Colors::mix(palette.color(QPalette::Window), palette.color(QPalette::Shadow), 0.2));
 
     painter->drawLine(rect.bottomLeft(), rect.bottomRight());
     painter->restore();
@@ -4819,8 +4822,8 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
             QString accelerator(text.mid(tabPosition + 1));
             text = text.left(tabPosition);
             QPalette copy(palette);
-            copy.setColor(QPalette::Active, QPalette::WindowText, _helper->transparentize(copy.color(QPalette::Active, QPalette::WindowText), 0.55));
-            copy.setColor(QPalette::Active, QPalette::HighlightedText, _helper->transparentize(copy.color(QPalette::Active, QPalette::HighlightedText), 0.55));
+            copy.setColor(QPalette::Active, QPalette::WindowText, Colors::transparentize(copy.color(QPalette::Active, QPalette::WindowText), 0.55));
+            copy.setColor(QPalette::Active, QPalette::HighlightedText, Colors::transparentize(copy.color(QPalette::Active, QPalette::HighlightedText), 0.55));
             drawItemText(painter, textRect, textFlags, copy, enabled, accelerator, role);
         }
 
@@ -4904,7 +4907,7 @@ bool Style::drawProgressBarContentsControl(const QStyleOption *option, QPainter 
         qreal progress(_animations->busyIndicatorEngine().value());
 
         QColor color(palette.color(QPalette::Highlight));
-        _helper->renderProgressBarBusyContents(painter, rect, color, _dark ? _helper->darken(color, 0.3) : _helper->darken(color, 0.15), horizontal, reverse, progress);
+        _helper->renderProgressBarBusyContents(painter, rect, color, _dark ? Colors::darken(color, 0.3) : Colors::darken(color, 0.15), horizontal, reverse, progress);
     } else {
         QRegion oldClipRegion(painter->clipRegion());
         if (horizontal) {
@@ -4923,7 +4926,7 @@ bool Style::drawProgressBarContentsControl(const QStyleOption *option, QPainter 
             }
         }
 
-        _helper->renderProgressBarContents(painter, rect, palette.color(QPalette::Highlight), _dark ? _helper->darken(palette.color(QPalette::Highlight), 0.3) : _helper->darken(palette.color(QPalette::Highlight), 0.15));
+        _helper->renderProgressBarContents(painter, rect, palette.color(QPalette::Highlight), _dark ? Colors::darken(palette.color(QPalette::Highlight), 0.3) : Colors::darken(palette.color(QPalette::Highlight), 0.15));
         painter->setClipRegion(oldClipRegion);
     }
 
@@ -4935,7 +4938,7 @@ bool Style::drawProgressBarGrooveControl(const QStyleOption *option, QPainter *p
 {
     const QPalette &palette(option->palette);
     QColor outline(_helper->buttonOutlineColor(palette, false, false, AnimationData::OpacityInvalid, AnimationNone, _dark));
-    QColor color(palette.currentColorGroup() ? palette.color(QPalette::Window) : _helper->mix(outline, palette.color(QPalette::Window)));
+    QColor color(palette.currentColorGroup() ? palette.color(QPalette::Window) : Colors::mix(outline, palette.color(QPalette::Window)));
     _helper->renderProgressBarGroove(painter, option->rect, color, outline);
     return true;
 }
@@ -4958,7 +4961,7 @@ bool Style::drawProgressBarLabelControl(const QStyleOption *option, QPainter *pa
     const QRect &rect(option->rect);
 
     QPalette palette(option->palette);
-    palette.setColor(QPalette::WindowText, _helper->transparentize(palette.color(QPalette::Active, QPalette::WindowText), 0.6));
+    palette.setColor(QPalette::WindowText, Colors::transparentize(palette.color(QPalette::Active, QPalette::WindowText), 0.6));
 
     // store state and direction
     const State &state(option->state);
@@ -5208,7 +5211,7 @@ bool Style::drawRubberBandControl(const QStyleOption *option, QPainter *painter,
     QRect rect(option->rect);
 
     QColor color = palette.color(QPalette::Highlight);
-    painter->setPen(Helper::mix(color, palette.color(QPalette::Active, QPalette::WindowText)));
+    painter->setPen(Colors::mix(color, palette.color(QPalette::Active, QPalette::WindowText)));
     color.setAlpha(50);
     painter->setBrush(color);
     painter->setClipRegion(rect);
@@ -5249,7 +5252,7 @@ bool Style::drawHeaderSectionControl(const QStyleOption *option, QPainter *paint
 
     // outline
     painter->setBrush(Qt::NoBrush);
-    painter->setPen(_helper->alphaColor(palette.color(QPalette::WindowText), 0.2));
+    painter->setPen(Colors::alphaColor(palette.color(QPalette::WindowText), 0.2));
 
     if (isCorner) {
         if (reverseLayout)
@@ -5328,7 +5331,7 @@ bool Style::drawHeaderEmptyAreaControl(const QStyleOption *option, QPainter *pai
 
     // outline
     painter->setBrush(Qt::NoBrush);
-    painter->setPen(_helper->alphaColor(palette.color(QPalette::ButtonText), 0.1));
+    painter->setPen(Colors::alphaColor(palette.color(QPalette::ButtonText), 0.1));
 
     if (horizontal) {
         painter->drawLine(rect.bottomLeft(), rect.bottomRight());
@@ -5388,16 +5391,16 @@ bool Style::drawTabBarTabLabelControl(const QStyleOption *option, QPainter *pain
         painter->setFont(font);
         if (!(tabV2.state & State_Enabled)) {
             if (tabV2.state & State_Selected)
-                painter->setPen(Helper::mix(option->palette.brush(QPalette::Text).color(), option->palette.brush(QPalette::Window).color(), 0.3));
+                painter->setPen(Colors::mix(option->palette.brush(QPalette::Text).color(), option->palette.brush(QPalette::Window).color(), 0.3));
             else
-                painter->setPen(Helper::mix(option->palette.brush(QPalette::Text).color(), option->palette.brush(QPalette::Window).color(), 0.4));
+                painter->setPen(Colors::mix(option->palette.brush(QPalette::Text).color(), option->palette.brush(QPalette::Window).color(), 0.4));
         } else {
             if (tabV2.state & State_Selected)
                 painter->setPen(option->palette.brush(QPalette::WindowText).color());
             else if (tabV2.state & State_Active && tabV2.state & State_MouseOver)
-                painter->setPen(Helper::mix(option->palette.brush(QPalette::Dark).color(), option->palette.brush(QPalette::Text).color(), 0.7));
+                painter->setPen(Colors::mix(option->palette.brush(QPalette::Dark).color(), option->palette.brush(QPalette::Text).color(), 0.7));
             else
-                painter->setPen(Helper::mix(option->palette.brush(QPalette::Dark).color(), option->palette.brush(QPalette::Text).color(), 0.6));
+                painter->setPen(Colors::mix(option->palette.brush(QPalette::Dark).color(), option->palette.brush(QPalette::Text).color(), 0.6));
         }
 
         proxy()->drawItemText(painter, tr, alignment, tab->palette, tab->state & State_Enabled, tab->text, QPalette::NoRole);
@@ -5883,9 +5886,9 @@ bool Style::drawToolButtonComplexControl(const QStyleOptionComplex *option, QPai
         copy.rect = buttonRect;
         if (inTabBar) {
             QRect rect(option->rect);
-            QColor background(_helper->mix(option->palette.window().color(), option->palette.shadow().color(), 0.15));
-            background = _helper->mix(background, Qt::white, 0.2 * mouseOpacity);
-            background = _helper->mix(background, Qt::black, 0.15 * pressedOpacity);
+            QColor background(Colors::mix(option->palette.window().color(), option->palette.shadow().color(), 0.15));
+            background = Colors::mix(background, Qt::white, 0.2 * mouseOpacity);
+            background = Colors::mix(background, Qt::black, 0.15 * pressedOpacity);
             QColor outline(_helper->frameOutlineColor(option->palette));
             painter->setPen(background);
             painter->setBrush(background);
@@ -6225,9 +6228,9 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
 
         // base color
         QColor outline(_helper->buttonOutlineColor(palette, false, false, AnimationData::OpacityInvalid, AnimationNone, _dark));
-        QColor grooveColor(palette.currentColorGroup() ? palette.color(QPalette::Window) : _helper->mix(outline, palette.color(QPalette::Window)));
+        QColor grooveColor(palette.currentColorGroup() ? palette.color(QPalette::Window) : Colors::mix(outline, palette.color(QPalette::Window)));
         QColor highlightColor(palette.color(QPalette::Highlight));
-        QColor highlightOutline(_dark ? _helper->darken(highlightColor, 0.3) : _helper->darken(highlightColor, 0.15));
+        QColor highlightOutline(_dark ? Colors::darken(highlightColor, 0.3) : Colors::darken(highlightColor, 0.15));
 
         if (!enabled)
             _helper->renderProgressBarGroove(painter, grooveRect, grooveColor, outline);
@@ -6328,7 +6331,7 @@ bool Style::drawDialComplexControl(const QStyleOptionComplex *option, QPainter *
         QRect grooveRect(subControlRect(CC_Dial, sliderOption, SC_SliderGroove, widget));
 
         // groove
-        QColor grooveColor(Helper::mix(palette.color(QPalette::Window), palette.color(QPalette::WindowText), 0.3));
+        QColor grooveColor(Colors::mix(palette.color(QPalette::Window), palette.color(QPalette::WindowText), 0.3));
 
         // render groove
         _helper->renderDialGroove(painter, grooveRect, grooveColor);
@@ -6397,9 +6400,9 @@ bool Style::drawScrollBarComplexControl(const QStyleOptionComplex *option, QPain
         const QPalette &palette(option->palette);
         QColor color;
         if (_dark) {
-            color = _helper->mix(palette.color(QPalette::Window), _helper->mix(palette.color(QPalette::Base), palette.color(QPalette::Window), 0.5), opacity);
+            color = Colors::mix(palette.color(QPalette::Window), Colors::mix(palette.color(QPalette::Base), palette.color(QPalette::Window), 0.5), opacity);
         } else {
-            color = _helper->mix(palette.color(QPalette::Window), _helper->mix(palette.color(QPalette::Window), palette.color(QPalette::Text), 0.2), opacity);
+            color = Colors::mix(palette.color(QPalette::Window), Colors::mix(palette.color(QPalette::Window), palette.color(QPalette::Text), 0.2), opacity);
         }
 
         const State &state(option->state);
@@ -6619,8 +6622,8 @@ void Style::renderSpinBoxArrow(const SubControl &subControl, const QStyleOptionS
 
     if (true) {
         painter->setPen(Qt::NoPen);
-        QColor background = Helper::mix(palette.base().color(), palette.text().color(), opacity * 0.1);
-        background = Helper::mix(background, palette.dark().color(), pressedOpacity);
+        QColor background = Colors::mix(palette.base().color(), palette.text().color(), opacity * 0.1);
+        background = Colors::mix(background, palette.dark().color(), pressedOpacity);
         painter->setBrush(background);
         if (hasFocus)
             painter->drawRect(arrowRect.adjusted(1, 3, -1, -2));
@@ -6755,7 +6758,7 @@ QColor Style::scrollBarArrowColor(const QStyleOptionSlider *option, const SubCon
     if (rect.intersects(_animations->scrollBarEngine().subControlRect(widget, control))) {
         QColor highlight = _helper->hoverColor(palette);
         if (animated) {
-            color = Helper::mix(color, highlight, opacity);
+            color = Colors::mix(color, highlight, opacity);
         } else if (mouseOver) {
             color = highlight;
         }
@@ -6929,16 +6932,16 @@ QIcon Style::titleBarButtonIcon(StandardPixmap standardPixmap, const QStyleOptio
     // map colors to icon states
     const QList<IconData> iconTypes = {
         // state off icons
-        { Helper::mix(palette.color(QPalette::Window), base,  0.5), invertNormalState, QIcon::Normal, QIcon::Off },
-        { Helper::mix(palette.color(QPalette::Window), selected, 0.5), invertNormalState, QIcon::Selected, QIcon::Off },
-        { Helper::mix(palette.color(QPalette::Window), negative, 0.5), true, QIcon::Active, QIcon::Off },
-        { Helper::mix(palette.color(QPalette::Window), base, 0.2), invertNormalState, QIcon::Disabled, QIcon::Off },
+        { Colors::mix(palette.color(QPalette::Window), base,  0.5), invertNormalState, QIcon::Normal, QIcon::Off },
+        { Colors::mix(palette.color(QPalette::Window), selected, 0.5), invertNormalState, QIcon::Selected, QIcon::Off },
+        { Colors::mix(palette.color(QPalette::Window), negative, 0.5), true, QIcon::Active, QIcon::Off },
+        { Colors::mix(palette.color(QPalette::Window), base, 0.2), invertNormalState, QIcon::Disabled, QIcon::Off },
 
         // state on icons
-        { Helper::mix(palette.color(QPalette::Window), negative, 0.7), true, QIcon::Normal, QIcon::On },
-        { Helper::mix(palette.color(QPalette::Window), negativeSelected, 0.7), true, QIcon::Selected, QIcon::On },
-        { Helper::mix(palette.color(QPalette::Window), negative, 0.7), true, QIcon::Active, QIcon::On },
-        { Helper::mix(palette.color(QPalette::Window), base, 0.2), invertNormalState, QIcon::Disabled, QIcon::On }
+        { Colors::mix(palette.color(QPalette::Window), negative, 0.7), true, QIcon::Normal, QIcon::On },
+        { Colors::mix(palette.color(QPalette::Window), negativeSelected, 0.7), true, QIcon::Selected, QIcon::On },
+        { Colors::mix(palette.color(QPalette::Window), negative, 0.7), true, QIcon::Active, QIcon::On },
+        { Colors::mix(palette.color(QPalette::Window), base, 0.2), invertNormalState, QIcon::Disabled, QIcon::On }
     };
 
     // default icon sizes

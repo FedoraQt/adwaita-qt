@@ -1,7 +1,7 @@
 /*************************************************************************
  * Copyright (C) 2014 by Hugo Pereira Da Costa <hugo.pereira@free.fr>    *
  * Copyright (C) 2014-2018 Martin Bříza <m@rtinbriza.cz>                 *
- * Copyright (C) 2019 Jan Grulich <jgrulich@redhat.com>                  *
+ * Copyright (C) 2019-2020 Jan Grulich <jgrulich@redhat.com>             *
  *                                                                       *
  * This program is free software; you can redistribute it and/or modify  *
  * it under the terms of the GNU General Public License as published by  *
@@ -41,145 +41,37 @@
 
 namespace Adwaita
 {
-
 //* adwaita style helper class.
 /** contains utility functions used at multiple places in both adwaita style and adwaita window decoration */
 class Helper
 {
 public:
-
     //* constructor
     explicit Helper();
 
     //* destructor
     virtual ~Helper()
-    {}
-
-    static bool isWindowActive(const QWidget *widget)
     {
-        const QWindow *win = widget ? widget->window()->windowHandle() : nullptr;
-        if (win) {
-            return win->isActive();
-        }
-        return false;
     }
 
-    //*@name color utilities
-    //@{
+    static bool isWindowActive(const QWidget *widget);
 
-    // Borrowed from the KColorUtils code
-    static QColor mix(const QColor &c1, const QColor &c2, qreal bias = 0.5)
-    {
-        auto mixQreal = [](qreal a, qreal b, qreal bias) {
-            return a + (b - a) * bias;
-        };
-
-        if (bias <= 0.0)
-            return c1;
-        if (bias >= 1.0)
-            return c2;
-        if (std::isnan(bias))
-            return c1;
-
-        qreal r = mixQreal(c1.redF(),   c2.redF(),   bias);
-        qreal g = mixQreal(c1.greenF(), c2.greenF(), bias);
-        qreal b = mixQreal(c1.blueF(),  c2.blueF(),  bias);
-        qreal a = mixQreal(c1.alphaF(), c2.alphaF(), bias);
-
-        return QColor::fromRgbF(r, g, b, a);
-    }
-
-    static QColor lighten(const QColor &color, qreal amount = 0.1)
-    {
-        qreal h, s, l, a;
-        color.getHslF(&h, &s, &l, &a);
-
-        qreal lightness = l + amount;
-        if (lightness > 1)
-            lightness = 1;
-        return QColor::fromHslF(h, s, lightness, a);
-    }
-
-    static QColor darken(const QColor &color, qreal amount = 0.1)
-    {
-        qreal h, s, l, a;
-        color.getHslF(&h, &s, &l, &a);
-
-        qreal lightness = l - amount;
-        if (lightness < 0)
-            lightness = 0;
-
-        return QColor::fromHslF(h, s, lightness, a);
-    }
-
-    static QColor desaturate(const QColor &color, qreal amount = 0.1)
-    {
-        qreal h, s, l, a;
-        color.getHslF(&h, &s, &l, &a);
-
-        qreal saturation = s - amount;
-        if (saturation < 0)
-            saturation = 0;
-        return QColor::fromHslF(h, saturation, l, a);
-    }
-
-    static QColor transparentize(const QColor &color, qreal amount = 0.1)
-    {
-        qreal h, s, l, a;
-        color.getHslF(&h, &s, &l, &a);
-
-        qreal alpha = a - amount;
-        if (alpha < 0)
-            alpha = 0;
-        return QColor::fromHslF(h, s, l, alpha);
-    }
-
-    //* returns adwaita color palette
-    QPalette palette(bool dark) const;
-
-    //* add alpha channel multiplier to color
-    QColor alphaColor(QColor color, qreal alpha) const;
-
-    //* mouse over color
-    QColor hoverColor(const QPalette &palette) const
-    {
-        return palette.highlight().color();
-    }
-
-    //* focus color
-    QColor focusColor(const QPalette &palette) const
-    {
-        return palette.highlight().color();
-    }
-
-    //* negative text color (used for close button)
-    QColor negativeText(const QPalette &palette) const
-    // { return _viewNegativeTextBrush.brush( palette ).color(); }
-    {
-        Q_UNUSED(palette);
-        return Qt::red;
-    }
-
-    //* shadow
-    QColor shadowColor(const QPalette &palette) const
-    {
-        return alphaColor(palette.color(QPalette::Shadow), 0.15);
-    }
-
-    //* titlebar color
-    QColor titleBarColor(const QPalette &palette, bool active) const
-    {
-        return palette.color(active ? QPalette::Active : QPalette::Inactive, QPalette::Window);
-    }
-
-    //* titlebar text color
-    QColor titleBarTextColor(const QPalette &palette, bool active) const
-    {
-        return palette.color(active ? QPalette::Active : QPalette::Inactive, QPalette::WindowText);
-    }
+    QColor hoverColor(const QPalette &palette) const;
+    QColor focusColor(const QPalette &palette) const;
+    QColor negativeText(const QPalette &palette) const;
+    QColor shadowColor(const QPalette &palette) const;
+    QColor titleBarColor(const QPalette &palette, bool active) const;
+    QColor titleBarTextColor(const QPalette &palette, bool active) const;
 
     //* indicator outline color
-    QColor indicatorOutlineColor(const QPalette &palette, bool mouseOver = false, bool hasFocus = false, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone, CheckBoxState state = CheckOff, bool darkMode = false, bool inMenu = false) const;
+    QColor indicatorOutlineColor(const QPalette &palette,
+                                 bool mouseOver = false,
+                                 bool hasFocus = false,
+                                 qreal opacity = AnimationData::OpacityInvalid,
+                                 AnimationMode = AnimationNone,
+                                 CheckBoxState state = CheckOff,
+                                 bool darkMode = false,
+                                 bool inMenu = false) const;
 
     //* frame outline color, using animations
     QColor frameOutlineColor(const QPalette &palette, bool mouseOver = false, bool hasFocus = false, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone, bool darkMode = false) const;
@@ -190,11 +82,7 @@ public:
     //* side panel outline color, using animations
     QColor sidePanelOutlineColor(const QPalette &palette, bool hasFocus = false, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone) const;
 
-    //* frame background color
-    QColor frameBackgroundColor(const QPalette &palette) const
-    {
-        return frameBackgroundColor(palette, palette.currentColorGroup());
-    }
+    QColor frameBackgroundColor(const QPalette &palette) const;
 
     //* frame background color
     QColor frameBackgroundColor(const QPalette &palette, QPalette::ColorGroup) const;
@@ -218,7 +106,15 @@ public:
     QColor buttonBackgroundColor(const QPalette &palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone, bool darkMode = false) const;
 
     //* checkbox/radiobutton color, using animations
-    QColor indicatorBackgroundColor(const QPalette &palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone, CheckBoxState state = CheckOff, bool darkMode = false, bool inMenu = false) const;
+    QColor indicatorBackgroundColor(const QPalette &palette,
+                                    bool mouseOver,
+                                    bool hasFocus,
+                                    bool sunken,
+                                    qreal opacity = AnimationData::OpacityInvalid,
+                                    AnimationMode = AnimationNone,
+                                    CheckBoxState state = CheckOff,
+                                    bool darkMode = false,
+                                    bool inMenu = false) const;
 
     //* tool button color
     QColor toolButtonColor(const QPalette &palette, bool mouseOver, bool hasFocus, bool sunken, qreal opacity = AnimationData::OpacityInvalid, AnimationMode = AnimationNone) const;
@@ -277,7 +173,18 @@ public:
     void renderButtonFrame(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, const QColor &shadow, bool focus, bool sunken, bool mouseOver, bool active, bool darkMode = false) const;
 
     //* checkbox frame
-    void renderCheckBoxFrame(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, const QColor &shadow, bool focus, bool sunken, bool mouseOver, bool active, CheckBoxState state = CheckOff, bool darkMode = false, bool inMenu = false) const;
+    void renderCheckBoxFrame(QPainter *painter,
+                             const QRect &rect,
+                             const QColor &color,
+                             const QColor &outline,
+                             const QColor &shadow,
+                             bool focus,
+                             bool sunken,
+                             bool mouseOver,
+                             bool active,
+                             CheckBoxState state = CheckOff,
+                             bool darkMode = false,
+                             bool inMenu = false) const;
 
     //* button frame
     void renderFlatButtonFrame(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, const QColor &shadow, bool focus, bool sunken, bool mouseOver, bool active) const;
@@ -301,13 +208,35 @@ public:
     void renderCheckBoxBackground(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, bool sunken) const;
 
     //* checkbox
-    void renderCheckBox(QPainter *painter, const QRect &rect, const QColor &background, const QColor &outline, const QColor &tickColor, bool sunken, CheckBoxState state, bool mouseOver, qreal animation = AnimationData::OpacityInvalid, bool active = true, bool darkMode = false, bool inMenu = false) const;
+    void renderCheckBox(QPainter *painter,
+                        const QRect &rect,
+                        const QColor &background,
+                        const QColor &outline,
+                        const QColor &tickColor,
+                        bool sunken,
+                        CheckBoxState state,
+                        bool mouseOver,
+                        qreal animation = AnimationData::OpacityInvalid,
+                        bool active = true,
+                        bool darkMode = false,
+                        bool inMenu = false) const;
 
     //* radio button
     void renderRadioButtonBackground(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, bool sunken) const;
 
     //* radio button
-    void renderRadioButton(QPainter *painter, const QRect &rect, const QColor &background, const QColor &outline, const QColor &tickColor, bool sunken, bool enabled, RadioButtonState state, qreal animation = AnimationData::OpacityInvalid, bool mouseOver = false, bool darkMode = false, bool inMenu = false) const;
+    void renderRadioButton(QPainter *painter,
+                           const QRect &rect,
+                           const QColor &background,
+                           const QColor &outline,
+                           const QColor &tickColor,
+                           bool sunken,
+                           bool enabled,
+                           RadioButtonState state,
+                           qreal animation = AnimationData::OpacityInvalid,
+                           bool mouseOver = false,
+                           bool darkMode = false,
+                           bool inMenu = false) const;
 
     //* slider groove
     void renderSliderGroove(QPainter *painter, const QRect &rect, const QColor &) const;
@@ -426,7 +355,6 @@ public:
     void setVariant(QWidget *widget, const QByteArray &variant);
 
 protected:
-
     //* initialize
     void init(void);
 
@@ -437,14 +365,12 @@ protected:
     QPainterPath roundedPath(const QRectF &, Corners, qreal) const;
 
 private:
-
 #if ADWAITA_HAVE_X11
 
     //* atom used for compositing manager
     xcb_atom_t _compositingManagerAtom;
 
 #endif
-
 };
 
 }

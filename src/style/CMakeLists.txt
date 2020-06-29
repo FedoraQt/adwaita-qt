@@ -1,6 +1,6 @@
 
 include_directories(
-    ${CMAKE_CURRENT_BINARY_DIR} # for adwaita-config.h
+    ${CMAKE_BINARY_DIR}/src/lib # for adwaita-config.h
     ${CMAKE_SOURCE_DIR}/src/lib
     ${CMAKE_CURRENT_SOURCE_DIR}
 )

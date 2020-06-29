@@ -1,7 +1,7 @@
 /*************************************************************************
  * Copyright (C) 2014 by Hugo Pereira Da Costa <hugo.pereira@free.fr>    *
  * Copyright (C) 2014-2018 Martin Bříza <m@rtinbriza.cz>                 *
- * Copyright (C) 2019 Jan Grulich <jgrulich@redhat.com>                  *
+ * Copyright (C) 2019-2020 Jan Grulich <jgrulich@redhat.com>             *
  *                                                                       *
  * This program is free software; you can redistribute it and/or modify  *
  * it under the terms of the GNU General Public License as published by  *
@@ -20,8 +20,8 @@
  *************************************************************************/
 
 #include "adwaitahelper.h"
-
 #include "adwaita.h"
+#include "adwaitacolors.h"
 
 #include <QApplication>
 #include <QPainter>
@@ -43,198 +43,47 @@ Helper::Helper()
     init();
 }
 
-//
-QPalette Helper::palette(bool dark) const
+// static
+bool Helper::isWindowActive(const QWidget *widget)
 {
-    QPalette palette;
-
-    if (dark) {
-        // Colors defined in GTK adwaita style in _colors.scss
-        QColor base_color = lighten(desaturate(QColor("#241f31"), 1.0), 0.02);
-        QColor text_color = QColor("white");
-        QColor bg_color = darken(desaturate(QColor("#3d3846"), 1.0), 0.04);
-        QColor fg_color = QColor("#eeeeec");
-        QColor selected_bg_color = darken(QColor("#3584e4"), 0.2);
-        QColor selected_fg_color = QColor("white");
-        QColor osd_text_color = QColor("white");
-        QColor osd_bg_color = QColor("black");
-        QColor shadow = transparentize(QColor("black"), 0.9);
-
-        QColor backdrop_fg_color = mix(fg_color, bg_color);
-        QColor backdrop_base_color = lighten(base_color, 0.01);
-        QColor backdrop_selected_fg_color = mix(text_color, backdrop_base_color, 0.2);
-
-        // This is the color we use as initial color for the gradient in normal state
-        // Defined in _drawing.scss button(normal)
-        QColor button_base_color = darken(bg_color, 0.01);
-
-        QColor link_color = lighten(selected_bg_color, 0.2);
-        QColor link_visited_color = lighten(selected_bg_color, 0.1);
-
-        palette.setColor(QPalette::All,      QPalette::Window,          bg_color);
-        palette.setColor(QPalette::All,      QPalette::WindowText,      fg_color);
-        palette.setColor(QPalette::All,      QPalette::Base,            base_color);
-        palette.setColor(QPalette::All,      QPalette::AlternateBase,   base_color);
-        palette.setColor(QPalette::All,      QPalette::ToolTipBase,     osd_bg_color);
-        palette.setColor(QPalette::All,      QPalette::ToolTipText,     osd_text_color);
-        palette.setColor(QPalette::All,      QPalette::Text,            fg_color);
-        palette.setColor(QPalette::All,      QPalette::Button,          button_base_color);
-        palette.setColor(QPalette::All,      QPalette::ButtonText,      fg_color);
-        palette.setColor(QPalette::All,      QPalette::BrightText,      text_color);
-
-        palette.setColor(QPalette::All,      QPalette::Light,           lighten(button_base_color));
-        palette.setColor(QPalette::All,      QPalette::Midlight,        mix(lighten(button_base_color), button_base_color));
-        palette.setColor(QPalette::All,      QPalette::Mid,             mix(darken(button_base_color), button_base_color));
-        palette.setColor(QPalette::All,      QPalette::Dark,            darken(button_base_color));
-        palette.setColor(QPalette::All,      QPalette::Shadow,          shadow);
-
-        palette.setColor(QPalette::All,      QPalette::Highlight,       selected_bg_color);
-        palette.setColor(QPalette::All,      QPalette::HighlightedText, selected_fg_color);
-
-        palette.setColor(QPalette::All,      QPalette::Link,            link_color);
-        palette.setColor(QPalette::All,      QPalette::LinkVisited,     link_visited_color);
-
-
-        QColor insensitive_fg_color = mix(fg_color, bg_color);
-        QColor insensitive_bg_color = mix(bg_color, base_color, 0.4);
-
-        palette.setColor(QPalette::Disabled, QPalette::Window,          insensitive_bg_color);
-        palette.setColor(QPalette::Disabled, QPalette::WindowText,      insensitive_fg_color);
-        palette.setColor(QPalette::Disabled, QPalette::Base,            base_color);
-        palette.setColor(QPalette::Disabled, QPalette::AlternateBase,   base_color);
-        palette.setColor(QPalette::Disabled, QPalette::Text,            insensitive_fg_color);
-        palette.setColor(QPalette::Disabled, QPalette::Button,          insensitive_bg_color);
-        palette.setColor(QPalette::Disabled, QPalette::ButtonText,      insensitive_fg_color);
-        palette.setColor(QPalette::Disabled, QPalette::BrightText,      text_color);
-
-        palette.setColor(QPalette::Disabled, QPalette::Light,           lighten(insensitive_bg_color));
-        palette.setColor(QPalette::Disabled, QPalette::Midlight,        mix(lighten(insensitive_bg_color), insensitive_bg_color));
-        palette.setColor(QPalette::Disabled, QPalette::Mid,             mix(darken(insensitive_bg_color), insensitive_bg_color));
-        palette.setColor(QPalette::Disabled, QPalette::Dark,            darken(insensitive_bg_color));
-        palette.setColor(QPalette::Disabled, QPalette::Shadow,          shadow);
-
-        palette.setColor(QPalette::Disabled, QPalette::Highlight,       selected_bg_color);
-        palette.setColor(QPalette::Disabled, QPalette::HighlightedText, selected_fg_color);
-
-        palette.setColor(QPalette::Disabled, QPalette::Link,            link_color);
-        palette.setColor(QPalette::Disabled, QPalette::LinkVisited,     link_visited_color);
-
-
-        palette.setColor(QPalette::Inactive, QPalette::Window,          bg_color);
-        palette.setColor(QPalette::Inactive, QPalette::WindowText,      backdrop_fg_color);
-        palette.setColor(QPalette::Inactive, QPalette::Base,            backdrop_base_color);
-        palette.setColor(QPalette::Inactive, QPalette::AlternateBase,   backdrop_base_color);
-        palette.setColor(QPalette::Inactive, QPalette::Text,            backdrop_fg_color);
-        palette.setColor(QPalette::Inactive, QPalette::Button,          button_base_color);
-        palette.setColor(QPalette::Inactive, QPalette::ButtonText,      backdrop_fg_color);
-        palette.setColor(QPalette::Inactive, QPalette::BrightText,      text_color);
-
-        palette.setColor(QPalette::Inactive, QPalette::Light,           lighten(insensitive_bg_color));
-        palette.setColor(QPalette::Inactive, QPalette::Midlight,        mix(lighten(insensitive_bg_color), insensitive_bg_color));
-        palette.setColor(QPalette::Inactive, QPalette::Mid,             mix(darken(insensitive_bg_color), insensitive_bg_color));
-        palette.setColor(QPalette::Inactive, QPalette::Dark,            darken(insensitive_bg_color));
-        palette.setColor(QPalette::Inactive, QPalette::Shadow,          shadow);
-
-        palette.setColor(QPalette::Inactive, QPalette::Highlight,       selected_bg_color);
-        palette.setColor(QPalette::Inactive, QPalette::HighlightedText, backdrop_selected_fg_color);
-
-        palette.setColor(QPalette::Inactive, QPalette::Link,            link_color);
-        palette.setColor(QPalette::Inactive, QPalette::LinkVisited,     link_visited_color);
-    } else {
-        // Colors defined in GTK adwaita style in _colors.scss
-        QColor base_color = QColor("white");
-        QColor text_color = QColor("black");
-        QColor bg_color = QColor("#f6f5f4");
-        QColor fg_color = QColor("#2e3436");
-        QColor selected_bg_color = QColor("#3584e4");
-        QColor selected_fg_color = QColor("white");
-        QColor osd_text_color = QColor("white");
-        QColor osd_bg_color = QColor("black");
-        QColor shadow = transparentize(QColor("black"), 0.9);
-
-        QColor backdrop_fg_color = mix(fg_color, bg_color);
-        QColor backdrop_base_color = darken(base_color, 0.01);
-        QColor backdrop_selected_fg_color = backdrop_base_color;
-
-        // This is the color we use as initial color for the gradient in normal state
-        // Defined in _drawing.scss button(normal)
-        QColor button_base_color = darken(bg_color, 0.04);
-
-        QColor link_color = darken(selected_bg_color, 0.1);
-        QColor link_visited_color = darken(selected_bg_color, 0.2);
-
-        palette.setColor(QPalette::All,      QPalette::Window,          bg_color);
-        palette.setColor(QPalette::All,      QPalette::WindowText,      fg_color);
-        palette.setColor(QPalette::All,      QPalette::Base,            base_color);
-        palette.setColor(QPalette::All,      QPalette::AlternateBase,   base_color);
-        palette.setColor(QPalette::All,      QPalette::ToolTipBase,     osd_bg_color);
-        palette.setColor(QPalette::All,      QPalette::ToolTipText,     osd_text_color);
-        palette.setColor(QPalette::All,      QPalette::Text,            fg_color);
-        palette.setColor(QPalette::All,      QPalette::Button,          button_base_color);
-        palette.setColor(QPalette::All,      QPalette::ButtonText,      fg_color);
-        palette.setColor(QPalette::All,      QPalette::BrightText,      text_color);
-
-        palette.setColor(QPalette::All,      QPalette::Light,           lighten(button_base_color));
-        palette.setColor(QPalette::All,      QPalette::Midlight,        mix(lighten(button_base_color), button_base_color));
-        palette.setColor(QPalette::All,      QPalette::Mid,             mix(darken(button_base_color), button_base_color));
-        palette.setColor(QPalette::All,      QPalette::Dark,            darken(button_base_color));
-        palette.setColor(QPalette::All,      QPalette::Shadow,          shadow);
-
-        palette.setColor(QPalette::All,      QPalette::Highlight,       selected_bg_color);
-        palette.setColor(QPalette::All,      QPalette::HighlightedText, selected_fg_color);
-
-        palette.setColor(QPalette::All,      QPalette::Link,            link_color);
-        palette.setColor(QPalette::All,      QPalette::LinkVisited,     link_visited_color);
-
-        QColor insensitive_fg_color = mix(fg_color, bg_color);
-        QColor insensitive_bg_color = mix(bg_color, base_color, 0.4);
-
-        palette.setColor(QPalette::Disabled, QPalette::Window,          insensitive_bg_color);
-        palette.setColor(QPalette::Disabled, QPalette::WindowText,      insensitive_fg_color);
-        palette.setColor(QPalette::Disabled, QPalette::Base,            base_color);
-        palette.setColor(QPalette::Disabled, QPalette::AlternateBase,   base_color);
-        palette.setColor(QPalette::Disabled, QPalette::Text,            insensitive_fg_color);
-        palette.setColor(QPalette::Disabled, QPalette::Button,          insensitive_bg_color);
-        palette.setColor(QPalette::Disabled, QPalette::ButtonText,      insensitive_fg_color);
-        palette.setColor(QPalette::Disabled, QPalette::BrightText,      text_color);
-
-        palette.setColor(QPalette::Disabled, QPalette::Light,           lighten(insensitive_bg_color));
-        palette.setColor(QPalette::Disabled, QPalette::Midlight,        mix(lighten(insensitive_bg_color), insensitive_bg_color));
-        palette.setColor(QPalette::Disabled, QPalette::Mid,             mix(darken(insensitive_bg_color), insensitive_bg_color));
-        palette.setColor(QPalette::Disabled, QPalette::Dark,            darken(insensitive_bg_color));
-        palette.setColor(QPalette::Disabled, QPalette::Shadow,          shadow);
-
-        palette.setColor(QPalette::Disabled, QPalette::Highlight,       selected_bg_color);
-        palette.setColor(QPalette::Disabled, QPalette::HighlightedText, selected_fg_color);
-
-        palette.setColor(QPalette::Disabled, QPalette::Link,            link_color);
-        palette.setColor(QPalette::Disabled, QPalette::LinkVisited,     link_visited_color);
-
-
-        palette.setColor(QPalette::Inactive, QPalette::Window,          bg_color);
-        palette.setColor(QPalette::Inactive, QPalette::WindowText,      backdrop_fg_color);
-        palette.setColor(QPalette::Inactive, QPalette::Base,            backdrop_base_color);
-        palette.setColor(QPalette::Inactive, QPalette::AlternateBase,   backdrop_base_color);
-        palette.setColor(QPalette::Inactive, QPalette::Text,            backdrop_fg_color);
-        palette.setColor(QPalette::Inactive, QPalette::Button,          button_base_color);
-        palette.setColor(QPalette::Inactive, QPalette::ButtonText,      backdrop_fg_color);
-        palette.setColor(QPalette::Inactive, QPalette::BrightText,      text_color);
-
-        palette.setColor(QPalette::Inactive, QPalette::Light,           lighten(insensitive_bg_color));
-        palette.setColor(QPalette::Inactive, QPalette::Midlight,        mix(lighten(insensitive_bg_color), insensitive_bg_color));
-        palette.setColor(QPalette::Inactive, QPalette::Mid,             mix(darken(insensitive_bg_color), insensitive_bg_color));
-        palette.setColor(QPalette::Inactive, QPalette::Dark,            darken(insensitive_bg_color));
-        palette.setColor(QPalette::Inactive, QPalette::Shadow,          shadow);
-
-        palette.setColor(QPalette::Inactive, QPalette::Highlight,       selected_bg_color);
-        palette.setColor(QPalette::Inactive, QPalette::HighlightedText, backdrop_selected_fg_color);
-
-        palette.setColor(QPalette::Inactive, QPalette::Link,            link_color);
-        palette.setColor(QPalette::Inactive, QPalette::LinkVisited,     link_visited_color);
+    const QWindow *win = widget ? widget->window()->windowHandle() : nullptr;
+    if (win) {
+        return win->isActive();
     }
-
-    return palette;
+    return false;
 }
+
+QColor Helper::hoverColor(const QPalette &palette) const
+{
+    return palette.highlight().color();
+}
+
+QColor Helper::focusColor(const QPalette &palette) const
+{
+    return palette.highlight().color();
+}
+
+QColor Helper::negativeText(const QPalette &palette) const
+{
+    Q_UNUSED(palette);
+    return Qt::red;
+}
+
+QColor Helper::shadowColor(const QPalette &palette) const
+{
+    return Colors::alphaColor(palette.color(QPalette::Shadow), 0.15);
+}
+
+QColor Helper::titleBarColor(const QPalette &palette, bool active) const
+{
+    return palette.color(active ? QPalette::Active : QPalette::Inactive, QPalette::Window);
+}
+
+QColor Helper::titleBarTextColor(const QPalette &palette, bool active) const
+{
+    return palette.color(active ? QPalette::Active : QPalette::Inactive, QPalette::WindowText);
+}
+
 
 //____________________________________________________________________
 QColor Helper::indicatorOutlineColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode, CheckBoxState state, bool darkMode, bool inMenu) const
@@ -247,9 +96,9 @@ QColor Helper::indicatorOutlineColor(const QPalette &palette, bool mouseOver, bo
         }
 
         if (darkMode) {
-            return darken(palette.color(QPalette::Window), 0.18);
+            return Colors::darken(palette.color(QPalette::Window), 0.18);
         } else {
-            return darken(palette.color(QPalette::Window), 0.24);
+            return Colors::darken(palette.color(QPalette::Window), 0.24);
         }
     } else {
         return palette.color(QPalette::Highlight);
@@ -268,7 +117,7 @@ QColor Helper::inputOutlineColor(const QPalette &palette, bool mouseOver, bool h
 
     // focus takes precedence over hover
     if (mode == AnimationFocus) {
-        outline = mix(outline, focusColor(palette), opacity);
+        outline = Colors::mix(outline, focusColor(palette), opacity);
     } else if (hasFocus) {
         outline = focusColor(palette);
     }
@@ -283,7 +132,7 @@ QColor Helper::sidePanelOutlineColor(const QPalette &palette, bool hasFocus, qre
     QColor focus(palette.color(QPalette::Active, QPalette::Highlight));
 
     if (mode == AnimationFocus) {
-        outline = mix(outline, focus, opacity);
+        outline = Colors::mix(outline, focus, opacity);
     } else if (hasFocus) {
         outline = focus;
     }
@@ -291,10 +140,15 @@ QColor Helper::sidePanelOutlineColor(const QPalette &palette, bool hasFocus, qre
     return outline;
 }
 
+QColor Helper::frameBackgroundColor(const QPalette &palette) const
+{
+    return frameBackgroundColor(palette, palette.currentColorGroup());
+}
+
 //____________________________________________________________________
 QColor Helper::frameBackgroundColor(const QPalette &palette, QPalette::ColorGroup group) const
 {
-    return mix(palette.color(group, QPalette::Window), palette.color(group, QPalette::Base), 0.3);
+    return Colors::mix(palette.color(group, QPalette::Window), palette.color(group, QPalette::Base), 0.3);
 }
 
 //____________________________________________________________________
@@ -302,11 +156,11 @@ QColor Helper::arrowColor(const QPalette &palette, QPalette::ColorGroup group, Q
 {
     switch (role) {
     case QPalette::Text:
-        return mix(palette.color(group, QPalette::Text), palette.color(group, QPalette::Base), arrowShade);
+        return Colors::mix(palette.color(group, QPalette::Text), palette.color(group, QPalette::Base), arrowShade);
     case QPalette::WindowText:
-        return mix(palette.color(group, QPalette::WindowText), palette.color(group, QPalette::Window), arrowShade);
+        return Colors::mix(palette.color(group, QPalette::WindowText), palette.color(group, QPalette::Window), arrowShade);
     case QPalette::ButtonText:
-        return mix(palette.color(group, QPalette::ButtonText), palette.color(group, QPalette::Button), arrowShade);
+        return Colors::mix(palette.color(group, QPalette::ButtonText), palette.color(group, QPalette::Button), arrowShade);
     default:
         return palette.color(group, role);
     }
@@ -326,9 +180,9 @@ QColor Helper::arrowColor(const QPalette &palette, bool mouseOver, bool hasFocus
 QColor Helper::buttonOutlineColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode, bool darkMode) const
 {
     if (darkMode) {
-        return darken(palette.color(QPalette::Window), 0.1);
+        return Colors::darken(palette.color(QPalette::Window), 0.1);
     } else {
-        return darken(palette.color(QPalette::Window), 0.18);
+        return Colors::darken(palette.color(QPalette::Window), 0.18);
     }
 }
 
@@ -341,40 +195,40 @@ QColor Helper::buttonBackgroundColor(const QPalette &palette, bool mouseOver, bo
 
     if (isDisabled && (mode == AnimationPressed || sunken)) {
         // Defined in drawing.css - insensitive-active button
-        // if($variant == 'light', darken(mix($c, $base_color, 85%), 8%), darken(mix($c, $base_color, 85%), 6%));
+        // if($variant == 'light', Colors::darken(Colors::mix($c, $base_color, 85%), 8%), Colors::darken(Colors::mix($c, $base_color, 85%), 6%));
         // FIXME: doesn't seem to be correct color
-        return darkMode ? darken(mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.15), 0.06) :
-                          darken(mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.15), 0.08);
+        return darkMode ? Colors::darken(Colors::mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.15), 0.06) :
+               Colors::darken(Colors::mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.15), 0.08);
     }
 
     if (mode == AnimationPressed) {
         if (darkMode) {
-            // Active button for dark mode is darken(bg_color, 0.09)
-            return mix(darken(background, 0.01), darken(background, 0.09), opacity);
+            // Active button for dark mode is Colors::darken(bg_color, 0.09)
+            return Colors::mix(Colors::darken(background, 0.01), Colors::darken(background, 0.09), opacity);
         } else {
-            // Active button for normal mode is darken(bg_color, 0.14)
-            return mix(buttonBackground, darken(background, 0.14), opacity);
+            // Active button for normal mode is Colors::darken(bg_color, 0.14)
+            return Colors::mix(buttonBackground, Colors::darken(background, 0.14), opacity);
         }
     } else if (sunken) {
         if (darkMode) {
-            // Active button for dark mode is darken(bg_color, 0.09)
-            return darken(background, 0.09);
+            // Active button for dark mode is Colors::darken(bg_color, 0.09)
+            return Colors::darken(background, 0.09);
         } else {
-            // Active button for normal mode is darken(bg_color, 0.14)
-            return darken(background, 0.14);
+            // Active button for normal mode is Colors::darken(bg_color, 0.14)
+            return Colors::darken(background, 0.14);
         }
     } else if (mode == AnimationHover) {
         if (darkMode) {
-            // Hovered button for dark mode is darken(bg_color, 0.01)
-            return mix(buttonBackground, darken(background, 0.01), opacity);
+            // Hovered button for dark mode is Colors::darken(bg_color, 0.01)
+            return Colors::mix(buttonBackground, Colors::darken(background, 0.01), opacity);
         } else {
             // Hovered button for normal mode is bg_color
-            return mix(buttonBackground, background, opacity);
+            return Colors::mix(buttonBackground, background, opacity);
         }
     } else if (mouseOver) {
         if (darkMode) {
-            // Hovered button for dark mode is darken(bg_color, 0.01)
-            return darken(background, 0.01);
+            // Hovered button for dark mode is Colors::darken(bg_color, 0.01)
+            return Colors::darken(background, 0.01);
         } else {
             // Hovered button for normal mode is bg_color
             return background;
@@ -389,53 +243,53 @@ QColor Helper::indicatorBackgroundColor(const QPalette &palette, bool mouseOver,
 {
     bool isDisabled = palette.currentColorGroup() == QPalette::Disabled;
     QColor background(palette.color(QPalette::Window));
-    // Normal-alt button for dark mode is darken(bg_color, 0.03)
-    // Normal-alt button for normal mode is lighten(bg_color, 0.05)
-    QColor indicatorColor(darkMode ? darken(background, 0.03) : lighten(background, 0.05));
+    // Normal-alt button for dark mode is Colors::darken(bg_color, 0.03)
+    // Normal-alt button for normal mode is Colors::lighten(bg_color, 0.05)
+    QColor indicatorColor(darkMode ? Colors::darken(background, 0.03) : Colors::lighten(background, 0.05));
 
     if (inMenu || state == CheckOff) {
         if (isDisabled) {
             // Defined in drawing.css - insensitive button
-            // $insensitive_bg_color: mix($bg_color, $base_color, 60%);
-            return mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.6);
+            // $insensitive_bg_color: Colors::mix($bg_color, $base_color, 60%);
+            return Colors::mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.6);
         }
 
         if (mode == AnimationPressed) {
             if (darkMode) {
-                // Active button for dark mode is darken(bg_color, 0.09)
-                return mix(background, darken(background, 0.09), opacity);
+                // Active button for dark mode is Colors::darken(bg_color, 0.09)
+                return Colors::mix(background, Colors::darken(background, 0.09), opacity);
             } else {
-                // Active button for normal mode is darken(bg_color, 0.14)
-                return mix(lighten(background, 0.0), darken(background, 0.14), opacity);
+                // Active button for normal mode is Colors::darken(bg_color, 0.14)
+                return Colors::mix(Colors::lighten(background, 0.0), Colors::darken(background, 0.14), opacity);
             }
         } else if (sunken) {
             if (darkMode) {
-                // Active button for dark mode is darken(bg_color, 0.09)
-                return darken(background, 0.09);
+                // Active button for dark mode is Colors::darken(bg_color, 0.09)
+                return Colors::darken(background, 0.09);
             } else {
-                // Active button for normal mode is darken(bg_color, 0.14)
-                return darken(background, 0.14);
+                // Active button for normal mode is Colors::darken(bg_color, 0.14)
+                return Colors::darken(background, 0.14);
             }
         } else if (mode == AnimationHover) {
             if (darkMode) {
                 // Hovered-alt button for dark mode is bg_color
-                return mix(indicatorColor, background, opacity);
+                return Colors::mix(indicatorColor, background, opacity);
             } else {
-                // Hovered-alt button for normal mode is lighten(bg_color, 0.09)
-                return mix(indicatorColor, lighten(background, 0.09), opacity);
+                // Hovered-alt button for normal mode is Colors::lighten(bg_color, 0.09)
+                return Colors::mix(indicatorColor, Colors::lighten(background, 0.09), opacity);
             }
         } else if (mouseOver) {
             if (darkMode) {
                 // Hovered-alt button for dark mode is bg_color
                 return background;
             } else {
-                // Hovered-alt button for normal mode is lighten(bg_color, 0.09)
-                return lighten(background, 0.09);
+                // Hovered-alt button for normal mode is Colors::lighten(bg_color, 0.09)
+                return Colors::lighten(background, 0.09);
             }
         }
     } else {
         if (darkMode) {
-            return lighten(palette.color(QPalette::Highlight));
+            return Colors::lighten(palette.color(QPalette::Highlight));
         } else {
             return palette.color(QPalette::Highlight);
         }
@@ -455,21 +309,21 @@ QColor Helper::toolButtonColor(const QPalette &palette, bool mouseOver, bool has
 //____________________________________________________________________
 QColor Helper::sliderOutlineColor(const QPalette &palette, bool mouseOver, bool hasFocus, qreal opacity, AnimationMode mode) const
 {
-    QColor outline(mix(palette.color(QPalette::Window), palette.color(QPalette::Shadow), 0.5));
+    QColor outline(Colors::mix(palette.color(QPalette::Window), palette.color(QPalette::Shadow), 0.5));
 
     // hover takes precedence over focus
     if (mode == AnimationHover) {
         QColor hover(hoverColor(palette));
         QColor focus(focusColor(palette));
         if (hasFocus)
-            outline = mix(focus, hover, opacity);
+            outline = Colors::mix(focus, hover, opacity);
         else
-            outline = mix(outline, hover, opacity);
+            outline = Colors::mix(outline, hover, opacity);
     } else if (mouseOver) {
         outline = hoverColor(palette);
     } else if (mode == AnimationFocus) {
         QColor focus(focusColor(palette));
-        outline = mix(outline, focus, opacity);
+        outline = Colors::mix(outline, focus, opacity);
     } else if (hasFocus) {
         outline = focusColor(palette);
     }
@@ -484,20 +338,20 @@ QColor Helper::scrollBarHandleColor(const QPalette &palette, bool mouseOver, boo
     QColor bgColor = palette.color(QPalette::Window);
     QColor selectedBgColor = palette.color(QPalette::Highlight);
 
-    QColor color(mix(fgColor, bgColor, 0.4));
-    QColor hoverColor(mix(fgColor, bgColor, 0.2));
-    QColor activeColor(darkMode ? lighten(selectedBgColor, 0.1) : darken(selectedBgColor, 0.1));
+    QColor color(Colors::mix(fgColor, bgColor, 0.4));
+    QColor hoverColor(Colors::mix(fgColor, bgColor, 0.2));
+    QColor activeColor(darkMode ? Colors::lighten(selectedBgColor, 0.1) : Colors::darken(selectedBgColor, 0.1));
 
     // hover takes precedence over focus
     if (mode == AnimationPressed) {
         if (mouseOver)
-            color = mix(hoverColor, activeColor, opacity);
+            color = Colors::mix(hoverColor, activeColor, opacity);
         else
-            color = mix(color, activeColor, opacity);
+            color = Colors::mix(color, activeColor, opacity);
     } else if (sunken) {
         color = activeColor;
     } else if (mode == AnimationHover) {
-        color = mix(color, hoverColor, opacity);
+        color = Colors::mix(color, hoverColor, opacity);
     } else if (mouseOver) {
         color = hoverColor;
     }
@@ -519,7 +373,7 @@ QColor Helper::checkBoxIndicatorColor(const QPalette &palette, bool mouseOver, b
         if (active) {
             return palette.color(QPalette::HighlightedText);
         } else {
-            return transparentize(palette.color(QPalette::ToolTipText), 0.2);
+            return Colors::transparentize(palette.color(QPalette::ToolTipText), 0.2);
         }
     }
 }
@@ -537,16 +391,16 @@ QColor Helper::headerTextColor(const QPalette &palette, const QStyle::State stat
 
     if (state & QStyle::State_Enabled) {
         if (state & QStyle::State_Sunken)
-            return alphaColor(col, 0.9);
+            return Colors::alphaColor(col, 0.9);
         else if (state & QStyle::State_MouseOver)
-            return alphaColor(col, 0.7);
+            return Colors::alphaColor(col, 0.7);
     }
-    return alphaColor(col, 0.5);
+    return Colors::alphaColor(col, 0.5);
 }
 
 QColor Helper::tabBarColor(const QPalette &palette, const QStyle::State state) const
 {
-    QColor background(mix(palette.window().color(), palette.shadow().color(), 0.15));
+    QColor background(Colors::mix(palette.window().color(), palette.shadow().color(), 0.15));
     if (!(state & QStyle::State_Enabled))
         background = background.lighter(115);
     if (!(state & QStyle::State_Active))
@@ -561,19 +415,10 @@ QPalette Helper::disabledPalette(const QPalette &source, qreal ratio) const
 
     const QList<QPalette::ColorRole> roles = { QPalette::Background, QPalette::Highlight, QPalette::WindowText, QPalette::ButtonText, QPalette::Text, QPalette::Button };
     foreach (const QPalette::ColorRole &role, roles) {
-        copy.setColor(role, mix(source.color(QPalette::Active, role), source.color(QPalette::Disabled, role), 1.0 - ratio));
+        copy.setColor(role, Colors::mix(source.color(QPalette::Active, role), source.color(QPalette::Disabled, role), 1.0 - ratio));
     }
 
     return copy;
-}
-
-//____________________________________________________________________
-QColor Helper::alphaColor(QColor color, qreal alpha) const
-{
-    if (alpha >= 0 && alpha < 1.0) {
-        color.setAlphaF(alpha * color.alphaF());
-    }
-    return color;
 }
 
 //______________________________________________________________________________
@@ -821,24 +666,24 @@ void Helper::renderButtonFrame(QPainter *painter, const QRect &rect, const QColo
             gradient.setColorAt(1, color);
         } else if (mouseOver) {
             if (darkMode) {
-                QColor baseColor = lighten(color, 0.01);
-                // Hovered button in dark mode is a gradient from $color to lighten(bg_color, 0.01)
-                gradient.setColorAt(0, lighten(baseColor, 0.01)); // FIXME not correct according to adwaita's _drawing.scss file, but looks more close than before
-                gradient.setColorAt(1, lighten(baseColor, 0.01));
+                QColor baseColor = Colors::lighten(color, 0.01);
+                // Hovered button in dark mode is a gradient from $color to Colors::lighten(bg_color, 0.01)
+                gradient.setColorAt(0, Colors::lighten(baseColor, 0.01)); // FIXME not correct according to adwaita's _drawing.scss file, but looks more close than before
+                gradient.setColorAt(1, Colors::lighten(baseColor, 0.01));
             } else {
                 QColor baseColor = color;
-                // Hovered button in normal mode is a gradient from $color to lighten(bg_color, 0.01)
+                // Hovered button in normal mode is a gradient from $color to Colors::lighten(bg_color, 0.01)
                 gradient.setColorAt(0, color);
-                gradient.setColorAt(1, lighten(baseColor, 0.01));
+                gradient.setColorAt(1, Colors::lighten(baseColor, 0.01));
             }
         } else {
             if (darkMode) {
-                QColor baseColor = lighten(color, 0.01);
+                QColor baseColor = Colors::lighten(color, 0.01);
                 // Normal button in dark mode is a gradient from $color to bg_color
                 gradient.setColorAt(0, color);
                 gradient.setColorAt(1, baseColor);
             } else {
-                QColor baseColor = lighten(color, 0.04);
+                QColor baseColor = Colors::lighten(color, 0.04);
                 // Normal button in normal mode is a gradient from $color to bg_color
                 gradient.setColorAt(0, color);
                 gradient.setColorAt(1, baseColor);
@@ -864,7 +709,7 @@ void Helper::renderButtonFrame(QPainter *painter, const QRect &rect, const QColo
 
 //______________________________________________________________________________
 void Helper::renderCheckBoxFrame(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline, const QColor &shadow,
-                               bool hasFocus, bool sunken, bool mouseOver, bool active, CheckBoxState state, bool darkMode, bool inMenu) const
+                                 bool hasFocus, bool sunken, bool mouseOver, bool active, CheckBoxState state, bool darkMode, bool inMenu) const
 {
     // setup painter
     painter->setRenderHint(QPainter::Antialiasing, true);
@@ -887,7 +732,7 @@ void Helper::renderCheckBoxFrame(QPainter *painter, const QRect &rect, const QCo
         if (color.isValid() && active) {
             QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
             if (sunken) {
-                    // Pressed-alt button in dark mode is not a gradient, just an image consting from same $color
+                // Pressed-alt button in dark mode is not a gradient, just an image consting from same $color
                 if (darkMode) {
                     gradient.setColorAt(0, color);
                     gradient.setColorAt(1, color);
@@ -899,23 +744,23 @@ void Helper::renderCheckBoxFrame(QPainter *painter, const QRect &rect, const QCo
             } else if (mouseOver) {
                 if (darkMode) {
                     QColor baseColor = color;
-                    // Hovered-alt button in dark mode is a gradient from $color to darken(bg_color, 0.04)
-                    gradient.setColorAt(0, darken(baseColor, 0.04));
+                    // Hovered-alt button in dark mode is a gradient from $color to Colors::darken(bg_color, 0.04)
+                    gradient.setColorAt(0, Colors::darken(baseColor, 0.04));
                     gradient.setColorAt(1, color);
                 } else {
-                    QColor baseColor = darken(color, 0.09);
-                    // Hovered-alt button in normal mode is a gradient from $color to lighten(bg_color, 0.04)
+                    QColor baseColor = Colors::darken(color, 0.09);
+                    // Hovered-alt button in normal mode is a gradient from $color to Colors::lighten(bg_color, 0.04)
                     gradient.setColorAt(0, color);                      // FIXME:
-                    gradient.setColorAt(1, lighten(baseColor, 0.04));   // should be vice-versa, but this way it seems to be more accurate
+                    gradient.setColorAt(1, Colors::lighten(baseColor, 0.04));   // should be vice-versa, but this way it seems to be more accurate
                 }
             } else {
                 if (darkMode) {
-                    QColor baseColor = lighten(color, 0.03);
-                    // Normal-alt button in dark mode is a gradient from $color to darken(bg_color, 0.06)
-                    gradient.setColorAt(0, darken(baseColor, 0.06));
+                    QColor baseColor = Colors::lighten(color, 0.03);
+                    // Normal-alt button in dark mode is a gradient from $color to Colors::darken(bg_color, 0.06)
+                    gradient.setColorAt(0, Colors::darken(baseColor, 0.06));
                     gradient.setColorAt(1, color);
                 } else {
-                    QColor baseColor = darken(color, 0.05);
+                    QColor baseColor = Colors::darken(color, 0.05);
                     // Normal-alt button in normal mode is a gradient from $color to bg_color
                     gradient.setColorAt(0, baseColor);
                     gradient.setColorAt(1, color);
@@ -931,7 +776,7 @@ void Helper::renderCheckBoxFrame(QPainter *painter, const QRect &rect, const QCo
         if (color.isValid()) {
             QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
             gradient.setColorAt(0, color);
-            gradient.setColorAt(1, lighten(color, 0.04));
+            gradient.setColorAt(1, Colors::lighten(color, 0.04));
             painter->setBrush(gradient);
         } else {
             painter->setBrush(Qt::NoBrush);
@@ -973,8 +818,8 @@ void Helper::renderFlatButtonFrame(QPainter *painter, const QRect &rect, const Q
         } else if (sunken) {
             gradient.setColorAt(0, color);
         } else {
-            gradient.setColorAt(0, mix(color, Qt::white, 0.07));
-            gradient.setColorAt(1, mix(color, Qt::black, 0.1));
+            gradient.setColorAt(0, Colors::mix(color, Qt::white, 0.07));
+            gradient.setColorAt(1, Colors::mix(color, Qt::black, 0.1));
         }
         painter->setBrush(gradient);
     } else
@@ -1252,23 +1097,23 @@ void Helper::renderRadioButton(QPainter *painter, const QRect &rect, const QColo
             } else if (mouseOver) {
                 if (darkMode) {
                     QColor baseColor = background;
-                    // Hovered-alt button in dark mode is a gradient from $background to darken(bg_background, 0.04)
-                    gradient.setColorAt(0, darken(baseColor, 0.04));
+                    // Hovered-alt button in dark mode is a gradient from $background to Colors::darken(bg_background, 0.04)
+                    gradient.setColorAt(0, Colors::darken(baseColor, 0.04));
                     gradient.setColorAt(1, background);
                 } else {
-                    QColor baseColor = darken(background, 0.09);
-                    // Hovered-alt button in normal mode is a gradient from $background to lighten(bg_background, 0.04)
+                    QColor baseColor = Colors::darken(background, 0.09);
+                    // Hovered-alt button in normal mode is a gradient from $background to Colors::lighten(bg_background, 0.04)
                     gradient.setColorAt(0, background);                 // FIXME:
-                    gradient.setColorAt(1, lighten(baseColor, 0.04));   // should be vice-versa, but this way it seems to be more accurate
+                    gradient.setColorAt(1, Colors::lighten(baseColor, 0.04));   // should be vice-versa, but this way it seems to be more accurate
                 }
             } else {
                 if (darkMode) {
-                    QColor baseColor = lighten(background, 0.03);
-                    // Normal-alt button in dark mode is a gradient from $background to darken(bg_background, 0.06)
-                    gradient.setColorAt(0, darken(baseColor, 0.06));
+                    QColor baseColor = Colors::lighten(background, 0.03);
+                    // Normal-alt button in dark mode is a gradient from $background to Colors::darken(bg_background, 0.06)
+                    gradient.setColorAt(0, Colors::darken(baseColor, 0.06));
                     gradient.setColorAt(1, background);
                 } else {
-                    QColor baseColor = darken(background, 0.05);
+                    QColor baseColor = Colors::darken(background, 0.05);
                     // Normal-alt button in normal mode is a gradient from $background to bg_background
                     gradient.setColorAt(0, baseColor);
                     gradient.setColorAt(1, background);
@@ -1289,7 +1134,7 @@ void Helper::renderRadioButton(QPainter *painter, const QRect &rect, const QColo
         if (background.isValid()) {
             QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
             gradient.setColorAt(0, background);
-            gradient.setColorAt(1, lighten(background, 0.04));
+            gradient.setColorAt(1, Colors::lighten(background, 0.04));
             painter->setBrush(gradient);
         } else {
             painter->setBrush(Qt::NoBrush);
@@ -1421,12 +1266,12 @@ void Helper::renderSliderHandle(QPainter *painter, const QRect &rect, const QCol
             gradient.setColorAt(1, color);
         } else {
             if (darkMode) {
-                QColor baseColor = lighten(color, 0.03);
-                // Normal-alt button in dark mode is a gradient from $color to darken(bg_background, 0.06)
-                gradient.setColorAt(0, darken(baseColor, 0.06));
+                QColor baseColor = Colors::lighten(color, 0.03);
+                // Normal-alt button in dark mode is a gradient from $color to Colors::darken(bg_background, 0.06)
+                gradient.setColorAt(0, Colors::darken(baseColor, 0.06));
                 gradient.setColorAt(1, color);
             } else {
-                QColor baseColor = darken(color, 0.05);
+                QColor baseColor = Colors::darken(color, 0.05);
                 // Normal-alt button in normal mode is a gradient from $color to bg_background
                 gradient.setColorAt(0, baseColor);
                 gradient.setColorAt(1, color);
@@ -1506,7 +1351,7 @@ void Helper::renderProgressBarGroove(QPainter *painter, const QRect &rect, const
 
 //______________________________________________________________________________
 void Helper::renderProgressBarBusyContents(QPainter *painter, const QRect &rect, const QColor &color, const QColor &outline,
-                                           bool horizontal, bool reverse, int progress) const
+        bool horizontal, bool reverse, int progress) const
 {
     Q_UNUSED(reverse);
 
@@ -1882,7 +1727,7 @@ void Helper::setVariant(QWidget *widget, const QByteArray &variant)
         typedef void *(*XcbConnectFn)(const char *, int *);
         typedef XcbInternAtomCookie(*XcbInternAtomFn)(void *, quint8, quint16, const char *);
         typedef XcbInternAtomReply * (*XcbInternAtomReplyFn)(void *, XcbInternAtomCookie, void *);
-        typedef XcbVoidCookie (*XcbChangePropertyFn)(void *, quint8, quint32, XcbAtom, XcbAtom, quint8, quint32, const void *);
+        typedef XcbVoidCookie(*XcbChangePropertyFn)(void *, quint8, quint32, XcbAtom, XcbAtom, quint8, quint32, const void *);
         typedef int (*XcbFlushFn)(void *);
 
         static QLibrary *lib = 0;
