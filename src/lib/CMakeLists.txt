@@ -7,7 +7,7 @@ include_directories(
 configure_file(config-adwaita.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-adwaita.h )
 configure_file(adwaita-qt.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/adwaita-qt.pc @ONLY)
 
-set(libadwaitaqt_SRCS
+set(libadwaitaqt_priv_SRCS
     # Animations
     animations/adwaitaanimation.cpp
     animations/adwaitaanimations.cpp
@@ -37,57 +37,24 @@ set(libadwaitaqt_SRCS
 
     # Others
     adwaitaaddeventfilter.cpp
-    adwaitacolors.cpp
     adwaitamnemonics.cpp
     adwaitasplitterproxy.cpp
     adwaitawidgetexplorer.cpp
     adwaitawindowmanager.cpp
 )
 
-set(libadwaitaqt_HEADERS
-    # Animations
-    animations/adwaitaanimation.h
-    animations/adwaitaanimations.h
-    animations/adwaitaanimationdata.h
-    animations/adwaitabaseengine.h
-    animations/adwaitabusyindicatordata.h
-    animations/adwaitabusyindicatorengine.h
-    animations/adwaitadatamap.h
-    animations/adwaitadialdata.h
-    animations/adwaitadialengine.h
-    animations/adwaitaenabledata.h
-    animations/adwaitagenericdata.h
-    animations/adwaitaheaderviewdata.h
-    animations/adwaitaheaderviewengine.h
-    animations/adwaitascrollbardata.h
-    animations/adwaitascrollbarengine.h
-    animations/adwaitaspinboxengine.h
-    animations/adwaitaspinboxdata.h
-    animations/adwaitastackedwidgetdata.h
-    animations/adwaitastackedwidgetengine.h
-    animations/adwaitatabbarengine.h
-    animations/adwaitatabbardata.h
-    animations/adwaitatoolboxengine.h
-    animations/adwaitatransitiondata.h
-    animations/adwaitatransitionwidget.h
-    animations/adwaitawidgetstateengine.h
-    animations/adwaitawidgetstatedata.h
-
-    # Others
-    adwaita.h
-    adwaitaqt_export.h
-    adwaitaaddeventfilter.h
-    adwaitacolors.h
-    adwaitamnemonics.h
-    adwaitasplitterproxy.h
-    adwaitawidgetexplorer.h
-    adwaitawindowmanager.h
+set(libadwaitaqt_SRCS
+    adwaitacolors.cpp
 )
 
-add_library(adwaitaqt SHARED ${libadwaitaqt_SRCS})
-add_library(AdwaitaQt ALIAS adwaitaqt)
+set(libadwaitaqt_HEADERS
+    adwaita.h
+    adwaitacolors.h
+    adwaitaqt_export.h
+)
 
-target_link_libraries(adwaitaqt
+add_library(adwaitaqtpriv SHARED ${libadwaitaqt_priv_SRCS})
+target_link_libraries(adwaitaqtpriv
     Qt5::Core
     Qt5::DBus
     Qt5::Gui
@@ -95,9 +62,22 @@ target_link_libraries(adwaitaqt
     Qt5::X11Extras
 )
 
-set_target_properties(adwaitaqt PROPERTIES VERSION ${ADWAITAQT_VERSION} SOVERSION 1)
-target_include_directories(adwaitaqt PUBLIC ${Qt5Core_INCLUDE_DIRS} ${Qt5Gui_INCLUDE_DIRS} ${Qt5DBus_INCLUDE_DIRS} ${Qt5Widgets_INCLUDE_DIRS} ${Qt5X11Extras_INCLUDE_DIRS})
+add_library(adwaitaqt SHARED ${libadwaitaqt_SRCS})
+add_library(AdwaitaQt ALIAS adwaitaqt)
 
+target_link_libraries(adwaitaqt
+    PUBLIC
+    Qt5::Core
+    Qt5::Gui
+    Qt5::Widgets
+    PRIVATE
+    adwaitaqtpriv
+)
+
+set_target_properties(adwaitaqt PROPERTIES VERSION ${ADWAITAQT_VERSION} SOVERSION 1)
+target_include_directories(adwaitaqt PUBLIC ${Qt5Core_INCLUDE_DIRS} ${Qt5Gui_INCLUDE_DIRS} ${Qt5Widgets_INCLUDE_DIRS})
+
+install(TARGETS adwaitaqtpriv DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR} EXPORT AdwaitaQtTargets)
 install(TARGETS adwaitaqt DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR} EXPORT AdwaitaQtTargets)
 
 install(FILES ${libadwaitaqt_HEADERS} DESTINATION ${CMAKE_INSTALL_FULL_INCLUDEDIR}/AdwaitaQt)

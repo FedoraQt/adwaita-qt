@@ -22,7 +22,6 @@
 #ifndef ADWAITA_COLORS_H
 #define ADWAITA_COLORS_H
 
-#include "animations/adwaitaanimations.h"
 #include "adwaitaqt_export.h"
 
 #include <QColor>

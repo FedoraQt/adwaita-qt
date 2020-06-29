@@ -22,7 +22,9 @@
 #include <QTest>
 
 #include <AdwaitaQt/adwaita.h>
-#include <AdwaitaQt/adwaitaanimations.h>
+#include <AdwaitaQt/adwaitacolors.h>
+
+#include <memory>
 
 QTEST_MAIN(Test)
 
@@ -30,6 +32,6 @@ void Test::initTestCase()
 {
     // Just simple test whethe we can link against the Adwaita library
     // and find headers
-    QPointer<Adwaita::Animations> animations = new Adwaita::Animations(this);
-    QVERIFY(!animations.isNull());
+    std::unique_ptr<Adwaita::ColorRequestOptions> options(new Adwaita::ColorRequestOptions(QPalette()));
+    QVERIFY(options);
 }
