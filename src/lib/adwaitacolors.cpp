@@ -128,8 +128,9 @@ QColor Colors::darken(const QColor &color, qreal amount)
     color.getHslF(&h, &s, &l, &a);
 
     qreal lightness = l - amount;
-    if (lightness < 0)
+    if (lightness < 0) {
         lightness = 0;
+    }
 
     return QColor::fromHslF(h, s, lightness, a);
 }
@@ -140,8 +141,9 @@ QColor Colors::desaturate(const QColor &color, qreal amount)
     color.getHslF(&h, &s, &l, &a);
 
     qreal saturation = s - amount;
-    if (saturation < 0)
+    if (saturation < 0) {
         saturation = 0;
+    }
     return QColor::fromHslF(h, saturation, l, a);
 }
 
@@ -151,21 +153,30 @@ QColor Colors::lighten(const QColor &color, qreal amount)
     color.getHslF(&h, &s, &l, &a);
 
     qreal lightness = l + amount;
-    if (lightness > 1)
+    if (lightness > 1) {
         lightness = 1;
+    }
     return QColor::fromHslF(h, s, lightness, a);
 }
 
 QColor Colors::mix(const QColor &c1, const QColor &c2, qreal bias)
 {
-    auto mixQreal = [](qreal a, qreal b, qreal bias) { return a + (b - a) * bias; };
+    auto mixQreal = [](qreal a, qreal b, qreal bias) {
+        return a + (b - a) * bias;
+    };
 
-    if (bias <= 0.0)
+    if (bias <= 0.0) {
         return c1;
-    if (bias >= 1.0)
+    }
+
+    if (bias >= 1.0) {
         return c2;
-    if (std::isnan(bias))
+    }
+
+    if (std::isnan(bias)) {
         return c1;
+
+    }
 
     qreal r = mixQreal(c1.redF(), c2.redF(), bias);
     qreal g = mixQreal(c1.greenF(), c2.greenF(), bias);
@@ -181,8 +192,10 @@ QColor Colors::transparentize(const QColor &color, qreal amount)
     color.getHslF(&h, &s, &l, &a);
 
     qreal alpha = a - amount;
-    if (alpha < 0)
+    if (alpha < 0) {
         alpha = 0;
+    }
+
     return QColor::fromHslF(h, s, l, alpha);
 }
 
