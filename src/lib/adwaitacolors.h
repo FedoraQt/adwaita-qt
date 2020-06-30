@@ -22,6 +22,7 @@
 #ifndef ADWAITA_COLORS_H
 #define ADWAITA_COLORS_H
 
+#include "adwaita.h"
 #include "adwaitaqt_export.h"
 
 #include <QColor>
@@ -59,6 +60,24 @@ public:
     void setActive(bool active);
     bool active() const;
 
+    void setHasFocus(bool focus);
+    bool hasFocus() const;
+
+    void setMouseOver(bool mouseOver);
+    bool mouseOver() const;
+
+    void setOpacity(qreal opacity);
+    qreal opacity() const;
+
+    void setAnimationMode(AnimationMode mode);
+    AnimationMode animationMode() const;
+
+    void setCheckboxState(CheckBoxState state);
+    CheckBoxState checkboxState() const;
+
+    void setInMenu(bool inMenu);
+    bool inMenu() const;
+
 private:
     Q_DECLARE_PRIVATE(ColorRequestOptions)
 
@@ -88,67 +107,13 @@ public:
     static QColor titleBarTextColor(const ColorRequestOptions &options);
 
     // Outline colors
-//     static QColor arrowOutlineColor(const ColorRequestOptions &options);
-//                              const QPalette &palette,
-//                              QPalette::ColorGroup,
-//                              QPalette::ColorRole
-
-//     static QColor arrowOutlineColor(const ColorRequestOptions &options);
-//                             const QPalette &palette,
-//                             QPalette::ColorRole role);
-
-//     static QColor arrowOutlineColor(const ColorRequestOptions &options);
-//                              const QPalette &palette,
-//                              bool mouseOver,
-//                              bool hasFocus, qreal opacity = AnimationData::OpacityInvalid,
-//                              AnimationMode = AnimationNone);
-
-//     static QColor buttonOutlineColor(const ColorRequestOptions &options);
-//                                      const QPalette &palette,
-//                                      bool mouseOver,
-//                                      bool hasFocus,
-//                                      qreal opacity = AnimationData::OpacityInvalid,
-//                                      AnimationMode = AnimationNone,
-//                                      bool darkMode = false);
-
-//     static QColor indicatorOutlineColor(const ColorRequestOptions &options);
-//                                         const QPalette &palette,
-//                                         bool mouseOver = false,
-//                                         bool hasFocus = false,
-//                                         qreal opacity = AnimationData::OpacityInvalid,
-//                                         AnimationMode = AnimationNone,
-//                                         CheckBoxState state = CheckOff,
-//                                         bool inMenu = false,
-//                                         ColorVariant variant = Adwaita);
-
-//     static QColor frameOutlineColor(const ColorRequestOptions &options);
-//                                     const QPalette &palette,
-//                                     bool mouseOver = false,
-//                                     bool hasFocus = false,
-//                                     qreal opacity = AnimationData::OpacityInvalid,
-//                                     AnimationMode = AnimationNone,
-//                                     ColorVariant variant = Adwaita);
-
-//     static QColor inputOutlineColor(const ColorRequestOptions &options);
-//                                     const QPalette &palette,
-//                                     bool mouseOver = false,
-//                                     bool hasFocus = false,
-//                                     qreal opacity = AnimationData::OpacityInvalid,
-//                                     AnimationMode = AnimationNone,
-//                                     ColorVariant variant = Adwaita);
-
-//     static QColor sidePanelOutlineColor(const ColorRequestOptions &options);
-//                                         const QPalette &palette,
-//                                         bool hasFocus = false,
-//                                         qreal opacity = AnimationData::OpacityInvalid,
-//                                         AnimationMode = AnimationNone);
-//     static QColor sliderOutlineColor(const ColorRequestOptions &options);
-//                                      const QPalette &palette,
-//                                      bool mouseOver,
-//                                      bool hasFocus,
-//                                      qreal opacity = AnimationData::OpacityInvalid,
-//                                      AnimationMode = AnimationNone);
-
+    static QColor arrowOutlineColor(const ColorRequestOptions &options);
+    static QColor buttonOutlineColor(const ColorRequestOptions &options);
+    static QColor indicatorOutlineColor(const ColorRequestOptions &options);
+    static QColor frameOutlineColor(const ColorRequestOptions &options);
+    static QColor inputOutlineColor(const ColorRequestOptions &options);
+    static QColor sidePanelOutlineColor(const ColorRequestOptions &options);
+    static QColor sliderOutlineColor(const ColorRequestOptions &options);
 
 //     // Background colors
 //     QColor frameBackgroundColor(const QPalette &palette);

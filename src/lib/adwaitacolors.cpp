@@ -20,11 +20,15 @@
  *************************************************************************/
 
 #include "adwaitacolors.h"
+#include "animations/adwaitaanimationdata.h"
 
 #include <cmath>
 
 namespace Adwaita
 {
+
+//* contrast for arrow and treeline rendering
+static const qreal arrowShade = 0.15;
 
 class ColorRequestOptionsPrivate
 {
@@ -39,7 +43,13 @@ public:
     QPalette::ColorGroup m_colorGroup = QPalette::ColorGroup::Normal;
     QPalette::ColorRole m_colorRole = QPalette::ColorRole::Base;
     ColorRequestOptions::ColorVariant m_colorVariant = ColorRequestOptions::Adwaita;
-    bool m_active;
+    bool m_active = false;
+    bool m_focus = false;
+    bool m_mouseHover = false;
+    qreal m_opacity = AnimationData::OpacityInvalid;
+    AnimationMode m_animationMode = AnimationNone;
+    CheckBoxState m_checkboxState = CheckOff;
+    bool m_inMenu = false;
 };
 
 ColorRequestOptions::ColorRequestOptions(const QPalette &palette)
@@ -112,6 +122,90 @@ bool ColorRequestOptions::active() const
     Q_D(const ColorRequestOptions);
 
     return d->m_active;
+}
+
+void ColorRequestOptions::setHasFocus(bool focus)
+{
+    Q_D(ColorRequestOptions);
+
+    d->m_focus = focus;
+}
+
+bool ColorRequestOptions::hasFocus() const
+{
+    Q_D(const ColorRequestOptions);
+
+    return d->m_focus;
+}
+
+void ColorRequestOptions::setMouseOver(bool mouseOver)
+{
+    Q_D(ColorRequestOptions);
+
+    d->m_mouseHover = mouseOver;
+}
+
+bool ColorRequestOptions::mouseOver() const
+{
+    Q_D(const ColorRequestOptions);
+
+    return d->m_mouseHover;
+}
+
+void ColorRequestOptions::setOpacity(qreal opacity)
+{
+    Q_D(ColorRequestOptions);
+
+    d->m_opacity = opacity;
+}
+
+qreal ColorRequestOptions::opacity() const
+{
+    Q_D(const ColorRequestOptions);
+
+    return d->m_opacity;
+}
+
+void ColorRequestOptions::setAnimationMode(AnimationMode mode)
+{
+    Q_D(ColorRequestOptions);
+
+    d->m_animationMode = mode;
+}
+
+AnimationMode ColorRequestOptions::animationMode() const
+{
+    Q_D(const ColorRequestOptions);
+
+    return d->m_animationMode;
+}
+
+void ColorRequestOptions::setCheckboxState(CheckBoxState state)
+{
+    Q_D(ColorRequestOptions);
+
+    d->m_checkboxState = state;
+}
+
+CheckBoxState ColorRequestOptions::checkboxState() const
+{
+    Q_D(const ColorRequestOptions);
+
+    return d->m_checkboxState;
+}
+
+void ColorRequestOptions::setInMenu(bool inMenu)
+{
+    Q_D(ColorRequestOptions);
+
+    d->m_inMenu = inMenu;
+}
+
+bool ColorRequestOptions::inMenu() const
+{
+    Q_D(const ColorRequestOptions);
+
+    return d->m_inMenu;
 }
 
 QColor Colors::alphaColor(QColor color, qreal alpha)
@@ -447,6 +541,105 @@ QColor Colors::titleBarColor(const ColorRequestOptions &options)
 QColor Colors::titleBarTextColor(const ColorRequestOptions &options)
 {
     return options.palette().color(options.active() ? QPalette::Active : QPalette::Inactive, QPalette::WindowText);
+}
+
+QColor Colors::arrowOutlineColor(const ColorRequestOptions &options)
+{
+    switch (options.colorRole()) {
+    case QPalette::Text:
+        return mix(options.palette().color(options.colorGroup(), QPalette::Text), options.palette().color(options.colorGroup(), QPalette::Base), arrowShade);
+    case QPalette::WindowText:
+        return mix(options.palette().color(options.colorGroup(), QPalette::WindowText), options.palette().color(options.colorGroup(), QPalette::Window), arrowShade);
+    case QPalette::ButtonText:
+        return mix(options.palette().color(options.colorGroup(), QPalette::ButtonText), options.palette().color(options.colorGroup(), QPalette::Button), arrowShade);
+    default:
+        return options.palette().text().color();
+    }
+}
+
+QColor Colors::buttonOutlineColor(const ColorRequestOptions &options)
+{
+    if (options.colorVariant() == ColorRequestOptions::AdwaitaDark) {
+        return darken(options.palette().color(QPalette::Window), 0.1);
+    } else {
+        return darken(options.palette().color(QPalette::Window), 0.18);
+    }
+}
+
+QColor Colors::indicatorOutlineColor(const ColorRequestOptions &options)
+{
+    bool isDisabled = options.palette().currentColorGroup() == QPalette::Disabled;
+    if (options.inMenu() || options.checkboxState() == CheckBoxState::CheckOff) {
+
+        if (isDisabled) {
+            return buttonOutlineColor(options);
+        }
+
+        if (options.colorVariant() == ColorRequestOptions::AdwaitaDark) {
+            return darken(options.palette().color(QPalette::Window), 0.18);
+        } else {
+            return darken(options.palette().color(QPalette::Window), 0.24);
+        }
+    } else {
+        return options.palette().color(QPalette::Highlight);
+    }
+}
+
+QColor Colors::frameOutlineColor(const ColorRequestOptions &options)
+{
+    return inputOutlineColor(options);
+}
+
+QColor Colors::inputOutlineColor(const ColorRequestOptions &options)
+{
+    QColor outline(buttonOutlineColor(options));
+
+    // focus takes precedence over hover
+    if (options.animationMode() == AnimationFocus) {
+        outline = mix(outline, focusColor(options));
+    } else if (options.hasFocus()) {
+        outline = focusColor(options);
+    }
+
+    return outline;
+}
+
+QColor Colors::sidePanelOutlineColor(const ColorRequestOptions &options)
+{
+    QColor outline(options.palette().color(QPalette::Inactive, QPalette::Highlight));
+    QColor focus(options.palette().color(QPalette::Active, QPalette::Highlight));
+
+    if (options.animationMode() == AnimationFocus) {
+        outline = mix(outline, focus, options.opacity());
+    } else if (options.hasFocus()) {
+        outline = focus;
+    }
+
+    return outline;
+}
+
+QColor Colors::sliderOutlineColor(const ColorRequestOptions &options)
+{
+    QColor outline(mix(options.palette().color(QPalette::Window), options.palette().color(QPalette::Shadow), 0.5));
+
+    // hover takes precedence over focus
+    if (options.animationMode() == AnimationHover) {
+        QColor hover(hoverColor(options));
+        QColor focus(focusColor(options));
+        if (options.hasFocus())
+            outline = mix(focus, hover, options.opacity());
+        else
+            outline = mix(outline, hover, options.opacity());
+    } else if (options.mouseOver()) {
+        outline = hoverColor(options);
+    } else if (options.animationMode() == AnimationFocus) {
+        QColor focus(focusColor(options));
+        outline = mix(outline, focus, options.opacity());
+    } else if (options.hasFocus()) {
+        outline = focusColor(options);
+    }
+
+    return outline;
 }
 
 } // namespace Adwaita
