@@ -21,14 +21,19 @@
 #ifndef ADWAITA_H
 #define ADWAITA_H
 
+#include <adwaitaqt_export.h>
+
 #include <QColor>
 #include <QFlags>
+#include <QPalette>
 #include <QPointer>
+#include <QStyle>
 #include <QScopedPointer>
 #include <QWeakPointer>
 
 namespace Adwaita
 {
+
 //*@name convenience typedef
 //@{
 
@@ -37,9 +42,6 @@ template<typename T> using WeakPointer = QPointer<T>;
 
 //* scoped pointer convenience typedef
 template<typename T> using ScopedPointer = QScopedPointer<T, QScopedPointerPodDeleter>;
-
-//* disable QStringLiteral for older Qt version
-using QStringLiteral = QString;
 
 //@}
 
@@ -276,6 +278,60 @@ enum ArrowOrientation { ArrowNone, ArrowUp, ArrowDown, ArrowLeft, ArrowRight };
 
 //* button type
 enum ButtonType { ButtonClose, ButtonMaximize, ButtonMinimize, ButtonRestore };
+
+enum ColorVariant { Adwaita, AdwaitaDark, AdwaitaHighcontrast };
+
+class StyleOptionsPrivate;
+
+class ADWAITAQT_EXPORT StyleOptions
+{
+public:
+    explicit StyleOptions(const QPalette &palette);
+    virtual ~StyleOptions();
+
+    QPalette palette() const;
+
+    void setColorGroup(QPalette::ColorGroup group);
+    QPalette::ColorGroup colorGroup() const;
+
+    void setColorRole(QPalette::ColorRole role);
+    QPalette::ColorRole colorRole() const;
+
+    void setColorVariant(ColorVariant variant);
+    ColorVariant colorVariant() const;
+
+    void setActive(bool active);
+    bool active() const;
+
+    void setHasFocus(bool focus);
+    bool hasFocus() const;
+
+    void setMouseOver(bool mouseOver);
+    bool mouseOver() const;
+
+    void setOpacity(qreal opacity);
+    qreal opacity() const;
+
+    void setAnimationMode(AnimationMode mode);
+    AnimationMode animationMode() const;
+
+    void setCheckboxState(CheckBoxState state);
+    CheckBoxState checkboxState() const;
+
+    void setState(QStyle::State state);
+    QStyle::State state() const;
+
+    void setInMenu(bool inMenu);
+    bool inMenu() const;
+
+    void setSunken(bool sunken);
+    bool sunken() const;
+
+private:
+    Q_DECLARE_PRIVATE(StyleOptions)
+
+    const QScopedPointer<StyleOptionsPrivate> d_ptr;
+};
 
 } // namespace Adwaita
 

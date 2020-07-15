@@ -21,10 +21,14 @@
 #ifndef ADWAITA_H
 #define ADWAITA_H
 
+#include <adwaitaqt_export.h>
+
 #include <QColor>
 #include <QFlags>
+#include <QPalette>
 #include <QPointer>
 #include <QScopedPointer>
+#include <QStyle>
 #include <QWeakPointer>
 
 namespace Adwaita
@@ -276,6 +280,9 @@ enum ArrowOrientation { ArrowNone, ArrowUp, ArrowDown, ArrowLeft, ArrowRight };
 
 //* button type
 enum ButtonType { ButtonClose, ButtonMaximize, ButtonMinimize, ButtonRestore };
+
+//* color variant
+enum ColorVariant { Adwaita, AdwaitaDark, AdwaitaHighContrast };
 
 } // namespace Adwaita
 

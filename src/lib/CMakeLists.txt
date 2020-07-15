@@ -44,6 +44,7 @@ set(libadwaitaqt_priv_SRCS
 )
 
 set(libadwaitaqt_SRCS
+    adwaita.cpp
     adwaitacolors.cpp
 )
 

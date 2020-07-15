@@ -30,184 +30,6 @@ namespace Adwaita
 //* contrast for arrow and treeline rendering
 static const qreal arrowShade = 0.15;
 
-class ColorRequestOptionsPrivate
-{
-public:
-    explicit ColorRequestOptionsPrivate(const QPalette &palette)
-        : m_palette(palette)
-    { }
-    virtual ~ColorRequestOptionsPrivate()
-    { }
-
-    QPalette m_palette;
-    QPalette::ColorGroup m_colorGroup = QPalette::ColorGroup::Normal;
-    QPalette::ColorRole m_colorRole = QPalette::ColorRole::Base;
-    ColorRequestOptions::ColorVariant m_colorVariant = ColorRequestOptions::Adwaita;
-    bool m_active = false;
-    bool m_focus = false;
-    bool m_mouseHover = false;
-    qreal m_opacity = AnimationData::OpacityInvalid;
-    AnimationMode m_animationMode = AnimationNone;
-    CheckBoxState m_checkboxState = CheckOff;
-    bool m_inMenu = false;
-};
-
-ColorRequestOptions::ColorRequestOptions(const QPalette &palette)
-    : d_ptr(new ColorRequestOptionsPrivate(palette))
-{
-}
-
-ColorRequestOptions::~ColorRequestOptions()
-{
-}
-
-QPalette ColorRequestOptions::palette() const
-{
-    Q_D(const ColorRequestOptions);
-
-    return d->m_palette;
-}
-
-void ColorRequestOptions::setColorGroup(QPalette::ColorGroup group)
-{
-    Q_D(ColorRequestOptions);
-
-    d->m_colorGroup = group;
-}
-
-QPalette::ColorGroup ColorRequestOptions::colorGroup() const
-{
-    Q_D(const ColorRequestOptions);
-
-    return d->m_colorGroup;
-}
-
-void ColorRequestOptions::setColorRole(QPalette::ColorRole role)
-{
-    Q_D(ColorRequestOptions);
-
-    d->m_colorRole = role;
-}
-
-QPalette::ColorRole ColorRequestOptions::colorRole() const
-{
-    Q_D(const ColorRequestOptions);
-
-    return d->m_colorRole;
-}
-
-void ColorRequestOptions::setColorVariant(ColorRequestOptions::ColorVariant variant)
-{
-    Q_D(ColorRequestOptions);
-
-    d->m_colorVariant = variant;
-}
-
-ColorRequestOptions::ColorVariant ColorRequestOptions::colorVariant() const
-{
-    Q_D(const ColorRequestOptions);
-
-    return d->m_colorVariant;
-}
-
-void ColorRequestOptions::setActive(bool active)
-{
-    Q_D(ColorRequestOptions);
-
-    d->m_active = active;
-}
-
-bool ColorRequestOptions::active() const
-{
-    Q_D(const ColorRequestOptions);
-
-    return d->m_active;
-}
-
-void ColorRequestOptions::setHasFocus(bool focus)
-{
-    Q_D(ColorRequestOptions);
-
-    d->m_focus = focus;
-}
-
-bool ColorRequestOptions::hasFocus() const
-{
-    Q_D(const ColorRequestOptions);
-
-    return d->m_focus;
-}
-
-void ColorRequestOptions::setMouseOver(bool mouseOver)
-{
-    Q_D(ColorRequestOptions);
-
-    d->m_mouseHover = mouseOver;
-}
-
-bool ColorRequestOptions::mouseOver() const
-{
-    Q_D(const ColorRequestOptions);
-
-    return d->m_mouseHover;
-}
-
-void ColorRequestOptions::setOpacity(qreal opacity)
-{
-    Q_D(ColorRequestOptions);
-
-    d->m_opacity = opacity;
-}
-
-qreal ColorRequestOptions::opacity() const
-{
-    Q_D(const ColorRequestOptions);
-
-    return d->m_opacity;
-}
-
-void ColorRequestOptions::setAnimationMode(AnimationMode mode)
-{
-    Q_D(ColorRequestOptions);
-
-    d->m_animationMode = mode;
-}
-
-AnimationMode ColorRequestOptions::animationMode() const
-{
-    Q_D(const ColorRequestOptions);
-
-    return d->m_animationMode;
-}
-
-void ColorRequestOptions::setCheckboxState(CheckBoxState state)
-{
-    Q_D(ColorRequestOptions);
-
-    d->m_checkboxState = state;
-}
-
-CheckBoxState ColorRequestOptions::checkboxState() const
-{
-    Q_D(const ColorRequestOptions);
-
-    return d->m_checkboxState;
-}
-
-void ColorRequestOptions::setInMenu(bool inMenu)
-{
-    Q_D(ColorRequestOptions);
-
-    d->m_inMenu = inMenu;
-}
-
-bool ColorRequestOptions::inMenu() const
-{
-    Q_D(const ColorRequestOptions);
-
-    return d->m_inMenu;
-}
-
 QColor Colors::alphaColor(QColor color, qreal alpha)
 {
     if (alpha >= 0 && alpha < 1.0) {
@@ -499,11 +321,23 @@ static QPalette paletteAdwaitaHighContrast()
     return palette;
 }
 
-QPalette Colors::palette(ColorRequestOptions::ColorVariant variant)
+QPalette Colors::disabledPalette(const QPalette &source, qreal ratio)
 {
-    if (variant == ColorRequestOptions::Adwaita) {
+    QPalette copy(source);
+
+    const QList<QPalette::ColorRole> roles = { QPalette::Background, QPalette::Highlight, QPalette::WindowText, QPalette::ButtonText, QPalette::Text, QPalette::Button };
+    foreach (const QPalette::ColorRole &role, roles) {
+        copy.setColor(role, Colors::mix(source.color(QPalette::Active, role), source.color(QPalette::Disabled, role), 1.0 - ratio));
+    }
+
+    return copy;
+}
+
+QPalette Colors::palette(ColorVariant variant)
+{
+    if (variant == ColorVariant::Adwaita) {
         return paletteAdwaita();
-    } else if (variant == ColorRequestOptions::AdwaitaDark) {
+    } else if (variant == ColorVariant::AdwaitaDark) {
         return paletteAdwaitaDark();
     } else {
         // TODO
@@ -511,39 +345,39 @@ QPalette Colors::palette(ColorRequestOptions::ColorVariant variant)
     }
 }
 
-QColor Colors::hoverColor(const ColorRequestOptions &options)
+QColor Colors::hoverColor(const StyleOptions &options)
 {
     return options.palette().highlight().color();
 }
 
-QColor Colors::focusColor(const ColorRequestOptions &options)
+QColor Colors::focusColor(const StyleOptions &options)
 {
     return options.palette().highlight().color();
 }
 
-QColor Colors::negativeText(const ColorRequestOptions &options)
+QColor Colors::negativeText(const StyleOptions &options)
 {
-    Q_UNUSED(options);
+    Q_UNUSED(options)
 
     return Qt::red;
 }
 
-QColor Colors::shadowColor(const ColorRequestOptions &options)
+QColor Colors::shadowColor(const StyleOptions &options)
 {
     return alphaColor(options.palette().color(QPalette::Shadow), 0.15);
 }
 
-QColor Colors::titleBarColor(const ColorRequestOptions &options)
+QColor Colors::titleBarColor(const StyleOptions &options)
 {
     return options.palette().color(options.active() ? QPalette::Active : QPalette::Inactive, QPalette::Window);
 }
 
-QColor Colors::titleBarTextColor(const ColorRequestOptions &options)
+QColor Colors::titleBarTextColor(const StyleOptions &options)
 {
     return options.palette().color(options.active() ? QPalette::Active : QPalette::Inactive, QPalette::WindowText);
 }
 
-QColor Colors::arrowOutlineColor(const ColorRequestOptions &options)
+QColor Colors::arrowOutlineColor(const StyleOptions &options)
 {
     switch (options.colorRole()) {
     case QPalette::Text:
@@ -557,25 +391,25 @@ QColor Colors::arrowOutlineColor(const ColorRequestOptions &options)
     }
 }
 
-QColor Colors::buttonOutlineColor(const ColorRequestOptions &options)
+QColor Colors::buttonOutlineColor(const StyleOptions &options)
 {
-    if (options.colorVariant() == ColorRequestOptions::AdwaitaDark) {
+    if (options.colorVariant() == ColorVariant::AdwaitaDark) {
         return darken(options.palette().color(QPalette::Window), 0.1);
     } else {
         return darken(options.palette().color(QPalette::Window), 0.18);
     }
 }
 
-QColor Colors::indicatorOutlineColor(const ColorRequestOptions &options)
+QColor Colors::indicatorOutlineColor(const StyleOptions &options)
 {
     bool isDisabled = options.palette().currentColorGroup() == QPalette::Disabled;
-    if (options.inMenu() || options.checkboxState() == CheckBoxState::CheckOff) {
+    if (options.inMenu() || options.state() == CheckBoxState::CheckOff) {
 
         if (isDisabled) {
             return buttonOutlineColor(options);
         }
 
-        if (options.colorVariant() == ColorRequestOptions::AdwaitaDark) {
+        if (options.colorVariant() == ColorVariant::AdwaitaDark) {
             return darken(options.palette().color(QPalette::Window), 0.18);
         } else {
             return darken(options.palette().color(QPalette::Window), 0.24);
@@ -585,12 +419,12 @@ QColor Colors::indicatorOutlineColor(const ColorRequestOptions &options)
     }
 }
 
-QColor Colors::frameOutlineColor(const ColorRequestOptions &options)
+QColor Colors::frameOutlineColor(const StyleOptions &options)
 {
     return inputOutlineColor(options);
 }
 
-QColor Colors::inputOutlineColor(const ColorRequestOptions &options)
+QColor Colors::inputOutlineColor(const StyleOptions &options)
 {
     QColor outline(buttonOutlineColor(options));
 
@@ -604,7 +438,7 @@ QColor Colors::inputOutlineColor(const ColorRequestOptions &options)
     return outline;
 }
 
-QColor Colors::sidePanelOutlineColor(const ColorRequestOptions &options)
+QColor Colors::sidePanelOutlineColor(const StyleOptions &options)
 {
     QColor outline(options.palette().color(QPalette::Inactive, QPalette::Highlight));
     QColor focus(options.palette().color(QPalette::Active, QPalette::Highlight));
@@ -618,7 +452,7 @@ QColor Colors::sidePanelOutlineColor(const ColorRequestOptions &options)
     return outline;
 }
 
-QColor Colors::sliderOutlineColor(const ColorRequestOptions &options)
+QColor Colors::sliderOutlineColor(const StyleOptions &options)
 {
     QColor outline(mix(options.palette().color(QPalette::Window), options.palette().color(QPalette::Shadow), 0.5));
 
@@ -626,10 +460,11 @@ QColor Colors::sliderOutlineColor(const ColorRequestOptions &options)
     if (options.animationMode() == AnimationHover) {
         QColor hover(hoverColor(options));
         QColor focus(focusColor(options));
-        if (options.hasFocus())
+        if (options.hasFocus()) {
             outline = mix(focus, hover, options.opacity());
-        else
+        } else {
             outline = mix(outline, hover, options.opacity());
+        }
     } else if (options.mouseOver()) {
         outline = hoverColor(options);
     } else if (options.animationMode() == AnimationFocus) {
@@ -640,6 +475,209 @@ QColor Colors::sliderOutlineColor(const ColorRequestOptions &options)
     }
 
     return outline;
+}
+
+QColor Colors::buttonBackgroundColor(const StyleOptions &options)
+{
+    bool isDisabled = options.palette().currentColorGroup() == QPalette::Disabled;
+    QColor buttonBackground(options.palette().color(QPalette::Button));
+    QColor background(options.palette().color(QPalette::Window));
+
+    const bool darkMode = options.colorVariant() == ColorVariant::AdwaitaDark;
+    const QPalette &palette = options.palette();
+
+    if (isDisabled && (options.animationMode() == AnimationPressed || options.sunken())) {
+        // Defined in drawing.css - insensitive-active button
+        // if($variant == 'light', Colors::darken(Colors::mix($c, $base_color, 85%), 8%), Colors::darken(Colors::mix($c, $base_color, 85%), 6%));
+        // FIXME: doesn't seem to be correct color
+        return darkMode ? Colors::darken(Colors::mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.15), 0.06) :
+               Colors::darken(Colors::mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.15), 0.08);
+    }
+
+    if (options.animationMode() == AnimationPressed) {
+        if (options.colorVariant() == ColorVariant::AdwaitaDark) {
+            // Active button for dark mode is Colors::darken(bg_color, 0.09)
+            return Colors::mix(Colors::darken(background, 0.01), Colors::darken(background, 0.09), options.opacity());
+        } else {
+            // Active button for normal mode is Colors::darken(bg_color, 0.14)
+            return Colors::mix(buttonBackground, Colors::darken(background, 0.14), options.opacity());
+        }
+    } else if (options.sunken()) {
+        if (darkMode) {
+            // Active button for dark mode is Colors::darken(bg_color, 0.09)
+            return Colors::darken(background, 0.09);
+        } else {
+            // Active button for normal mode is Colors::darken(bg_color, 0.14)
+            return Colors::darken(background, 0.14);
+        }
+    } else if (options.animationMode() == AnimationHover) {
+        if (darkMode) {
+            // Hovered button for dark mode is Colors::darken(bg_color, 0.01)
+            return Colors::mix(buttonBackground, Colors::darken(background, 0.01), options.opacity());
+        } else {
+            // Hovered button for normal mode is bg_color
+            return Colors::mix(buttonBackground, background, options.opacity());
+        }
+    } else if (options.mouseOver()) {
+        if (darkMode) {
+            // Hovered button for dark mode is Colors::darken(bg_color, 0.01)
+            return Colors::darken(background, 0.01);
+        } else {
+            // Hovered button for normal mode is bg_color
+            return background;
+        }
+    }
+
+    return buttonBackground;
+}
+
+QColor Colors::checkBoxIndicatorColor(const StyleOptions &options)
+{
+    if (options.inMenu()) {
+        return options.palette().color(QPalette::Text);
+    } else {
+        if (options.active()) {
+            return options.palette().color(QPalette::HighlightedText);
+        } else {
+            return Colors::transparentize(options.palette().color(QPalette::ToolTipText), 0.2);
+        }
+    }
+}
+
+QColor Colors::headerTextColor(const StyleOptions &options)
+{
+    QColor col(options.palette().color(QPalette::WindowText));
+
+    if (options.state() & QStyle::State_Enabled) {
+        if (options.state() & QStyle::State_Sunken) {
+            return Colors::alphaColor(col, 0.9);
+        } else if (options.state() & QStyle::State_MouseOver) {
+            return Colors::alphaColor(col, 0.7);
+        }
+    }
+    return Colors::alphaColor(col, 0.5);
+}
+
+QColor Colors::indicatorBackgroundColor(const StyleOptions &options)
+{
+    const QPalette &palette = options.palette();
+    const bool darkMode = options.colorVariant() == ColorVariant::AdwaitaDark;
+
+    bool isDisabled = palette.currentColorGroup() == QPalette::Disabled;
+    QColor background(palette.color(QPalette::Window));
+    // Normal-alt button for dark mode is Colors::darken(bg_color, 0.03)
+    // Normal-alt button for normal mode is Colors::lighten(bg_color, 0.05)
+    QColor indicatorColor(darkMode ? Colors::darken(background, 0.03) : Colors::lighten(background, 0.05));
+
+    if (options.inMenu() || options.state() == CheckOff) {
+        if (isDisabled) {
+            // Defined in drawing.css - insensitive button
+            // $insensitive_bg_color: Colors::mix($bg_color, $base_color, 60%);
+            return Colors::mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.6);
+        }
+
+        if (options.animationMode() == AnimationPressed) {
+            if (darkMode) {
+                // Active button for dark mode is Colors::darken(bg_color, 0.09)
+                return Colors::mix(background, Colors::darken(background, 0.09), options.opacity());
+            } else {
+                // Active button for normal mode is Colors::darken(bg_color, 0.14)
+                return Colors::mix(Colors::lighten(background, 0.0), Colors::darken(background, 0.14), options.opacity());
+            }
+        } else if (options.sunken()) {
+            if (darkMode) {
+                // Active button for dark mode is Colors::darken(bg_color, 0.09)
+                return Colors::darken(background, 0.09);
+            } else {
+                // Active button for normal mode is Colors::darken(bg_color, 0.14)
+                return Colors::darken(background, 0.14);
+            }
+        } else if (options.animationMode() == AnimationHover) {
+            if (darkMode) {
+                // Hovered-alt button for dark mode is bg_color
+                return Colors::mix(indicatorColor, background, options.opacity());
+            } else {
+                // Hovered-alt button for normal mode is Colors::lighten(bg_color, 0.09)
+                return Colors::mix(indicatorColor, Colors::lighten(background, 0.09), options.opacity());
+            }
+        } else if (options.mouseOver()) {
+            if (darkMode) {
+                // Hovered-alt button for dark mode is bg_color
+                return background;
+            } else {
+                // Hovered-alt button for normal mode is Colors::lighten(bg_color, 0.09)
+                return Colors::lighten(background, 0.09);
+            }
+        }
+    } else {
+        if (darkMode) {
+            return Colors::lighten(palette.color(QPalette::Highlight));
+        } else {
+            return palette.color(QPalette::Highlight);
+        }
+    }
+
+    return indicatorColor;
+}
+
+QColor Colors::frameBackgroundColor(const StyleOptions &options)
+{
+    return Colors::mix(options.palette().color(options.colorGroup(), QPalette::Window), options.palette().color(options.colorGroup(), QPalette::Base), 0.3);
+}
+
+QColor Colors::scrollBarHandleColor(const StyleOptions &options)
+{
+    QColor fgColor = options.palette().color(QPalette::Text);
+    QColor bgColor = options.palette().color(QPalette::Window);
+    QColor selectedBgColor = options.palette().color(QPalette::Highlight);
+
+    QColor color(Colors::mix(fgColor, bgColor, 0.4));
+    QColor hoverColor(Colors::mix(fgColor, bgColor, 0.2));
+    QColor activeColor(options.colorVariant() == ColorVariant::AdwaitaDark ? Colors::lighten(selectedBgColor, 0.1) : Colors::darken(selectedBgColor, 0.1));
+
+    // hover takes precedence over focus
+    if (options.animationMode() == AnimationPressed) {
+        if (options.mouseOver()) {
+            color = Colors::mix(hoverColor, activeColor, options.opacity());
+        } else {
+            color = Colors::mix(color, activeColor, options.opacity());
+        }
+    } else if (options.sunken()) {
+        color = activeColor;
+    } else if (options.animationMode() == AnimationHover) {
+        color = Colors::mix(color, hoverColor, options.opacity());
+    } else if (options.mouseOver()) {
+        color = hoverColor;
+    }
+
+    return color;
+}
+
+QColor Colors::separatorColor(const StyleOptions &options)
+{
+    return buttonOutlineColor(options);
+}
+
+QColor Colors::toolButtonColor(const StyleOptions &options)
+{
+    if (options.sunken() || (options.animationMode() != AnimationNone && options.animationMode() != AnimationHover)) {
+        return buttonBackgroundColor(options);
+    }
+
+    return Qt::transparent;
+}
+
+QColor Colors::tabBarColor(const StyleOptions &options)
+{
+    QColor background(Colors::mix(options.palette().window().color(), options.palette().shadow().color(), 0.15));
+    if (!(options.state() & QStyle::State_Enabled)) {
+        background = background.lighter(115);
+    }
+
+    if (!(options.state() & QStyle::State_Active)) {
+        background = background.lighter(115);
+    }
+    return background;
 }
 
 } // namespace Adwaita
