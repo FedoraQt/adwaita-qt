@@ -28,7 +28,6 @@ target_link_libraries(${LIBRARY_NAME}
     Qt5::DBus
     Qt5::Gui
     Qt5::Widgets
-    Qt5::X11Extras
 )
 
 set_target_properties(${LIBRARY_NAME} PROPERTIES

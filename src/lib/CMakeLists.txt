@@ -60,7 +60,6 @@ target_link_libraries(adwaitaqtpriv
     Qt5::DBus
     Qt5::Gui
     Qt5::Widgets
-    Qt5::X11Extras
 )
 
 add_library(adwaitaqt SHARED ${libadwaitaqt_SRCS})
