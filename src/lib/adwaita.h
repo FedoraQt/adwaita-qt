@@ -21,7 +21,7 @@
 #ifndef ADWAITA_H
 #define ADWAITA_H
 
-#include <adwaitaqt_export.h>
+#include "adwaitaqt_export.h"
 
 #include <QColor>
 #include <QFlags>

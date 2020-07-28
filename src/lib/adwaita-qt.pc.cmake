@@ -10,3 +10,4 @@ Requires: @PC_REQUIRES@
 
 Libs: -L${libdir} -ladwaitaqt
 Cflags: -I${includedir}
+Requires: Qt5Core Qt5Widgets
