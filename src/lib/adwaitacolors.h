@@ -43,7 +43,7 @@ public:
 
     static QPalette disabledPalette(const QPalette &source, qreal ratio);
     // Color palette for each Adwaita variant
-    static QPalette palette(ColorVariant variant = ColorVariant::Adwaita);
+    static QPalette palette(ColorVariant variant = ColorVariant::Unknown);
 
     // Generic colors
     static QColor hoverColor(const StyleOptions &options);

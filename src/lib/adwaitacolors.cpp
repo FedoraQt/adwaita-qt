@@ -22,6 +22,8 @@
 #include "adwaitacolors.h"
 #include "animations/adwaitaanimationdata.h"
 
+#include <QGuiApplication>
+
 #include <cmath>
 
 namespace Adwaita
@@ -335,7 +337,14 @@ QPalette Colors::disabledPalette(const QPalette &source, qreal ratio)
 
 QPalette Colors::palette(ColorVariant variant)
 {
-    if (variant == ColorVariant::Adwaita) {
+    if (variant == ColorVariant::Unknown) {
+        const QColor textColor = QGuiApplication::palette().color(QPalette::Text);
+        if ((textColor.redF() * 0.299 + textColor.greenF() * 0.587 + textColor.blueF() * 0.114) <= 186) {
+            return paletteAdwaitaDark();
+        } else {
+            return paletteAdwaita();
+        }
+    } else if (variant == ColorVariant::Adwaita) {
         return paletteAdwaita();
     } else if (variant == ColorVariant::AdwaitaDark) {
         return paletteAdwaitaDark();

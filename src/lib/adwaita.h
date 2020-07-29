@@ -279,7 +279,7 @@ enum ArrowOrientation { ArrowNone, ArrowUp, ArrowDown, ArrowLeft, ArrowRight };
 //* button type
 enum ButtonType { ButtonClose, ButtonMaximize, ButtonMinimize, ButtonRestore };
 
-enum ColorVariant { Adwaita, AdwaitaDark, AdwaitaHighcontrast };
+enum ColorVariant { Unknown, Adwaita, AdwaitaDark, AdwaitaHighcontrast };
 
 class StyleOptionsPrivate;
 
