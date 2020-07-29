@@ -36,7 +36,7 @@ public:
     QPalette m_palette;
     QPalette::ColorGroup m_colorGroup = QPalette::ColorGroup::Normal;
     QPalette::ColorRole m_colorRole = QPalette::ColorRole::Base;
-    ColorVariant m_colorVariant = ColorVariant::Adwaita;
+    ColorVariant m_colorVariant = ColorVariant::Unknown;
     bool m_active = false;
     bool m_focus = false;
     bool m_mouseHover = false;
