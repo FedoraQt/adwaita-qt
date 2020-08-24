@@ -1,5 +1,5 @@
-#ifndef adwaitastyleplugin_h
-#define adwaitastyleplugin_h
+#ifndef ADWAITA_STYLE_PLUGIN_H
+#define ADWAITA_STYLE_PLUGIN_H
 
 /*************************************************************************
  * Copyright (C) 2014 by Hugo Pereira Da Costa <hugo.pereira@free.fr>    *
@@ -25,31 +25,28 @@
 namespace Adwaita
 {
 
-    class StylePlugin : public QStylePlugin
-    {
+class StylePlugin : public QStylePlugin
+{
+    Q_OBJECT
 
-        Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QStyleFactoryInterface" FILE "adwaita.json")
+public:
 
-        Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QStyleFactoryInterface" FILE "adwaita.json" )
+    //* constructor
+    explicit StylePlugin(QObject *parent = 0):
+        QStylePlugin(parent)
+    {}
 
-        public:
+    //* destructor
+    ~StylePlugin();
 
-        //* constructor
-        explicit StylePlugin(QObject *parent = 0):
-            QStylePlugin(parent)
-        {}
+    //* returns list of valid keys
+    QStringList keys() const;
 
-        //* destructor
-        ~StylePlugin();
+    //* create style
+    QStyle *create(const QString &key);
+};
 
-        //* returns list of valid keys
-        QStringList keys() const;
+} // namespace Adwaita
 
-        //* create style
-        QStyle* create( const QString& );
-
-    };
-
-}
-
-#endif
+#endif // ADWAITA_STYLE_PLUGIN_H

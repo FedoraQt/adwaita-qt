@@ -26,27 +26,26 @@
 namespace Adwaita
 {
 
-    //_________________________________________________
-    QStyle* StylePlugin::create( const QString &key )
-    {
-        if( key.toLower() == QStringLiteral( "adwaita" ) )
-        {
-            return new Style(false);
-        }
-        if ( key.toLower() == QStringLiteral( "adwaita-dark") )
-        {
-            return new Style(true);
-        }
-        return nullptr;
+QStyle *StylePlugin::create(const QString &key)
+{
+    if (key.toLower() == QStringLiteral("adwaita")) {
+        return new Style(false);
     }
 
-    //_________________________________________________
-    StylePlugin::~StylePlugin()
-    {
+    if (key.toLower() == QStringLiteral("adwaita-dark")) {
+        return new Style(true);
     }
 
-    //_________________________________________________
-    QStringList StylePlugin::keys() const
-    { return QStringList() << QStringLiteral( "Adwaita" ) << QStringLiteral( "Adwaita-Dark" ); }
-
+    return nullptr;
 }
+
+StylePlugin::~StylePlugin()
+{
+}
+
+QStringList StylePlugin::keys() const
+{
+    return QStringList() << QStringLiteral("Adwaita") << QStringLiteral("Adwaita-Dark");
+}
+
+} // namespace Adwaita
