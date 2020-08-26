@@ -606,7 +606,7 @@ QColor Colors::indicatorBackgroundColor(const StyleOptions &options)
     // Normal-alt button for normal mode is Colors::lighten(bg_color, 0.05)
     QColor indicatorColor(darkMode ? Colors::darken(background, 0.03) : Colors::lighten(background, 0.05));
 
-    if (options.inMenu() || options.state() == CheckOff) {
+    if (options.inMenu() || options.checkboxState() == CheckOff) {
         if (isDisabled) {
             // Defined in drawing.css - insensitive button
             // $insensitive_bg_color: Colors::mix($bg_color, $base_color, 60%);
