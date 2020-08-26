@@ -4,4 +4,4 @@ if (BUILD_EXAMPLE)
 endif()
 
 add_subdirectory(lib)
-#add_subdirectory(style)
+add_subdirectory(style)

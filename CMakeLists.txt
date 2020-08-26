@@ -19,6 +19,7 @@ find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
     DBus
     Gui
     Widgets
+    X11Extras
 )
 
 find_package(XCB 1.10 COMPONENTS XCB)

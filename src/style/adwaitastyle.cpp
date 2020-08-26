@@ -1,7 +1,7 @@
 /*************************************************************************
  * Copyright (C) 2014 by Hugo Pereira Da Costa <hugo.pereira@free.fr>    *
  * Copyright (C) 2014-2018 Martin Bříza <m@rtinbriza.cz>                 *
- * Copyright (C) 2019 Jan Grulich <jgrulich@redhat.com>                  *
+ * Copyright (C) 2019-2020 Jan Grulich <jgrulich@redhat.com>             *
  *                                                                       *
  * This program is free software; you can redistribute it and/or modify  *
  * it under the terms of the GNU General Public License as published by  *
@@ -19,12 +19,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  *************************************************************************/
 
+// Adwaita style
 #include "adwaitastyle.h"
-
-#include "adwaita.h"
-#include "animations/adwaitaanimations.h"
-#include "adwaitacolors.h"
 #include "adwaitahelper.h"
+
+// Adwaita lib
+#include "animations/adwaitaanimations.h"
+#include "adwaita.h"
+#include "adwaitacolors.h"
 #include "adwaitamnemonics.h"
 #include "adwaitasplitterproxy.h"
 #include "adwaitawidgetexplorer.h"
@@ -33,13 +35,14 @@
 #include <QApplication>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QDBusConnection>
 #include <QDial>
 #include <QDialog>
-#include <QDBusConnection>
 #include <QDockWidget>
 #include <QFormLayout>
 #include <QGraphicsView>
 #include <QGroupBox>
+#include <QItemDelegate>
 #include <QLineEdit>
 #include <QMainWindow>
 #include <QMdiSubWindow>
@@ -50,7 +53,6 @@
 #include <QRadioButton>
 #include <QScrollBar>
 #include <QSpinBox>
-#include <QItemDelegate>
 #include <QSplitterHandle>
 #include <QTextEdit>
 #include <QToolBar>
@@ -64,9 +66,7 @@ namespace AdwaitaPrivate
 // needed to keep track of tabbars when being dragged
 class TabBarData: public QObject
 {
-
 public:
-
     //* constructor
     explicit TabBarData(QObject *parent)
         : QObject(parent)
@@ -97,15 +97,12 @@ public:
 private:
     //* pointer to target tabBar
     Adwaita::WeakPointer<const QWidget> _tabBar;
-
 };
 
 //* needed to have spacing added to items in combobox
 class ComboBoxItemDelegate: public QItemDelegate
 {
-
 public:
-
     //* constructor
     ComboBoxItemDelegate(QAbstractItemView *parent)
         : QItemDelegate(parent)
@@ -121,16 +118,16 @@ public:
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
     {
         // call either proxy or parent class
-        if (_proxy)
+        if (_proxy) {
             _proxy.data()->paint(painter, option, index);
-        else
+        } else {
             QItemDelegate::paint(painter, option, index);
+        }
     }
 
     //* size hint for index
     virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
     {
-
         // get size from either proxy or parent class
         QSize size(_proxy ?
                    _proxy.data()->sizeHint(option, index) :
@@ -140,6 +137,7 @@ public:
         if (size.isValid()) {
             size.rheight() += _itemMargin * 2;
         }
+
         return size;
     }
 
@@ -202,13 +200,15 @@ void tabLayout(const QStyleOptionTabV3 *opt, const QWidget *widget, QRect *textR
 
         *iconRect = QRect(tr.left(), tr.center().y() - tabIconSize.height() / 2,
                           tabIconSize.width(), tabIconSize .height());
-        if (!verticalTabs)
+        if (!verticalTabs) {
             *iconRect = proxyStyle->visualRect(opt->direction, opt->rect, *iconRect);
+        }
         tr.setLeft(tr.left() + tabIconSize.width() + 4);
     }
 
-    if (!verticalTabs)
+    if (!verticalTabs) {
         tr = proxyStyle->visualRect(opt->direction, opt->rect, tr);
+    }
 
     *textRect = tr;
 }
@@ -260,8 +260,9 @@ Style::~Style(void)
 //______________________________________________________________
 void Style::polish(QWidget *widget)
 {
-    if (!widget)
+    if (!widget) {
         return;
+    }
 
     // register widget to animations
     _animations->registerWidget(widget);
@@ -270,21 +271,21 @@ void Style::polish(QWidget *widget)
 
     // enable mouse over effects for all necessary widgets
     if (qobject_cast<QAbstractItemView *>(widget)
-        || qobject_cast<QAbstractSpinBox *>(widget)
-        || qobject_cast<QCheckBox *>(widget)
-        || qobject_cast<QComboBox *>(widget)
-        || qobject_cast<QDial *>(widget)
-        || qobject_cast<QLineEdit *>(widget)
-        || qobject_cast<QPushButton *>(widget)
-        || qobject_cast<QRadioButton *>(widget)
-        || qobject_cast<QScrollBar *>(widget)
-        || qobject_cast<QSlider *>(widget)
-        || qobject_cast<QSplitterHandle *>(widget)
-        || qobject_cast<QTabBar *>(widget)
-        || qobject_cast<QTextEdit *>(widget)
-        || qobject_cast<QToolButton *>(widget)
-        || qobject_cast<QHeaderView *>(widget)
-        || widget->inherits("KTextEditor::View")) {
+            || qobject_cast<QAbstractSpinBox *>(widget)
+            || qobject_cast<QCheckBox *>(widget)
+            || qobject_cast<QComboBox *>(widget)
+            || qobject_cast<QDial *>(widget)
+            || qobject_cast<QLineEdit *>(widget)
+            || qobject_cast<QPushButton *>(widget)
+            || qobject_cast<QRadioButton *>(widget)
+            || qobject_cast<QScrollBar *>(widget)
+            || qobject_cast<QSlider *>(widget)
+            || qobject_cast<QSplitterHandle *>(widget)
+            || qobject_cast<QTabBar *>(widget)
+            || qobject_cast<QTextEdit *>(widget)
+            || qobject_cast<QToolButton *>(widget)
+            || qobject_cast<QHeaderView *>(widget)
+            || widget->inherits("KTextEditor::View")) {
         widget->setAttribute(Qt::WA_Hover);
     }
 
@@ -402,7 +403,7 @@ void Style::polish(QWidget *widget)
         // TODO keep synced with the standard palette
         const QColor activeTextColor = _dark ? QColor("#eeeeec") : QColor("#2e3436");
         const QColor inactiveTextColor = _dark ? Colors::mix(QColor("#eeeeec"), Colors::darken(Colors::desaturate(QColor("#3d3846"), 1.0), 0.04)) :
-                                                 Colors::mix(QColor("#2e3436"), QColor("#f6f5f4"));
+                                         Colors::mix(QColor("#2e3436"), QColor("#f6f5f4"));
         // No custom text color used, we can do our HACK
         if (inactiveTextColor == pal.color(QPalette::Inactive, QPalette::Text) && activeTextColor == pal.color(QPalette::Active, QPalette::Text)) {
             pal.setColor(QPalette::Inactive, QPalette::Text, pal.color(QPalette::Active, QPalette::Text));
@@ -422,8 +423,9 @@ void Style::polish(QWidget *widget)
 void Style::polishScrollArea(QAbstractScrollArea *scrollArea)
 {
     // check argument
-    if (!scrollArea)
+    if (!scrollArea) {
         return;
+    }
 
     // enable mouse over effect in sunken scrollareas that support focus
     if (scrollArea->frameShadow() == QFrame::Sunken && scrollArea->focusPolicy() & Qt::StrongFocus) {
@@ -470,8 +472,9 @@ void Style::polishScrollArea(QAbstractScrollArea *scrollArea)
 
     // get viewport and check background role
     QWidget *viewport(scrollArea->viewport());
-    if (!(viewport && viewport->backgroundRole() == QPalette::Window))
+    if (!(viewport && viewport->backgroundRole() == QPalette::Window)) {
         return;
+    }
 
     // change viewport autoFill background.
     // do the same for all children if the background role is QPalette::Window
@@ -494,11 +497,11 @@ void Style::unpolish(QWidget *widget)
 
     // remove event filter
     if (qobject_cast<QAbstractScrollArea *>(widget)
-        || qobject_cast<QDockWidget *>(widget)
-        || qobject_cast<QMdiSubWindow *>(widget)
-        || widget->inherits("QComboBoxPrivateContainer")
-        || qobject_cast<QDialog *>(widget)
-        || qobject_cast<QMainWindow *>(widget)) {
+            || qobject_cast<QDockWidget *>(widget)
+            || qobject_cast<QMdiSubWindow *>(widget)
+            || widget->inherits("QComboBoxPrivateContainer")
+            || qobject_cast<QDialog *>(widget)
+            || qobject_cast<QMainWindow *>(widget)) {
         widget->removeEventFilter(this);
     }
 
@@ -508,13 +511,13 @@ void Style::unpolish(QWidget *widget)
 void Style::polish(QPalette &palette)
 {
     // TODO: highcontrast
-    palette = Colors::palette(_dark ? ColorRequestOptions::AdwaitaDark : ColorRequestOptions::Adwaita);
+    palette = Colors::palette(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
 }
 
 QPalette Style::standardPalette() const
 {
     // TODO: highcontrast
-    return Colors::palette(_dark ? ColorRequestOptions::AdwaitaDark : ColorRequestOptions::Adwaita);
+    return Colors::palette(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
 }
 
 //______________________________________________________________
@@ -525,15 +528,21 @@ int Style::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWi
 
     // frame width
     case PM_DefaultFrameWidth:
-        if (widget && widget->inherits("QComboBoxPrivateContainer"))
+        if (widget && widget->inherits("QComboBoxPrivateContainer")) {
             return 1;
-        if (qobject_cast<const QMenu *>(widget))
+        }
+
+        if (qobject_cast<const QMenu *>(widget)) {
             return Metrics::Menu_FrameWidth;
-        if (qobject_cast<const QLineEdit *>(widget))
+        }
+
+        if (qobject_cast<const QLineEdit *>(widget)) {
             return Metrics::LineEdit_FrameWidth;
-        if (qobject_cast<const QAbstractScrollArea *>(widget))
+        }
+
+        if (qobject_cast<const QAbstractScrollArea *>(widget)) {
             return Metrics::ScrollArea_FrameWidth;
-        else if (isQtQuickControl(option, widget)) {
+        } else if (isQtQuickControl(option, widget)) {
             const QString &elementType = option->styleObject->property("elementType").toString();
             if (elementType == QLatin1String("edit") || elementType == QLatin1String("spinbox")) {
                 return Metrics::LineEdit_FrameWidth;
@@ -579,10 +588,11 @@ int Style::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWi
     // buttons
     case PM_ButtonMargin: {
         // needs special case for kcalc buttons, to prevent the application to set too small margins
-        if (widget && widget->inherits("KCalcButton"))
+        if (widget && widget->inherits("KCalcButton")) {
             return Metrics::Button_MarginWidth + 4;
-        else
+        } else {
             return Metrics::Button_MarginWidth;
+        }
     }
 
     case PM_ButtonDefaultIndicator:
@@ -689,7 +699,6 @@ int Style::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWi
         return Metrics::Splitter_SplitterWidth;
     case PM_DockWidgetSeparatorExtent:
         return Metrics::Splitter_SplitterWidth;
-
     // fallback
     default:
         return ParentStyleClass::pixelMetric(metric, option, widget);
@@ -711,14 +720,14 @@ int Style::styleHint(StyleHint hint, const QStyleOption *option, const QWidget *
              * in QGraphicsView because the painting fails completely otherwise
              */
             if (widget && (qobject_cast<const QAbstractItemView *>(widget->parent())
-                           ||qobject_cast<const QGraphicsView *>(widget->parent())
+                           || qobject_cast<const QGraphicsView *>(widget->parent())
                            || qobject_cast<const QMainWindow *>(widget->parent()))) {
                 return true;
             }
 
             // also check if widget's parent is some itemView viewport
             if (widget && widget->parent() && qobject_cast<const QAbstractItemView *>(widget->parent()->parent())
-                && static_cast<const QAbstractItemView *>(widget->parent()->parent())->viewport() == widget->parent()) {
+                    && static_cast<const QAbstractItemView *>(widget->parent()->parent())->viewport() == widget->parent()) {
                 return true;
             }
 
@@ -787,7 +796,6 @@ int Style::styleHint(StyleHint hint, const QStyleOption *option, const QWidget *
 QRect Style::subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
 {
     switch (element) {
-
     case SE_PushButtonContents:
         return pushButtonContentsRect(option, widget);
     case SE_PushButtonFocusRect:
@@ -919,12 +927,13 @@ QStyle::SubControl Style::hitTestComplexControl(ComplexControl control, const QS
             // Must be either page up/page down, or just click on the slider.
             QRect sliderRect = subControlRect(CC_ScrollBar, option, SC_ScrollBarSlider, widget);
 
-            if (sliderRect.contains(point))
+            if (sliderRect.contains(point)) {
                 return SC_ScrollBarSlider;
-            else if (preceeds(point, sliderRect, option))
+            } else if (preceeds(point, sliderRect, option)) {
                 return SC_ScrollBarSubPage;
-            else
+            } else {
                 return SC_ScrollBarAddPage;
+            }
         }
 
         // This is one of the up/down buttons. First, decide which one it is.
@@ -932,15 +941,17 @@ QStyle::SubControl Style::hitTestComplexControl(ComplexControl control, const QS
             if (_subLineButtons == DoubleButton) {
                 QRect buttonRect = scrollBarInternalSubControlRect(option, SC_ScrollBarSubLine);
                 return scrollBarHitTest(buttonRect, point, option);
-            } else
+            } else {
                 return SC_ScrollBarSubLine;
+            }
         }
 
         if (_addLineButtons == DoubleButton) {
             QRect buttonRect = scrollBarInternalSubControlRect(option, SC_ScrollBarAddLine);
             return scrollBarHitTest(buttonRect, point, option);
-        } else
+        } else {
             return SC_ScrollBarAddLine;
+        }
     }
 
     // fallback
@@ -1226,8 +1237,9 @@ void Style::drawItemText(QPainter *painter, const QRect &rect, int flags, const 
 
     // make sure vertical alignment is defined
     // fallback on Align::VCenter if not
-    if (!(flags & Qt::AlignVertical_Mask))
+    if (!(flags & Qt::AlignVertical_Mask)) {
         flags |= Qt::AlignVCenter;
+    }
 
     if (_animations->widgetEnabilityEngine().enabled()) {
         /*
@@ -1237,7 +1249,7 @@ void Style::drawItemText(QPainter *painter, const QRect &rect, int flags, const 
          */
         const QWidget *widget(static_cast<const QWidget *>(painter->device()));
         if (_animations->widgetEnabilityEngine().isAnimated(widget, AnimationEnable)) {
-            QPalette copy(_helper->disabledPalette(palette, _animations->widgetEnabilityEngine().opacity(widget, AnimationEnable)));
+            QPalette copy(Colors::disabledPalette(palette, _animations->widgetEnabilityEngine().opacity(widget, AnimationEnable)));
             return ParentStyleClass::drawItemText(painter, rect, flags, copy, enabled, text, textRole);
         }
     }
@@ -1266,7 +1278,7 @@ bool Style::eventFilter(QObject *object, QEvent *event)
     }
 
     if ((!widget->parent() || !qobject_cast<QWidget *>(widget->parent()) || qobject_cast<QDialog *>(widget) || qobject_cast<QMainWindow *>(widget))
-        && (QEvent::Show == event->type() || QEvent::StyleChange == event->type())) {
+            && (QEvent::Show == event->type() || QEvent::StyleChange == event->type())) {
         _helper->setVariant(widget, _dark ? "dark" : "light");
     }
 
@@ -1282,8 +1294,9 @@ bool Style::eventFilterScrollArea(QWidget *widget, QEvent *event)
         // get scrollarea viewport
         QAbstractScrollArea *scrollArea(qobject_cast<QAbstractScrollArea *>(widget));
         QWidget *viewport;
-        if (!(scrollArea && (viewport = scrollArea->viewport())))
+        if (!(scrollArea && (viewport = scrollArea->viewport()))) {
             break;
+        }
 
         // get scrollarea horizontal and vertical containers
         QWidget *child(nullptr);
@@ -1296,10 +1309,13 @@ bool Style::eventFilterScrollArea(QWidget *widget, QEvent *event)
             children.append(child);
         }
 
-        if (children.empty())
+        if (children.empty()) {
             break;
-        if (!scrollArea->styleSheet().isEmpty())
+        }
+
+        if (!scrollArea->styleSheet().isEmpty()) {
             break;
+        }
 
         // make sure proper background is rendered behind the containers
         QPainter painter(scrollArea);
@@ -1310,10 +1326,11 @@ bool Style::eventFilterScrollArea(QWidget *widget, QEvent *event)
         // decide background color
         const QPalette::ColorRole role(viewport->backgroundRole());
         QColor background;
-        if (role == QPalette::Window && hasAlteredBackground(viewport))
-            background = _helper->frameBackgroundColor(viewport->palette());
-        else
+        if (role == QPalette::Window && hasAlteredBackground(viewport)) {
+            background = Colors::frameBackgroundColor(StyleOptions(viewport->palette()));
+        } else {
             background = viewport->palette().color(role);
+        }
         painter.setBrush(background);
 
         // render
@@ -1336,31 +1353,36 @@ bool Style::eventFilterScrollArea(QWidget *widget, QEvent *event)
         // find list of scrollbars
         QList<QScrollBar *> scrollBars;
         if (QAbstractScrollArea *scrollArea = qobject_cast<QAbstractScrollArea *>(widget)) {
-            if (scrollArea->horizontalScrollBarPolicy() != Qt::ScrollBarAlwaysOff)
+            if (scrollArea->horizontalScrollBarPolicy() != Qt::ScrollBarAlwaysOff) {
                 scrollBars.append(scrollArea->horizontalScrollBar());
-            if (scrollArea->verticalScrollBarPolicy() != Qt::ScrollBarAlwaysOff)
+            }
+            if (scrollArea->verticalScrollBarPolicy() != Qt::ScrollBarAlwaysOff) {
                 scrollBars.append(scrollArea->verticalScrollBar());
+            }
         } else if (widget->inherits("KTextEditor::View")) {
             scrollBars = widget->findChildren<QScrollBar *>();
         }
 
         // loop over found scrollbars
         foreach (QScrollBar *scrollBar, scrollBars) {
-            if (!(scrollBar && scrollBar->isVisible()))
+            if (!(scrollBar && scrollBar->isVisible())) {
                 continue;
+            }
 
             QPoint offset;
-            if (scrollBar->orientation() == Qt::Horizontal)
+            if (scrollBar->orientation() == Qt::Horizontal) {
                 offset = QPoint(0, frameWidth);
-            else
+            } else {
                 offset = QPoint(QApplication::isLeftToRight() ? frameWidth : -frameWidth, 0);
+            }
 
             // map position to scrollarea
             QPoint position(scrollBar->mapFrom(widget, mouseEvent->pos() - offset));
 
             // check if contains
-            if (!scrollBar->rect().contains(position))
+            if (!scrollBar->rect().contains(position)) {
                 continue;
+            }
 
             // copy event, send and return
             QMouseEvent copy(mouseEvent->type(), position, scrollBar->mapToGlobal(position),
@@ -1391,8 +1413,8 @@ bool Style::eventFilterComboBoxContainer(QWidget *widget, QEvent *event)
 
         QRect rect(widget->rect());
         const QPalette &palette(widget->palette());
-        QColor background(_helper->frameBackgroundColor(palette));
-        QColor outline(_helper->frameOutlineColor(palette));
+        QColor background(Colors::frameBackgroundColor(StyleOptions(palette)));
+        QColor outline(Colors::frameOutlineColor(StyleOptions(palette)));
 
         bool hasAlpha(_helper->hasAlphaChannel(widget));
         if (hasAlpha) {
@@ -1417,8 +1439,8 @@ bool Style::eventFilterDockWidget(QDockWidget *dockWidget, QEvent *event)
 
         // store palette and set colors
         const QPalette &palette(dockWidget->palette());
-        QColor background(_helper->frameBackgroundColor(palette));
-        QColor outline(_helper->frameOutlineColor(palette));
+        QColor background(Colors::frameBackgroundColor(StyleOptions(palette)));
+        QColor outline(Colors::frameOutlineColor(StyleOptions(palette)));
 
         // store rect
         QRect rect(dockWidget->rect());
@@ -1474,16 +1496,18 @@ bool Style::eventFilterCommandLinkButton(QCommandLinkButton *button, QEvent *eve
         QStyleOptionButton option;
         option.initFrom(button);
         option.features |= QStyleOptionButton::CommandLinkButton;
-        if (isFlat)
+        if (isFlat) {
             option.features |= QStyleOptionButton::Flat;
+        }
         option.text = QString();
         option.icon = QIcon();
 
-        if (button->isChecked())
+        if (button->isChecked()) {
             option.state |= State_On;
-        if (button->isDown())
+        }
+        if (button->isDown()) {
             option.state |= State_Sunken;
-
+        }
         // frame
         drawControl(QStyle::CE_PushButton, &option, &painter, button);
 
@@ -1554,7 +1578,9 @@ void Style::configurationChanged(void)
 QIcon Style::standardIconImplementation(StandardPixmap standardPixmap, const QStyleOption *option, const QWidget *widget) const
 {
     // lookup cache
-    if (_iconCache.contains(standardPixmap)) return _iconCache.value(standardPixmap);
+    if (_iconCache.contains(standardPixmap)) {
+        return _iconCache.value(standardPixmap);
+    }
 
     QIcon icon;
     switch (standardPixmap) {
@@ -1565,12 +1591,10 @@ QIcon Style::standardIconImplementation(StandardPixmap standardPixmap, const QSt
     case SP_DockWidgetCloseButton:
         icon = titleBarButtonIcon(standardPixmap, option, widget);
         break;
-
     case SP_ToolBarHorizontalExtensionButton:
     case SP_ToolBarVerticalExtensionButton:
         icon = toolBarExtensionIcon(standardPixmap, option, widget);
         break;
-
     default:
         break;
     }
@@ -1578,7 +1602,6 @@ QIcon Style::standardIconImplementation(StandardPixmap standardPixmap, const QSt
     if (icon.isNull()) {
         // do not cache parent style icon, since it may change at runtime
         return  ParentStyleClass::standardIcon(standardPixmap, option, widget);
-
     } else {
         const_cast<IconCache *>(&_iconCache)->insert(standardPixmap, icon);
         return icon;
@@ -1631,10 +1654,11 @@ void Style::loadConfiguration()
     }
 
     // frame focus
-    if (Adwaita::Config::ViewDrawFocusIndicator)
+    if (Adwaita::Config::ViewDrawFocusIndicator) {
         _frameFocusPrimitive = &Style::drawFrameFocusRectPrimitive;
-    else
+    } else {
         _frameFocusPrimitive = &Style::emptyPrimitive;
+    }
 
     // widget explorer
     _widgetExplorer->setEnabled(Adwaita::Config::WidgetExplorerEnabled);
@@ -1678,23 +1702,26 @@ QRect Style::lineEditContentsRect(const QStyleOption *option, const QWidget *wid
 {
     // cast option and check
     const QStyleOptionFrame *frameOption(qstyleoption_cast<const QStyleOptionFrame *>(option));
-    if (!frameOption)
+    if (!frameOption) {
         return option->rect;
+    }
 
     // check flatness
     bool flat(frameOption->lineWidth == 0);
-    if (flat)
+    if (flat) {
         return option->rect;
+    }
 
     // copy rect and take out margins
     QRect rect(option->rect);
 
     // take out margins if there is enough room
     int frameWidth(pixelMetric(PM_DefaultFrameWidth, option, widget));
-    if (rect.height() >= option->fontMetrics.height() + 2 * frameWidth)
+    if (rect.height() >= option->fontMetrics.height() + 2 * frameWidth) {
         return insideMargin(rect, frameWidth);
-    else
+    } else {
         return rect;
+    }
 }
 
 //___________________________________________________________________________________________________________________
@@ -1702,8 +1729,9 @@ QRect Style::progressBarGrooveRect(const QStyleOption *option, const QWidget *wi
 {
     // cast option and check
     const QStyleOptionProgressBar *progressBarOption(qstyleoption_cast<const QStyleOptionProgressBar *>(option));
-    if (!progressBarOption)
+    if (!progressBarOption) {
         return option->rect;
+    }
 
     // get flags and orientation
     bool textVisible(progressBarOption->textVisible);
@@ -1715,10 +1743,11 @@ QRect Style::progressBarGrooveRect(const QStyleOption *option, const QWidget *wi
     // copy rectangle and adjust
     QRect rect(option->rect);
     int frameWidth(pixelMetric(PM_DefaultFrameWidth, option, widget));
-    if (horizontal)
+    if (horizontal) {
         rect = insideMargin(rect, frameWidth, 0);
-    else
+    } else {
         rect = insideMargin(rect, 0, frameWidth);
+    }
 
     if (textVisible && !busy && horizontal) {
         QRect textRect(subElementRect(SE_ProgressBarLabel, option, widget));
@@ -1740,16 +1769,18 @@ QRect Style::progressBarContentsRect(const QStyleOption *option, const QWidget *
 {
     // cast option and check
     const QStyleOptionProgressBar *progressBarOption(qstyleoption_cast<const QStyleOptionProgressBar *>(option));
-    if (!progressBarOption)
+    if (!progressBarOption) {
         return QRect();
+    }
 
     // get groove rect
     QRect rect(progressBarGrooveRect(option, widget));
 
     // in busy mode, grooveRect is used
     bool busy(progressBarOption->minimum == 0 && progressBarOption->maximum == 0);
-    if (busy)
+    if (busy) {
         return rect;
+    }
 
     // get orientation
     const QStyleOptionProgressBarV2 *progressBarOption2(qstyleoption_cast<const QStyleOptionProgressBarV2 *>(option));
@@ -1772,8 +1803,9 @@ QRect Style::progressBarContentsRect(const QStyleOption *option, const QWidget *
     if (horizontal) {
         indicatorRect = QRect(inverted ? (rect.right() - indicatorSize + 1) : rect.left(), rect.y(), indicatorSize, rect.height());
         indicatorRect = visualRect(option->direction, rect, indicatorRect);
-    } else
+    } else {
         indicatorRect = QRect(rect.x(), inverted ? rect.top() : (rect.bottom() - indicatorSize + 1), rect.width(), indicatorSize);
+    }
 
     return indicatorRect;
 }
@@ -1783,20 +1815,23 @@ QRect Style::progressBarLabelRect(const QStyleOption *option, const QWidget *) c
 {
     // cast option and check
     const QStyleOptionProgressBar *progressBarOption(qstyleoption_cast<const QStyleOptionProgressBar *>(option));
-    if (!progressBarOption)
+    if (!progressBarOption) {
         return QRect();
+    }
 
     // get flags and check
     bool textVisible(progressBarOption->textVisible);
     bool busy(progressBarOption->minimum == 0 && progressBarOption->maximum == 0);
-    if (!textVisible || busy)
+    if (!textVisible || busy) {
         return QRect();
+    }
 
     // get direction and check
     const QStyleOptionProgressBarV2 *progressBarOption2(qstyleoption_cast<const QStyleOptionProgressBarV2 *>(option));
     bool horizontal(!progressBarOption2 || progressBarOption2->orientation == Qt::Horizontal);
-    if (!horizontal)
+    if (!horizontal) {
         return QRect();
+    }
 
     int textWidth = qMax(option->fontMetrics.size(_mnemonics->textFlags(), progressBarOption->text).width(),
                          option->fontMetrics.size(_mnemonics->textFlags(), QStringLiteral("100%")).width());
@@ -1813,12 +1848,14 @@ QRect Style::headerArrowRect(const QStyleOption *option, const QWidget *) const
 {
     // cast option and check
     const QStyleOptionHeader *headerOption(qstyleoption_cast<const QStyleOptionHeader *>(option));
-    if (!headerOption)
+    if (!headerOption) {
         return option->rect;
+    }
 
     // check if arrow is necessary
-    if (headerOption->sortIndicator == QStyleOptionHeader::None)
+    if (headerOption->sortIndicator == QStyleOptionHeader::None) {
         return QRect();
+    }
 
     QRect arrowRect(insideMargin(option->rect, Metrics::Header_MarginWidth));
     arrowRect.setLeft(arrowRect.right() - Metrics::Header_ArrowSize + 1);
@@ -1831,14 +1868,16 @@ QRect Style::headerLabelRect(const QStyleOption *option, const QWidget *) const
 {
     // cast option and check
     const QStyleOptionHeader *headerOption(qstyleoption_cast<const QStyleOptionHeader *>(option));
-    if (!headerOption)
+    if (!headerOption) {
         return option->rect;
+    }
 
     // check if arrow is necessary
     // QRect labelRect( insideMargin( option->rect, Metrics::Header_MarginWidth ) );
     QRect labelRect(insideMargin(option->rect, Metrics::Header_MarginWidth, 0));
-    if (headerOption->sortIndicator == QStyleOptionHeader::None)
+    if (headerOption->sortIndicator == QStyleOptionHeader::None) {
         return labelRect;
+    }
 
     labelRect.adjust(0, 0, -Metrics::Header_ArrowSize - Metrics::Header_ItemSpacing, 0);
     return visualRect(option, labelRect);
@@ -1865,8 +1904,9 @@ QRect Style::tabBarTabLeftButtonRect(const QStyleOption *option, const QWidget *
 {
     // cast option and check
     const QStyleOptionTabV3 *tabOptionV3(qstyleoption_cast<const QStyleOptionTabV3 *>(option));
-    if (!tabOptionV3 || tabOptionV3->leftButtonSize.isEmpty())
+    if (!tabOptionV3 || tabOptionV3->leftButtonSize.isEmpty()) {
         return QRect();
+    }
 
     QRect rect(option->rect);
     QSize size(tabOptionV3->leftButtonSize);
@@ -1883,19 +1923,16 @@ QRect Style::tabBarTabLeftButtonRect(const QStyleOption *option, const QWidget *
         buttonRect.moveTop((rect.height() - buttonRect.height()) / 2);
         buttonRect = visualRect(option, buttonRect);
         break;
-
     case QTabBar::RoundedWest:
     case QTabBar::TriangularWest:
         buttonRect.moveBottom(rect.bottom() - Metrics::TabBar_TabMarginWidth);
         buttonRect.moveLeft((rect.width() - buttonRect.width()) / 2);
         break;
-
     case QTabBar::RoundedEast:
     case QTabBar::TriangularEast:
         buttonRect.moveTop(rect.top() + Metrics::TabBar_TabMarginWidth);
         buttonRect.moveLeft((rect.width() - buttonRect.width()) / 2);
         break;
-
     default:
         break;
     }
@@ -1908,8 +1945,9 @@ QRect Style::tabBarTabRightButtonRect(const QStyleOption *option, const QWidget 
 {
     // cast option and check
     const QStyleOptionTabV3 *tabOptionV3(qstyleoption_cast<const QStyleOptionTabV3 *>(option));
-    if (!tabOptionV3 || tabOptionV3->rightButtonSize.isEmpty())
+    if (!tabOptionV3 || tabOptionV3->rightButtonSize.isEmpty()) {
         return QRect();
+    }
 
     QRect rect(option->rect);
     QSize size(tabOptionV3->rightButtonSize);
@@ -1926,19 +1964,16 @@ QRect Style::tabBarTabRightButtonRect(const QStyleOption *option, const QWidget 
         buttonRect.moveTop((rect.height() - buttonRect.height()) / 2);
         buttonRect = visualRect(option, buttonRect);
         break;
-
     case QTabBar::RoundedWest:
     case QTabBar::TriangularWest:
         buttonRect.moveTop(rect.top() + Metrics::TabBar_TabMarginWidth);
         buttonRect.moveLeft((rect.width() - buttonRect.width()) / 2);
         break;
-
     case QTabBar::RoundedEast:
     case QTabBar::TriangularEast:
         buttonRect.moveBottom(rect.bottom() - Metrics::TabBar_TabMarginWidth);
         buttonRect.moveLeft((rect.width() - buttonRect.width()) / 2);
         break;
-
     default:
         break;
     }
@@ -1951,8 +1986,9 @@ QRect Style::tabWidgetTabBarRect(const QStyleOption *option, const QWidget *widg
 {
     // cast option and check
     const QStyleOptionTabWidgetFrame *tabOption = qstyleoption_cast<const QStyleOptionTabWidgetFrame *>(option);
-    if (!tabOption)
+    if (!tabOption) {
         return ParentStyleClass::subElementRect(SE_TabWidgetTabBar, option, widget);
+    }
 
     // do nothing if tabbar is hidden
     QSize tabBarSize(tabOption->tabBarSize);
@@ -1991,25 +2027,20 @@ QRect Style::tabWidgetTabBarRect(const QStyleOption *option, const QWidget *widg
     case QTabBar::TriangularNorth:
         tabBarRect.moveTop(rect.top() + 1);
         break;
-
     case QTabBar::RoundedSouth:
     case QTabBar::TriangularSouth:
         tabBarRect.moveBottom(rect.bottom() - 1);
         break;
-
     case QTabBar::RoundedWest:
     case QTabBar::TriangularWest:
         tabBarRect.moveLeft(rect.left() + 1);
         break;
-
     case QTabBar::RoundedEast:
     case QTabBar::TriangularEast:
         tabBarRect.moveRight(rect.right() - 1);
         break;
-
     default:
         break;
-
     }
 
     return tabBarRect;
@@ -2020,12 +2051,14 @@ QRect Style::tabWidgetTabContentsRect(const QStyleOption *option, const QWidget 
 {
     // cast option and check
     const QStyleOptionTabWidgetFrame *tabOption = qstyleoption_cast<const QStyleOptionTabWidgetFrame *>(option);
-    if (!tabOption)
+    if (!tabOption) {
         return option->rect;
+    }
 
     // do nothing if tabbar is hidden
-    if (tabOption->tabBarSize.isEmpty())
+    if (tabOption->tabBarSize.isEmpty()) {
         return option->rect;
+    }
     QRect rect = tabWidgetTabPaneRect(option, widget);
 
     bool documentMode(tabOption->lineWidth == 0);
@@ -2035,32 +2068,30 @@ QRect Style::tabWidgetTabContentsRect(const QStyleOption *option, const QWidget 
         case QTabBar::RoundedNorth:
         case QTabBar::TriangularNorth:
             return rect.adjusted(0, Metrics::TabWidget_MarginWidth, 0, 0);
-
         case QTabBar::RoundedSouth:
         case QTabBar::TriangularSouth:
             return rect.adjusted(0, 0, 0, -Metrics::TabWidget_MarginWidth);
-
         case QTabBar::RoundedWest:
         case QTabBar::TriangularWest:
             return rect.adjusted(Metrics::TabWidget_MarginWidth, 0, 0, 0);
-
         case QTabBar::RoundedEast:
         case QTabBar::TriangularEast:
             return rect.adjusted(0, 0, -Metrics::TabWidget_MarginWidth, 0);
-
         default:
             return rect;
         }
-    } else
+    } else {
         return insideMargin(rect, Metrics::TabWidget_MarginWidth);
+    }
 }
 
 //____________________________________________________________________
 QRect Style::tabWidgetTabPaneRect(const QStyleOption *option, const QWidget *) const
 {
     const QStyleOptionTabWidgetFrame *tabOption = qstyleoption_cast<const QStyleOptionTabWidgetFrame *>(option);
-    if (!tabOption || tabOption->tabBarSize.isEmpty())
+    if (!tabOption || tabOption->tabBarSize.isEmpty()) {
         return option->rect;
+    }
 
     int overlap = Metrics::TabBar_BaseOverlap + 1;
     QSize tabBarSize(tabOption->tabBarSize - QSize(overlap, overlap));
@@ -2071,22 +2102,18 @@ QRect Style::tabWidgetTabPaneRect(const QStyleOption *option, const QWidget *) c
     case QTabBar::TriangularNorth:
         rect.adjust(0, tabBarSize.height(), 0, 0);
         break;
-
     case QTabBar::RoundedSouth:
     case QTabBar::TriangularSouth:
         rect.adjust(0, 0, 0, -tabBarSize.height());
         break;
-
     case QTabBar::RoundedWest:
     case QTabBar::TriangularWest:
         rect.adjust(tabBarSize.width(), 0, 0, 0);
         break;
-
     case QTabBar::RoundedEast:
     case QTabBar::TriangularEast:
         rect.adjust(0, 0, -tabBarSize.width(), 0);
         break;
-
     default:
         return QRect();
     }
@@ -2099,18 +2126,21 @@ QRect Style::tabWidgetCornerRect(SubElement element, const QStyleOption *option,
 {
     // cast option and check
     const QStyleOptionTabWidgetFrame *tabOption = qstyleoption_cast<const QStyleOptionTabWidgetFrame *>(option);
-    if (!tabOption)
+    if (!tabOption) {
         return option->rect;
+    }
 
     // do nothing if tabbar is hidden
     QSize tabBarSize(tabOption->tabBarSize);
-    if (tabBarSize.isEmpty())
+    if (tabBarSize.isEmpty()) {
         return QRect();
+    }
 
     // do nothing for vertical tabs
     bool verticalTabs(isVerticalTab(tabOption->shape));
-    if (verticalTabs)
+    if (verticalTabs) {
         return QRect();
+    }
 
     QRect rect(option->rect);
     QRect cornerRect;
@@ -2119,12 +2149,10 @@ QRect Style::tabWidgetCornerRect(SubElement element, const QStyleOption *option,
         cornerRect = QRect(QPoint(0, 0), tabOption->leftCornerWidgetSize);
         cornerRect.moveLeft(rect.left());
         break;
-
     case SE_TabWidgetRightCorner:
         cornerRect = QRect(QPoint(0, 0), tabOption->rightCornerWidgetSize);
         cornerRect.moveRight(rect.right());
         break;
-
     default:
         break;
     }
@@ -2137,12 +2165,10 @@ QRect Style::tabWidgetCornerRect(SubElement element, const QStyleOption *option,
     case QTabBar::TriangularNorth:
         cornerRect.moveTop(rect.top());
         break;
-
     case QTabBar::RoundedSouth:
     case QTabBar::TriangularSouth:
         cornerRect.moveBottom(rect.bottom());
         break;
-
     default:
         break;
     }
@@ -2157,8 +2183,9 @@ QRect Style::toolBoxTabContentsRect(const QStyleOption *option, const QWidget *w
 {
     // cast option and check
     const QStyleOptionToolBox *toolBoxOption(qstyleoption_cast<const QStyleOptionToolBox *>(option));
-    if (!toolBoxOption)
+    if (!toolBoxOption) {
         return option->rect;
+    }
 
     // copy rect
     const QRect &rect(option->rect);
@@ -2168,8 +2195,9 @@ QRect Style::toolBoxTabContentsRect(const QStyleOption *option, const QWidget *w
         int iconSize(pixelMetric(QStyle::PM_SmallIconSize, option, widget));
         contentsWidth += iconSize;
 
-        if (!toolBoxOption->text.isEmpty())
+        if (!toolBoxOption->text.isEmpty()) {
             contentsWidth += Metrics::ToolBox_TabItemSpacing;
+        }
     }
 
     if (!toolBoxOption->text.isEmpty()) {
@@ -2246,8 +2274,9 @@ QRect Style::toolButtonSubControlRect(const QStyleOptionComplex *option, SubCont
 
     // cast option and check
     const QStyleOptionToolButton *toolButtonOption = qstyleoption_cast<const QStyleOptionToolButton *>(option);
-    if (!toolButtonOption)
+    if (!toolButtonOption) {
         return ParentStyleClass::subControlRect(CC_ToolButton, option, subControl, widget);
+    }
 
     bool hasPopupMenu(toolButtonOption->features & QStyleOptionToolButton::MenuButtonPopup);
     const bool hasInlineIndicator(toolButtonOption->features & QStyleOptionToolButton::HasMenu
@@ -2260,8 +2289,9 @@ QRect Style::toolButtonSubControlRect(const QStyleOptionComplex *option, SubCont
     switch (subControl) {
     case SC_ToolButtonMenu: {
         // check fratures
-        if (!(hasPopupMenu || hasInlineIndicator))
+        if (!(hasPopupMenu || hasInlineIndicator)) {
             return QRect();
+        }
 
         // check features
         QRect menuRect(rect);
@@ -2278,8 +2308,9 @@ QRect Style::toolButtonSubControlRect(const QStyleOptionComplex *option, SubCont
             QRect contentsRect(rect);
             contentsRect.setRight(rect.right() - menuButtonWidth);
             return visualRect(option, contentsRect);
-        } else
+        } else {
             return rect;
+        }
     }
 
     default:
@@ -2292,8 +2323,9 @@ QRect Style::comboBoxSubControlRect(const QStyleOptionComplex *option, SubContro
 {
     // cast option and check
     const QStyleOptionComboBox *comboBoxOption(qstyleoption_cast<const QStyleOptionComboBox *>(option));
-    if (!comboBoxOption)
+    if (!comboBoxOption) {
         return ParentStyleClass::subControlRect(CC_ComboBox, option, subControl, widget);
+    }
 
     bool editable(comboBoxOption->editable);
     bool flat(editable && !comboBoxOption->frame);
@@ -2306,7 +2338,6 @@ QRect Style::comboBoxSubControlRect(const QStyleOptionComplex *option, SubContro
         return flat ? rect : QRect();
     case SC_ComboBoxListBoxPopup:
         return rect;
-
     case SC_ComboBoxArrow: {
         QRect arrowRect(
             rect.right() - rect.height() + 1,
@@ -2346,8 +2377,9 @@ QRect Style::spinBoxSubControlRect(const QStyleOptionComplex *option, SubControl
 {
     // cast option and check
     const QStyleOptionSpinBox *spinBoxOption(qstyleoption_cast<const QStyleOptionSpinBox *>(option));
-    if (!spinBoxOption)
+    if (!spinBoxOption) {
         return ParentStyleClass::subControlRect(CC_SpinBox, option, subControl, widget);
+    }
     bool flat(!spinBoxOption->frame);
 
     // copy rect
@@ -2356,30 +2388,30 @@ QRect Style::spinBoxSubControlRect(const QStyleOptionComplex *option, SubControl
     switch (subControl) {
     case SC_SpinBoxFrame:
         return flat ? QRect() : rect;
-
     case SC_SpinBoxUp:
-        if (rect.width() > 2 * rect.height() + 24)
+        if (rect.width() > 2 * rect.height() + 24) {
             return QRect(rect.right() - rect.height() - 1,
                          rect.top(),
                          rect.height(),
                          rect.height() - 1);
-        else
+        } else {
             return QRect(rect.right() - 0.6 * rect.height(),
                          rect.top(),
                          rect.height() * 0.6,
                          rect.height() / 2 + 3);
-
+        }
     case SC_SpinBoxDown: {
-        if (rect.width() > 2 * rect.height() + 24)
+        if (rect.width() > 2 * rect.height() + 24) {
             return QRect(rect.right() - 2 * rect.height(),
                          rect.top(),
                          rect.height(),
                          rect.height() - 1);
-        else
+        } else {
             return QRect(rect.right() - 0.6 * rect.height(),
                          rect.top() + rect.height() / 2 - 2,
                          rect.height() * 0.6,
                          rect.height() / 2 + 1);
+        }
     }
 
     case SC_SpinBoxEditField: {
@@ -2387,14 +2419,15 @@ QRect Style::spinBoxSubControlRect(const QStyleOptionComplex *option, SubControl
 
         QRect labelRect;
 
-        if (rect.width() > 2 * rect.height() + 24)
+        if (rect.width() > 2 * rect.height() + 24) {
             labelRect = QRect(rect.left(), rect.top(),
                               rect.width() - 2 * rect.height() - frameWidth,
                               rect.height());
-        else
+        } else {
             labelRect = QRect(rect.left(), rect.top(),
                               rect.width() - 0.6 * rect.height() - frameWidth,
                               rect.height());
+        }
 
         // remove right side line editor margins
         if (!flat && labelRect.height() >= option->fontMetrics.height() + 2 * frameWidth) {
@@ -2421,18 +2454,19 @@ QRect Style::scrollBarInternalSubControlRect(const QStyleOptionComplex *option, 
     switch (subControl) {
     case SC_ScrollBarSubLine: {
         int majorSize(scrollBarButtonHeight(_subLineButtons));
-        if (horizontal)
+        if (horizontal) {
             return visualRect(option, QRect(rect.left(), rect.top(), majorSize, rect.height()));
-        else
+        } else {
             return visualRect(option, QRect(rect.left(), rect.top(), rect.width(), majorSize));
+        }
     }
-
     case SC_ScrollBarAddLine: {
         int majorSize(scrollBarButtonHeight(_addLineButtons));
-        if (horizontal)
+        if (horizontal) {
             return visualRect(option, QRect(rect.right() - majorSize + 1, rect.top(), majorSize, rect.height()));
-        else
+        } else {
             return visualRect(option, QRect(rect.left(), rect.bottom() - majorSize + 1, rect.width(), majorSize));
+        }
     }
 
     default:
@@ -2445,8 +2479,9 @@ QRect Style::scrollBarSubControlRect(const QStyleOptionComplex *option, SubContr
 {
     // cast option and check
     const QStyleOptionSlider *sliderOption(qstyleoption_cast<const QStyleOptionSlider *>(option));
-    if (!sliderOption)
+    if (!sliderOption) {
         return ParentStyleClass::subControlRect(CC_ScrollBar, option, subControl, widget);
+    }
 
     // get relevant state
     const State &state(option->state);
@@ -2456,7 +2491,6 @@ QRect Style::scrollBarSubControlRect(const QStyleOptionComplex *option, SubContr
     case SC_ScrollBarSubLine:
     case SC_ScrollBarAddLine:
         return QRect();
-
     case SC_ScrollBarGroove: {
         QRect topRect = visualRect(option, scrollBarInternalSubControlRect(option, SC_ScrollBarSubLine));
         QRect bottomRect = visualRect(option, scrollBarInternalSubControlRect(option, SC_ScrollBarAddLine));
@@ -2475,14 +2509,14 @@ QRect Style::scrollBarSubControlRect(const QStyleOptionComplex *option, SubContr
         // define rect
         return visualRect(option, QRect(topLeftCorner, botRightCorner));
     }
-
     case SC_ScrollBarSlider: {
         // handle RTL here to unreflect things if need be
         QRect groove = visualRect(option, subControlRect(CC_ScrollBar, option, SC_ScrollBarGroove, widget));
         groove.adjust(0, 0, 1, 1);
 
-        if (sliderOption->minimum == sliderOption->maximum)
+        if (sliderOption->minimum == sliderOption->maximum) {
             return groove;
+        }
 
         // Figure out how much room there is
         int space(horizontal ? groove.width() : groove.height());
@@ -2493,42 +2527,45 @@ QRect Style::scrollBarSubControlRect(const QStyleOptionComplex *option, SubContr
         sliderSize = qMin(sliderSize, space);
 
         space -= sliderSize;
-        if (space <= 0)
+        if (space <= 0) {
             return groove;
+        }
 
         int pos = qRound(qreal(sliderOption->sliderPosition - sliderOption->minimum) / (sliderOption->maximum - sliderOption->minimum) * space);
-        if (sliderOption->upsideDown)
+        if (sliderOption->upsideDown) {
             pos = space - pos;
-        if (horizontal)
+        }
+        if (horizontal) {
             return visualRect(option, QRect(groove.left() + pos, groove.top(), sliderSize, groove.height()));
-        else
+        } else {
             return visualRect(option, QRect(groove.left(), groove.top() + pos, groove.width(), sliderSize));
+        }
     }
-
     case SC_ScrollBarSubPage: {
         // handle RTL here to unreflect things if need be
         QRect slider = visualRect(option, subControlRect(CC_ScrollBar, option, SC_ScrollBarSlider, widget));
         QRect groove = visualRect(option, subControlRect(CC_ScrollBar, option, SC_ScrollBarGroove, widget));
 
-        if (horizontal)
+        if (horizontal) {
             return visualRect(option, QRect(groove.left(), groove.top(), slider.left() - groove.left(), groove.height()));
-        else
+        } else {
             return visualRect(option, QRect(groove.left(), groove.top(), groove.width(), slider.top() - groove.top()));
+        }
     }
-
     case SC_ScrollBarAddPage: {
         // handle RTL here to unreflect things if need be
         QRect slider = visualRect(option, subControlRect(CC_ScrollBar, option, SC_ScrollBarSlider, widget));
         QRect groove = visualRect(option, subControlRect(CC_ScrollBar, option, SC_ScrollBarGroove, widget));
 
-        if (horizontal)
+        if (horizontal) {
             return visualRect(option, QRect(slider.right() + 1, groove.top(), groove.right() - slider.right(), groove.height()));
-        else
+        } else {
             return visualRect(option, QRect(groove.left(), slider.bottom() + 1, groove.width(), groove.bottom() - slider.bottom()));
+        }
     }
 
     default:
-        return ParentStyleClass::subControlRect(CC_ScrollBar, option, subControl, widget);;
+        return ParentStyleClass::subControlRect(CC_ScrollBar, option, subControl, widget);
     }
 }
 
@@ -2537,8 +2574,9 @@ QRect Style::dialSubControlRect(const QStyleOptionComplex *option, SubControl su
 {
     // cast option and check
     const QStyleOptionSlider *sliderOption(qstyleoption_cast<const QStyleOptionSlider *>(option));
-    if (!sliderOption)
+    if (!sliderOption) {
         return ParentStyleClass::subControlRect(CC_Dial, option, subControl, widget);
+    }
 
     // adjust rect to be square, and centered
     QRect rect(option->rect);
@@ -2567,7 +2605,7 @@ QRect Style::dialSubControlRect(const QStyleOptionComplex *option, SubControl su
     }
 
     default:
-        return ParentStyleClass::subControlRect(CC_Dial, option, subControl, widget);;
+        return ParentStyleClass::subControlRect(CC_Dial, option, subControl, widget);
 
     }
 }
@@ -2577,8 +2615,9 @@ QRect Style::sliderSubControlRect(const QStyleOptionComplex *option, SubControl 
 {
     // cast option and check
     const QStyleOptionSlider *sliderOption(qstyleoption_cast<const QStyleOptionSlider *>(option));
-    if (!sliderOption)
+    if (!sliderOption) {
         return ParentStyleClass::subControlRect(CC_Slider, option, subControl, widget);
+    }
 
     switch (subControl) {
     case SC_SliderGroove: {
@@ -2590,10 +2629,11 @@ QRect Style::sliderSubControlRect(const QStyleOptionComplex *option, SubControl 
         grooveRect = insideMargin(grooveRect, pixelMetric(PM_DefaultFrameWidth, option, widget));
 
         // centering
-        if (horizontal)
+        if (horizontal) {
             grooveRect = centerRect(grooveRect, grooveRect.width(), Metrics::Slider_GrooveThickness);
-        else
+        } else {
             grooveRect = centerRect(grooveRect, Metrics::Slider_GrooveThickness, grooveRect.height());
+        }
         return grooveRect;
     }
 
@@ -2628,8 +2668,9 @@ QSize Style::lineEditSizeFromContents(const QStyleOption *option, const QSize &c
 {
     // cast option and check
     const QStyleOptionFrame *frameOption(qstyleoption_cast<const QStyleOptionFrame *>(option));
-    if (!frameOption)
+    if (!frameOption) {
         return contentsSize;
+    }
 
     bool flat(frameOption->lineWidth == 0);
     int frameWidth(pixelMetric(PM_DefaultFrameWidth, option, widget));
@@ -2646,8 +2687,9 @@ QSize Style::comboBoxSizeFromContents(const QStyleOption *option, const QSize &c
 {
     // cast option and check
     const QStyleOptionComboBox *comboBoxOption(qstyleoption_cast<const QStyleOptionComboBox *>(option));
-    if (!comboBoxOption)
+    if (!comboBoxOption) {
         return contentsSize;
+    }
 
     // copy size
     QSize size(contentsSize);
@@ -2655,8 +2697,9 @@ QSize Style::comboBoxSizeFromContents(const QStyleOption *option, const QSize &c
     // add relevant margin
     bool flat(!comboBoxOption->frame);
     int frameWidth(pixelMetric(PM_ComboBoxFrameWidth, option, widget));
-    if (!flat)
+    if (!flat) {
         size = expandSize(size, frameWidth);
+    }
 
     size.rwidth() += Metrics::MenuButton_IndicatorWidth;
     size.rwidth() += Metrics::Button_ItemSpacing;
@@ -2681,8 +2724,9 @@ QSize Style::spinBoxSizeFromContents(const QStyleOption *option, const QSize &co
 {
     // cast option and check
     const QStyleOptionSpinBox *spinBoxOption(qstyleoption_cast<const QStyleOptionSpinBox *>(option));
-    if (!spinBoxOption)
+    if (!spinBoxOption) {
         return contentsSize;
+    }
 
     bool flat(!spinBoxOption->frame);
 
@@ -2691,8 +2735,9 @@ QSize Style::spinBoxSizeFromContents(const QStyleOption *option, const QSize &co
 
     // add editor margins
     int frameWidth(pixelMetric(PM_SpinBoxFrameWidth, option, widget));
-    if (!flat)
+    if (!flat) {
         size = expandSize(size, frameWidth);
+    }
 
     size.rwidth() += 2 * Metrics::SpinBox_MinHeight;
     size.rwidth() += Metrics::Button_ItemSpacing;
@@ -2712,8 +2757,9 @@ QSize Style::sliderSizeFromContents(const QStyleOption *option, const QSize &con
 {
     // cast option and check
     const QStyleOptionSlider *sliderOption(qstyleoption_cast<const QStyleOptionSlider *>(option));
-    if (!sliderOption)
+    if (!sliderOption) {
         return contentsSize;
+    }
 
     // store tick position and orientation
     const QSlider::TickPosition &tickPosition(sliderOption->tickPosition);
@@ -2721,8 +2767,9 @@ QSize Style::sliderSizeFromContents(const QStyleOption *option, const QSize &con
     bool disableTicks(!Adwaita::Config::SliderDrawTickMarks);
 
     // do nothing if no ticks are requested
-    if (tickPosition == QSlider::NoTicks)
+    if (tickPosition == QSlider::NoTicks) {
         return contentsSize;
+    }
 
     /*
      * Qt adds its own tick length directly inside QSlider.
@@ -2736,17 +2783,19 @@ QSize Style::sliderSizeFromContents(const QStyleOption *option, const QSize &con
 
     QSize size(contentsSize);
     if (horizontal) {
-        if (tickPosition & QSlider::TicksAbove)
+        if (tickPosition & QSlider::TicksAbove) {
             size.rheight() += tickLength - builtInTickLength;
-        if (tickPosition & QSlider::TicksBelow)
+        }
+        if (tickPosition & QSlider::TicksBelow) {
             size.rheight() += tickLength - builtInTickLength;
-
+        }
     } else {
-        if (tickPosition & QSlider::TicksAbove)
+        if (tickPosition & QSlider::TicksAbove) {
             size.rwidth() += tickLength - builtInTickLength;
-        if (tickPosition & QSlider::TicksBelow)
+        }
+        if (tickPosition & QSlider::TicksBelow) {
             size.rwidth() += tickLength - builtInTickLength;
-
+        }
     }
 
     return size;
@@ -2757,8 +2806,9 @@ QSize Style::pushButtonSizeFromContents(const QStyleOption *option, const QSize 
 {
     // cast option and check
     const QStyleOptionButton *buttonOption(qstyleoption_cast<const QStyleOptionButton *>(option));
-    if (!buttonOption)
+    if (!buttonOption) {
         return contentsSize;
+    }
 
     // output
     QSize size;
@@ -2785,20 +2835,23 @@ QSize Style::pushButtonSizeFromContents(const QStyleOption *option, const QSize 
         hasIcon &= (showIconsOnPushButtons() || flat || !hasText);
 
         // text
-        if (hasText)
+        if (hasText) {
             size = buttonOption->fontMetrics.size(Qt::TextShowMnemonic, buttonOption->text);
+        }
 
         // icon
         if (hasIcon) {
             QSize iconSize = buttonOption->iconSize;
-            if (!iconSize.isValid())
+            if (!iconSize.isValid()) {
                 iconSize = QSize(pixelMetric(PM_SmallIconSize, option, widget), pixelMetric(PM_SmallIconSize, option, widget));
+            }
 
             size.setHeight(qMax(size.height(), iconSize.height()));
             size.rwidth() += iconSize.width();
 
-            if (hasText)
+            if (hasText) {
                 size.rwidth() += Metrics::Button_ItemSpacing;
+            }
         }
 
     }
@@ -2807,8 +2860,9 @@ QSize Style::pushButtonSizeFromContents(const QStyleOption *option, const QSize 
     bool hasMenu(buttonOption->features & QStyleOptionButton::HasMenu);
     if (hasMenu) {
         size.rwidth() += Metrics::MenuButton_IndicatorWidth;
-        if (hasText || hasIcon)
+        if (hasText || hasIcon) {
             size.rwidth() += Metrics::Button_ItemSpacing;
+        }
     }
 
     // expand with buttons margin
@@ -2833,8 +2887,9 @@ QSize Style::toolButtonSizeFromContents(const QStyleOption *option, const QSize 
 {
     // cast option and check
     const QStyleOptionToolButton *toolButtonOption = qstyleoption_cast<const QStyleOptionToolButton *>(option);
-    if (!toolButtonOption)
+    if (!toolButtonOption) {
         return contentsSize;
+    }
 
     // copy size
     QSize size = contentsSize;
@@ -2849,8 +2904,9 @@ QSize Style::toolButtonSizeFromContents(const QStyleOption *option, const QSize 
 
     int marginWidth(Metrics::ToolButton_MarginWidth);
 
-    if (hasInlineIndicator)
+    if (hasInlineIndicator) {
         size.rwidth() += Metrics::ToolButton_InlineIndicatorWidth;
+    }
     size = expandSize(size, marginWidth);
 
     // We need to add 1px as the toolbutton is smaller by 1px when rendering button frame
@@ -2870,8 +2926,9 @@ QSize Style::menuItemSizeFromContents(const QStyleOption *option, const QSize &c
 {
     // cast option and check
     const QStyleOptionMenuItem *menuItemOption = qstyleoption_cast<const QStyleOptionMenuItem *>(option);
-    if (!menuItemOption)
+    if (!menuItemOption) {
         return contentsSize;
+    }
 
     /*
      * First calculate the intrinsic size of the item.
@@ -2882,11 +2939,10 @@ QSize Style::menuItemSizeFromContents(const QStyleOption *option, const QSize &c
     case QStyleOptionMenuItem::Normal:
     case QStyleOptionMenuItem::DefaultItem:
     case QStyleOptionMenuItem::SubMenu: {
-
         int iconWidth = 0;
-        if (showIconsInMenuItems())
+        if (showIconsInMenuItems()) {
             iconWidth = isQtQuickControl(option, widget) ? qMax(pixelMetric(PM_SmallIconSize, option, widget), menuItemOption->maxIconWidth) : menuItemOption->maxIconWidth;
-
+        }
         int leftColumnWidth(iconWidth);
 
         // add space with respect to text
@@ -2906,8 +2962,9 @@ QSize Style::menuItemSizeFromContents(const QStyleOption *option, const QSize &c
          * ( see QMenuPrivate::calcActionRects() )
          */
         bool hasAccelerator(menuItemOption->text.indexOf(QLatin1Char('\t')) >= 0);
-        if (hasAccelerator)
+        if (hasAccelerator) {
             size.rwidth() += Metrics::MenuItem_AcceleratorSpace;
+        }
 
         // right column
         int rightColumnWidth = Metrics::MenuButton_IndicatorWidth + Metrics::MenuItem_ItemSpacing;
@@ -2934,8 +2991,9 @@ QSize Style::menuItemSizeFromContents(const QStyleOption *option, const QSize &c
             // make sure height is large enough for icon and text
             int iconWidth(menuItemOption->maxIconWidth);
             int textHeight(menuItemOption->fontMetrics.height());
-            if (!menuItemOption->icon.isNull())
+            if (!menuItemOption->icon.isNull()) {
                 size.setHeight(qMax(size.height(), iconWidth));
+            }
             if (!menuItemOption->text.isEmpty()) {
                 size.setHeight(qMax(size.height(), textHeight));
                 size.setWidth(qMax(size.width(), menuItemOption->fontMetrics.width(menuItemOption->text)));
@@ -2956,8 +3014,9 @@ QSize Style::progressBarSizeFromContents(const QStyleOption *option, const QSize
 {
     // cast option
     const QStyleOptionProgressBar *progressBarOption(qstyleoption_cast<const QStyleOptionProgressBar *>(option));
-    if (!progressBarOption)
+    if (!progressBarOption) {
         return contentsSize;
+    }
 
     const QStyleOptionProgressBarV2 *progressBarOption2(qstyleoption_cast<const QStyleOptionProgressBarV2 *>(option));
     bool horizontal(!progressBarOption2 || progressBarOption2->orientation == Qt::Horizontal);
@@ -2971,8 +3030,9 @@ QSize Style::progressBarSizeFromContents(const QStyleOption *option, const QSize
 
         size.setWidth(qMax(size.width(), int(Metrics::ProgressBar_Thickness)));
         size.setHeight(qMax(size.height(), int(Metrics::ProgressBar_Thickness)));
-        if (textVisible)
+        if (textVisible) {
             size.setHeight(qMax(size.height(), option->fontMetrics.height()));
+        }
     } else {
         size.setHeight(qMax(size.height(), int(Metrics::ProgressBar_Thickness)));
         size.setWidth(qMax(size.width(), int(Metrics::ProgressBar_Thickness)));
@@ -2986,44 +3046,53 @@ QSize Style::tabWidgetSizeFromContents(const QStyleOption *option, const QSize &
 {
     // cast option and check
     const QStyleOptionTabWidgetFrame *tabOption = qstyleoption_cast<const QStyleOptionTabWidgetFrame *>(option);
-    if (!tabOption)
+    if (!tabOption) {
         return expandSize(contentsSize, Metrics::TabWidget_MarginWidth);
+    }
 
     // try find direct children of type QTabBar and QStackedWidget
     // this is needed in order to add TabWidget margins only if they are necessary around tabWidget content, not the tabbar
-    if (!widget)
+    if (!widget) {
         return expandSize(contentsSize, Metrics::TabWidget_MarginWidth);
+    }
+
     QTabBar *tabBar = nullptr;
     QStackedWidget *stack = nullptr;
     auto children(widget->children());
     foreach (auto child, children) {
-        if (!tabBar)
+        if (!tabBar) {
             tabBar = qobject_cast<QTabBar *>(child);
-        if (!stack)
+        }
+        if (!stack) {
             stack = qobject_cast<QStackedWidget *>(child);
-        if (tabBar && stack)
+        }
+        if (tabBar && stack) {
             break;
+        }
     }
 
-    if (!(tabBar && stack))
+    if (!(tabBar && stack)) {
         return expandSize(contentsSize, Metrics::TabWidget_MarginWidth);
+    }
 
     // tab orientation
     bool verticalTabs(tabOption && isVerticalTab(tabOption->shape));
     if (verticalTabs) {
         int tabBarHeight = tabBar->minimumSizeHint().height();
         int stackHeight = stack->minimumSizeHint().height();
-        if (contentsSize.height() == tabBarHeight && tabBarHeight + 2 * (Metrics::Frame_FrameWidth - 1) >= stackHeight + 2 * Metrics::TabWidget_MarginWidth)
+        if (contentsSize.height() == tabBarHeight && tabBarHeight + 2 * (Metrics::Frame_FrameWidth - 1) >= stackHeight + 2 * Metrics::TabWidget_MarginWidth) {
             return QSize(contentsSize.width() + 2 * Metrics::TabWidget_MarginWidth, contentsSize.height() + 2 * (Metrics::Frame_FrameWidth - 1));
-        else
+        } else {
             return expandSize(contentsSize, Metrics::TabWidget_MarginWidth);
+        }
     } else {
         int tabBarWidth = tabBar->minimumSizeHint().width();
         int stackWidth = stack->minimumSizeHint().width();
-        if (contentsSize.width() == tabBarWidth && tabBarWidth + 2 * (Metrics::Frame_FrameWidth - 1) >= stackWidth + 2 * Metrics::TabWidget_MarginWidth)
+        if (contentsSize.width() == tabBarWidth && tabBarWidth + 2 * (Metrics::Frame_FrameWidth - 1) >= stackWidth + 2 * Metrics::TabWidget_MarginWidth) {
             return QSize(contentsSize.width() + 2 * (Metrics::Frame_FrameWidth - 1), contentsSize.height() + 2 * Metrics::TabWidget_MarginWidth);
-        else
+        } else {
             return expandSize(contentsSize, Metrics::TabWidget_MarginWidth);
+        }
     }
 }
 
@@ -3039,14 +3108,18 @@ QSize Style::tabBarTabSizeFromContents(const QStyleOption *option, const QSize &
 
     // calculate width increment for horizontal tabs
     int widthIncrement = 0;
-    if (hasIcon && !(hasText || hasLeftButton || hasRightButton))
+    if (hasIcon && !(hasText || hasLeftButton || hasRightButton)) {
         widthIncrement -= 4;
-    if (hasText && hasIcon)
+    }
+    if (hasText && hasIcon) {
         widthIncrement += Metrics::TabBar_TabItemSpacing;
-    if (hasLeftButton && (hasText || hasIcon))
+    }
+    if (hasLeftButton && (hasText || hasIcon)) {
         widthIncrement += Metrics::TabBar_TabItemSpacing;
-    if (hasRightButton && (hasText || hasIcon || hasLeftButton))
+    }
+    if (hasRightButton && (hasText || hasIcon || hasLeftButton)) {
         widthIncrement += Metrics::TabBar_TabItemSpacing;
+    }
 
     // add margins
     QSize size(contentsSize);
@@ -3059,16 +3132,18 @@ QSize Style::tabBarTabSizeFromContents(const QStyleOption *option, const QSize &
     bool verticalTabs(tabOption && isVerticalTab(tabOption));
     if (verticalTabs) {
         size.rheight() += widthIncrement;
-        if (hasIcon && !hasText)
+        if (hasIcon && !hasText) {
             size = size.expandedTo(QSize(Metrics::TabBar_TabMinHeight, 0));
-        else
+        } else {
             size = size.expandedTo(QSize(Metrics::TabBar_TabMinHeight, Metrics::TabBar_TabMinWidth));
+        }
     } else {
         size.rwidth() += widthIncrement;
-        if (hasIcon && !hasText)
+        if (hasIcon && !hasText) {
             size = size.expandedTo(QSize(0, Metrics::TabBar_TabMinHeight));
-        else
+        } else {
             size = size.expandedTo(QSize(Metrics::TabBar_TabMinWidth, Metrics::TabBar_TabMinHeight));
+        }
     }
 
     return size;
@@ -3079,8 +3154,9 @@ QSize Style::headerSectionSizeFromContents(const QStyleOption *option, const QSi
 {
     // cast option and check
     const QStyleOptionHeader *headerOption(qstyleoption_cast<const QStyleOptionHeader *>(option));
-    if (!headerOption)
+    if (!headerOption) {
         return contentsSize;
+    }
 
     // get text size
     bool horizontal(headerOption->orientation == Qt::Horizontal);
@@ -3092,18 +3168,21 @@ QSize Style::headerSectionSizeFromContents(const QStyleOption *option, const QSi
 
     // contents width
     int contentsWidth(0);
-    if (hasText)
+    if (hasText) {
         contentsWidth += textSize.width();
+    }
     if (hasIcon) {
         contentsWidth += iconSize.width();
-        if (hasText)
+        if (hasText) {
             contentsWidth += Metrics::Header_ItemSpacing;
+        }
     }
 
     // contents height
     int contentsHeight(headerOption->fontMetrics.height());
-    if (hasIcon)
+    if (hasIcon) {
         contentsHeight = qMax(contentsHeight, iconSize.height());
+    }
 
     if (horizontal) {
         // also add space for icon
@@ -3135,8 +3214,9 @@ bool Style::drawFramePrimitive(const QStyleOption *option, QPainter *painter, co
     const bool isTitleWidget(Adwaita::Config::TitleWidgetDrawFrame && widget && widget->parent() && widget->parent()->inherits("KTitleWidget"));
     // copy state
     const State &state(option->state);
-    if (!isTitleWidget && !(state & (State_Sunken | State_Raised)))
+    if (!isTitleWidget && !(state & (State_Sunken | State_Raised))) {
         return true;
+    }
 
     const bool isInputWidget((widget && widget->testAttribute(Qt::WA_Hover))
                              || (isQtQuickControl(option, widget) && option->styleObject->property("elementType").toString() == QStringLiteral("edit")));
@@ -3152,18 +3232,25 @@ bool Style::drawFramePrimitive(const QStyleOption *option, QPainter *painter, co
     AnimationMode mode(_animations->inputWidgetEngine().frameAnimationMode(widget));
     qreal opacity(_animations->inputWidgetEngine().frameOpacity(widget));
 
+    // Style options
+    StyleOptions styleOptions(palette);
+    styleOptions.setHasFocus(hasFocus);
+    styleOptions.setMouseOver(mouseOver);
+    styleOptions.setOpacity(opacity);
+    styleOptions.setAnimationMode(mode);
+
     // render
     if (!Adwaita::Config::SidePanelDrawFrame && widget && widget->property(PropertyNames::sidePanelView).toBool()) {
-        QColor outline(_helper->sidePanelOutlineColor(palette, hasFocus, opacity, mode));
+        QColor outline(Colors::sidePanelOutlineColor(styleOptions));
         bool reverseLayout(option->direction == Qt::RightToLeft);
         Side side(reverseLayout ? SideRight : SideLeft);
         _helper->renderSidePanelFrame(painter, rect, outline, side);
     } else if (qobject_cast<const QAbstractScrollArea *>(widget)) {
-        QColor outline(_helper->frameOutlineColor(palette, mouseOver, hasFocus, opacity, mode));
+        QColor outline(Colors::frameOutlineColor(styleOptions));
         _helper->renderSquareFrame(painter, rect, outline, hasFocus);
     } else {
         QColor background(isTitleWidget ? palette.color(widget->backgroundRole()) : QColor());
-        QColor outline(_helper->frameOutlineColor(palette, mouseOver, hasFocus, opacity, mode));
+        QColor outline(Colors::frameOutlineColor(styleOptions));
         _helper->renderFrame(painter, rect, background, outline, hasFocus);
     }
 
@@ -3199,13 +3286,22 @@ bool Style::drawFrameLineEditPrimitive(const QStyleOption *option, QPainter *pai
         AnimationMode mode(_animations->inputWidgetEngine().frameAnimationMode(widget));
         qreal opacity(_animations->inputWidgetEngine().frameOpacity(widget));
 
+        // Style options
+        StyleOptions styleOptions(palette);
+        styleOptions.setMouseOver(mouseOver);
+        styleOptions.setHasFocus(hasFocus);
+        styleOptions.setOpacity(opacity);
+        styleOptions.setAnimationMode(mode);
+        styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
         // render
         QColor background(palette.currentColorGroup() == QPalette::Disabled ? palette.color(QPalette::Window) : palette.color(QPalette::Base));
-        QColor outline(_helper->inputOutlineColor(palette, mouseOver, hasFocus, opacity, mode, _dark));
-        if (qobject_cast<const QComboBox *>(widget))
+        QColor outline(Colors::inputOutlineColor(styleOptions));
+        if (qobject_cast<const QComboBox *>(widget)) {
             _helper->renderFlatFrame(painter, rect, background, outline, hasFocus);
-        else
+        } else {
             _helper->renderFrame(painter, rect, background, outline, hasFocus);
+        }
     }
 
     return true;
@@ -3214,15 +3310,17 @@ bool Style::drawFrameLineEditPrimitive(const QStyleOption *option, QPainter *pai
 //___________________________________________________________________________________
 bool Style::drawFrameFocusRectPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-    if (option->styleObject && option->styleObject->property("elementType") == QLatin1String("button"))
+    if (option->styleObject && option->styleObject->property("elementType") == QLatin1String("button")) {
         return true;
+    }
 
     const State &state(option->state);
     QRectF rect(QRectF(option->rect).adjusted(0, 0, -1, -1));
     const QPalette &palette(option->palette);
 
-    if (rect.width() < 10)
+    if (rect.width() < 10) {
         return true;
+    }
 
     QColor outlineColor(Colors::mix(palette.color(QPalette::Window), palette.color(QPalette::WindowText), 0.35));
     QPen pen(outlineColor, 1);
@@ -3244,15 +3342,15 @@ bool Style::drawFrameMenuPrimitive(const QStyleOption *option, QPainter *painter
     // do nothing for other cases, for which frame is rendered via drawPanelMenuPrimitive
     if (qobject_cast<const QToolBar *>(widget)) {
         const QPalette &palette(option->palette);
-        QColor background(_helper->frameBackgroundColor(palette));
-        QColor outline(_helper->frameOutlineColor(palette));
+        QColor background(Colors::frameBackgroundColor(StyleOptions(palette)));
+        QColor outline(Colors::frameOutlineColor(StyleOptions(palette)));
 
         bool hasAlpha(_helper->hasAlphaChannel(widget));
         _helper->renderMenuFrame(painter, option->rect, background, outline, hasAlpha);
     } else if (isQtQuickControl(option, widget)) {
         const QPalette &palette(option->palette);
-        QColor background(_helper->frameBackgroundColor(palette));
-        QColor outline(_helper->frameOutlineColor(palette));
+        QColor background(Colors::frameBackgroundColor(StyleOptions(palette)));
+        QColor outline(Colors::frameOutlineColor(StyleOptions(palette)));
 
         bool hasAlpha(_helper->hasAlphaChannel(widget));
         _helper->renderMenuFrame(painter, option->rect, background, outline, hasAlpha);
@@ -3272,13 +3370,15 @@ bool Style::drawFrameTabWidgetPrimitive(const QStyleOption *option, QPainter *pa
 {
     // cast option and check
     const QStyleOptionTabWidgetFrameV2 *tabOption(qstyleoption_cast<const QStyleOptionTabWidgetFrameV2 *>(option));
-    if (!tabOption)
+    if (!tabOption) {
         return true;
+    }
 
     // do nothing if tabbar is hidden
     bool isQtQuickControl(this->isQtQuickControl(option, widget));
-    if (tabOption->tabBarSize.isEmpty() && !isQtQuickControl)
+    if (tabOption->tabBarSize.isEmpty() && !isQtQuickControl) {
         return true;
+    }
 
     // adjust rect to handle overlaps
     QRect rect(option->rect);
@@ -3291,52 +3391,64 @@ bool Style::drawFrameTabWidgetPrimitive(const QStyleOption *option, QPainter *pa
     switch (tabOption->shape) {
     case QTabBar::RoundedNorth:
     case QTabBar::TriangularNorth:
-        if (isQtQuickControl)
+        if (isQtQuickControl) {
             rect.adjust(-1, -1, 1, 0);
-        if (tabBarSize.width() >= rect.width() - 2 * Metrics::Frame_FrameRadius)
+        }
+        if (tabBarSize.width() >= rect.width() - 2 * Metrics::Frame_FrameRadius) {
             corners &= ~CornersTop;
-        if (tabBarRect.left() < rect.left() + Metrics::Frame_FrameRadius)
+        }
+        if (tabBarRect.left() < rect.left() + Metrics::Frame_FrameRadius) {
             corners &= ~CornerTopLeft;
-        if (tabBarRect.right() > rect.right() - Metrics::Frame_FrameRadius)
+        }
+        if (tabBarRect.right() > rect.right() - Metrics::Frame_FrameRadius) {
             corners &= ~CornerTopRight;
+        }
         break;
-
     case QTabBar::RoundedSouth:
     case QTabBar::TriangularSouth:
-        if (isQtQuickControl)
+        if (isQtQuickControl) {
             rect.adjust(-1, 0, 1, 1);
-        if (tabBarSize.width() >= rect.width() - 2 * Metrics::Frame_FrameRadius)
+        }
+        if (tabBarSize.width() >= rect.width() - 2 * Metrics::Frame_FrameRadius) {
             corners &= ~CornersBottom;
-        if (tabBarRect.left() < rect.left() + Metrics::Frame_FrameRadius)
+        }
+        if (tabBarRect.left() < rect.left() + Metrics::Frame_FrameRadius) {
             corners &= ~CornerBottomLeft;
-        if (tabBarRect.right() > rect.right() - Metrics::Frame_FrameRadius)
+        }
+        if (tabBarRect.right() > rect.right() - Metrics::Frame_FrameRadius) {
             corners &= ~CornerBottomRight;
+        }
         break;
-
     case QTabBar::RoundedWest:
     case QTabBar::TriangularWest:
-        if (isQtQuickControl)
+        if (isQtQuickControl) {
             rect.adjust(-1, 0, 0, 0);
-        if (tabBarSize.height() >= rect.height() - 2 * Metrics::Frame_FrameRadius)
+        }
+        if (tabBarSize.height() >= rect.height() - 2 * Metrics::Frame_FrameRadius) {
             corners &= ~CornersLeft;
-        if (tabBarRect.top() < rect.top() + Metrics::Frame_FrameRadius)
+        }
+        if (tabBarRect.top() < rect.top() + Metrics::Frame_FrameRadius) {
             corners &= ~CornerTopLeft;
-        if (tabBarRect.bottom() > rect.bottom() - Metrics::Frame_FrameRadius)
+        }
+        if (tabBarRect.bottom() > rect.bottom() - Metrics::Frame_FrameRadius) {
             corners &= ~CornerBottomLeft;
+        }
         break;
-
     case QTabBar::RoundedEast:
     case QTabBar::TriangularEast:
-        if (isQtQuickControl)
+        if (isQtQuickControl) {
             rect.adjust(0, 0, 1, 0);
-        if (tabBarSize.height() >= rect.height() - 2 * Metrics::Frame_FrameRadius)
+        }
+        if (tabBarSize.height() >= rect.height() - 2 * Metrics::Frame_FrameRadius) {
             corners &= ~CornersRight;
-        if (tabBarRect.top() < rect.top() + Metrics::Frame_FrameRadius)
+        }
+        if (tabBarRect.top() < rect.top() + Metrics::Frame_FrameRadius) {
             corners &= ~CornerTopRight;
-        if (tabBarRect.bottom() > rect.bottom() - Metrics::Frame_FrameRadius)
+        }
+        if (tabBarRect.bottom() > rect.bottom() - Metrics::Frame_FrameRadius) {
             corners &= ~CornerBottomRight;
+        }
         break;
-
     default:
         break;
     }
@@ -3344,7 +3456,7 @@ bool Style::drawFrameTabWidgetPrimitive(const QStyleOption *option, QPainter *pa
     // define colors
     const QPalette &palette(option->palette);
     QColor background(palette.color(QPalette::Base));
-    QColor outline(_helper->frameOutlineColor(palette));
+    QColor outline(Colors::frameOutlineColor(StyleOptions(palette)));
     _helper->renderTabWidgetFrame(painter, rect, background, outline, corners);
 
     return true;
@@ -3357,13 +3469,18 @@ bool Style::drawFrameTabBarBasePrimitive(const QStyleOption *option, QPainter *p
 
     // cast option and check
     const QStyleOptionTabBarBase *tabOption(qstyleoption_cast<const QStyleOptionTabBarBase *>(option));
-    if (!tabOption)
+    if (!tabOption) {
         return true;
+    }
+
+    // Style options
+    StyleOptions styleOptions(option->palette);
+    styleOptions.setState(option->state);
 
     // get rect, orientation, palette
     QRect rect(option->rect);
-    QColor outline(_helper->frameOutlineColor(option->palette));
-    QColor background = _helper->tabBarColor(option->palette, option->state);
+    QColor outline(Colors::frameOutlineColor(styleOptions));
+    QColor background = Colors::tabBarColor(styleOptions);
 
     // setup painter
     painter->setBrush(background);
@@ -3384,12 +3501,16 @@ bool Style::drawFrameWindowPrimitive(const QStyleOption *option, QPainter *paint
     State state(option->state);
     bool selected(state & State_Selected);
 
+    // Style options
+    StyleOptions styleOptions(palette);
+    styleOptions.setMouseOver(false);
+    styleOptions.setHasFocus(selected);
+
     // render frame outline
-    QColor outline(_helper->frameOutlineColor(palette, false, selected));
+    QColor outline(Colors::frameOutlineColor(styleOptions));
     _helper->renderMenuFrame(painter, rect, QColor(), outline);
 
     return true;
-
 }
 
 //___________________________________________________________________________________
@@ -3409,6 +3530,11 @@ bool Style::drawIndicatorArrowPrimitive(ArrowOrientation orientation, const QSty
     bool inTabBar(widget && qobject_cast<const QTabBar *>(widget->parentWidget()));
     bool inToolButton(qstyleoption_cast<const QStyleOptionToolButton *>(option));
 
+    // Style options
+    StyleOptions styleOptions(palette);
+    styleOptions.setMouseOver(mouseOver);
+    styleOptions.setHasFocus(hasFocus);
+
     // color
     QColor color;
     if (inTabBar) {
@@ -3419,9 +3545,13 @@ bool Style::drawIndicatorArrowPrimitive(ArrowOrientation orientation, const QSty
          */
         AnimationMode mode(_animations->widgetStateEngine().buttonAnimationMode(widget));
         qreal opacity(_animations->widgetStateEngine().buttonOpacity(widget));
-        color = _helper->arrowColor(palette, mouseOver, hasFocus, opacity, mode);
+
+        styleOptions.setAnimationMode(mode);
+        styleOptions.setOpacity(opacity);
+
+        color = Colors::arrowOutlineColor(styleOptions);
     } else if (mouseOver && !inToolButton) {
-        color = _helper->hoverColor(palette);
+        color = Colors::hoverColor(styleOptions);
     } else if (inToolButton) {
         bool flat(state & State_AutoRaise);
 
@@ -3437,22 +3567,36 @@ bool Style::drawIndicatorArrowPrimitive(ArrowOrientation orientation, const QSty
             bool animated(_animations->toolButtonEngine().isAnimated(widget, AnimationHover));
             qreal opacity(_animations->toolButtonEngine().opacity(widget, AnimationHover));
 
-            color = _helper->arrowColor(palette, arrowHover, false, opacity, animated ? AnimationHover : AnimationNone);
+            // Style ooptions
+            styleOptions.setAnimationMode(animated ? AnimationHover : AnimationNone);
+
+            color = Colors::arrowOutlineColor(styleOptions);
         } else {
             bool sunken(state & (State_On | State_Sunken));
             if (flat) {
-                if (sunken && hasFocus && !mouseOver)
+                if (sunken && hasFocus && !mouseOver) {
                     color = palette.color(QPalette::HighlightedText);
-                else
-                    color = _helper->arrowColor(palette, QPalette::WindowText);
+                } else {
+                    // Style options
+                    styleOptions.setColorRole(QPalette::WindowText);
+
+                    color = Colors::arrowOutlineColor(styleOptions);
+                }
             } else if (hasFocus && !mouseOver)  {
                 color = palette.color(QPalette::HighlightedText);
             } else {
-                color = _helper->arrowColor(palette, QPalette::ButtonText);
+                // Style options
+                styleOptions.setColorRole(QPalette::ButtonText);
+
+                color = Colors::arrowOutlineColor(styleOptions);
             }
         }
-    } else
-        color = _helper->arrowColor(palette, QPalette::WindowText);
+    } else {
+        // Style options
+        styleOptions.setColorRole(QPalette::WindowText);
+
+        color = Colors::arrowOutlineColor(styleOptions);
+    }
 
     // render
     _helper->renderArrow(painter, rect, color, orientation);
@@ -3468,19 +3612,26 @@ bool Style::drawIndicatorHeaderArrowPrimitive(const QStyleOption *option, QPaint
 
     // arrow orientation
     ArrowOrientation orientation(ArrowNone);
-    if (state & State_UpArrow || (headerOption && headerOption->sortIndicator == QStyleOptionHeader::SortUp))
+    if (state & State_UpArrow || (headerOption && headerOption->sortIndicator == QStyleOptionHeader::SortUp)) {
         orientation = ArrowUp;
-    else if (state & State_DownArrow || (headerOption && headerOption->sortIndicator == QStyleOptionHeader::SortDown))
+    } else if (state & State_DownArrow || (headerOption && headerOption->sortIndicator == QStyleOptionHeader::SortDown)) {
         orientation = ArrowDown;
-    if (orientation == ArrowNone)
+    }
+    if (orientation == ArrowNone) {
         return true;
+    }
 
     // invert arrows if requested by (hidden) options
-    if (Adwaita::Config::ViewInvertSortIndicator)
+    if (Adwaita::Config::ViewInvertSortIndicator) {
         orientation = (orientation == ArrowUp) ? ArrowDown : ArrowUp;
+    }
+
+    // Style options
+    StyleOptions styleOptions(option->palette);
+    styleOptions.setState(state);
 
     // define color and polygon for drawing arrow
-    QColor color = _helper->headerTextColor(option->palette, state);
+    QColor color = Colors::headerTextColor(styleOptions);
 
     // render
     _helper->renderArrow(painter, option->rect, color, orientation);
@@ -3493,8 +3644,9 @@ bool Style::drawPanelButtonCommandPrimitive(const QStyleOption *option, QPainter
 {
     // cast option and check
     const QStyleOptionButton *buttonOption(qstyleoption_cast< const QStyleOptionButton * >(option));
-    if (!buttonOption)
+    if (!buttonOption) {
         return true;
+    }
 
     // rect and palette
     const QRect &rect(option->rect);
@@ -3516,10 +3668,18 @@ bool Style::drawPanelButtonCommandPrimitive(const QStyleOption *option, QPainter
     AnimationMode mode(_animations->widgetStateEngine().buttonAnimationMode(widget));
     qreal opacity(_animations->widgetStateEngine().buttonOpacity(widget));
 
+    // Style options
+    StyleOptions styleOptions(option->palette);
+    styleOptions.setMouseOver(mouseOver);
+    styleOptions.setHasFocus(hasFocus);
+    styleOptions.setSunken(sunken);
+    styleOptions.setOpacity(opacity);
+    styleOptions.setAnimationMode(mode);
+    styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
     if (flat) {
         // define colors and render
-        const QPalette &palette(option->palette);
-        QColor color(_helper->toolButtonColor(palette, mouseOver, hasFocus, sunken, opacity, mode));
+        QColor color(Colors::toolButtonColor(styleOptions));
         _helper->renderToolButtonFrame(painter, rect, color, sunken);
     } else {
         // update button color from palette in case button is default
@@ -3531,8 +3691,8 @@ bool Style::drawPanelButtonCommandPrimitive(const QStyleOption *option, QPainter
         }
 
         QColor shadow(palette.color(QPalette::Shadow));
-        QColor outline(_helper->buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode, _dark));
-        QColor background(_helper->buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode, _dark));
+        QColor outline(Colors::buttonOutlineColor(styleOptions));
+        QColor background(Colors::buttonBackgroundColor(styleOptions));
 
         // render
         _helper->renderButtonFrame(painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver, enabled && windowActive, _dark);
@@ -3564,15 +3724,24 @@ bool Style::drawPanelButtonToolPrimitive(const QStyleOption *option, QPainter *p
     AnimationMode mode(_animations->widgetStateEngine().buttonAnimationMode(widget));
     qreal opacity(_animations->widgetStateEngine().buttonOpacity(widget));
 
+    // Style options
+    StyleOptions styleOptions(option->palette);
+    styleOptions.setMouseOver(mouseOver);
+    styleOptions.setHasFocus(hasFocus);
+    styleOptions.setSunken(sunken);
+    styleOptions.setOpacity(opacity);
+    styleOptions.setAnimationMode(mode);
+    styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
     if (!autoRaise || mouseOver || sunken) {
         // need to check widget for popup mode, because option is not set properly
         const QToolButton *toolButton(qobject_cast<const QToolButton *>(widget));
         bool hasPopupMenu(toolButton && toolButton->popupMode() == QToolButton::MenuButtonPopup);
 
         // render as push button
-        QColor shadow(_helper->shadowColor(palette));
-        QColor outline(_helper->buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode, _dark));
-        QColor background(_helper->buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode, _dark));
+        QColor shadow(Colors::shadowColor(styleOptions));
+        QColor outline(Colors::buttonOutlineColor(styleOptions));
+        QColor background(Colors::buttonBackgroundColor(styleOptions));
 
         // adjust frame in case of menu
         if (hasPopupMenu) {
@@ -3584,7 +3753,7 @@ bool Style::drawPanelButtonToolPrimitive(const QStyleOption *option, QPainter *p
         // render
         _helper->renderButtonFrame(painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver, windowActive);
     } else {
-        QColor color(_helper->toolButtonColor(palette, mouseOver, hasFocus, sunken, opacity, mode));
+        QColor color(Colors::toolButtonColor(styleOptions));
         _helper->renderToolButtonFrame(painter, rect, color, sunken);
     }
 
@@ -3610,12 +3779,10 @@ bool Style::drawTabBarPanelButtonToolPrimitive(const QStyleOption *option, QPain
     case QTabBar::TriangularNorth:
         rect.adjust(0, 0, 0, -overlap);
         break;
-
     case QTabBar::RoundedSouth:
     case QTabBar::TriangularSouth:
         rect.adjust(0, overlap, 0, 0);
         break;
-
     case QTabBar::RoundedWest:
     case QTabBar::TriangularWest:
         rect.adjust(0, 0, -overlap, 0);
@@ -3628,15 +3795,16 @@ bool Style::drawTabBarPanelButtonToolPrimitive(const QStyleOption *option, QPain
 
     default:
         break;
-
     }
 
     // get the relevant palette
     const QWidget *parent(tabBar->parentWidget());
-    if (qobject_cast<const QTabWidget *>(parent))
+    if (qobject_cast<const QTabWidget *>(parent)) {
         parent = parent->parentWidget();
+    }
     QPalette palette(parent ? parent->palette() : QApplication::palette());
-    QColor color = hasAlteredBackground(parent) ? _helper->frameBackgroundColor(palette) : palette.color(QPalette::Window);
+
+    QColor color = hasAlteredBackground(parent) ? Colors::frameBackgroundColor(StyleOptions(palette)) : palette.color(QPalette::Window);
 
     // render flat background
     painter->setPen(Qt::NoPen);
@@ -3670,12 +3838,13 @@ bool Style::drawPanelMenuPrimitive(const QStyleOption *option, QPainter *painter
      * do nothing if menu is embedded in another widget
      * this corresponds to having a transparent background
      */
-    if (widget && !widget->isWindow())
+    if (widget && !widget->isWindow()) {
         return true;
+    }
 
     const QPalette &palette(option->palette);
-    QColor background(_helper->frameBackgroundColor(palette));
-    QColor outline(_helper->frameOutlineColor(palette));
+    QColor background(Colors::frameBackgroundColor(StyleOptions(palette)));
+    QColor outline(Colors::frameOutlineColor(StyleOptions(palette)));
 
     bool hasAlpha(_helper->hasAlphaChannel(widget));
     _helper->renderMenuFrame(painter, option->rect, background, outline, hasAlpha);
@@ -3707,15 +3876,19 @@ bool Style::drawPanelItemViewRowPrimitive(const QStyleOption *option, QPainter *
 {
     const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option);
 
-    if (!vopt)
+    if (!vopt) {
         return false;
+    }
 
     QPalette::ColorGroup cg = (widget ? widget->isEnabled() : (vopt->state & QStyle::State_Enabled))
-                            ? QPalette::Normal : QPalette::Disabled;
-    if (cg == QPalette::Normal && !(vopt->state & QStyle::State_Active))
+                              ? QPalette::Normal : QPalette::Disabled;
+    if (cg == QPalette::Normal && !(vopt->state & QStyle::State_Active)) {
         cg = QPalette::Inactive;
-    if ((vopt->state & QStyle::State_Selected) &&  proxy()->styleHint(QStyle::SH_ItemView_ShowDecorationSelected, option, widget))
+    }
+
+    if ((vopt->state & QStyle::State_Selected) &&  proxy()->styleHint(QStyle::SH_ItemView_ShowDecorationSelected, option, widget)) {
         painter->fillRect(vopt->rect, vopt->palette.color(cg, QPalette::Highlight));
+    }
 
     return true;
 }
@@ -3725,8 +3898,9 @@ bool Style::drawPanelItemViewItemPrimitive(const QStyleOption *option, QPainter 
 {
     // cast option and check
     const QStyleOptionViewItemV4 *viewItemOption = qstyleoption_cast<const QStyleOptionViewItemV4 *>(option);
-    if (!viewItemOption)
+    if (!viewItemOption) {
         return false;
+    }
 
     // try cast widget
     const QAbstractItemView *abstractItemView = qobject_cast<const QAbstractItemView *>(widget);
@@ -3752,10 +3926,11 @@ bool Style::drawPanelItemViewItemPrimitive(const QStyleOption *option, QPainter 
 
     // define color group
     QPalette::ColorGroup colorGroup;
-    if (enabled)
+    if (enabled) {
         colorGroup = windowActive ? QPalette::Active : QPalette::Inactive;
-    else
+    } else {
         colorGroup = QPalette::Disabled;
+    }
 
     // render custom background
     if (hasCustomBackground && !hasSolidBackground) {
@@ -3769,10 +3944,11 @@ bool Style::drawPanelItemViewItemPrimitive(const QStyleOption *option, QPainter 
     // render selection
     // define color
     QColor color;
-    if (hasCustomBackground && hasSolidBackground)
+    if (hasCustomBackground && hasSolidBackground) {
         color = viewItemOption->backgroundBrush.color();
-    else
+    } else {
         color = palette.color(colorGroup, QPalette::Highlight);
+    }
 
     // render
     _helper->renderSelection(painter, rect, color);
@@ -3795,16 +3971,26 @@ bool Style::drawIndicatorCheckBoxPrimitive(const QStyleOption *option, QPainter 
     bool active((state & (State_On | State_NoChange)));
     bool windowActive(state & State_Active);
 
-
     // checkbox state
     CheckBoxState checkBoxState(CheckOff);
-    if (state & State_NoChange)
+    if (state & State_NoChange) {
         checkBoxState = CheckPartial;
-    else if (state & State_On)
+    } else if (state & State_On) {
         checkBoxState = CheckOn;
+    }
 
-    const QColor &outline(_helper->indicatorOutlineColor(palette, mouseOver, false, AnimationData::OpacityInvalid, AnimationNone, checkBoxState, _dark));
-    const QColor &background(_helper->indicatorBackgroundColor(palette, mouseOver, false, sunken, AnimationData::OpacityInvalid, AnimationNone, checkBoxState, _dark));
+    // Style options
+    StyleOptions styleOptions(option->palette);
+    styleOptions.setMouseOver(mouseOver);
+    styleOptions.setHasFocus(false);
+    styleOptions.setSunken(sunken);
+    styleOptions.setOpacity(AnimationData::OpacityInvalid);
+    styleOptions.setAnimationMode(AnimationNone);
+    styleOptions.setCheckboxState(checkBoxState);
+    styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
+    const QColor &outline(Colors::indicatorOutlineColor(styleOptions));
+    const QColor &background(Colors::indicatorBackgroundColor(styleOptions));
 
     // detect checkboxes in lists
     bool isSelectedItem(this->isSelectedItem(widget, rect.center()));
@@ -3813,23 +3999,33 @@ bool Style::drawIndicatorCheckBoxPrimitive(const QStyleOption *option, QPainter 
     _animations->widgetStateEngine().updateState(widget, AnimationHover, mouseOver);
     if (checkBoxState != CheckPartial) {
         _animations->widgetStateEngine().updateState(widget, AnimationPressed, checkBoxState != CheckOff);
-        if (_animations->widgetStateEngine().isAnimated(widget, AnimationPressed) && checkBoxState == CheckOn)
+        if (_animations->widgetStateEngine().isAnimated(widget, AnimationPressed) && checkBoxState == CheckOn) {
             checkBoxState = CheckAnimated;
+        }
     }
     qreal animation(_animations->widgetStateEngine().opacity(widget, AnimationPressed));
 
     QColor tickColor;
     if (isSelectedItem) {
-        tickColor = _helper->checkBoxIndicatorColor(palette, false, enabled && active);
+        // Style options
+        styleOptions.setActive(enabled && active);
+
+        tickColor = Colors::checkBoxIndicatorColor(styleOptions);
         _helper->renderCheckBoxBackground(painter, rect, palette.color(QPalette::Base), outline, sunken);
     } else {
         AnimationMode mode(_animations->widgetStateEngine().isAnimated(widget, AnimationHover) ? AnimationHover : AnimationNone);
         qreal opacity(_animations->widgetStateEngine().opacity(widget, AnimationHover));
-        tickColor = _helper->checkBoxIndicatorColor(palette, mouseOver, enabled && active, opacity, mode);
+
+        // Style options
+        styleOptions.setAnimationMode(mode);
+        styleOptions.setOpacity(opacity);
+        styleOptions.setActive(enabled && active);
+
+        tickColor = Colors::checkBoxIndicatorColor(styleOptions);
     }
 
     // render
-    QColor shadow(_helper->shadowColor(palette));
+    QColor shadow(Colors::shadowColor(StyleOptions(palette)));
     _helper->renderCheckBox(painter, rect, background, outline, tickColor, sunken, checkBoxState, mouseOver, animation, enabled && windowActive, _dark);
     return true;
 }
@@ -3849,8 +4045,18 @@ bool Style::drawIndicatorRadioButtonPrimitive(const QStyleOption *option, QPaint
     bool checked(state & State_On);
     bool windowActive(state & State_Active);
 
-    const QColor &outline(_helper->indicatorOutlineColor(palette, mouseOver, false, AnimationData::OpacityInvalid, AnimationNone, checked ? CheckOn : CheckOff, _dark));
-    const QColor &background(_helper->indicatorBackgroundColor(palette, mouseOver, false, sunken, AnimationData::OpacityInvalid, AnimationNone, checked ? CheckOn : CheckOff,_dark));
+    // Style options
+    StyleOptions styleOptions(option->palette);
+    styleOptions.setMouseOver(mouseOver);
+    styleOptions.setHasFocus(false);
+    styleOptions.setSunken(sunken);
+    styleOptions.setOpacity(AnimationData::OpacityInvalid);
+    styleOptions.setAnimationMode(AnimationNone);
+    styleOptions.setCheckboxState(checked ? CheckOn : CheckOff);
+    styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
+    const QColor &outline(Colors::indicatorOutlineColor(styleOptions));
+    const QColor &background(Colors::indicatorBackgroundColor(styleOptions));
 
     // radio button state
     RadioButtonState radioButtonState(state & State_On ? RadioOn : RadioOff);
@@ -3861,20 +4067,30 @@ bool Style::drawIndicatorRadioButtonPrimitive(const QStyleOption *option, QPaint
     // animation state
     _animations->widgetStateEngine().updateState(widget, AnimationHover, mouseOver);
     _animations->widgetStateEngine().updateState(widget, AnimationPressed, radioButtonState != RadioOff);
-    if (_animations->widgetStateEngine().isAnimated(widget, AnimationPressed))
+    if (_animations->widgetStateEngine().isAnimated(widget, AnimationPressed)) {
         radioButtonState = RadioAnimated;
+    }
     qreal animation(_animations->widgetStateEngine().opacity(widget, AnimationPressed));
 
     // colors
-    QColor shadow(_helper->shadowColor(palette));
+    QColor shadow(Colors::shadowColor(StyleOptions(palette)));
     QColor tickColor;
     if (isSelectedItem) {
-        tickColor = _helper->checkBoxIndicatorColor(palette, false, enabled && checked);
+        // Style options
+        styleOptions.setActive(enabled && checked);
+
+        tickColor = Colors::checkBoxIndicatorColor(styleOptions);
         _helper->renderRadioButtonBackground(painter, rect, palette.color(QPalette::Base), outline, sunken);
     } else {
         AnimationMode mode(_animations->widgetStateEngine().isAnimated(widget, AnimationHover) ? AnimationHover : AnimationNone);
         qreal opacity(_animations->widgetStateEngine().opacity(widget, AnimationHover));
-        tickColor = _helper->checkBoxIndicatorColor(palette, mouseOver, enabled && checked, opacity, mode);
+
+        // Style options
+        styleOptions.setAnimationMode(mode);
+        styleOptions.setOpacity(opacity);
+        styleOptions.setActive(enabled && checked);
+
+        tickColor = Colors::checkBoxIndicatorColor(styleOptions);
     }
 
     // render
@@ -3888,8 +4104,9 @@ bool Style::drawIndicatorButtonDropDownPrimitive(const QStyleOption *option, QPa
 {
     // cast option and check
     const QStyleOptionToolButton *toolButtonOption(qstyleoption_cast<const QStyleOptionToolButton *>(option));
-    if (!toolButtonOption)
+    if (!toolButtonOption) {
         return true;
+    }
 
     // store state
     const State &state(option->state);
@@ -3901,8 +4118,9 @@ bool Style::drawIndicatorButtonDropDownPrimitive(const QStyleOption *option, QPa
     bool sunken(enabled && (state & State_Sunken));
 
     // do nothing for autoraise buttons
-    if ((autoRaise && !sunken && !mouseOver) || !(toolButtonOption->subControls & SC_ToolButtonMenu))
+    if ((autoRaise && !sunken && !mouseOver) || !(toolButtonOption->subControls & SC_ToolButtonMenu)) {
         return true;
+    }
 
     // store palette and rect
     const QPalette &palette(option->palette);
@@ -3916,10 +4134,19 @@ bool Style::drawIndicatorButtonDropDownPrimitive(const QStyleOption *option, QPa
     AnimationMode mode(_animations->widgetStateEngine().buttonAnimationMode(widget));
     qreal opacity(_animations->widgetStateEngine().buttonOpacity(widget));
 
+    // Style options
+    StyleOptions styleOptions(option->palette);
+    styleOptions.setMouseOver(mouseOver);
+    styleOptions.setHasFocus(false);
+    styleOptions.setSunken(sunken);
+    styleOptions.setOpacity(AnimationData::OpacityInvalid);
+    styleOptions.setAnimationMode(AnimationNone);
+    styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
     // render as push button
-    QColor shadow(_helper->shadowColor(palette));
-    QColor outline(_helper->buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode, _dark));
-    QColor background(_helper->buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode, _dark));
+    QColor shadow(Colors::shadowColor(StyleOptions(palette)));
+    QColor outline(Colors::buttonOutlineColor(styleOptions));
+    QColor background(Colors::buttonBackgroundColor(styleOptions));
 
     QRect frameRect(rect);
     painter->setClipRect(rect);
@@ -3943,8 +4170,9 @@ bool Style::drawIndicatorTabClosePrimitive(const QStyleOption *option, QPainter 
 {
     // get icon and check
     QIcon icon(standardIcon(SP_TitleBarCloseButton, option, widget));
-    if (icon.isNull())
+    if (icon.isNull()) {
         return false;
+    }
 
     // store state
     const State &state(option->state);
@@ -3959,10 +4187,11 @@ bool Style::drawIndicatorTabClosePrimitive(const QStyleOption *option, QPainter 
         iconMode = QIcon::Disabled;
         iconState = QIcon::Off;
     } else {
-        if (active)
+        if (active) {
             iconMode = QIcon::Active;
-        else
+        } else {
             iconMode = QIcon::Normal;
+        }
 
         iconState = sunken ? QIcon::On : QIcon::Off;
     }
@@ -3984,8 +4213,9 @@ bool Style::drawIndicatorTabTearPrimitive(const QStyleOption *option, QPainter *
 {
     // cast option and check
     const QStyleOptionTab *tabOption(qstyleoption_cast<const QStyleOptionTab *>(option));
-    if (!tabOption)
+    if (!tabOption) {
         return true;
+    }
 
     // store palette and rect
     const QPalette &palette(option->palette);
@@ -4001,27 +4231,26 @@ bool Style::drawIndicatorTabTearPrimitive(const QStyleOption *option, QPainter *
     case QTabBar::TriangularNorth:
     case QTabBar::RoundedNorth:
         rect.adjust(0, 1, 0, 0);
-        if (reverseLayout)
+        if (reverseLayout) {
             painter->drawLine(rect.topRight(), rect.bottomRight());
-        else
+        } else {
             painter->drawLine(rect.topLeft(), rect.bottomLeft());
+        }
         break;
-
     case QTabBar::TriangularSouth:
     case QTabBar::RoundedSouth:
         rect.adjust(0, 0, 0, -1);
-        if (reverseLayout)
+        if (reverseLayout) {
             painter->drawLine(rect.topRight(), rect.bottomRight());
-        else
+        } else {
             painter->drawLine(rect.topLeft(), rect.bottomLeft());
+        }
         break;
-
     case QTabBar::TriangularWest:
     case QTabBar::RoundedWest:
         rect.adjust(1, 0, 0, 0);
         painter->drawLine(rect.topLeft(), rect.topRight());
         break;
-
     case QTabBar::TriangularEast:
     case QTabBar::RoundedEast:
         rect.adjust(0, 0, -1, 0);
@@ -4039,8 +4268,9 @@ bool Style::drawIndicatorTabTearPrimitive(const QStyleOption *option, QPainter *
 bool Style::drawIndicatorToolBarHandlePrimitive(const QStyleOption *option, QPainter *painter, const QWidget *) const
 {
     // do nothing if disabled from options
-    if (!Adwaita::Config::ToolBarDrawItemSeparator)
+    if (!Adwaita::Config::ToolBarDrawItemSeparator) {
         return true;
+    }
 
     // store rect and palette
     QRect rect(option->rect);
@@ -4050,8 +4280,12 @@ bool Style::drawIndicatorToolBarHandlePrimitive(const QStyleOption *option, QPai
     const State &state(option->state);
     bool separatorIsVertical(state & State_Horizontal);
 
+    // Style options
+    StyleOptions styleOptions(option->palette);
+    styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
     // define color and render
-    QColor color(_helper->separatorColor(palette, _dark));
+    QColor color(Colors::separatorColor(styleOptions));
     if (separatorIsVertical) {
         rect.setWidth(Metrics::ToolBar_HandleWidth);
         rect = centerRect(option->rect, rect.size());
@@ -4093,8 +4327,12 @@ bool Style::drawIndicatorToolBarSeparatorPrimitive(const QStyleOption *option, Q
     const State &state(option->state);
     bool separatorIsVertical(state & State_Horizontal);
 
+    // Style options
+    StyleOptions styleOptions(option->palette);
+    styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
     // define color and render
-    QColor color(_helper->separatorColor(palette, _dark));
+    QColor color(Colors::separatorColor(styleOptions));
     _helper->renderSeparator(painter, rect, color, separatorIsVertical);
 
     return true;
@@ -4127,23 +4365,29 @@ bool Style::drawIndicatorBranchPrimitive(const QStyleOption *option, QPainter *p
 
         // get orientation from option
         ArrowOrientation orientation;
-        if (expanderOpen)
+        if (expanderOpen) {
             orientation = ArrowDown;
-        else if (reverseLayout)
+        } else if (reverseLayout) {
             orientation = ArrowLeft;
-        else
+        } else {
             orientation = ArrowRight;
+        }
+
+        // Style options
+        StyleOptions styleOptions(option->palette);
+        styleOptions.setColorRole(QPalette::Text);
 
         // color
-        QColor arrowColor(mouseOver ? _helper->hoverColor(palette) : _helper->arrowColor(palette, QPalette::Text));
+        QColor arrowColor(mouseOver ? Colors::hoverColor(StyleOptions(palette)) : Colors::arrowOutlineColor(styleOptions));
 
         // render
         _helper->renderArrow(painter, arrowRect, arrowColor, orientation);
     }
 
     // tree branches
-    if (!Adwaita::Config::ViewDrawTreeBranchLines)
+    if (!Adwaita::Config::ViewDrawTreeBranchLines) {
         return true;
+    }
 
     QPoint center(rect.center());
     QColor lineColor(Colors::mix(palette.color(QPalette::Base), palette.color(QPalette::Text), 0.25));
@@ -4179,8 +4423,9 @@ bool Style::drawPushButtonLabelControl(const QStyleOption *option, QPainter *pai
 {
     // cast option and check
     const QStyleOptionButton *buttonOption(qstyleoption_cast<const QStyleOptionButton *>(option));
-    if (!buttonOption)
+    if (!buttonOption) {
         return true;
+    }
 
     // copy rect and palette
     const QRect &rect(option->rect);
@@ -4227,8 +4472,12 @@ bool Style::drawPushButtonLabelControl(const QStyleOption *option, QPainter *pai
 
         arrowRect = visualRect(option, arrowRect);
 
+        // Style options
+        StyleOptions styleOptions(option->palette);
+        styleOptions.setColorRole(textRole);
+
         // define color
-        QColor arrowColor(_helper->arrowColor(palette, textRole));
+        QColor arrowColor(Colors::arrowOutlineColor(styleOptions));
         _helper->renderArrow(painter, arrowRect, arrowColor, ArrowDown);
     }
 
@@ -4250,39 +4499,43 @@ bool Style::drawPushButtonLabelControl(const QStyleOption *option, QPainter *pai
     QRect iconRect;
     QRect textRect;
 
-    if (hasText && !hasIcon)
+    if (hasText && !hasIcon) {
         textRect = contentsRect;
-    else if (hasIcon && !hasText)
+    } else if (hasIcon && !hasText) {
         iconRect = contentsRect;
-    else {
+    } else {
         int contentsWidth(iconSize.width() + textSize.width() + Metrics::Button_ItemSpacing);
         iconRect = QRect(QPoint(contentsRect.left() + (contentsRect.width() - contentsWidth) / 2, contentsRect.top() + (contentsRect.height() - iconSize.height()) / 2), iconSize);
         textRect = QRect(QPoint(iconRect.right() + Metrics::ToolButton_ItemSpacing + 1, contentsRect.top() + (contentsRect.height() - textSize.height()) / 2), textSize);
     }
 
     // handle right to left
-    if (iconRect.isValid())
+    if (iconRect.isValid()) {
         iconRect = visualRect(option, iconRect);
-    if (textRect.isValid())
+    }
+    if (textRect.isValid()) {
         textRect = visualRect(option, textRect);
+    }
 
     // make sure there is enough room for icon
-    if (iconRect.isValid())
+    if (iconRect.isValid()) {
         iconRect = centerRect(iconRect, iconSize);
+    }
 
     // render icon
     if (hasIcon && iconRect.isValid()) {
         // icon state and mode
         const QIcon::State iconState(sunken ? QIcon::On : QIcon::Off);
         QIcon::Mode iconMode;
-        if (!enabled)
+        if (!enabled) {
             iconMode = QIcon::Disabled;
-        else if (!flat && hasFocus)
+        } else if (!flat && hasFocus) {
             iconMode = QIcon::Selected;
-        else if (mouseOver && flat)
+        } else if (mouseOver && flat) {
             iconMode = QIcon::Active;
-        else
+        } else {
             iconMode = QIcon::Normal;
+        }
 
         QPixmap pixmap = buttonOption->icon.pixmap(iconSize, iconMode, iconState);
         drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
@@ -4291,10 +4544,11 @@ bool Style::drawPushButtonLabelControl(const QStyleOption *option, QPainter *pai
     // render text
     if (hasText && textRect.isValid()) {
         if (enabled && !sunken && !mouseOver && !flat) {
-            if (_dark)
+            if (_dark) {
                 drawItemText(painter, textRect.adjusted(0, -1, 0, -1), textFlags, palette, false, buttonOption->text, QPalette::Dark);
-            else
+            } else {
                 drawItemText(painter, textRect.adjusted(0, 1, 0, 1), textFlags, palette, false, buttonOption->text, QPalette::Light);
+            }
         }
         drawItemText(painter, textRect, textFlags, palette, enabled, buttonOption->text, textRole);
     }
@@ -4321,10 +4575,11 @@ bool Style::drawToolButtonLabelControl(const QStyleOption *option, QPainter *pai
 
     // focus flag is set to match the background color in either renderButtonFrame or renderToolButtonFrame
     bool hasFocus(false);
-    if (flat)
+    if (flat) {
         hasFocus = enabled && !mouseOver && (option->state & State_HasFocus);
-    else
+    } else {
         hasFocus = enabled && !mouseOver && (option->state & (State_HasFocus | State_Sunken));
+    }
 
     bool hasArrow(toolButtonOption->features & QStyleOptionToolButton::Arrow);
     bool hasIcon(!(hasArrow || toolButtonOption->icon.isNull()));
@@ -4358,9 +4613,9 @@ bool Style::drawToolButtonLabelControl(const QStyleOption *option, QPainter *pai
         textFlags |= Qt::AlignCenter;
     } else {
         bool leftAlign(widget && widget->property(PropertyNames::toolButtonAlignment).toInt() == Qt::AlignLeft);
-        if (leftAlign)
+        if (leftAlign) {
             iconRect = QRect(QPoint(contentsRect.left(), contentsRect.top() + (contentsRect.height() - iconSize.height()) / 2), iconSize);
-        else {
+        } else {
             int contentsWidth(iconSize.width() + textSize.width() + Metrics::ToolButton_ItemSpacing);
             iconRect = QRect(QPoint(contentsRect.left() + (contentsRect.width() - contentsWidth) / 2, contentsRect.top() + (contentsRect.height() - iconSize.height()) / 2), iconSize);
         }
@@ -4375,8 +4630,9 @@ bool Style::drawToolButtonLabelControl(const QStyleOption *option, QPainter *pai
     }
 
     // make sure there is enough room for icon
-    if (iconRect.isValid())
+    if (iconRect.isValid()) {
         iconRect = centerRect(iconRect, iconSize);
+    }
 
     // render arrow or icon
     if (hasArrow && iconRect.isValid()) {
@@ -4403,14 +4659,15 @@ bool Style::drawToolButtonLabelControl(const QStyleOption *option, QPainter *pai
         // icon state and mode
         const QIcon::State iconState(sunken ? QIcon::On : QIcon::Off);
         QIcon::Mode iconMode;
-        if (!enabled)
+        if (!enabled) {
             iconMode = QIcon::Disabled;
-        else if (!flat && hasFocus)
+        } else if (!flat && hasFocus) {
             iconMode = QIcon::Selected;
-        else if (mouseOver && flat)
+        } else if (mouseOver && flat) {
             iconMode = QIcon::Active;
-        else
+        } else {
             iconMode = QIcon::Normal;
+        }
 
         QPixmap pixmap = toolButtonOption->icon.pixmap(iconSize, iconMode, iconState);
         drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
@@ -4419,10 +4676,11 @@ bool Style::drawToolButtonLabelControl(const QStyleOption *option, QPainter *pai
     // render text
     if (hasText && textRect.isValid()) {
         QPalette::ColorRole textRole(QPalette::ButtonText);
-        if (flat)
+        if (flat) {
             textRole = (hasFocus && sunken && !mouseOver) ? QPalette::HighlightedText : QPalette::WindowText;
-        else if (hasFocus && !mouseOver)
+        } else if (hasFocus && !mouseOver) {
             textRole = QPalette::HighlightedText;
+        }
 
         painter->setFont(toolButtonOption->font);
         drawItemText(painter, textRect, textFlags, palette, enabled, toolButtonOption->text, textRole);
@@ -4436,8 +4694,9 @@ bool Style::drawCheckBoxLabelControl(const QStyleOption *option, QPainter *paint
 {
     // cast option and check
     const QStyleOptionButton *buttonOption(qstyleoption_cast<const QStyleOptionButton *>(option));
-    if (!buttonOption)
+    if (!buttonOption) {
         return true;
+    }
 
     // copy palette and rect
     const QPalette &palette(option->palette);
@@ -4487,10 +4746,12 @@ bool Style::drawCheckBoxLabelControl(const QStyleOption *option, QPainter *paint
 bool Style::drawComboBoxLabelControl(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
     const QStyleOptionComboBox *comboBoxOption(qstyleoption_cast<const QStyleOptionComboBox *>(option));
-    if (!comboBoxOption)
+    if (!comboBoxOption) {
         return false;
-    if (comboBoxOption->editable)
+    }
+    if (comboBoxOption->editable) {
         return false;
+    }
 
     // need to alter palette for focused buttons
     const State &state(option->state);
@@ -4527,14 +4788,16 @@ bool Style::drawComboBoxLabelControl(const QStyleOption *option, QPainter *paint
             iconRect = alignedRect(cb->direction,
                                    Qt::AlignLeft | Qt::AlignVCenter,
                                    iconRect.size(), editRect);
-            if (cb->editable)
+            if (cb->editable) {
                 painter->fillRect(iconRect, option->palette.brush(QPalette::Base));
+            }
             proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
 
-            if (cb->direction == Qt::RightToLeft)
+            if (cb->direction == Qt::RightToLeft) {
                 editRect.translate(-4 - cb->iconSize.width(), 0);
-            else
+            } else {
                 editRect.translate(cb->iconSize.width() + 4, 0);
+            }
         }
         if (!cb->currentText.isEmpty() && !cb->editable) {
             proxy()->drawItemText(painter, editRect.adjusted(Metrics::ComboBox_MarginWidth, 0, -1, 0),
@@ -4553,15 +4816,16 @@ bool Style::drawComboBoxLabelControl(const QStyleOption *option, QPainter *paint
 bool Style::drawItemViewItemControl(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
     const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option);
-    if (!vopt)
+    if (!vopt) {
         return true;
+    }
 
     QStyleOptionViewItem op(*vopt);
 
     if (_helper->isWindowActive(widget)) {
         const QColor activeTextColor = _dark ? QColor("#eeeeec") : QColor("#2e3436");
         const QColor inactiveTextColor = _dark ? Colors::mix(QColor("#eeeeec"), Colors::darken(Colors::desaturate(QColor("#3d3846"), 1.0), 0.04)) :
-                                                 Colors::mix(QColor("#2e3436"), QColor("#f6f5f4"));
+                                         Colors::mix(QColor("#2e3436"), QColor("#f6f5f4"));
         // No custom text color used, we can do our HACK
         QPalette palette = op.palette;
         if (inactiveTextColor == palette.color(QPalette::Inactive, QPalette::Text) && activeTextColor == palette.color(QPalette::Active, QPalette::Text)) {
@@ -4627,7 +4891,7 @@ bool Style::drawMenuBarItemControl(const QStyleOption *option, QPainter *painter
 
     // render hover and focus
     if (useStrongFocus && sunken) {
-        QColor outlineColor = _helper->focusColor(palette);
+        QColor outlineColor = Colors::focusColor(StyleOptions(palette));
         _helper->renderFocusRect(painter, QRect(rect.left(), rect.bottom() - 2, rect.width(), 3), outlineColor);
     }
 
@@ -4647,10 +4911,12 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
 {
     // cast option and check
     const QStyleOptionMenuItem *menuItemOption = qstyleoption_cast<const QStyleOptionMenuItem *>(option);
-    if (!menuItemOption)
+    if (!menuItemOption) {
         return true;
-    if (menuItemOption->menuItemType == QStyleOptionMenuItem::EmptyArea)
+    }
+    if (menuItemOption->menuItemType == QStyleOptionMenuItem::EmptyArea) {
         return true;
+    }
 
     // copy rect and palette
     const QRect &rect(option->rect);
@@ -4660,7 +4926,11 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
     if (menuItemOption->menuItemType == QStyleOptionMenuItem::Separator) {
         // normal separator
         if (menuItemOption->text.isEmpty() && menuItemOption->icon.isNull()) {
-            QColor color(_helper->separatorColor(palette, _dark));
+            // Style options
+            StyleOptions styleOptions(option->palette);
+            styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
+            QColor color(Colors::separatorColor(styleOptions));
             _helper->renderSeparator(painter, rect, color);
             return true;
         } else {
@@ -4687,7 +4957,7 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
 
     // render hover and focus
     if (useStrongFocus && (selected || sunken)) {
-        QColor color = _helper->focusColor(palette);
+        QColor color = Colors::focusColor(StyleOptions(palette));
         QColor outlineColor = Qt::transparent;
 
         Sides sides = 0;
@@ -4708,8 +4978,20 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
     contentsRect.setLeft(Metrics::CheckBox_Size + Metrics::MenuItem_ItemSpacing);
 
     CheckBoxState checkState(menuItemOption->checked ? CheckOn : CheckOff);
+
+    // Style options
+    StyleOptions styleOptions(option->palette);
+    styleOptions.setMouseOver(mouseOver);
+    styleOptions.setHasFocus(false);
+    styleOptions.setSunken(false);
+    styleOptions.setOpacity(AnimationData::OpacityInvalid);
+    styleOptions.setAnimationMode(AnimationNone);
+    styleOptions.setCheckboxState(checkState);
+    styleOptions.setInMenu(true);
+    styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
     const QColor &outline(palette.foreground().color());
-    const QColor &indicatorBackground(_helper->indicatorBackgroundColor(palette, mouseOver, false, false, AnimationData::OpacityInvalid, AnimationNone, checkState, _dark, true));
+    const QColor &indicatorBackground(Colors::indicatorBackgroundColor(styleOptions));
     // render checkbox indicator
     if (menuItemOption->checkType == QStyleOptionMenuItem::NonExclusive) {
         checkBoxRect = visualRect(option, checkBoxRect);
@@ -4724,7 +5006,13 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
         bool active(menuItemOption->checked);
         AnimationMode mode(_animations->widgetStateEngine().isAnimated(widget, AnimationHover) ? AnimationHover : AnimationNone);
         qreal opacity(_animations->widgetStateEngine().opacity(widget, AnimationHover));
-        QColor tickColor = _helper->checkBoxIndicatorColor(palette, mouseOver, enabled && active, opacity, mode, _dark, true);
+
+        // Style options
+        styleOptions.setActive(enabled && active);
+        styleOptions.setAnimationMode(mode);
+        styleOptions.setOpacity(opacity);
+
+        QColor tickColor = Colors::checkBoxIndicatorColor(styleOptions);
         _helper->renderCheckBox(painter, checkBoxRect, indicatorBackground, outline, tickColor, false, checkState, mouseOver, enabled && windowActive, _dark, true);
     } else if (menuItemOption->checkType == QStyleOptionMenuItem::Exclusive) {
         checkBoxRect = visualRect(option, checkBoxRect);
@@ -4737,15 +5025,22 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
         bool active(menuItemOption->checked);
         AnimationMode mode(_animations->widgetStateEngine().isAnimated(widget, AnimationHover) ? AnimationHover : AnimationNone);
         qreal opacity(_animations->widgetStateEngine().opacity(widget, AnimationHover));
-        QColor tickColor = _helper->checkBoxIndicatorColor(palette, mouseOver, enabled && active, opacity, mode, _dark, true);
+
+        // Style options
+        styleOptions.setActive(enabled && active);
+        styleOptions.setAnimationMode(mode);
+        styleOptions.setOpacity(opacity);
+
+        QColor tickColor = Colors::checkBoxIndicatorColor(styleOptions);
         _helper->renderRadioButton(painter, checkBoxRect, indicatorBackground, outline, tickColor, false, enabled && windowActive, active ? RadioOn : RadioOff, _dark, true);
     }
 
     // icon
     int iconWidth = 0;
     bool showIcon(showIconsInMenuItems());
-    if (showIcon)
+    if (showIcon) {
         iconWidth = isQtQuickControl(option, widget) ? qMax(pixelMetric(PM_SmallIconSize, option, widget), menuItemOption->maxIconWidth) : menuItemOption->maxIconWidth;
+    }
 
     QRect iconRect(contentsRect.left(), contentsRect.top() + (contentsRect.height() - iconWidth) / 2, iconWidth, iconWidth);
     contentsRect.setLeft(iconRect.right() + Metrics::MenuItem_ItemSpacing + 1);
@@ -4757,14 +5052,15 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
 
         // icon mode
         QIcon::Mode mode;
-        if (selected && !useStrongFocus)
+        if (selected && !useStrongFocus) {
             mode = QIcon::Active;
-        else if (selected)
+        } else if (selected) {
             mode = QIcon::Selected;
-        else if (enabled)
+        } else if (enabled) {
             mode = QIcon::Normal;
-        else
+        } else {
             mode = QIcon::Disabled;
+        }
 
         // icon state
         const QIcon::State iconState(sunken ? QIcon::On : QIcon::Off);
@@ -4784,14 +5080,16 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
 
         // color
         QColor arrowColor;
-        if (useStrongFocus && (selected || sunken))
+        if (useStrongFocus && (selected || sunken)) {
             arrowColor = palette.color(QPalette::HighlightedText);
-        else if (sunken)
-            arrowColor = _helper->focusColor(palette);
-        else if (selected)
-            arrowColor = _helper->hoverColor(palette);
-        else
-            arrowColor = _helper->arrowColor(palette, QPalette::WindowText);
+        } else if (sunken) {
+            arrowColor = Colors::focusColor(StyleOptions(palette));
+        } else if (selected) {
+            arrowColor = Colors::hoverColor(StyleOptions(palette));
+        } else {
+            styleOptions.setColorRole(QPalette::WindowText);
+            arrowColor = Colors::arrowOutlineColor(styleOptions);
+        }
 
         // render
         _helper->renderArrow(painter, arrowRect, arrowColor, orientation);
@@ -4913,16 +5211,20 @@ bool Style::drawProgressBarContentsControl(const QStyleOption *option, QPainter 
         if (horizontal) {
             if (rect.width() < Metrics::ProgressBar_Thickness) {
                 painter->setClipRect(rect, Qt::IntersectClip);
-                if (reverse)
+                if (reverse) {
                     rect.setLeft(rect.left() - Metrics::ProgressBar_Thickness + rect.width());
-                else
+                } else {
                     rect.setWidth(Metrics::ProgressBar_Thickness);
+                }
             }
         } else {
             if (rect.height() < Metrics::ProgressBar_Thickness) {
                 painter->setClipRect(rect, Qt::IntersectClip);
-                if (reverse) rect.setHeight(Metrics::ProgressBar_Thickness);
-                else rect.setTop(rect.top() - Metrics::ProgressBar_Thickness + rect.height());
+                if (reverse) {
+                    rect.setHeight(Metrics::ProgressBar_Thickness);
+                } else {
+                    rect.setTop(rect.top() - Metrics::ProgressBar_Thickness + rect.height());
+                }
             }
         }
 
@@ -4937,7 +5239,16 @@ bool Style::drawProgressBarContentsControl(const QStyleOption *option, QPainter 
 bool Style::drawProgressBarGrooveControl(const QStyleOption *option, QPainter *painter, const QWidget *) const
 {
     const QPalette &palette(option->palette);
-    QColor outline(_helper->buttonOutlineColor(palette, false, false, AnimationData::OpacityInvalid, AnimationNone, _dark));
+
+    // Style options
+    StyleOptions styleOptions(option->palette);
+    styleOptions.setHasFocus(false);
+    styleOptions.setSunken(false);
+    styleOptions.setOpacity(AnimationData::OpacityInvalid);
+    styleOptions.setAnimationMode(AnimationNone);
+    styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
+    QColor outline(Colors::buttonOutlineColor(styleOptions));
     QColor color(palette.currentColorGroup() ? palette.color(QPalette::Window) : Colors::mix(outline, palette.color(QPalette::Window)));
     _helper->renderProgressBarGroove(painter, option->rect, color, outline);
     return true;
@@ -4948,14 +5259,16 @@ bool Style::drawProgressBarLabelControl(const QStyleOption *option, QPainter *pa
 {
     // cast option and check
     const QStyleOptionProgressBar *progressBarOption(qstyleoption_cast<const QStyleOptionProgressBar *>(option));
-    if (!progressBarOption)
+    if (!progressBarOption) {
         return true;
+    }
 
     // get direction and check
     const QStyleOptionProgressBarV2 *progressBarOption2(qstyleoption_cast<const QStyleOptionProgressBarV2 *>(option));
     bool horizontal = !progressBarOption2 || progressBarOption2->orientation == Qt::Horizontal;
-    if (!horizontal)
+    if (!horizontal) {
         return true;
+    }
 
     // store rect and palette
     const QRect &rect(option->rect);
@@ -4979,8 +5292,9 @@ bool Style::drawScrollBarSliderControl(const QStyleOption *option, QPainter *pai
 {
     // cast option and check
     const QStyleOptionSlider *sliderOption(qstyleoption_cast<const QStyleOptionSlider *>(option));
-    if (!sliderOption)
+    if (!sliderOption) {
         return true;
+    }
 
     const State &state(option->state);
     bool horizontal(state & State_Horizontal);
@@ -5008,11 +5322,22 @@ bool Style::drawScrollBarSliderControl(const QStyleOption *option, QPainter *pai
 
     AnimationMode mode(_animations->scrollBarEngine().animationMode(widget, SC_ScrollBarSlider));
     qreal opacity(_animations->scrollBarEngine().opacity(widget, SC_ScrollBarSlider));
-    QColor color = _helper->scrollBarHandleColor(palette, mouseOver, hasFocus, sunken, opacity, mode, _dark);
-    if (mouseOver)
+
+    // Style options
+    StyleOptions styleOptions(option->palette);
+    styleOptions.setMouseOver(mouseOver);
+    styleOptions.setHasFocus(hasFocus);
+    styleOptions.setSunken(sunken);
+    styleOptions.setOpacity(opacity);
+    styleOptions.setAnimationMode(mode);
+    styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
+    QColor color = Colors::scrollBarHandleColor(styleOptions);
+    if (mouseOver) {
         opacity = 1;
-    else
+    } else {
         opacity = 0;
+    }
 
     /*
     if( horizontal ) handleRect = centerRect( rect, rect.width(), rect.height() * (0.5 + 0.5 * opacity));
@@ -5034,13 +5359,15 @@ bool Style::drawScrollBarSliderControl(const QStyleOption *option, QPainter *pai
 bool Style::drawScrollBarAddLineControl(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
     // do nothing if no buttons are defined
-    if (_addLineButtons == NoButton)
+    if (_addLineButtons == NoButton) {
         return true;
+    }
 
     // cast option and check
     const QStyleOptionSlider *sliderOption(qstyleoption_cast<const QStyleOptionSlider *>(option));
-    if (!sliderOption)
+    if (!sliderOption) {
         return true;
+    }
 
     const State &state(option->state);
     bool horizontal(state & State_Horizontal);
@@ -5082,12 +5409,14 @@ bool Style::drawScrollBarAddLineControl(const QStyleOption *option, QPainter *pa
         copy.rect = rect;
         color = scrollBarArrowColor(&copy,  SC_ScrollBarAddLine, widget);
         if (horizontal) {
-            if (reverseLayout)
+            if (reverseLayout) {
                 _helper->renderArrow(painter, rect, color, ArrowLeft);
-            else
+            } else {
                 _helper->renderArrow(painter, rect.translated(1, 0), color, ArrowRight);
-        } else
+            }
+        } else {
             _helper->renderArrow(painter, rect.translated(0, 1), color, ArrowDown);
+        }
     }
 
     return true;
@@ -5097,13 +5426,15 @@ bool Style::drawScrollBarAddLineControl(const QStyleOption *option, QPainter *pa
 bool Style::drawScrollBarSubLineControl(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
     // do nothing if no buttons are set
-    if (_subLineButtons == NoButton)
+    if (_subLineButtons == NoButton) {
         return true;
+    }
 
     // cast option and check
     const QStyleOptionSlider *sliderOption(qstyleoption_cast<const QStyleOptionSlider *>(option));
-    if (!sliderOption)
+    if (!sliderOption) {
         return true;
+    }
 
     const State &state(option->state);
     bool horizontal(state & State_Horizontal);
@@ -5150,13 +5481,14 @@ bool Style::drawScrollBarSubLineControl(const QStyleOption *option, QPainter *pa
         copy.rect = rect;
         color = scrollBarArrowColor(&copy,  SC_ScrollBarSubLine, widget);
         if (horizontal) {
-            if (reverseLayout)
+            if (reverseLayout) {
                 _helper->renderArrow(painter, rect.translated(1, 0), color, ArrowRight);
-            else
+            } else {
                 _helper->renderArrow(painter, rect, color, ArrowLeft);
-
-        } else
+            }
+        } else {
             _helper->renderArrow(painter, rect, color, ArrowUp);
+        }
     }
 
     return true;
@@ -5167,33 +5499,39 @@ bool Style::drawShapedFrameControl(const QStyleOption *option, QPainter *painter
 {
     // cast option and check
     const QStyleOptionFrameV3 *frameOpt = qstyleoption_cast<const QStyleOptionFrameV3 *>(option);
-    if (!frameOpt)
+    if (!frameOpt) {
         return false;
+    }
 
     switch (frameOpt->frameShape) {
     case QFrame::Box: {
-        if (option->state & State_Sunken)
+        if (option->state & State_Sunken) {
             return true;
-        else
+        } else {
             break;
+        }
     }
-
     case QFrame::HLine:
     case QFrame::VLine: {
         const QRect &rect(option->rect);
-        QColor color(_helper->separatorColor(option->palette, _dark));
+
+        // Style options
+        StyleOptions styleOptions(option->palette);
+        styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
+        QColor color(Colors::separatorColor(styleOptions));
         bool isVertical(frameOpt->frameShape == QFrame::VLine);
         _helper->renderSeparator(painter, rect, color, isVertical);
         return true;
     }
-
     case QFrame::StyledPanel: {
         if (isQtQuickControl(option, widget)) {
             // ComboBox popup frame
             drawFrameMenuPrimitive(option, painter, widget);
             return true;
-        } else
-            break;
+        }
+
+        break;
     }
 
     default:
@@ -5230,8 +5568,9 @@ bool Style::drawHeaderSectionControl(const QStyleOption *option, QPainter *paint
     bool sunken(enabled && (state & (State_On | State_Sunken)));
 
     const QStyleOptionHeader *headerOption(qstyleoption_cast<const QStyleOptionHeader *>(option));
-    if (!headerOption)
+    if (!headerOption) {
         return true;
+    }
 
     bool horizontal(headerOption->orientation == Qt::Horizontal);
     bool isFirst(horizontal && (headerOption->position == QStyleOptionHeader::Beginning));
@@ -5255,32 +5594,36 @@ bool Style::drawHeaderSectionControl(const QStyleOption *option, QPainter *paint
     painter->setPen(Colors::alphaColor(palette.color(QPalette::WindowText), 0.2));
 
     if (isCorner) {
-        if (reverseLayout)
+        if (reverseLayout) {
             painter->drawPoint(rect.bottomLeft());
-        else
+        } else {
             painter->drawPoint(rect.bottomRight());
+        }
     } else if (horizontal) {
         painter->drawLine(rect.bottomLeft(), rect.bottomRight());
     } else {
-        if (reverseLayout)
+        if (reverseLayout) {
             painter->drawLine(rect.topLeft(), rect.bottomLeft());
-        else
+        } else {
             painter->drawLine(rect.topRight(), rect.bottomRight());
+        }
     }
 
     // separators
     if (horizontal) {
         if (headerOption->section != 0 || isFirst) {
-            if (reverseLayout)
+            if (reverseLayout) {
                 painter->drawLine(rect.topLeft(), rect.bottomLeft() - QPoint(0, 1));
-            else
+            } else {
                 painter->drawLine(rect.topRight(), rect.bottomRight() - QPoint(0, 1));
+            }
         }
     } else {
-        if (reverseLayout)
+        if (reverseLayout) {
             painter->drawLine(rect.bottomLeft() + QPoint(1, 0), rect.bottomRight());
-        else
+        } else {
             painter->drawLine(rect.bottomLeft(), rect.bottomRight() - QPoint(1, 0));
+        }
     }
 
     return true;
@@ -5307,7 +5650,12 @@ bool Style::drawHeaderLabelControl(const QStyleOption *option, QPainter *painter
         fnt.setBold(true);
         painter->setFont(fnt);
         QPalette palette(header->palette);
-        palette.setColor(QPalette::Text, _helper->headerTextColor(palette, header->state));
+
+        // Style options
+        StyleOptions styleOptions(option->palette);
+        styleOptions.setState(header->state);
+
+        palette.setColor(QPalette::Text, Colors::headerTextColor(styleOptions));
         proxy()->drawItemText(painter, rect, header->textAlignment, palette, (header->state & State_Active), header->text, QPalette::Text);
     }
     return true;
@@ -5336,10 +5684,11 @@ bool Style::drawHeaderEmptyAreaControl(const QStyleOption *option, QPainter *pai
     if (horizontal) {
         painter->drawLine(rect.bottomLeft(), rect.bottomRight());
     } else {
-        if (reverseLayout)
+        if (reverseLayout) {
             painter->drawLine(rect.topLeft(), rect.bottomLeft());
-        else
+        } else {
             painter->drawLine(rect.topRight(), rect.bottomRight());
+        }
     }
 
     return true;
@@ -5390,23 +5739,26 @@ bool Style::drawTabBarTabLabelControl(const QStyleOption *option, QPainter *pain
         font.setBold(true);
         painter->setFont(font);
         if (!(tabV2.state & State_Enabled)) {
-            if (tabV2.state & State_Selected)
+            if (tabV2.state & State_Selected) {
                 painter->setPen(Colors::mix(option->palette.brush(QPalette::Text).color(), option->palette.brush(QPalette::Window).color(), 0.3));
-            else
+            } else {
                 painter->setPen(Colors::mix(option->palette.brush(QPalette::Text).color(), option->palette.brush(QPalette::Window).color(), 0.4));
+            }
         } else {
-            if (tabV2.state & State_Selected)
+            if (tabV2.state & State_Selected) {
                 painter->setPen(option->palette.brush(QPalette::WindowText).color());
-            else if (tabV2.state & State_Active && tabV2.state & State_MouseOver)
+            } else if (tabV2.state & State_Active && tabV2.state & State_MouseOver) {
                 painter->setPen(Colors::mix(option->palette.brush(QPalette::Dark).color(), option->palette.brush(QPalette::Text).color(), 0.7));
-            else
+            } else {
                 painter->setPen(Colors::mix(option->palette.brush(QPalette::Dark).color(), option->palette.brush(QPalette::Text).color(), 0.6));
+            }
         }
 
         proxy()->drawItemText(painter, tr, alignment, tab->palette, tab->state & State_Enabled, tab->text, QPalette::NoRole);
 
-        if (verticalTabs)
+        if (verticalTabs) {
             painter->restore();
+        }
 
         if (tabV2.state & State_HasFocus) {
             int OFFSET = 1 + pixelMetric(PM_DefaultFrameWidth);
@@ -5444,8 +5796,9 @@ bool Style::drawTabBarTabLabelControl(const QStyleOption *option, QPainter *pain
     // code is copied from QCommonStyle, but adds focus
     // cast option and check
     const QStyleOptionTab *tabOption(qstyleoption_cast<const QStyleOptionTab *>(option));
-    if (!tabOption || tabOption->text.isEmpty())
+    if (!tabOption || tabOption->text.isEmpty()) {
         return true;
+    }
 
     // tab option rect
     bool verticalTabs(isVerticalTab(tabOption));
@@ -5477,8 +5830,9 @@ bool Style::drawTabBarTabLabelControl(const QStyleOption *option, QPainter *pain
     // adjust text rect based on font metrics
     textRect = option->fontMetrics.boundingRect(textRect, textFlags, tabOption->text);
 
-    if (verticalTabs)
+    if (verticalTabs) {
         painter->restore();
+    }
 
     return true;
 }
@@ -5487,8 +5841,9 @@ bool Style::drawTabBarTabLabelControl(const QStyleOption *option, QPainter *pain
 bool Style::drawTabBarTabShapeControl(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
     const QStyleOptionTab *tabOption(qstyleoption_cast<const QStyleOptionTab *>(option));
-    if (!tabOption)
+    if (!tabOption) {
         return true;
+    }
 
     // palette and state
     const QPalette &palette(option->palette);
@@ -5510,10 +5865,11 @@ bool Style::drawTabBarTabShapeControl(const QStyleOption *option, QPainter *pain
     qreal opacity(_animations->tabBarEngine().opacity(widget, rect.topLeft(), AnimationHover));
 
     // lock state
-    if (selected && widget && isDragged)
+    if (selected && widget && isDragged) {
         _tabBarData->lock(widget);
-    else if (widget && selected  && _tabBarData->isLocked(widget))
+    } else if (widget && selected  && _tabBarData->isLocked(widget)) {
         _tabBarData->release();
+    }
 
     // tab position
     const QStyleOptionTab::TabPosition &position = tabOption->position;
@@ -5548,37 +5904,37 @@ bool Style::drawTabBarTabShapeControl(const QStyleOption *option, QPainter *pain
     case QTabBar::TriangularNorth:
         corners = CornersTop;
         break;
-
     case QTabBar::RoundedSouth:
     case QTabBar::TriangularSouth:
         corners = CornersBottom;
         break;
-
     case QTabBar::RoundedWest:
     case QTabBar::TriangularWest:
         corners = CornersLeft;
         break;
-
     case QTabBar::RoundedEast:
     case QTabBar::TriangularEast:
         corners = CornersRight;
         break;
-
     default:
         break;
     }
 
+    // Style options
+    StyleOptions styleOptions(option->palette);
+    styleOptions.setState(option->state);
+
     // underline
-    QColor underline(enabled && selected ? _helper->focusColor(palette) : selected || mouseOver ? option->palette.color(QPalette::Window).darker() : Qt::transparent);
+    QColor underline(enabled && selected ? Colors::focusColor(StyleOptions(palette)) : selected || mouseOver ? option->palette.color(QPalette::Window).darker() : Qt::transparent);
 
     // outline
     QColor outline = QColor();
     if (selected && widget && widget->property("movable").toBool()) {
-        outline = _helper->frameOutlineColor(palette);
+        outline = Colors::frameOutlineColor(StyleOptions(palette));
     }
 
     // background
-    QColor background = _helper->tabBarColor(option->palette, option->state);
+    QColor background = Colors::tabBarColor(styleOptions);
 
     // render
     QRegion oldRegion(painter->clipRegion());
@@ -5595,8 +5951,9 @@ bool Style::drawToolBoxTabLabelControl(const QStyleOption *option, QPainter *pai
     // rendering is similar to drawPushButtonLabelControl
     // cast option and check
     const QStyleOptionToolBox *toolBoxOption(qstyleoption_cast<const QStyleOptionToolBox *>(option));
-    if (!toolBoxOption)
+    if (!toolBoxOption) {
         return true;
+    }
 
     // copy palette
     const QPalette &palette(option->palette);
@@ -5618,8 +5975,9 @@ bool Style::drawToolBoxTabLabelControl(const QStyleOption *option, QPainter *pai
     QSize contentsSize;
     if (!toolBoxOption->text.isEmpty()) {
         contentsSize = option->fontMetrics.size(_mnemonics->textFlags(), toolBoxOption->text);
-        if (!toolBoxOption->icon.isNull())
+        if (!toolBoxOption->icon.isNull()) {
             contentsSize.rwidth() += Metrics::ToolBox_TabItemSpacing;
+        }
     }
 
     // icon size
@@ -5635,9 +5993,9 @@ bool Style::drawToolBoxTabLabelControl(const QStyleOption *option, QPainter *pai
     if (!toolBoxOption->icon.isNull()) {
         // icon rect
         QRect iconRect;
-        if (toolBoxOption->text.isEmpty())
+        if (toolBoxOption->text.isEmpty()) {
             iconRect = centerRect(contentsRect, iconSize, iconSize);
-        else {
+        } else {
             iconRect = contentsRect;
             iconRect.setWidth(iconSize);
             iconRect = centerRect(iconRect, iconSize, iconSize);
@@ -5664,8 +6022,9 @@ bool Style::drawToolBoxTabShapeControl(const QStyleOption *option, QPainter *pai
 {
     // cast option and check
     const QStyleOptionToolBox *toolBoxOption(qstyleoption_cast<const QStyleOptionToolBox *>(option));
-    if (!toolBoxOption)
+    if (!toolBoxOption) {
         return true;
+    }
 
     // copy rect and palette
     const QRect &rect(option->rect);
@@ -5698,12 +6057,20 @@ bool Style::drawToolBoxTabShapeControl(const QStyleOption *option, QPainter *pai
         opacity = _animations->toolBoxEngine().opacity(device);
     }
 
+    // Style options
+    StyleOptions styleOptions(option->palette);
+    styleOptions.setMouseOver(mouseOver);
+    styleOptions.setHasFocus(false);
+    styleOptions.setOpacity(opacity);
+    styleOptions.setAnimationMode(isAnimated ? AnimationHover : AnimationNone);
+
     // color
     QColor outline;
-    if (selected)
-        outline = _helper->focusColor(palette);
-    else
-        outline = _helper->frameOutlineColor(palette, mouseOver, false, opacity, isAnimated ? AnimationHover : AnimationNone);
+    if (selected) {
+        outline = Colors::focusColor(StyleOptions(palette));
+    } else {
+        outline = Colors::frameOutlineColor(styleOptions);
+    }
 
     // render
     _helper->renderToolBoxFrame(painter, rect, tabRect.width(), outline);
@@ -5716,8 +6083,9 @@ bool Style::drawDockWidgetTitleControl(const QStyleOption *option, QPainter *pai
 {
     // cast option and check
     const QStyleOptionDockWidget *dockWidgetOption = ::qstyleoption_cast<const QStyleOptionDockWidget *>(option);
-    if (!dockWidgetOption)
+    if (!dockWidgetOption) {
         return true;
+    }
 
     const QPalette &palette(option->palette);
     const State &state(option->state);
@@ -5733,23 +6101,27 @@ bool Style::drawDockWidgetTitleControl(const QStyleOption *option, QPainter *pai
     // get rectangle and adjust to properly accounts for buttons
     QRect rect(insideMargin(dockWidgetOption->rect, Metrics::Frame_FrameWidth));
     if (verticalTitleBar) {
-        if (buttonRect.isValid())
+        if (buttonRect.isValid()) {
             rect.setTop(buttonRect.bottom() + 1);
+        }
     } else if (reverseLayout) {
-        if (buttonRect.isValid())
+        if (buttonRect.isValid()) {
             rect.setLeft(buttonRect.right() + 1);
+        }
         rect.adjust(0, 0, -4, 0);
     } else {
-        if (buttonRect.isValid())
+        if (buttonRect.isValid()) {
             rect.setRight(buttonRect.left() - 1);
+        }
         rect.adjust(4, 0, 0, 0);
     }
 
     QString title(dockWidgetOption->title);
     int titleWidth = dockWidgetOption->fontMetrics.size(_mnemonics->textFlags(), title).width();
     int width = verticalTitleBar ? rect.height() : rect.width();
-    if (width < titleWidth)
+    if (width < titleWidth) {
         title = dockWidgetOption->fontMetrics.elidedText(title, Qt::ElideMiddle, width, Qt::TextShowMnemonic);
+    }
 
     if (verticalTitleBar) {
         QSize size = rect.size();
@@ -5810,8 +6182,9 @@ bool Style::drawToolButtonComplexControl(const QStyleOptionComplex *option, QPai
 {
     // cast option and check
     const QStyleOptionToolButton *toolButtonOption(qstyleoption_cast<const QStyleOptionToolButton *>(option));
-    if (!toolButtonOption)
+    if (!toolButtonOption) {
         return true;
+    }
 
     // need to alter palette for focused buttons
     const State &state(option->state);
@@ -5838,8 +6211,9 @@ bool Style::drawToolButtonComplexControl(const QStyleOptionComplex *option, QPai
         pressedOpacity = 1.0;
     } else if (mode == AnimationHover) {
         mouseOpacity = _animations->widgetStateEngine().buttonOpacity(widget);
-    } else if (mouseOver)
+    } else if (mouseOver) {
         mouseOpacity = 1.0;
+    }
 
     // detect buttons in tabbar, for which special rendering is needed
     bool isDockWidgetTitleButton(widget && widget->inherits("QDockWidgetTitleButton"));
@@ -5889,7 +6263,7 @@ bool Style::drawToolButtonComplexControl(const QStyleOptionComplex *option, QPai
             QColor background(Colors::mix(option->palette.window().color(), option->palette.shadow().color(), 0.15));
             background = Colors::mix(background, Qt::white, 0.2 * mouseOpacity);
             background = Colors::mix(background, Qt::black, 0.15 * pressedOpacity);
-            QColor outline(_helper->frameOutlineColor(option->palette));
+            QColor outline(Colors::frameOutlineColor(StyleOptions(option->palette)));
             painter->setPen(background);
             painter->setBrush(background);
             switch (toolButtonOption->arrowType) {
@@ -5942,8 +6316,9 @@ bool Style::drawToolButtonComplexControl(const QStyleOptionComplex *option, QPai
     // arrow
     if (hasPopupMenu) {
         copy.rect = menuRect;
-        if (!flat || mouseOver || sunken)
+        if (!flat || mouseOver || sunken) {
             drawPrimitive(PE_IndicatorButtonDropDown, &copy, painter, widget);
+        }
 
         drawPrimitive(PE_IndicatorArrowDown, &copy, painter, widget);
     } else if (hasInlineIndicator) {
@@ -5993,8 +6368,9 @@ bool Style::drawComboBoxComplexControl(const QStyleOptionComplex *option, QPaint
 {
     // cast option and check
     const QStyleOptionComboBox *comboBoxOption(qstyleoption_cast<const QStyleOptionComboBox *>(option));
-    if (!comboBoxOption)
+    if (!comboBoxOption) {
         return true;
+    }
 
     // rect and palette
     const QRect &rect(option->rect);
@@ -6026,6 +6402,13 @@ bool Style::drawComboBoxComplexControl(const QStyleOptionComplex *option, QPaint
     _animations->inputWidgetEngine().updateState(widget, AnimationHover, mouseOver);
     _animations->inputWidgetEngine().updateState(widget, AnimationFocus, hasFocus && !mouseOver);
 
+    // Style options
+    StyleOptions styleOptions(option->palette);
+    styleOptions.setMouseOver(mouseOver);
+    styleOptions.setHasFocus(hasFocus);
+    styleOptions.setSunken(sunken);
+    styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
     // frame
     if (option->subControls & SC_ComboBoxFrame) {
         if (editable) {
@@ -6040,10 +6423,14 @@ bool Style::drawComboBoxComplexControl(const QStyleOptionComplex *option, QPaint
                 AnimationMode mode(_animations->inputWidgetEngine().buttonAnimationMode(widget));
                 qreal opacity(_animations->inputWidgetEngine().buttonOpacity(widget));
 
+                // Style options
+                styleOptions.setAnimationMode(mode);
+                styleOptions.setOpacity(opacity);
+
                 // define colors
-                QColor shadow(_helper->shadowColor(palette));
-                QColor outline(_helper->buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode, _dark));
-                QColor background(_helper->buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode, _dark));
+                QColor shadow(Colors::shadowColor(styleOptions));
+                QColor outline(Colors::buttonOutlineColor(styleOptions));
+                QColor background(Colors::buttonBackgroundColor(styleOptions));
 
                 // render
                 _helper->renderButtonFrame(painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver, enabled && windowActive, _dark);
@@ -6057,15 +6444,19 @@ bool Style::drawComboBoxComplexControl(const QStyleOptionComplex *option, QPaint
             AnimationMode mode(_animations->inputWidgetEngine().buttonAnimationMode(widget));
             qreal opacity(_animations->inputWidgetEngine().buttonOpacity(widget));
 
+            // Style options
+            styleOptions.setAnimationMode(mode);
+            styleOptions.setOpacity(opacity);
+
             if (flat) {
                 // define colors and render
-                QColor color(_helper->toolButtonColor(palette, mouseOver, hasFocus, sunken, opacity, mode));
+                QColor color(Colors::toolButtonColor(styleOptions));
                 _helper->renderToolButtonFrame(painter, rect, color, sunken);
             } else {
                 // define colors
-                QColor shadow(_helper->shadowColor(palette));
-                QColor outline(_helper->buttonOutlineColor(palette, mouseOver, hasFocus, opacity, mode, _dark));
-                QColor background(_helper->buttonBackgroundColor(palette, mouseOver, hasFocus, sunken, opacity, mode, _dark));
+                QColor shadow(Colors::shadowColor(styleOptions));
+                QColor outline(Colors::buttonOutlineColor(styleOptions));
+                QColor background(Colors::buttonBackgroundColor(styleOptions));
 
                 // render
                 _helper->renderButtonFrame(painter, rect, background, outline, shadow, hasFocus, sunken, mouseOver, enabled && windowActive, _dark);
@@ -6085,8 +6476,11 @@ bool Style::drawComboBoxComplexControl(const QStyleOptionComplex *option, QPaint
         const QComboBox *comboBox = qobject_cast<const QComboBox *>(widget);
         bool empty(comboBox && !comboBox->count());
 
+        // Style options
+        styleOptions.setColorRole(QPalette::ButtonText);
+
         // arrow color
-        QColor arrowColor = _helper->arrowColor(palette, QPalette::ButtonText);
+        QColor arrowColor = Colors::arrowOutlineColor(styleOptions);
 
         // arrow rect
         QRect arrowRect(subControlRect(CC_ComboBox, option, SC_ComboBoxArrow, widget));
@@ -6102,8 +6496,9 @@ bool Style::drawComboBoxComplexControl(const QStyleOptionComplex *option, QPaint
 bool Style::drawSpinBoxComplexControl(const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
 {
     const QStyleOptionSpinBox *spinBoxOption(qstyleoption_cast<const QStyleOptionSpinBox *>(option));
-    if (!spinBoxOption)
+    if (!spinBoxOption) {
         return true;
+    }
 
     // store palette and rect
     const QPalette &palette(option->palette);
@@ -6122,13 +6517,14 @@ bool Style::drawSpinBoxComplexControl(const QStyleOptionComplex *option, QPainte
         } else {
             drawPrimitive(PE_FrameLineEdit, option, painter, widget);
         }
-
     }
 
-    if (option->subControls & SC_SpinBoxUp)
+    if (option->subControls & SC_SpinBoxUp) {
         renderSpinBoxArrow(SC_SpinBoxUp, spinBoxOption, painter, widget);
-    if (option->subControls & SC_SpinBoxDown)
+    }
+    if (option->subControls & SC_SpinBoxDown) {
         renderSpinBoxArrow(SC_SpinBoxDown, spinBoxOption, painter, widget);
+    }
 
     return true;
 }
@@ -6138,8 +6534,9 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
 {
     // cast option and check
     const QStyleOptionSlider *sliderOption(qstyleoption_cast<const QStyleOptionSlider *>(option));
-    if (!sliderOption)
+    if (!sliderOption) {
         return true;
+    }
 
     // copy rect and palette
     const QRect &rect(option->rect);
@@ -6153,14 +6550,18 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
     bool hasFocus(enabled && (state & State_HasFocus));
     bool horizontal(sliderOption->orientation == Qt::Horizontal);
     Side tickSide { SideNone };
-    if (horizontal && sliderOption->tickPosition == QSlider::TicksAbove)
+    if (horizontal && sliderOption->tickPosition == QSlider::TicksAbove) {
         tickSide = (Side)((int) tickSide | (int) SideTop);
-    if (horizontal && sliderOption->tickPosition == QSlider::TicksBelow)
+    }
+    if (horizontal && sliderOption->tickPosition == QSlider::TicksBelow) {
         tickSide = (Side)((int) tickSide | (int) SideBottom);
-    if (!horizontal && sliderOption->tickPosition == QSlider::TicksLeft)
+    }
+    if (!horizontal && sliderOption->tickPosition == QSlider::TicksLeft) {
         tickSide = (Side)((int) tickSide | (int) SideLeft);
-    if (!horizontal && sliderOption->tickPosition == QSlider::TicksRight)
+    }
+    if (!horizontal && sliderOption->tickPosition == QSlider::TicksRight) {
         tickSide = (Side)((int) tickSide | (int) SideRight);
+    }
 
     // tickmarks
     if (Adwaita::Config::SliderDrawTickMarks && (sliderOption->subControls & SC_SliderTickmarks)) {
@@ -6168,8 +6569,9 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
         int tickPosition(sliderOption->tickPosition);
         int available(pixelMetric(PM_SliderSpaceAvailable, option, widget));
         int interval = sliderOption->tickInterval;
-        if (interval < 1)
+        if (interval < 1) {
             interval = sliderOption->pageStep;
+        }
         if (interval >= 1) {
             int fudge(pixelMetric(PM_SliderLength, option, widget) / 2);
             int current(sliderOption->minimum);
@@ -6178,19 +6580,27 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
             QRect grooveRect(subControlRect(CC_Slider, sliderOption, SC_SliderGroove, widget));
             QList<QLine> tickLines;
             if (horizontal) {
-                if (tickPosition & QSlider::TicksAbove)
+                if (tickPosition & QSlider::TicksAbove) {
                     tickLines.append(QLine(rect.left(), grooveRect.top() - Metrics::Slider_TickMarginWidth, rect.left(), grooveRect.top() - Metrics::Slider_TickMarginWidth - Metrics::Slider_TickLength));
-                if (tickPosition & QSlider::TicksBelow)
+                }
+                if (tickPosition & QSlider::TicksBelow) {
                     tickLines.append(QLine(rect.left(), grooveRect.bottom() + Metrics::Slider_TickMarginWidth, rect.left(), grooveRect.bottom() + Metrics::Slider_TickMarginWidth + Metrics::Slider_TickLength));
+                }
             } else {
-                if (tickPosition & QSlider::TicksAbove)
+                if (tickPosition & QSlider::TicksAbove) {
                     tickLines.append(QLine(grooveRect.left() - Metrics::Slider_TickMarginWidth, rect.top(), grooveRect.left() - Metrics::Slider_TickMarginWidth - Metrics::Slider_TickLength, rect.top()));
-                if (tickPosition & QSlider::TicksBelow)
+                }
+                if (tickPosition & QSlider::TicksBelow) {
                     tickLines.append(QLine(grooveRect.right() + Metrics::Slider_TickMarginWidth, rect.top(), grooveRect.right() + Metrics::Slider_TickMarginWidth + Metrics::Slider_TickLength, rect.top()));
+                }
             }
 
+            // Style options
+            StyleOptions styleOptions(palette);
+            styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
             // colors
-            QColor base(_helper->separatorColor(palette, _dark));
+            QColor base(Colors::separatorColor(styleOptions));
 
             while (current <= sliderOption->maximum) {
                 // adjust color
@@ -6200,10 +6610,11 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
                 // calculate positions and draw lines
                 int position(sliderPositionFromValue(sliderOption->minimum, sliderOption->maximum, current, available) + fudge);
                 foreach (const QLine &tickLine, tickLines) {
-                    if (horizontal)
+                    if (horizontal) {
                         painter->drawLine(tickLine.translated(upsideDown ? (rect.width() - position) : position, 0));
-                    else
+                    } else {
                         painter->drawLine(tickLine.translated(0, upsideDown ? (rect.height() - position) : position));
+                    }
                 }
 
                 // go to next position
@@ -6226,15 +6637,19 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
         // retrieve groove rect
         QRect grooveRect(subControlRect(CC_Slider, sliderOption, SC_SliderGroove, widget));
 
+        // Style options
+        StyleOptions styleOptions(palette);
+        styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
         // base color
-        QColor outline(_helper->buttonOutlineColor(palette, false, false, AnimationData::OpacityInvalid, AnimationNone, _dark));
+        QColor outline(Colors::buttonOutlineColor(styleOptions));
         QColor grooveColor(palette.currentColorGroup() ? palette.color(QPalette::Window) : Colors::mix(outline, palette.color(QPalette::Window)));
         QColor highlightColor(palette.color(QPalette::Highlight));
         QColor highlightOutline(_dark ? Colors::darken(highlightColor, 0.3) : Colors::darken(highlightColor, 0.15));
 
-        if (!enabled)
+        if (!enabled) {
             _helper->renderProgressBarGroove(painter, grooveRect, grooveColor, outline);
-        else {
+        } else {
             bool upsideDown(sliderOption->upsideDown);
 
             // handle rect
@@ -6285,10 +6700,21 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
         AnimationMode mode(_animations->widgetStateEngine().buttonAnimationMode(widget));
         qreal opacity(_animations->widgetStateEngine().buttonOpacity(widget));
 
+        // Style options
+        StyleOptions styleOptions(palette);
+        styleOptions.setMouseOver(mouseOver);
+        styleOptions.setOpacity(opacity);
+        styleOptions.setCheckboxState(CheckOff);
+        styleOptions.setInMenu(true);
+        styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
         // define colors
-        QColor background(_helper->indicatorBackgroundColor(palette, mouseOver, false, false, opacity, AnimationNone, CheckOff, _dark, true));
-        QColor outline(_helper->indicatorOutlineColor(palette, handleActive && mouseOver, hasFocus, opacity, mode, CheckOff, _dark, true));
-        QColor shadow(_helper->shadowColor(palette));
+        QColor background(Colors::indicatorBackgroundColor(styleOptions));
+
+        styleOptions.setMouseOver(handleActive && mouseOver);
+
+        QColor outline(Colors::indicatorOutlineColor(styleOptions));
+        QColor shadow(Colors::shadowColor(styleOptions));
 
         // render
         _helper->renderSliderHandle(painter, handleRect, background, outline, shadow, sunken, enabled && windowActive, tickSide);
@@ -6302,8 +6728,9 @@ bool Style::drawDialComplexControl(const QStyleOptionComplex *option, QPainter *
 {
     // cast option and check
     const QStyleOptionSlider *sliderOption(qstyleoption_cast<const QStyleOptionSlider *>(option));
-    if (!sliderOption)
+    if (!sliderOption) {
         return true;
+    }
 
     const QPalette &palette(option->palette);
     const State &state(option->state);
@@ -6312,14 +6739,18 @@ bool Style::drawDialComplexControl(const QStyleOptionComplex *option, QPainter *
     bool hasFocus(enabled && (state & State_HasFocus));
     bool horizontal(sliderOption->orientation == Qt::Horizontal);
     Side tickSide { SideNone };
-    if (horizontal && sliderOption->tickPosition == QSlider::TicksAbove)
+    if (horizontal && sliderOption->tickPosition == QSlider::TicksAbove) {
         tickSide = (Side)((int) tickSide | (int) SideTop);
-    if (horizontal && sliderOption->tickPosition == QSlider::TicksBelow)
+    }
+    if (horizontal && sliderOption->tickPosition == QSlider::TicksBelow) {
         tickSide = (Side)((int) tickSide | (int) SideBottom);
-    if (!horizontal && sliderOption->tickPosition == QSlider::TicksLeft)
+    }
+    if (!horizontal && sliderOption->tickPosition == QSlider::TicksLeft) {
         tickSide = (Side)((int) tickSide | (int) SideLeft);
-    if (!horizontal && sliderOption->tickPosition == QSlider::TicksRight)
+    }
+    if (!horizontal && sliderOption->tickPosition == QSlider::TicksRight) {
         tickSide = (Side)((int) tickSide | (int) SideRight);
+    }
 
     // do not render tickmarks
     if (sliderOption->subControls & SC_DialTickmarks)
@@ -6366,10 +6797,18 @@ bool Style::drawDialComplexControl(const QStyleOptionComplex *option, QPainter *
         AnimationMode mode(_animations->dialEngine().buttonAnimationMode(widget));
         qreal opacity(_animations->dialEngine().buttonOpacity(widget));
 
+        // Style options
+        StyleOptions styleOptions(palette);
+        styleOptions.setAnimationMode(mode);
+        styleOptions.setMouseOver(handleActive && mouseOver);
+        styleOptions.setHasFocus(hasFocus);
+        styleOptions.setOpacity(opacity);
+        styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
         // define colors
         QColor background(palette.color(QPalette::Button));
-        QColor outline(_helper->sliderOutlineColor(palette, handleActive && mouseOver, hasFocus, opacity, mode));
-        QColor shadow(_helper->shadowColor(palette));
+        QColor outline(Colors::sliderOutlineColor(styleOptions));
+        QColor shadow(Colors::shadowColor(styleOptions));
 
         // render
         qreal angle = 270 - 180 * dialAngle(sliderOption, sliderOption->sliderPosition) / M_PI;
@@ -6389,8 +6828,9 @@ bool Style::drawScrollBarComplexControl(const QStyleOptionComplex *option, QPain
     bool animated(Adwaita::Config::ScrollBarShowOnMouseOver && _animations->scrollBarEngine().isAnimated(widget,  AnimationHover, QStyle::SC_ScrollBarGroove));
     bool mouseOver((option->state & State_Active) && option->state & State_MouseOver);
 
-    if (opacity == AnimationData::OpacityInvalid)
+    if (opacity == AnimationData::OpacityInvalid) {
         opacity = 1;
+    }
 
     // render full groove directly, rather than using the addPage and subPage control element methods
     if ((mouseOver || animated) && option->subControls & SC_ScrollBarGroove) {
@@ -6408,10 +6848,11 @@ bool Style::drawScrollBarComplexControl(const QStyleOptionComplex *option, QPain
         const State &state(option->state);
         bool horizontal(state & State_Horizontal);
 
-        if (horizontal)
+        if (horizontal) {
             grooveRect = centerRect(grooveRect, grooveRect.width(), Metrics::ScrollBar_SliderWidth);
-        else
+        } else {
             grooveRect = centerRect(grooveRect, Metrics::ScrollBar_SliderWidth, grooveRect.height());
+        }
 
         // render
         if (enabled) {
@@ -6454,8 +6895,9 @@ bool Style::drawTitleBarComplexControl(const QStyleOptionComplex *option, QPaint
 {
     // cast option and check
     const QStyleOptionTitleBar *titleBarOption(qstyleoption_cast<const QStyleOptionTitleBar *>(option));
-    if (!titleBarOption)
+    if (!titleBarOption) {
         return true;
+    }
 
     // store palette and rect
     QPalette palette(option->palette);
@@ -6465,11 +6907,16 @@ bool Style::drawTitleBarComplexControl(const QStyleOptionComplex *option, QPaint
     bool enabled(flags & State_Enabled);
     bool active(enabled && (titleBarOption->titleBarState & Qt::WindowActive));
 
+    // Style options
+    StyleOptions styleOptions(palette);
+    styleOptions.setActive(active);
+    styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
     if (titleBarOption->subControls & SC_TitleBarLabel) {
         // render background
         painter->setClipRect(rect);
-        QColor outline(_helper->frameOutlineColor(palette, false, false));
-        QColor background(_helper->titleBarColor(palette, active));
+        QColor outline(Colors::frameOutlineColor(styleOptions));
+        QColor background(Colors::titleBarColor(styleOptions));
         _helper->renderTabWidgetFrame(painter, rect.adjusted(-1, -1, 1, 3), background, outline, CornersTop);
 
         painter->setRenderHint(QPainter::Antialiasing, false);
@@ -6478,7 +6925,7 @@ bool Style::drawTitleBarComplexControl(const QStyleOptionComplex *option, QPaint
         painter->drawLine(rect.bottomLeft(), rect.bottomRight());
 
         // render text
-        palette.setColor(QPalette::WindowText, _helper->titleBarTextColor(palette, active));
+        palette.setColor(QPalette::WindowText, Colors::titleBarTextColor(styleOptions));
         QRect textRect(subControlRect(CC_TitleBar, option, SC_TitleBarLabel, widget));
         ParentStyleClass::drawItemText(painter, textRect, Qt::AlignCenter, palette, active, titleBarOption->text, QPalette::WindowText);
     }
@@ -6495,8 +6942,9 @@ bool Style::drawTitleBarComplexControl(const QStyleOptionComplex *option, QPaint
     // loop over supported buttons
     foreach (const SubControl &subControl, subControls) {
         // skip if not requested
-        if (!(titleBarOption->subControls & subControl))
+        if (!(titleBarOption->subControls & subControl)) {
             continue;
+        }
 
         // find matching icon
         QIcon icon;
@@ -6521,13 +6969,15 @@ bool Style::drawTitleBarComplexControl(const QStyleOptionComplex *option, QPaint
         }
 
         // check icon
-        if (icon.isNull())
+        if (icon.isNull()) {
             continue;
+        }
 
         // define icon rect
         QRect iconRect(subControlRect(CC_TitleBar, option, subControl, widget));
-        if (iconRect.isEmpty())
+        if (iconRect.isEmpty()) {
             continue;
+        }
 
         // active state
         bool subControlActive(titleBarOption->activeSubControls & subControl);
@@ -6548,11 +6998,11 @@ bool Style::drawTitleBarComplexControl(const QStyleOptionComplex *option, QPaint
             iconMode = QIcon::Disabled;
             iconState = QIcon::Off;
         } else {
-            if (mouseOver)
+            if (mouseOver) {
                 iconMode = QIcon::Active;
-//                else if( active ) iconMode = QIcon::Selected;
-            else
+            } else {
                 iconMode = QIcon::Normal;
+            }
 
             iconState = subControlActive ? QIcon::On : QIcon::Off;
         }
@@ -6575,7 +7025,7 @@ void Style::renderSpinBoxArrow(const SubControl &subControl, const QStyleOptionS
     bool hasFocus(state & State_HasFocus);
     bool enabled(state & State_Enabled);
     bool sunken(state & State_Sunken && option->activeSubControls & subControl);
-    const QColor &outline = _helper->frameOutlineColor(option->palette).lighter(120);
+    const QColor &outline = Colors::frameOutlineColor(StyleOptions(palette)).lighter(120);
 
     // check steps enable step
     const bool atLimit((subControl == SC_SpinBoxUp && !(option->stepEnabled & QAbstractSpinBox::StepUpEnabled))
@@ -6596,9 +7046,14 @@ void Style::renderSpinBoxArrow(const SubControl &subControl, const QStyleOptionS
     qreal opacity(_animations->spinBoxEngine().opacity(widget, subControl));
     qreal pressedOpacity(_animations->spinBoxEngine().pressed(widget, subControl));
 
-    QColor color = _helper->arrowColor(palette, QPalette::Text);
+    // Style options
+    StyleOptions styleOptions(palette);
+    styleOptions.setColorRole(QPalette::Text);
+
+    QColor color = Colors::arrowOutlineColor(styleOptions);
     if (atLimit) {
-        color = _helper->arrowColor(palette, QPalette::Disabled, QPalette::Text);
+        styleOptions.setColorGroup(QPalette::Disabled);
+        color = Colors::arrowOutlineColor(styleOptions);
     }
 
     // arrow orientation
@@ -6625,10 +7080,11 @@ void Style::renderSpinBoxArrow(const SubControl &subControl, const QStyleOptionS
         QColor background = Colors::mix(palette.base().color(), palette.text().color(), opacity * 0.1);
         background = Colors::mix(background, palette.dark().color(), pressedOpacity);
         painter->setBrush(background);
-        if (hasFocus)
+        if (hasFocus) {
             painter->drawRect(arrowRect.adjusted(1, 3, -1, -2));
-        else
+        } else {
             painter->drawRect(arrowRect.adjusted(1, 2, -1, -1));
+        }
     }
 
     // render
@@ -6642,7 +7098,12 @@ void Style::renderMenuTitle(const QStyleOptionToolButton *option, QPainter *pain
 {
     // render a separator at the bottom
     const QPalette &palette(option->palette);
-    QColor color(_helper->separatorColor(palette, _dark));
+
+    // Style options
+    StyleOptions styleOptions(palette);
+    styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
+
+    QColor color(Colors::separatorColor(styleOptions));
     _helper->renderSeparator(painter, QRect(option->rect.bottomLeft() - QPoint(0, Metrics::MenuItem_MarginWidth), QSize(option->rect.width(), 1)), color);
 
     // render text in the center of the rect
@@ -6657,16 +7118,18 @@ qreal Style::dialAngle(const QStyleOptionSlider *sliderOption, int value) const
 {
     // calculate angle at which handle needs to be drawn
     qreal angle(0);
-    if (sliderOption->maximum == sliderOption->minimum)
+    if (sliderOption->maximum == sliderOption->minimum) {
         angle = M_PI / 2;
-    else {
+    } else {
         qreal fraction(qreal(value - sliderOption->minimum) / qreal(sliderOption->maximum - sliderOption->minimum));
-        if (!sliderOption->upsideDown)
+        if (!sliderOption->upsideDown) {
             fraction = 1 - fraction;
-        if (sliderOption->dialWrapping)
+        }
+        if (sliderOption->dialWrapping) {
             angle = 1.5 * M_PI - fraction * 2 * M_PI;
-        else
+        } else {
             angle = (M_PI * 8 - fraction * 10 * M_PI) / 6;
+        }
     }
 
     return angle;
@@ -6676,8 +7139,9 @@ qreal Style::dialAngle(const QStyleOptionSlider *sliderOption, int value) const
 const QWidget *Style::scrollBarParent(const QWidget *widget) const
 {
     // check widget and parent
-    if (!(widget && widget->parentWidget()))
+    if (!(widget && widget->parentWidget())) {
         return nullptr;
+    }
 
     // try cast to scroll area. Must test both parent and grandparent
     QAbstractScrollArea *scrollArea;
@@ -6690,8 +7154,9 @@ const QWidget *Style::scrollBarParent(const QWidget *widget) const
         return scrollArea;
     } else if (widget->parentWidget()->inherits("KTextEditor::View")) {
         return widget->parentWidget();
-    } else
+    } else {
         return nullptr;
+    }
 }
 
 //______________________________________________________________________________
@@ -6699,15 +7164,19 @@ QColor Style::scrollBarArrowColor(const QStyleOptionSlider *option, const SubCon
 {
     const QRect &rect(option->rect);
     const QPalette &palette(option->palette);
-    QColor color(_helper->arrowColor(palette, QPalette::WindowText));
+
+    // Style options
+    StyleOptions styleOptions(palette);
+    styleOptions.setColorRole(QPalette::WindowText);
+
+    QColor color(Colors::arrowOutlineColor(styleOptions));
 
     bool widgetMouseOver((option->state & State_MouseOver) && (option->state & State_MouseOver));
-    if (widget)
+    if (widget) {
         widgetMouseOver = widget->underMouse();
-
-    // in case this QStyle is used by QQuickControls QStyle wrapper
-    else if (option->styleObject)
+    } else if (option->styleObject) { // in case this QStyle is used by QQuickControls QStyle wrapper
         widgetMouseOver = option->styleObject->property("hover").toBool();
+    }
 
     // check enabled state
     bool enabled(option->state & State_Enabled);
@@ -6715,28 +7184,31 @@ QColor Style::scrollBarArrowColor(const QStyleOptionSlider *option, const SubCon
         if (Adwaita::Config::ScrollBarShowOnMouseOver) {
             // finally, global opacity when ScrollBarShowOnMouseOver
             qreal globalOpacity(_animations->scrollBarEngine().opacity(widget, QStyle::SC_ScrollBarGroove));
-            if (globalOpacity >= 0)
+            if (globalOpacity >= 0) {
                 color.setAlphaF(globalOpacity);
-            // no mouse over and no animation in progress, don't draw arrows at all
-            else if (!widgetMouseOver)
+            } else if (!widgetMouseOver) { // no mouse over and no animation in progress, don't draw arrows at all
                 return Qt::transparent;
+            }
         }
         return color;
     }
 
     if ((control == SC_ScrollBarSubLine && option->sliderValue == option->minimum)
-        || (control == SC_ScrollBarAddLine && option->sliderValue == option->maximum)) {
+            || (control == SC_ScrollBarAddLine && option->sliderValue == option->maximum)) {
+
+        // Style options
+        styleOptions.setColorGroup(QPalette::Disabled);
 
         // manually disable arrow, to indicate that scrollbar is at limit
-        color = _helper->arrowColor(palette, QPalette::Disabled, QPalette::WindowText);
+        color = Colors::arrowOutlineColor(styleOptions);
         if (Adwaita::Config::ScrollBarShowOnMouseOver) {
             // finally, global opacity when ScrollBarShowOnMouseOver
             qreal globalOpacity(_animations->scrollBarEngine().opacity(widget, QStyle::SC_ScrollBarGroove));
-            if (globalOpacity >= 0)
+            if (globalOpacity >= 0) {
                 color.setAlphaF(globalOpacity);
-            // no mouse over and no animation in progress, don't draw arrows at all
-            else if (!widgetMouseOver)
+            } else if (!widgetMouseOver) { // no mouse over and no animation in progress, don't draw arrows at all
                 return Qt::transparent;
+            }
         }
         return color;
     }
@@ -6756,7 +7228,7 @@ QColor Style::scrollBarArrowColor(const QStyleOptionSlider *option, const SubCon
     }
 
     if (rect.intersects(_animations->scrollBarEngine().subControlRect(widget, control))) {
-        QColor highlight = _helper->hoverColor(palette);
+        QColor highlight = Colors::hoverColor(StyleOptions(palette));
         if (animated) {
             color = Colors::mix(color, highlight, opacity);
         } else if (mouseOver) {
@@ -6767,11 +7239,11 @@ QColor Style::scrollBarArrowColor(const QStyleOptionSlider *option, const SubCon
     if (Adwaita::Config::ScrollBarShowOnMouseOver) {
         // finally, global opacity when ScrollBarShowOnMouseOver
         qreal globalOpacity(_animations->scrollBarEngine().opacity(widget, QStyle::SC_ScrollBarGroove));
-        if (globalOpacity >= 0)
+        if (globalOpacity >= 0) {
             color.setAlphaF(globalOpacity);
-        // no mouse over and no animation in progress, don't draw arrows at all
-        else if (!widgetMouseOver)
+        } else if (!widgetMouseOver) { // no mouse over and no animation in progress, don't draw arrows at all
             return Qt::transparent;
+        }
     }
 
     return color;
@@ -6780,8 +7252,9 @@ QColor Style::scrollBarArrowColor(const QStyleOptionSlider *option, const SubCon
 //____________________________________________________________________________________
 void Style::setTranslucentBackground(QWidget *widget) const
 {
-    if (!_isKDE)
+    if (!_isKDE) {
         return;
+    }
     widget->setAttribute(Qt::WA_TranslucentBackground);
 
 #ifdef Q_WS_WIN
@@ -6816,12 +7289,13 @@ QIcon Style::toolBarExtensionIcon(StandardPixmap standardPixmap, const QStyleOpt
     // store palette
     // due to Qt, it is not always safe to assume that either option, nor widget are defined
     QPalette palette;
-    if (option)
+    if (option) {
         palette = option->palette;
-    else if (widget)
+    } else if (widget) {
         palette = widget->palette();
-    else
+    } else {
         palette = QApplication::palette();
+    }
 
     // convenience class to map color to icon mode
     struct IconData {
@@ -6904,20 +7378,21 @@ QIcon Style::titleBarButtonIcon(StandardPixmap standardPixmap, const QStyleOptio
     // store palette
     // due to Qt, it is not always safe to assume that either option, nor widget are defined
     QPalette palette;
-    if (option)
+    if (option) {
         palette = option->palette;
-    else if (widget)
+    } else if (widget) {
         palette = widget->palette();
-    else
+    } else {
         palette = QApplication::palette();
+    }
 
     bool isCloseButton(buttonType == ButtonClose && Adwaita::Config::OutlineCloseButton);
 
     palette.setCurrentColorGroup(QPalette::Active);
     QColor base(palette.color(QPalette::WindowText));
     QColor selected(palette.color(QPalette::HighlightedText));
-    QColor negative(buttonType == ButtonClose ? _helper->negativeText(palette) : base);
-    QColor negativeSelected(buttonType == ButtonClose ? _helper->negativeText(palette) : selected);
+    QColor negative(buttonType == ButtonClose ? Colors::negativeText(StyleOptions(palette)) : base);
+    QColor negativeSelected(buttonType == ButtonClose ? Colors::negativeText(StyleOptions(palette)) : selected);
 
     bool invertNormalState(isCloseButton);
 
@@ -6976,14 +7451,15 @@ const QAbstractItemView *Style::itemViewParent(const QWidget *widget) const
     const QAbstractItemView *itemView(nullptr);
 
     // check widget directly
-    if ((itemView = qobject_cast<const QAbstractItemView *>(widget)))
+    if ((itemView = qobject_cast<const QAbstractItemView *>(widget))) {
         return itemView;
     // check widget grand-parent
-    else if (widget && widget->parentWidget() && (itemView = qobject_cast<const QAbstractItemView *>(widget->parentWidget()->parentWidget()))
+    } else if (widget && widget->parentWidget() && (itemView = qobject_cast<const QAbstractItemView *>(widget->parentWidget()->parentWidget()))
              && itemView->viewport() == widget->parentWidget()) {
         return itemView;
-    } else
+    } else {
         return nullptr;
+    }
 }
 
 //____________________________________________________________________
@@ -6991,15 +7467,17 @@ bool Style::isSelectedItem(const QWidget *widget, const QPoint &localPosition) c
 {
     // get relevant itemview parent and check
     const QAbstractItemView *itemView(itemViewParent(widget));
-    if (!(itemView && itemView->hasFocus() && itemView->selectionModel()))
+    if (!(itemView && itemView->hasFocus() && itemView->selectionModel())) {
         return false;
+    }
 
     QPoint position = widget->mapTo(itemView, localPosition);
 
     // get matching QModelIndex and check
     QModelIndex index(itemView->indexAt(position));
-    if (!index.isValid())
+    if (!index.isValid()) {
         return false;
+    }
 
     // check whether index is selected
     return itemView->selectionModel()->isSelected(index);
@@ -7027,20 +7505,23 @@ bool Style::showIconsOnPushButtons(void) const
 bool Style::isMenuTitle(const QWidget *widget) const
 {
     // check widget
-    if (!widget)
+    if (!widget) {
         return false;
+    }
 
     // check property
     QVariant property(widget->property(PropertyNames::menuTitle));
-    if (property.isValid())
+    if (property.isValid()) {
         return property.toBool();
+    }
 
     // detect menu toolbuttons
     QWidget *parent = widget->parentWidget();
     if (qobject_cast<QMenu *>(parent)) {
         foreach (auto child, parent->findChildren<QWidgetAction *>()) {
-            if (child->defaultWidget() != widget)
+            if (child->defaultWidget() != widget) {
                 continue;
+            }
             const_cast<QWidget *>(widget)->setProperty(PropertyNames::menuTitle, true);
             return true;
         }
@@ -7054,27 +7535,31 @@ bool Style::isMenuTitle(const QWidget *widget) const
 bool Style::hasAlteredBackground(const QWidget *widget) const
 {
     // check widget
-    if (!widget)
+    if (!widget) {
         return false;
+    }
 
     // check property
     QVariant property(widget->property(PropertyNames::alteredBackground));
-    if (property.isValid())
+    if (property.isValid()) {
         return property.toBool();
+    }
 
     // check if widget is of relevant type
     bool hasAlteredBackground(false);
-    if (const QGroupBox *groupBox = qobject_cast<const QGroupBox *>(widget))
+    if (const QGroupBox *groupBox = qobject_cast<const QGroupBox *>(widget)) {
         hasAlteredBackground = !groupBox->isFlat();
-    else if (const QTabWidget *tabWidget = qobject_cast<const QTabWidget *>(widget))
+    } else if (const QTabWidget *tabWidget = qobject_cast<const QTabWidget *>(widget)) {
         hasAlteredBackground = !tabWidget->documentMode();
-    else if (qobject_cast<const QMenu *>(widget))
+    } else if (qobject_cast<const QMenu *>(widget)) {
         hasAlteredBackground = true;
-    else if (Adwaita::Config::DockWidgetDrawFrame && qobject_cast<const QDockWidget *>(widget))
+    } else if (Adwaita::Config::DockWidgetDrawFrame && qobject_cast<const QDockWidget *>(widget)) {
         hasAlteredBackground = true;
+    }
 
-    if (widget->parentWidget() && !hasAlteredBackground)
+    if (widget->parentWidget() && !hasAlteredBackground) {
         hasAlteredBackground = this->hasAlteredBackground(widget->parentWidget());
+    }
     const_cast<QWidget *>(widget)->setProperty(PropertyNames::alteredBackground, hasAlteredBackground);
     return hasAlteredBackground;
 }

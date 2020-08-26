@@ -19,9 +19,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  *************************************************************************/
 
-#include "adwaitahelper.h"
 #include "adwaita.h"
 #include "adwaitacolors.h"
+#include "adwaitahelper.h"
 
 #include <QApplication>
 #include <QPainter>
