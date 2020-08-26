@@ -1327,6 +1327,7 @@ void Helper::init(void)
 //____________________________________________________________________
 void Helper::setVariant(QWidget *widget, const QByteArray &variant)
 {
+#if ADWAITA_HAVE_X11
     if (isX11() && widget) { //  && !widget->testAttribute(Qt::WA_)) {
         static const char *_GTK_THEME_VARIANT = "_GTK_THEME_VARIANT";
 
@@ -1407,6 +1408,7 @@ void Helper::setVariant(QWidget *widget, const QByteArray &variant)
             widget->setProperty(_GTK_THEME_VARIANT, variant);
         }
     }
+#endif
 }
 
 }
