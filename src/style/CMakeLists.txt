@@ -23,18 +23,22 @@ add_library(${LIBRARY_NAME} MODULE ${Adwaita_SRCS})
 target_link_libraries(${LIBRARY_NAME}
     adwaitaqt
     adwaitaqtpriv
-    ${XCB_LIBRARIES}
     Qt5::Core
     Qt5::DBus
     Qt5::Gui
     Qt5::Widgets
-    Qt5::X11Extras
 )
 
-set_target_properties(${LIBRARY_NAME} PROPERTIES
-    LINK_FLAGS "-Wl,--no-undefined"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-    OUTPUT_NAME "adwaita"
-    PREFIX "")
+if (ADWAITA_HAVE_X11)
+    target_link_libraries(${LIBRARY_NAME} ${XCB_LIBRARIES} Qt5::X11Extras)
+endif()
+
+if (NOT APPLE AND NOT WIN32)
+    set_target_properties(${LIBRARY_NAME} PROPERTIES
+        LINK_FLAGS "-Wl,--no-undefined"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+        OUTPUT_NAME "adwaita"
+        PREFIX "")
+endif()
 
 install(TARGETS ${LIBRARY_NAME} DESTINATION "${QT_PLUGINS_DIR}/styles")

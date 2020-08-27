@@ -19,12 +19,17 @@ find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
     DBus
     Gui
     Widgets
-    X11Extras
 )
 
-find_package(XCB 1.10 COMPONENTS XCB)
+if (NOT APPLE AND NOT WIN32)
+    find_package(XCB 1.10 COMPONENTS XCB)
 
-set(ADWAITA_HAVE_X11 ${XCB_FOUND})
+    set(ADWAITA_HAVE_X11 ${XCB_FOUND})
+
+    find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
+        X11Extras
+    )
+endif()
 
 get_target_property(REAL_QMAKE_EXECUTABLE ${Qt5Core_QMAKE_EXECUTABLE}
                     IMPORTED_LOCATION)
