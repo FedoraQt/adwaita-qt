@@ -423,7 +423,7 @@ QColor Colors::buttonOutlineColor(const StyleOptions &options)
 QColor Colors::indicatorOutlineColor(const StyleOptions &options)
 {
     bool isDisabled = options.palette().currentColorGroup() == QPalette::Disabled;
-    if (options.inMenu() || options.state() == CheckBoxState::CheckOff) {
+    if (options.inMenu() || options.checkboxState() == CheckBoxState::CheckOff) {
         ColorVariant variant = options.colorVariant();
 
         if (variant == ColorVariant::Unknown) {
