@@ -24,7 +24,7 @@
 
 #include <QGuiApplication>
 
-#include <cmath>
+#include <QtMath>
 
 namespace Adwaita
 {
@@ -120,7 +120,9 @@ QColor Colors::transparentize(const QColor &color, qreal amount)
 static bool isDarkMode()
 {
     const QColor textColor = QGuiApplication::palette().color(QPalette::Text);
-    if ((textColor.redF() * 0.299 + textColor.greenF() * 0.587 + textColor.blueF() * 0.114) <= 186) {
+    if (qSqrt(((textColor.red() * textColor.red()) * 0.299) +
+              ((textColor.green() * textColor.green()) * 0.587) +
+              ((textColor.blue() * textColor.blue()) * 0.114)) > 128) {
         return true;
     }
 
