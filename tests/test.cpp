@@ -30,8 +30,8 @@ QTEST_MAIN(Test)
 
 void Test::initTestCase()
 {
-    // Just simple test whethe we can link against the Adwaita library
+    // Just simple test whether we can link against the Adwaita library
     // and find headers
-    std::unique_ptr<Adwaita::ColorRequestOptions> options(new Adwaita::ColorRequestOptions(QPalette()));
+    std::unique_ptr<Adwaita::StyleOptions> options(new Adwaita::StyleOptions(QPalette()));
     QVERIFY(options);
 }
