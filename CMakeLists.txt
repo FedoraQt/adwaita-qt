@@ -1,53 +1,72 @@
 project(Adwaita)
 
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.0)
 
+set(ADWAITAQT_VERSION_MAJOR 1)
+set(ADWAITAQT_VERSION "1.2.0")
+
+set(QT_MIN_VERSION "5.12.0")
 set(CMAKE_AUTOMOC ON)
+
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH})
+
+include(GNUInstallDirs)
+
 add_definitions(-std=c++11)
 
-option(USE_QT4 "Use Qt4 instead of Qt5" OFF)
-if (USE_QT4)
-    find_package(Qt4 REQUIRED)
-    set(QT_VERSION_NUMBER "4")
-else()
-    find_package(Qt5Core REQUIRED)
-    find_package(Qt5Gui REQUIRED)
-    find_package(Qt5Widgets REQUIRED)
-    find_package(Qt5DBus REQUIRED)
-    set(QT_QTGUI_LIBRARY Qt5::Gui Qt5::Widgets)
-    set(QT_QTCORE_LIBRARY Qt5::Core)
-    set(QT_QTDBUS_LIBRARY Qt5::DBus)
-    #target_link_libraries(${LIBRARY_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
-    set(QT_VERSION_NUMBER "5")
-    get_target_property(REAL_QMAKE_EXECUTABLE ${Qt5Core_QMAKE_EXECUTABLE}
-                       IMPORTED_LOCATION)
-    if (NOT QT_PLUGINS_DIR)
-        execute_process(COMMAND "${REAL_QMAKE_EXECUTABLE}" -query QT_INSTALL_PLUGINS
-                        OUTPUT_VARIABLE QT_PLUGINS_DIR
-                        ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
+    Core
+    DBus
+    Gui
+    Widgets
+)
+
+if (NOT APPLE AND NOT WIN32)
+    find_package(XCB 1.10 COMPONENTS XCB)
+
+    set(ADWAITA_HAVE_X11 ${XCB_FOUND})
+
+    find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
+        X11Extras
+    )
+endif()
+
+get_target_property(REAL_QMAKE_EXECUTABLE ${Qt5Core_QMAKE_EXECUTABLE}
+                    IMPORTED_LOCATION)
+if (NOT QT_PLUGINS_DIR)
+    execute_process(COMMAND "${REAL_QMAKE_EXECUTABLE}" -query QT_INSTALL_PLUGINS
+                    OUTPUT_VARIABLE QT_PLUGINS_DIR
+                    ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+endif()
+
+add_subdirectory(src)
+
+# Tests need to be build from the root directory
+# We now only test whether we can find and build against Adwaita library
+if (BUILD_TESTING)
+    enable_testing()
+
+    find_package(Qt5 ${QT_MIN_VERSION} NO_MODULE REQUIRED Test)
+
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(ADWAITAQT adwaita-qt>=${ADWAITAQT_VERSION})
+
+    if (NOT ADWAITAQT_FOUND)
+        message(FATAL_ERROR "Unable to find Adwaita-qt using PkgConfig")
     endif()
-endif()
 
-if (NOT CMAKE_INSTALL_PREFIX)
-    set (CMAKE_INSTALL_PREFIX "/usr/local")
-endif()
+    find_package(AdwaitaQt ${ADWAITAQT_VERSION} REQUIRED)
 
-if (NOT DATA_INSTALL_DIR)
-    set (DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share")
-endif()
-if (NOT THEME_INSTALL_DIR)
-    set (THEME_INSTALL_DIR "${DATA_INSTALL_DIR}/themes")
-endif()
+    set(test_SRCS
+        tests/test.cpp
+    )
 
-set(ADWAITA_THEME_DIR "${THEME_INSTALL_DIR}/Adwaita/qt")
+    add_executable(test-pkgconfig ${test_SRCS})
+    target_link_libraries(test-pkgconfig Qt5::Test ${ADWAITAQT_LIBRARIES})
 
-option(BUILD_EXAMPLE "Build an example widget factory app" OFF)
-if (BUILD_EXAMPLE)
-    if (USE_QT4)
-        error("It's not possible to build the example using Qt4 yet, sorry.")
-    else()
-        add_subdirectory(demo)
-    endif()
+    add_executable(test-cmake ${test_SRCS})
+    target_link_libraries(test-cmake Qt5::Test AdwaitaQt)
+
+    add_test(NAME TestPkgConfig COMMAND test-pkgconfig)
+    add_test(NAME TestCmake COMMAND test-cmake)
 endif()
-
-add_subdirectory(style)

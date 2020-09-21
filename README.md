@@ -1,7 +1,7 @@
 adwaita-qt
 ==========
 
-A native style to bend Qt4 and Qt5 applications to look like they belong into GNOME Shell.
+A native style to bend Qt5 applications to look like they belong into GNOME Shell.
 
 ![Widget Factory](/screenshots/widgets.png)
 
