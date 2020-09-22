@@ -74,6 +74,8 @@ target_link_libraries(adwaitaqt
     adwaitaqtpriv
 )
 
+set_target_properties(adwaitaqtpriv PROPERTIES VERSION ${ADWAITAQT_VERSION} SOVERSION 1)
+
 set_target_properties(adwaitaqt PROPERTIES VERSION ${ADWAITAQT_VERSION} SOVERSION 1)
 target_include_directories(adwaitaqt PUBLIC ${Qt5Core_INCLUDE_DIRS} ${Qt5Gui_INCLUDE_DIRS} ${Qt5Widgets_INCLUDE_DIRS})
 
