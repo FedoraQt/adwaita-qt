@@ -1686,7 +1686,7 @@ QRect Style::checkBoxContentsRect(const QStyleOption *option, const QWidget *) c
 //___________________________________________________________________________________________________________________
 QRect Style::checkBoxIndicatorRect(const QStyleOption *option, const QWidget *widget) const
 {
-    return ParentStyleClass::subElementRect(SE_CheckBoxIndicator, option, widget).translated(Metrics::CheckBox_ItemSpacing, 0);
+    return ParentStyleClass::subElementRect(SE_CheckBoxIndicator, option, widget);
 }
 
 //___________________________________________________________________________________________________________________

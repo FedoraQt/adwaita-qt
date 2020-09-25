@@ -168,7 +168,7 @@ enum Metrics {
     // checkboxes and radio buttons
     CheckBox_Size = 22,
     CheckBox_FocusMarginWidth = 3,
-    CheckBox_ItemSpacing = 8,
+    CheckBox_ItemSpacing = 4,
 
     // menubar items
     MenuBarItem_MarginWidth = 8,
