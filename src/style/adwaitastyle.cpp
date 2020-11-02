@@ -60,9 +60,13 @@
 #include <QToolButton>
 #include <QWidgetAction>
 
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
+
 namespace AdwaitaPrivate
 {
-
+    
 // needed to keep track of tabbars when being dragged
 class TabBarData: public QObject
 {

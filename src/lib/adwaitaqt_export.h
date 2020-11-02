@@ -1,8 +1,12 @@
 #ifndef ADWAITAQT_EXPORT_H
 #define ADWAITAQT_EXPORT_H
 
-#ifndef ADWAITAQT_EXPORT
-#   define ADWAITAQT_EXPORT __attribute__((visibility("default")))
+#if defined(_WIN32)
+#    define ADWAITAQT_EXPORT __declspec(dllexport)
+#elif defined(__GNUC__)
+#    define ADWAITAQT_EXPORT __attribute__((visibility("default")))
+#else
+#    define ADWAITAQT_EXPORT
 #endif
 
 #ifndef ADWAITAQT_NO_EXPORT
