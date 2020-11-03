@@ -207,7 +207,7 @@ public:
 
 private:
     //* container for needed animation data
-    class Data
+    class ADWAITAQT_EXPORT Data
     {
     public:
         //* default constructor
