@@ -75,8 +75,17 @@ target_link_libraries(adwaitaqt
 )
 
 set_target_properties(adwaitaqtpriv PROPERTIES VERSION ${ADWAITAQT_VERSION} SOVERSION 1)
+if(MINGW AND BUILD_SHARED_LIBS)
+    get_target_property(ADWAITA_QT_SOVERSION adwaitaqtpriv SOVERSION)
+    set_target_properties(adwaitaqtpriv PROPERTIES SUFFIX "-${ADWAITA_QT_SOVERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}")
+endif()
 
 set_target_properties(adwaitaqt PROPERTIES VERSION ${ADWAITAQT_VERSION} SOVERSION 1)
+if(MINGW AND BUILD_SHARED_LIBS)
+    get_target_property(ADWAITA_QT_SOVERSION adwaitaqt SOVERSION)
+    set_target_properties(adwaitaqt PROPERTIES SUFFIX "-${ADWAITA_QT_SOVERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}")
+endif()
+
 target_include_directories(adwaitaqt PUBLIC ${Qt5Core_INCLUDE_DIRS} ${Qt5Gui_INCLUDE_DIRS} ${Qt5Widgets_INCLUDE_DIRS})
 
 install(TARGETS adwaitaqtpriv DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR} EXPORT AdwaitaQtTargets)
