@@ -3,7 +3,7 @@ project(Adwaita)
 cmake_minimum_required(VERSION 3.0)
 
 set(ADWAITAQT_VERSION_MAJOR 1)
-set(ADWAITAQT_VERSION "1.1.90")
+set(ADWAITAQT_VERSION "1.2.0")
 
 set(QT_MIN_VERSION "5.12.0")
 set(CMAKE_AUTOMOC ON)
