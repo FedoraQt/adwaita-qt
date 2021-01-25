@@ -13,11 +13,10 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  build:
+  Linux:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
-
     - name: Install dependencies
       run: |
         sudo apt update
@@ -48,3 +47,25 @@ jobs:
         #cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_EXAMPLE=true -DBUILD_TESTING=true
         #make -j2
         #make test
+  Windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+        
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        cached: ${{ steps.cache-qt.outputs.cache-hit }}
+        arch: 'win64_mingw81'
+        version: '5.15.2'
+        
+    - name: Build
+      shell: bash
+      if: ${{ !steps.cache-qt.outputs.cache-hit }}
+      run: |
+        mkdir build
+        cd build
+        cmake -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX="$Qt5_Dir" -DBUILD_SHARED_LIBS=ON ..
+        mingw32-make -j2 VERBOSE=1
