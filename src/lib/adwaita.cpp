@@ -30,6 +30,10 @@ public:
     explicit StyleOptionsPrivate(const QPalette &palette)
         : m_palette(palette)
     { }
+    StyleOptionsPrivate(QPainter *painter, const QRect &rect)
+        : m_painter(painter)
+        , m_rect(rect)
+    { }
     virtual ~StyleOptionsPrivate()
     { }
 
@@ -43,9 +47,14 @@ public:
     qreal m_opacity = AnimationData::OpacityInvalid;
     AnimationMode m_animationMode = AnimationNone;
     CheckBoxState m_checkboxState = CheckOff;
+    RadioButtonState m_radioButtonState = RadioOff;
     QStyle::State m_state = QStyle::State_None;
     bool m_inMenu = false;
     bool m_sunken = false;
+    QPainter *m_painter = nullptr;
+    QRect m_rect;
+    QColor m_color;
+    QColor m_outlineColor;
 };
 
 StyleOptions::StyleOptions(const QPalette &palette)
@@ -53,8 +62,21 @@ StyleOptions::StyleOptions(const QPalette &palette)
 {
 }
 
+StyleOptions::StyleOptions(QPainter *painter, const QRect &rect)
+    : d_ptr(new StyleOptionsPrivate(painter, rect))
+{
+}
+
+
 StyleOptions::~StyleOptions()
 {
+}
+
+void StyleOptions::setPalette(const QPalette &palette)
+{
+    Q_D(StyleOptions);
+
+    d->m_palette = palette;
 }
 
 QPalette StyleOptions::palette() const
@@ -62,6 +84,34 @@ QPalette StyleOptions::palette() const
     Q_D(const StyleOptions);
 
     return d->m_palette;
+}
+
+void StyleOptions::setPainter(QPainter *painter)
+{
+    Q_D(StyleOptions);
+
+    d->m_painter = painter;
+}
+
+QPainter *StyleOptions::painter() const
+{
+    Q_D(const StyleOptions);
+
+    return d->m_painter;
+}
+
+void StyleOptions::setRect(const QRect &rect)
+{
+    Q_D(StyleOptions);
+
+    d->m_rect = rect;
+}
+
+QRect StyleOptions::rect() const
+{
+    Q_D(const StyleOptions);
+
+    return d->m_rect;
 }
 
 void StyleOptions::setColorGroup(QPalette::ColorGroup group)
@@ -190,6 +240,20 @@ CheckBoxState StyleOptions::checkboxState() const
     return d->m_checkboxState;
 }
 
+void StyleOptions::setRadioButtonState(RadioButtonState state)
+{
+    Q_D(StyleOptions);
+
+    d->m_radioButtonState = state;
+}
+
+RadioButtonState StyleOptions::radioButtonState() const
+{
+    Q_D(const StyleOptions);
+
+    return d->m_radioButtonState;
+}
+
 void StyleOptions::setState(QStyle::State state)
 {
     Q_D(StyleOptions);
@@ -230,6 +294,34 @@ bool StyleOptions::sunken() const
     Q_D(const StyleOptions);
 
     return d->m_sunken;
+}
+
+void StyleOptions::setColor(const QColor &color)
+{
+    Q_D(StyleOptions);
+
+    d->m_color = color;
+}
+
+QColor StyleOptions::color() const
+{
+    Q_D(const StyleOptions);
+
+    return d->m_color;
+}
+
+void StyleOptions::setOutlineColor(const QColor &outlineColor)
+{
+    Q_D(StyleOptions);
+
+    d->m_outlineColor = outlineColor;
+}
+
+QColor StyleOptions::outlineColor() const
+{
+    Q_D(const StyleOptions);
+
+    return d->m_outlineColor;
 }
 
 } // namespace Adwaita

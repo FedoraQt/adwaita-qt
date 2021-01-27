@@ -46,11 +46,13 @@ set(libadwaitaqt_priv_SRCS
 set(libadwaitaqt_SRCS
     adwaita.cpp
     adwaitacolors.cpp
+    adwaitarenderer.cpp
 )
 
 set(libadwaitaqt_HEADERS
     adwaita.h
     adwaitacolors.h
+    adwaitarenderer.h
     adwaitaqt_export.h
 )
 

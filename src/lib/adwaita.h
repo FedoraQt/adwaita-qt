@@ -287,9 +287,17 @@ class ADWAITAQT_EXPORT StyleOptions
 {
 public:
     explicit StyleOptions(const QPalette &palette);
+    StyleOptions(QPainter *painter, const QRect &rect);
     virtual ~StyleOptions();
 
+    void setPalette(const QPalette &palette);
     QPalette palette() const;
+
+    void setPainter(QPainter *painter);
+    QPainter *painter() const;
+
+    void setRect(const QRect &rect);
+    QRect rect() const;
 
     void setColorGroup(QPalette::ColorGroup group);
     QPalette::ColorGroup colorGroup() const;
@@ -318,6 +326,9 @@ public:
     void setCheckboxState(CheckBoxState state);
     CheckBoxState checkboxState() const;
 
+    void setRadioButtonState(RadioButtonState state);
+    RadioButtonState radioButtonState() const;
+
     void setState(QStyle::State state);
     QStyle::State state() const;
 
@@ -326,6 +337,12 @@ public:
 
     void setSunken(bool sunken);
     bool sunken() const;
+
+    void setColor(const QColor &color);
+    QColor color() const;
+
+    void setOutlineColor(const QColor &outlineColor);
+    QColor outlineColor() const;
 
 private:
     Q_DECLARE_PRIVATE(StyleOptions)
