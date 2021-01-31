@@ -345,7 +345,7 @@ void Renderer::renderMenuFrame(const StyleOptions &options, bool roundCorners)
     options.painter()->drawRect(frameRect);
 }
 
-void Renderer::renderButtonFrame(const StyleOptions &options, const QColor &shadow)
+void Renderer::renderButtonFrame(const StyleOptions &options)
 {
     if (!options.painter()) {
         return;
@@ -418,7 +418,7 @@ void Renderer::renderButtonFrame(const StyleOptions &options, const QColor &shad
     }
 }
 
-void Renderer::renderCheckBoxFrame(const StyleOptions &options, const QColor &shadow)
+void Renderer::renderCheckBoxFrame(const StyleOptions &options)
 {
     if (!options.painter()) {
         return;
@@ -500,7 +500,7 @@ void Renderer::renderCheckBoxFrame(const StyleOptions &options, const QColor &sh
     options.painter()->drawRoundedRect(frameRect, radius, radius);
 }
 
-void Renderer::renderFlatButtonFrame(const StyleOptions &options, const QColor &shadow)
+void Renderer::renderFlatButtonFrame(const StyleOptions &options)
 {
     if (!options.painter()) {
         return;
@@ -727,7 +727,7 @@ void Renderer::renderCheckBoxBackground(const StyleOptions &options)
     options.painter()->drawRect(frameRect);
 }
 
-void Renderer::renderCheckBox(const StyleOptions &options, const QColor &background, const QColor &tickColor, qreal animation)
+void Renderer::renderCheckBox(const StyleOptions &options, const QColor &tickColor, qreal animation)
 {
     if (!options.painter()) {
         return;
@@ -745,7 +745,7 @@ void Renderer::renderCheckBox(const StyleOptions &options, const QColor &backgro
     // content
     {
         StyleOptions tmpStyleOptions(options.painter(), options.rect());
-        tmpStyleOptions.setColor(background);
+        tmpStyleOptions.setColor(options.color());
         tmpStyleOptions.setOutlineColor(options.outlineColor());
         tmpStyleOptions.setHasFocus(false);
         tmpStyleOptions.setSunken(options.sunken());
@@ -754,7 +754,7 @@ void Renderer::renderCheckBox(const StyleOptions &options, const QColor &backgro
         tmpStyleOptions.setCheckboxState(options.checkboxState());
         tmpStyleOptions.setColorVariant(options.colorVariant());
         tmpStyleOptions.setInMenu(options.inMenu());
-        renderCheckBoxFrame(tmpStyleOptions, Qt::transparent);
+        renderCheckBoxFrame(tmpStyleOptions);
     }
 
     // mark
@@ -831,7 +831,7 @@ void Renderer::renderRadioButtonBackground(const StyleOptions &options)
     options.painter()->drawEllipse(frameRect);
 }
 
-void Renderer::renderRadioButton(const StyleOptions &options, const QColor &background, const QColor &tickColor, qreal animation)
+void Renderer::renderRadioButton(const StyleOptions &options, const QColor &tickColor, qreal animation)
 {
     if (!options.painter()) {
         return;
@@ -845,40 +845,40 @@ void Renderer::renderRadioButton(const StyleOptions &options, const QColor &back
     frameRect.adjust(2, 2, -2, -2);
 
     if (options.inMenu() || options.radioButtonState() == RadioOff) {
-        if (background.isValid() && options.active()) {
+        if (options.color().isValid() && options.active()) {
             QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
             if (options.sunken()) {
                 // Pressed-alt button in normal and dark mode is not a gradient, just an image consting from same $background
-                gradient.setColorAt(0, background);
-                gradient.setColorAt(1, background);
+                gradient.setColorAt(0, options.color());
+                gradient.setColorAt(1, options.color());
             } else if (options.mouseOver()) {
                 if (options.colorVariant() == AdwaitaDark) {
-                    QColor baseColor = background;
+                    QColor baseColor = options.color();
                     // Hovered-alt button in dark mode is a gradient from $background to Colors::darken(bg_background, 0.04)
                     gradient.setColorAt(0, Colors::darken(baseColor, 0.04));
-                    gradient.setColorAt(1, background);
+                    gradient.setColorAt(1, options.color());
                 } else {
-                    QColor baseColor = Colors::darken(background, 0.09);
+                    QColor baseColor = Colors::darken(options.color(), 0.09);
                     // Hovered-alt button in normal mode is a gradient from $background to Colors::lighten(bg_background, 0.04)
-                    gradient.setColorAt(0, background);                 // FIXME:
+                    gradient.setColorAt(0, options.color());                 // FIXME:
                     gradient.setColorAt(1, Colors::lighten(baseColor, 0.04));   // should be vice-versa, but this way it seems to be more accurate
                 }
             } else {
                 if (options.colorVariant() == AdwaitaDark) {
-                    QColor baseColor = Colors::lighten(background, 0.03);
+                    QColor baseColor = Colors::lighten(options.color(), 0.03);
                     // Normal-alt button in dark mode is a gradient from $background to Colors::darken(bg_background, 0.06)
                     gradient.setColorAt(0, Colors::darken(baseColor, 0.06));
-                    gradient.setColorAt(1, background);
+                    gradient.setColorAt(1, options.color());
                 } else {
-                    QColor baseColor = Colors::darken(background, 0.05);
+                    QColor baseColor = Colors::darken(options.color(), 0.05);
                     // Normal-alt button in normal mode is a gradient from $background to bg_background
                     gradient.setColorAt(0, baseColor);
-                    gradient.setColorAt(1, background);
+                    gradient.setColorAt(1, options.color());
                 }
             }
             options.painter()->setBrush(gradient);
         } else if (!options.active()) {
-            options.painter()->setBrush(background);
+            options.painter()->setBrush(options.color());
         } else {
             options.painter()->setBrush(Qt::NoBrush);
         }
@@ -888,10 +888,10 @@ void Renderer::renderRadioButton(const StyleOptions &options, const QColor &back
         QRectF contentRect(frameRect.adjusted(0.5, 0.5, -0.5, -0.5));
         options.painter()->drawEllipse(contentRect);
     } else {
-        if (background.isValid()) {
+        if (options.color().isValid()) {
             QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
-            gradient.setColorAt(0, background);
-            gradient.setColorAt(1, Colors::lighten(background, 0.04));
+            gradient.setColorAt(0, options.color());
+            gradient.setColorAt(1, Colors::lighten(options.color(), 0.04));
             options.painter()->setBrush(gradient);
         } else {
             options.painter()->setBrush(Qt::NoBrush);
@@ -943,7 +943,7 @@ void Renderer::renderSliderGroove(const StyleOptions &options)
     return;
 }
 
-void Renderer::renderSliderHandle(const StyleOptions &options, const QColor &shadow, Side ticks, qreal angle)
+void Renderer::renderSliderHandle(const StyleOptions &options, Side ticks, qreal angle)
 {
     if (!options.painter()) {
         return;

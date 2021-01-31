@@ -31,73 +31,73 @@ namespace Adwaita
 class ADWAITAQT_EXPORT Renderer
 {
 public:
-    void renderDebugFrame(const StyleOptions &options);
+    static void renderDebugFrame(const StyleOptions &options);
 
-    void renderFocusRect(const StyleOptions &options, Sides sides = SideNone);
+    static void renderFocusRect(const StyleOptions &options, Sides sides = SideNone);
 
-    void renderFocusLine(const StyleOptions &options);
+    static void renderFocusLine(const StyleOptions &options);
 
-    void renderFrame(const StyleOptions &options);
+    static void renderFrame(const StyleOptions &options);
 
-    void renderSquareFrame(const StyleOptions &options);
+    static void renderSquareFrame(const StyleOptions &options);
 
-    void renderFlatFrame(const StyleOptions &options);
+    static void renderFlatFrame(const StyleOptions &options);
 
-    void renderSidePanelFrame(const StyleOptions &options, Side side);
+    static void renderSidePanelFrame(const StyleOptions &options, Side side);
 
-    void renderMenuFrame(const StyleOptions &options, bool roundCorners = true);
+    static void renderMenuFrame(const StyleOptions &options, bool roundCorners = true);
 
-    void renderButtonFrame(const StyleOptions &options, const QColor &shadow);
+    static void renderButtonFrame(const StyleOptions &options);
 
-    void renderCheckBoxFrame(const StyleOptions &options, const QColor &shadow);
+    static void renderCheckBoxFrame(const StyleOptions &options);
 
-    void renderFlatButtonFrame(const StyleOptions &options, const QColor &shadow);
+    static void renderFlatButtonFrame(const StyleOptions &options);
 
-    void renderToolButtonFrame(const StyleOptions &options);
+    static void renderToolButtonFrame(const StyleOptions &options);
 
-    void renderToolBoxFrame(const StyleOptions &options, int tabWidth);
+    static void renderToolBoxFrame(const StyleOptions &options, int tabWidth);
 
-    void renderTabWidgetFrame(const StyleOptions &options, Corners corners);
+    static void renderTabWidgetFrame(const StyleOptions &options, Corners corners);
 
-    void renderSelection(const StyleOptions &options);
+    static void renderSelection(const StyleOptions &options);
 
-    void renderSeparator(const StyleOptions &options, bool vertical = false);
+    static void renderSeparator(const StyleOptions &options, bool vertical = false);
 
-    void renderCheckBoxBackground(const StyleOptions &options);
+    static void renderCheckBoxBackground(const StyleOptions &options);
 
-    void renderCheckBox(const StyleOptions &options, const QColor &background, const QColor &tickColor, qreal animation);
+    static void renderCheckBox(const StyleOptions &options, const QColor &tickColor, qreal animation = -1);
 
-    void renderRadioButtonBackground(const StyleOptions &options);
+    static void renderRadioButtonBackground(const StyleOptions &options);
 
-    void renderRadioButton(const StyleOptions &options, const QColor &background, const QColor &tickColor, qreal animation);
+    static void renderRadioButton(const StyleOptions &options, const QColor &tickColor, qreal animation = -1);
 
-    void renderSliderGroove(const StyleOptions &options);
+    static void renderSliderGroove(const StyleOptions &options);
 
-    void renderSliderHandle(const StyleOptions &options, const QColor &shadow, Side ticks, qreal angle = 0.0);
+    static void renderSliderHandle(const StyleOptions &options, Side ticks, qreal angle = 0.0);
 
-    void renderDialGroove(const StyleOptions &options);
+    static void renderDialGroove(const StyleOptions &options);
 
-    void renderDialContents(const StyleOptions &options, qreal first, qreal second);
+    static void renderDialContents(const StyleOptions &options, qreal first, qreal second);
 
-    void renderProgressBarGroove(const StyleOptions &options);
+    static void renderProgressBarGroove(const StyleOptions &options);
 
-    void renderProgressBarContents(const StyleOptions &options);
+    static void renderProgressBarContents(const StyleOptions &options);
 
-    void renderProgressBarBusyContents(const StyleOptions &options, bool horizontal, bool reverse, int progress);
+    static void renderProgressBarBusyContents(const StyleOptions &options, bool horizontal, bool reverse, int progress);
 
-    void renderScrollBarGroove(const StyleOptions &options);
+    static void renderScrollBarGroove(const StyleOptions &options);
 
-    void renderScrollBarHandle(const StyleOptions &options);
+    static void renderScrollBarHandle(const StyleOptions &options);
 
-    void renderToolBarHandle(const StyleOptions &options);
+    static void renderToolBarHandle(const StyleOptions &options);
 
-    void renderTabBarTab(const StyleOptions &options, const QColor &background, Corners corners, bool renderFrame);
+    static void renderTabBarTab(const StyleOptions &options, const QColor &background, Corners corners, bool renderFrame);
 
-    void renderArrow(const StyleOptions &options, ArrowOrientation arrowOrientation);
+    static void renderArrow(const StyleOptions &options, ArrowOrientation arrowOrientation);
 
-    void renderSign(const StyleOptions &options, bool orientation);
+    static void renderSign(const StyleOptions &options, bool orientation);
 
-    void renderDecorationButton(const StyleOptions &options, ButtonType buttonType, bool inverted);
+    static void renderDecorationButton(const StyleOptions &options, ButtonType buttonType, bool inverted);
 };
 
 } // namespace Adwaita
