@@ -31,17 +31,9 @@
 #include <X11/Xlib-xcb.h>
 #endif
 
-#ifndef M_PI
-    #define M_PI 3.14159265358979323846
-#endif
-
 namespace Adwaita
 {
 
-//* contrast for arrow and treeline rendering
-static const qreal arrowShade = 0.15;
-
-//____________________________________________________________________
 Helper::Helper()
 {
     init();
@@ -57,76 +49,18 @@ bool Helper::isWindowActive(const QWidget *widget)
     return false;
 }
 
-//______________________________________________________________________________
-bool Helper::isX11(void)
+bool Helper::isX11()
 {
     static const bool s_isX11 = qApp->platformName() == QLatin1String("xcb");
     return s_isX11;
 }
 
-bool Helper::isWayland(void)
+bool Helper::isWayland()
 {
     static const bool s_isWayland = qApp->platformName().startsWith(QLatin1String("wayland"));
     return s_isWayland;
 }
 
-//______________________________________________________________________________
-QRectF Helper::shadowRect(const QRectF &rect) const
-{
-    return rect;
-}
-
-//______________________________________________________________________________
-QPainterPath Helper::roundedPath(const QRectF &rect, Corners corners, qreal radius) const
-{
-    QPainterPath path;
-
-    // simple cases
-    if (corners == 0) {
-        path.addRect(rect);
-        return path;
-    }
-
-    if (corners == AllCorners) {
-        path.addRoundedRect(rect, radius, radius);
-        return path;
-    }
-
-    QSizeF cornerSize(2 * radius, 2 * radius);
-
-    // rotate counterclockwise
-    // top left corner
-    if (corners & CornerTopLeft) {
-        path.moveTo(rect.topLeft() + QPointF(radius, 0));
-        path.arcTo(QRectF(rect.topLeft(), cornerSize), 90, 90);
-    } else
-        path.moveTo(rect.topLeft());
-
-    // bottom left corner
-    if (corners & CornerBottomLeft) {
-        path.lineTo(rect.bottomLeft() - QPointF(0, radius));
-        path.arcTo(QRectF(rect.bottomLeft() - QPointF(0, 2 * radius), cornerSize), 180, 90);
-    } else
-        path.lineTo(rect.bottomLeft());
-
-    // bottom right corner
-    if (corners & CornerBottomRight) {
-        path.lineTo(rect.bottomRight() - QPointF(radius, 0));
-        path.arcTo(QRectF(rect.bottomRight() - QPointF(2 * radius, 2 * radius), cornerSize), 270, 90);
-    } else
-        path.lineTo(rect.bottomRight());
-
-    // top right corner
-    if (corners & CornerTopRight) {
-        path.lineTo(rect.topRight() + QPointF(0, radius));
-        path.arcTo(QRectF(rect.topRight() - QPointF(2 * radius, 0), cornerSize), 0, 90);
-    } else
-        path.lineTo(rect.topRight());
-    path.closeSubpath();
-    return path;
-}
-
-//________________________________________________________________________________________________________
 bool Helper::compositingActive(void) const
 {
 #if ADWAITA_HAVE_X11
@@ -142,16 +76,13 @@ bool Helper::compositingActive(void) const
     // use KWindowSystem
     //return KWindowSystem::compositingActive();
     return false;
-
 }
 
-//____________________________________________________________________
 bool Helper::hasAlphaChannel(const QWidget *widget) const
 {
     return compositingActive() && widget && widget->testAttribute(Qt::WA_TranslucentBackground);
 }
 
-//______________________________________________________________________________________
 QPixmap Helper::highDpiPixmap(int width, int height) const
 {
     qreal dpiRatio(qApp->devicePixelRatio());
@@ -160,7 +91,6 @@ QPixmap Helper::highDpiPixmap(int width, int height) const
     return pixmap;
 }
 
-//______________________________________________________________________________________
 qreal Helper::devicePixelRatio(const QPixmap &pixmap) const
 {
     Q_UNUSED(pixmap);
@@ -169,14 +99,12 @@ qreal Helper::devicePixelRatio(const QPixmap &pixmap) const
 
 #if ADWAITA_HAVE_X11
 
-//____________________________________________________________________
-xcb_connection_t *Helper::connection(void)
+xcb_connection_t *Helper::connection()
 {
 
     return QX11Info::connection();
 }
 
-//____________________________________________________________________
 xcb_atom_t Helper::createAtom(const QString &name) const
 {
     if (isX11()) {
@@ -190,8 +118,7 @@ xcb_atom_t Helper::createAtom(const QString &name) const
 
 #endif
 
-//____________________________________________________________________
-void Helper::init(void)
+void Helper::init()
 {
 #if ADWAITA_HAVE_X11
     if (isX11()) {
@@ -202,7 +129,6 @@ void Helper::init(void)
 #endif
 }
 
-//____________________________________________________________________
 void Helper::setVariant(QWidget *widget, const QByteArray &variant)
 {
 #if ADWAITA_HAVE_X11
