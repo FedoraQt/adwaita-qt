@@ -156,7 +156,7 @@ private:
 
 } // namespace AdwaitaPrivate
 
-void tabLayout(const QStyleOptionTabV3 *opt, const QWidget *widget, QRect *textRect, QRect *iconRect, const QStyle *proxyStyle)
+void tabLayout(const QStyleOptionTab *opt, const QWidget *widget, QRect *textRect, QRect *iconRect, const QStyle *proxyStyle)
 {
     Q_ASSERT(textRect);
     Q_ASSERT(iconRect);
@@ -386,7 +386,7 @@ void Style::polish(QWidget *widget)
         setTranslucentBackground(widget);
     } else if (QLineEdit *lineEdit = qobject_cast<QLineEdit *>(widget)) {
         // Do not use additional margin if the QLineEdit is really small
-        const bool useMarginWidth = lineEdit->width() > lineEdit->fontMetrics().width("#####");
+        const bool useMarginWidth = lineEdit->width() > lineEdit->fontMetrics().horizontalAdvance("#####");
         const bool useMarginHeight = lineEdit->height() > lineEdit->fontMetrics().height() + (2 * Metrics::LineEdit_MarginHeight);
         const int marginHeight = useMarginHeight ? Metrics::LineEdit_MarginHeight : 0;
         const int marginWidth = useMarginWidth ? Metrics::LineEdit_MarginWidth : 0;
@@ -1748,8 +1748,7 @@ QRect Style::progressBarGrooveRect(const QStyleOption *option, const QWidget *wi
     bool textVisible(progressBarOption->textVisible);
     bool busy(progressBarOption->minimum == 0 && progressBarOption->maximum == 0);
 
-    const QStyleOptionProgressBarV2 *progressBarOption2(qstyleoption_cast<const QStyleOptionProgressBarV2 *>(option));
-    bool horizontal(!progressBarOption2 || progressBarOption2->orientation == Qt::Horizontal);
+    bool horizontal(!progressBarOption || progressBarOption->orientation == Qt::Horizontal);
 
     // copy rectangle and adjust
     QRect rect(option->rect);
@@ -1794,11 +1793,10 @@ QRect Style::progressBarContentsRect(const QStyleOption *option, const QWidget *
     }
 
     // get orientation
-    const QStyleOptionProgressBarV2 *progressBarOption2(qstyleoption_cast<const QStyleOptionProgressBarV2 *>(option));
-    bool horizontal(!progressBarOption2 || progressBarOption2->orientation == Qt::Horizontal);
+    bool horizontal(!progressBarOption || progressBarOption->orientation == Qt::Horizontal);
 
     // check inverted appearance
-    bool inverted(progressBarOption2 ? progressBarOption2->invertedAppearance : false);
+    bool inverted(progressBarOption ? progressBarOption->invertedAppearance : false);
 
     // get progress and steps
     qreal progress(progressBarOption->progress - progressBarOption->minimum);
@@ -1838,8 +1836,7 @@ QRect Style::progressBarLabelRect(const QStyleOption *option, const QWidget *) c
     }
 
     // get direction and check
-    const QStyleOptionProgressBarV2 *progressBarOption2(qstyleoption_cast<const QStyleOptionProgressBarV2 *>(option));
-    bool horizontal(!progressBarOption2 || progressBarOption2->orientation == Qt::Horizontal);
+    bool horizontal(!progressBarOption || progressBarOption->orientation == Qt::Horizontal);
     if (!horizontal) {
         return QRect();
     }
@@ -1914,17 +1911,17 @@ QRect Style::sliderFocusRect(const QStyleOption *option, const QWidget *widget) 
 QRect Style::tabBarTabLeftButtonRect(const QStyleOption *option, const QWidget *) const
 {
     // cast option and check
-    const QStyleOptionTabV3 *tabOptionV3(qstyleoption_cast<const QStyleOptionTabV3 *>(option));
-    if (!tabOptionV3 || tabOptionV3->leftButtonSize.isEmpty()) {
+    const QStyleOptionTab *tabOption(qstyleoption_cast<const QStyleOptionTab *>(option));
+    if (!tabOption || tabOption->leftButtonSize.isEmpty()) {
         return QRect();
     }
 
     QRect rect(option->rect);
-    QSize size(tabOptionV3->leftButtonSize);
+    QSize size(tabOption->leftButtonSize);
     QRect buttonRect(QPoint(0, 0), size);
 
     // vertical positioning
-    switch (tabOptionV3->shape) {
+    switch (tabOption->shape) {
     case QTabBar::RoundedNorth:
     case QTabBar::TriangularNorth:
 
@@ -1955,17 +1952,17 @@ QRect Style::tabBarTabLeftButtonRect(const QStyleOption *option, const QWidget *
 QRect Style::tabBarTabRightButtonRect(const QStyleOption *option, const QWidget *) const
 {
     // cast option and check
-    const QStyleOptionTabV3 *tabOptionV3(qstyleoption_cast<const QStyleOptionTabV3 *>(option));
-    if (!tabOptionV3 || tabOptionV3->rightButtonSize.isEmpty()) {
+    const QStyleOptionTab *tabOption(qstyleoption_cast<const QStyleOptionTab *>(option));
+    if (!tabOption || tabOption->rightButtonSize.isEmpty()) {
         return QRect();
     }
 
     QRect rect(option->rect);
-    QSize size(tabOptionV3->rightButtonSize);
+    QSize size(tabOption->rightButtonSize);
     QRect buttonRect(QPoint(0, 0), size);
 
     // vertical positioning
-    switch (tabOptionV3->shape) {
+    switch (tabOption->shape) {
     case QTabBar::RoundedNorth:
     case QTabBar::TriangularNorth:
 
@@ -3007,7 +3004,7 @@ QSize Style::menuItemSizeFromContents(const QStyleOption *option, const QSize &c
             }
             if (!menuItemOption->text.isEmpty()) {
                 size.setHeight(qMax(size.height(), textHeight));
-                size.setWidth(qMax(size.width(), menuItemOption->fontMetrics.width(menuItemOption->text)));
+                size.setWidth(qMax(size.width(), menuItemOption->fontMetrics.horizontalAdvance(menuItemOption->text)));
             }
 
             return sizeFromContents(CT_ToolButton, &toolButtonOption, size, widget);
@@ -3029,8 +3026,7 @@ QSize Style::progressBarSizeFromContents(const QStyleOption *option, const QSize
         return contentsSize;
     }
 
-    const QStyleOptionProgressBarV2 *progressBarOption2(qstyleoption_cast<const QStyleOptionProgressBarV2 *>(option));
-    bool horizontal(!progressBarOption2 || progressBarOption2->orientation == Qt::Horizontal);
+    bool horizontal(!progressBarOption || progressBarOption->orientation == Qt::Horizontal);
 
     // make local copy
     QSize size(contentsSize);
@@ -3111,11 +3107,10 @@ QSize Style::tabWidgetSizeFromContents(const QStyleOption *option, const QSize &
 QSize Style::tabBarTabSizeFromContents(const QStyleOption *option, const QSize &contentsSize, const QWidget *) const
 {
     const QStyleOptionTab *tabOption(qstyleoption_cast<const QStyleOptionTab *>(option));
-    const QStyleOptionTabV3 *tabOptionV3(qstyleoption_cast<const QStyleOptionTabV3 *>(option));
     bool hasText(tabOption && !tabOption->text.isEmpty());
     bool hasIcon(tabOption && !tabOption->icon.isNull());
-    bool hasLeftButton(tabOptionV3 && !tabOptionV3->leftButtonSize.isEmpty());
-    bool hasRightButton(tabOptionV3 && !tabOptionV3->leftButtonSize.isEmpty());
+    bool hasLeftButton(tabOption && !tabOption->leftButtonSize.isEmpty());
+    bool hasRightButton(tabOption && !tabOption->leftButtonSize.isEmpty());
 
     // calculate width increment for horizontal tabs
     int widthIncrement = 0;
@@ -3136,7 +3131,7 @@ QSize Style::tabBarTabSizeFromContents(const QStyleOption *option, const QSize &
     QSize size(contentsSize);
 
     if (hasText) {
-        widthIncrement += option->fontMetrics.width(tabOption->text) * 0.2;
+        widthIncrement += option->fontMetrics.horizontalAdvance(tabOption->text) * 0.2;
     }
 
     // compare to minimum size
@@ -3379,7 +3374,7 @@ bool Style::drawFrameGroupBoxPrimitive(const QStyleOption *option, QPainter *pai
 bool Style::drawFrameTabWidgetPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
     // cast option and check
-    const QStyleOptionTabWidgetFrameV2 *tabOption(qstyleoption_cast<const QStyleOptionTabWidgetFrameV2 *>(option));
+    const QStyleOptionTabWidgetFrame *tabOption(qstyleoption_cast<const QStyleOptionTabWidgetFrame *>(option));
     if (!tabOption) {
         return true;
     }
@@ -3923,7 +3918,7 @@ bool Style::drawPanelItemViewRowPrimitive(const QStyleOption *option, QPainter *
 bool Style::drawPanelItemViewItemPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
     // cast option and check
-    const QStyleOptionViewItemV4 *viewItemOption = qstyleoption_cast<const QStyleOptionViewItemV4 *>(option);
+    const QStyleOptionViewItem *viewItemOption = qstyleoption_cast<const QStyleOptionViewItem *>(option);
     if (!viewItemOption) {
         return false;
     }
@@ -5051,7 +5046,7 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
     styleOptions.setInMenu(true);
     styleOptions.setColorVariant(_dark ? Adwaita::ColorVariant::AdwaitaDark : Adwaita::ColorVariant::Adwaita);
 
-    const QColor &outline(palette.foreground().color());
+    const QColor &outline(palette.windowText().color());
     const QColor &indicatorBackground(Colors::indicatorBackgroundColor(styleOptions));
     // render checkbox indicator
     if (menuItemOption->checkType == QStyleOptionMenuItem::NonExclusive) {
@@ -5215,44 +5210,45 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
 //___________________________________________________________________________________
 bool Style::drawProgressBarControl(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-    const QStyleOptionProgressBar *progressBarOption(qstyleoption_cast<const QStyleOptionProgressBar *>(option));
-    if (!progressBarOption)
+    const QStyleOptionProgressBar *progressBarOptionTmp(qstyleoption_cast<const QStyleOptionProgressBar *>(option));
+    if (!progressBarOptionTmp)
         return true;
 
-    // render groove
-    QStyleOptionProgressBarV2 progressBarOption2 = *progressBarOption;
-    progressBarOption2.rect = subElementRect(SE_ProgressBarGroove, progressBarOption, widget);
-    drawControl(CE_ProgressBarGroove, &progressBarOption2, painter, widget);
+    QStyleOptionProgressBar progressBarOption = *progressBarOptionTmp;
 
-    const QObject *styleObject(widget ? widget : progressBarOption->styleObject);
+    // render groove
+    progressBarOption.rect = subElementRect(SE_ProgressBarGroove, &progressBarOption, widget);
+    drawControl(CE_ProgressBarGroove, &progressBarOption, painter, widget);
+
+    const QObject *styleObject(widget ? widget : progressBarOption.styleObject);
 
     // enable busy animations
     // need to check both widget and passed styleObject, used for QML
     if (styleObject && _animations->busyIndicatorEngine().enabled()) {
 
         // register QML object if defined
-        if (!widget && progressBarOption->styleObject) {
-            _animations->busyIndicatorEngine().registerWidget(progressBarOption->styleObject);
+        if (!widget && progressBarOption.styleObject) {
+            _animations->busyIndicatorEngine().registerWidget(progressBarOption.styleObject);
         }
 
-        _animations->busyIndicatorEngine().setAnimated(styleObject, progressBarOption->maximum == 0 && progressBarOption->minimum == 0);
+        _animations->busyIndicatorEngine().setAnimated(styleObject, progressBarOption.maximum == 0 && progressBarOption.minimum == 0);
     }
 
     // check if animated and pass to option
     if (_animations->busyIndicatorEngine().isAnimated(styleObject)) {
-        progressBarOption2.progress = _animations->busyIndicatorEngine().value();
+        progressBarOption.progress = _animations->busyIndicatorEngine().value();
     }
 
     // render contents
-    progressBarOption2.rect = subElementRect(SE_ProgressBarContents, progressBarOption, widget);
-    drawControl(CE_ProgressBarContents, &progressBarOption2, painter, widget);
+    progressBarOption.rect = subElementRect(SE_ProgressBarContents, &progressBarOption, widget);
+    drawControl(CE_ProgressBarContents, &progressBarOption, painter, widget);
 
     // render text
-    bool textVisible(progressBarOption->textVisible);
-    bool busy(progressBarOption->minimum == 0 && progressBarOption->maximum == 0);
+    bool textVisible(progressBarOption.textVisible);
+    bool busy(progressBarOption.minimum == 0 && progressBarOption.maximum == 0);
     if (textVisible && !busy) {
-        progressBarOption2.rect = subElementRect(SE_ProgressBarLabel, progressBarOption, widget);
-        drawControl(CE_ProgressBarLabel, &progressBarOption2, painter, widget);
+        progressBarOption.rect = subElementRect(SE_ProgressBarLabel, &progressBarOption, widget);
+        drawControl(CE_ProgressBarLabel, &progressBarOption, painter, widget);
     }
 
     return true;
@@ -5270,9 +5266,8 @@ bool Style::drawProgressBarContentsControl(const QStyleOption *option, QPainter 
     const QPalette &palette(option->palette);
 
     // get direction
-    const QStyleOptionProgressBarV2 *progressBarOption2(qstyleoption_cast<const QStyleOptionProgressBarV2 *>(option));
-    bool horizontal = !progressBarOption2 || progressBarOption2->orientation == Qt::Horizontal;
-    bool inverted(progressBarOption2 ? progressBarOption2->invertedAppearance : false);
+    bool horizontal = !progressBarOption || progressBarOption->orientation == Qt::Horizontal;
+    bool inverted(progressBarOption ? progressBarOption->invertedAppearance : false);
     bool reverse = horizontal && option->direction == Qt::RightToLeft;
     if (inverted)
         reverse = !reverse;
@@ -5352,8 +5347,7 @@ bool Style::drawProgressBarLabelControl(const QStyleOption *option, QPainter *pa
     }
 
     // get direction and check
-    const QStyleOptionProgressBarV2 *progressBarOption2(qstyleoption_cast<const QStyleOptionProgressBarV2 *>(option));
-    bool horizontal = !progressBarOption2 || progressBarOption2->orientation == Qt::Horizontal;
+    bool horizontal = !progressBarOption || progressBarOption->orientation == Qt::Horizontal;
     if (!horizontal) {
         return true;
     }
@@ -5636,7 +5630,7 @@ bool Style::drawScrollBarSubLineControl(const QStyleOption *option, QPainter *pa
 bool Style::drawShapedFrameControl(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
     // cast option and check
-    const QStyleOptionFrameV3 *frameOpt = qstyleoption_cast<const QStyleOptionFrameV3 *>(option);
+    const QStyleOptionFrame *frameOpt = qstyleoption_cast<const QStyleOptionFrame *>(option);
     if (!frameOpt) {
         return false;
     }
@@ -5840,12 +5834,11 @@ bool Style::drawHeaderEmptyAreaControl(const QStyleOption *option, QPainter *pai
 bool Style::drawTabBarTabLabelControl(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
     if (const QStyleOptionTab *tab = qstyleoption_cast<const QStyleOptionTab *>(option)) {
-        QStyleOptionTabV3 tabV2(*tab);
-        QRect tr = tabV2.rect;
-        bool verticalTabs = tabV2.shape == QTabBar::RoundedEast
-                            || tabV2.shape == QTabBar::RoundedWest
-                            || tabV2.shape == QTabBar::TriangularEast
-                            || tabV2.shape == QTabBar::TriangularWest;
+        QRect tr = tab->rect;
+        bool verticalTabs = tab->shape == QTabBar::RoundedEast
+                            || tab->shape == QTabBar::RoundedWest
+                            || tab->shape == QTabBar::TriangularEast
+                            || tab->shape == QTabBar::TriangularWest;
 
         int alignment = Qt::AlignCenter | Qt::TextShowMnemonic;
         if (!proxy()->styleHint(SH_UnderlineShortcut, option, widget))
@@ -5854,7 +5847,7 @@ bool Style::drawTabBarTabLabelControl(const QStyleOption *option, QPainter *pain
         if (verticalTabs) {
             painter->save();
             int newX, newY, newRot;
-            if (tabV2.shape == QTabBar::RoundedEast || tabV2.shape == QTabBar::TriangularEast) {
+            if (tab->shape == QTabBar::RoundedEast || tab->shape == QTabBar::TriangularEast) {
                 newX = tr.width() + tr.x();
                 newY = tr.y();
                 newRot = 90;
@@ -5868,28 +5861,28 @@ bool Style::drawTabBarTabLabelControl(const QStyleOption *option, QPainter *pain
             painter->setTransform(m, true);
         }
         QRect iconRect;
-        tabLayout(&tabV2, widget, &tr, &iconRect, proxy());
+        tabLayout(tab, widget, &tr, &iconRect, proxy());
         tr = proxy()->subElementRect(SE_TabBarTabText, option, widget); //we compute tr twice because the style may override subElementRect
 
-        if (!tabV2.icon.isNull()) {
-            QPixmap tabIcon = tabV2.icon.pixmap(tabV2.iconSize, (tabV2.state & State_Enabled) ? QIcon::Normal : QIcon::Disabled,
-                                                (tabV2.state & State_Selected) ? QIcon::On : QIcon::Off);
+        if (!tab->icon.isNull()) {
+            QPixmap tabIcon = tab->icon.pixmap(tab->iconSize, (tab->state & State_Enabled) ? QIcon::Normal : QIcon::Disabled,
+                                                (tab->state & State_Selected) ? QIcon::On : QIcon::Off);
             painter->drawPixmap(iconRect.x(), iconRect.y(), tabIcon);
         }
 
         QFont font = painter->font();
         font.setBold(true);
         painter->setFont(font);
-        if (!(tabV2.state & State_Enabled)) {
-            if (tabV2.state & State_Selected) {
+        if (!(tab->state & State_Enabled)) {
+            if (tab->state & State_Selected) {
                 painter->setPen(Colors::mix(option->palette.brush(QPalette::Text).color(), option->palette.brush(QPalette::Window).color(), 0.3));
             } else {
                 painter->setPen(Colors::mix(option->palette.brush(QPalette::Text).color(), option->palette.brush(QPalette::Window).color(), 0.4));
             }
         } else {
-            if (tabV2.state & State_Selected) {
+            if (tab->state & State_Selected) {
                 painter->setPen(option->palette.brush(QPalette::WindowText).color());
-            } else if (tabV2.state & State_Active && tabV2.state & State_MouseOver) {
+            } else if (tab->state & State_Active && tab->state & State_MouseOver) {
                 painter->setPen(Colors::mix(option->palette.brush(QPalette::Dark).color(), option->palette.brush(QPalette::Text).color(), 0.7));
             } else {
                 painter->setPen(Colors::mix(option->palette.brush(QPalette::Dark).color(), option->palette.brush(QPalette::Text).color(), 0.6));
@@ -5902,17 +5895,17 @@ bool Style::drawTabBarTabLabelControl(const QStyleOption *option, QPainter *pain
             painter->restore();
         }
 
-        if (tabV2.state & State_HasFocus) {
+        if (tab->state & State_HasFocus) {
             int OFFSET = 1 + pixelMetric(PM_DefaultFrameWidth);
 
             int x1, x2;
-            x1 = tabV2.rect.left();
-            x2 = tabV2.rect.right() - 1;
+            x1 = tab->rect.left();
+            x2 = tab->rect.right() - 1;
 
             QStyleOptionFocusRect fropt;
             fropt.QStyleOption::operator=(*tab);
-            fropt.rect.setRect(x1 + 1 + OFFSET, tabV2.rect.y() + OFFSET,
-                               x2 - x1 - 2 * OFFSET, tabV2.rect.height() - 2 * OFFSET);
+            fropt.rect.setRect(x1 + 1 + OFFSET, tab->rect.y() + OFFSET,
+                               x2 - x1 - 2 * OFFSET, tab->rect.height() - 2 * OFFSET);
             drawPrimitive(PE_FrameFocusRect, &fropt, painter, widget);
         }
     }
@@ -6244,9 +6237,7 @@ bool Style::drawDockWidgetTitleControl(const QStyleOption *option, QPainter *pai
     bool enabled(state & State_Enabled);
     bool reverseLayout(option->direction == Qt::RightToLeft);
 
-    // cast to v2 to check vertical bar
-    const QStyleOptionDockWidgetV2 *v2 = qstyleoption_cast<const QStyleOptionDockWidgetV2 *>(option);
-    bool verticalTitleBar(v2 ? v2->verticalTitleBar : false);
+    bool verticalTitleBar(dockWidgetOption ? dockWidgetOption->verticalTitleBar : false);
 
     QRect buttonRect(subElementRect(dockWidgetOption->floatable ? SE_DockWidgetFloatButton : SE_DockWidgetCloseButton, option, widget));
 
@@ -6431,6 +6422,8 @@ bool Style::drawToolButtonComplexControl(const QStyleOptionComplex *option, QPai
             case Qt::RightArrow:
                 painter->drawRect(rect.adjusted(0, 1, -2, -2));
                 break;
+            default:
+                break;
             }
             painter->setPen(outline);
             switch (toolButtonOption->arrowType) {
@@ -6439,6 +6432,8 @@ bool Style::drawToolButtonComplexControl(const QStyleOptionComplex *option, QPai
                 break;
             case Qt::RightArrow:
                 painter->drawLine(rect.topRight(), rect.bottomRight());
+                break;
+            default:
                 break;
             }
             switch (toolButtonOption->arrowType) {
@@ -6451,6 +6446,8 @@ bool Style::drawToolButtonComplexControl(const QStyleOptionComplex *option, QPai
             case Qt::RightArrow:
                 painter->drawLine(rect.topLeft(), rect.topRight());
                 painter->drawLine(rect.bottomLeft(), rect.bottomRight());
+                break;
+            default:
                 break;
             }
         } else if (sunken && hasPopupMenu && !(toolButtonOption->activeSubControls & SC_ToolButton)) {
