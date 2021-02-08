@@ -1289,7 +1289,7 @@ void Renderer::renderSign(const StyleOptions &options, bool orientation)
     }
 }
 
-void Renderer::renderDecorationButton(const StyleOptions &options, ButtonType buttonType, bool inverted)
+void Renderer::renderDecorationButton(const StyleOptions &options, ButtonType buttonType)
 {
     if (!options.painter()) {
         return;
@@ -1321,25 +1321,17 @@ void Renderer::renderDecorationButton(const StyleOptions &options, ButtonType bu
         break;
     }
     case ButtonMaximize: {
-        options.painter()->drawPolyline(QPolygonF()
-                              << QPointF(4, 4)
-                              << QPointF(4, 14)
-                              << QPointF(14, 14)
-                              << QPointF(14, 4));
+        options.painter()->drawRect(4, 4, 10, 10);
         break;
     }
     case ButtonMinimize: {
-
         options.painter()->drawPolyline(QPolygonF()
                               << QPointF(4, 14)
                               << QPointF(14, 14));
         break;
     }
     case ButtonRestore: {
-        options.painter()->setPen(pen);
-        QPolygonF rect = QPolygonF() << QPointF(0, 0) << QPointF(8, 0) << QPointF(8, 8) << QPointF(0, 8);
-        options.painter()->drawPolygon(rect.translated(7, 3));
-        options.painter()->drawPolygon(rect.translated(3, 7));
+        options.painter()->drawRect(6, 6, 6, 6);
         break;
     }
     default:

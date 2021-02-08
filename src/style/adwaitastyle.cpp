@@ -67,7 +67,6 @@
 
 namespace AdwaitaPrivate
 {
-    
 // needed to keep track of tabbars when being dragged
 class TabBarData: public QObject
 {
@@ -7665,7 +7664,7 @@ QIcon Style::titleBarButtonIcon(StandardPixmap standardPixmap, const QStyleOptio
             StyleOptions styleOptions(&painter, pixmap.rect());
             styleOptions.setColor(iconData._color);
 
-            Adwaita::Renderer::renderDecorationButton(styleOptions, buttonType, iconData._inverted);
+            Adwaita::Renderer::renderDecorationButton(styleOptions, buttonType);
 
             painter.end();
 

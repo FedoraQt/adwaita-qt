@@ -97,7 +97,7 @@ public:
 
     static void renderSign(const StyleOptions &options, bool orientation);
 
-    static void renderDecorationButton(const StyleOptions &options, ButtonType buttonType, bool inverted);
+    static void renderDecorationButton(const StyleOptions &options, ButtonType buttonType);
 };
 
 } // namespace Adwaita
