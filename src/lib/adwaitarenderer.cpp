@@ -1321,7 +1321,7 @@ void Renderer::renderDecorationButton(const StyleOptions &options, ButtonType bu
         break;
     }
     case ButtonMaximize: {
-        options.painter()->drawRect(4, 4, 10, 10);
+        options.painter()->drawRect(5, 5, 8, 8);
         break;
     }
     case ButtonMinimize: {
