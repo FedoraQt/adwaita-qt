@@ -151,7 +151,6 @@ void Renderer::renderFocusRect(const StyleOptions &options, Sides sides)
     }
 
     options.painter()->restore();
-    return;
 }
 
 void Renderer::renderFocusLine(const StyleOptions &options)
@@ -184,6 +183,7 @@ void Renderer::renderFrame(const StyleOptions &options)
         return;
     }
 
+    options.painter()->save();
     options.painter()->setRenderHint(QPainter::Antialiasing);
 
     QRectF frameRect(options.rect().adjusted(1, 1, -1, -1));
@@ -213,6 +213,7 @@ void Renderer::renderFrame(const StyleOptions &options)
 
     // render
     options.painter()->drawRoundedRect(frameRect, radius, radius);
+    options.painter()->restore();
 }
 
 void Renderer::renderSquareFrame(const StyleOptions &options)
@@ -221,6 +222,7 @@ void Renderer::renderSquareFrame(const StyleOptions &options)
         return;
     }
 
+    options.painter()->save();
     options.painter()->setPen(options.color());
     options.painter()->drawRect(options.rect().adjusted(1, 1, -2, -2));
     if (options.hasFocus()) {
@@ -228,6 +230,7 @@ void Renderer::renderSquareFrame(const StyleOptions &options)
         options.painter()->setPen(options.color());
         options.painter()->drawRect(options.rect().adjusted(0, 0, -1, -1));
     }
+    options.painter()->restore();
 }
 
 void Renderer::renderFlatFrame(const StyleOptions &options)
@@ -236,6 +239,7 @@ void Renderer::renderFlatFrame(const StyleOptions &options)
         return;
     }
 
+    options.painter()->save();
     options.painter()->setRenderHint(QPainter::Antialiasing);
 
     QRectF frameRect(options.rect().adjusted(1, 1, -1, -1));
@@ -268,6 +272,7 @@ void Renderer::renderFlatFrame(const StyleOptions &options)
     path.addRoundedRect(frameRect.adjusted(0, 0, - 2 * radius, 0), radius, radius);
 
     options.painter()->drawPath(path.simplified());
+    options.painter()->restore();
 
     // render
     //options.painter()->drawRoundedRect( frameRect, radius, radius );
@@ -280,6 +285,7 @@ void Renderer::renderFlatRoundedButtonFrame(const StyleOptions &options)
         return;
     }
 
+    options.painter()->save();
     // setup options.painter()
     options.painter()->setRenderHint(QPainter::Antialiasing, true);
 
@@ -338,6 +344,7 @@ void Renderer::renderFlatRoundedButtonFrame(const StyleOptions &options)
 
     // render
     options.painter()->drawEllipse(frameRect);
+    options.painter()->restore();
 }
 
 void Renderer::renderSidePanelFrame(const StyleOptions &options, Side side)
@@ -356,6 +363,7 @@ void Renderer::renderSidePanelFrame(const StyleOptions &options, Side side)
     frameRect.adjust(0.5, 0.5, -0.5, -0.5);
 
     // setup options.painter()
+    options.painter()->save();
     options.painter()->setRenderHint(QPainter::Antialiasing);
     options.painter()->setPen(options.outlineColor());
 
@@ -385,6 +393,8 @@ void Renderer::renderSidePanelFrame(const StyleOptions &options, Side side)
     default:
         break;
     }
+
+    options.painter()->restore();
 }
 
 void Renderer::renderMenuFrame(const StyleOptions &options, bool roundCorners)
@@ -392,6 +402,8 @@ void Renderer::renderMenuFrame(const StyleOptions &options, bool roundCorners)
     if (!options.painter()) {
         return;
     }
+
+    options.painter()->save();
 
     // set brush
     if (options.color().isValid()) {
@@ -410,6 +422,7 @@ void Renderer::renderMenuFrame(const StyleOptions &options, bool roundCorners)
     }
 
     options.painter()->drawRect(frameRect);
+    options.painter()->restore();
 }
 
 void Renderer::renderButtonFrame(const StyleOptions &options)
@@ -419,6 +432,7 @@ void Renderer::renderButtonFrame(const StyleOptions &options)
     }
 
     // setup options.painter()
+    options.painter()->save();
     options.painter()->setRenderHint(QPainter::Antialiasing, true);
 
     // copy options.rect()
@@ -483,6 +497,8 @@ void Renderer::renderButtonFrame(const StyleOptions &options)
         options.painter()->setPen(options.outlineColor().darker(114));
         options.painter()->drawLine(frameRect.bottomLeft() + QPointF(2.7, 0), frameRect.bottomRight() + QPointF(-2.7, 0));
     }
+
+    options.painter()->restore();
 }
 
 void Renderer::renderCheckBoxFrame(const StyleOptions &options)
@@ -492,6 +508,7 @@ void Renderer::renderCheckBoxFrame(const StyleOptions &options)
     }
 
     // setup options.painter()
+    options.painter()->save();
     options.painter()->setRenderHint(QPainter::Antialiasing, true);
 
     // copy options.rect()
@@ -565,6 +582,7 @@ void Renderer::renderCheckBoxFrame(const StyleOptions &options)
 
     // render
     options.painter()->drawRoundedRect(frameRect, radius, radius);
+    options.painter()->restore();
 }
 
 void Renderer::renderFlatButtonFrame(const StyleOptions &options)
@@ -574,6 +592,7 @@ void Renderer::renderFlatButtonFrame(const StyleOptions &options)
     }
 
     // setup options.painter()
+    options.painter()->save();
     options.painter()->setRenderHint(QPainter::Antialiasing, true);
 
     // copy options.rect()
@@ -624,6 +643,8 @@ void Renderer::renderFlatButtonFrame(const StyleOptions &options)
 
     // render
     //options.painter()->drawRoundedRect( frameRect, radius, radius );
+
+    options.painter()->restore();
 }
 
 void Renderer::renderToolButtonFrame(const StyleOptions &options)
@@ -637,6 +658,7 @@ void Renderer::renderToolButtonFrame(const StyleOptions &options)
         return;
 
     // setup options.painter()
+    options.painter()->save();
     options.painter()->setRenderHints(QPainter::Antialiasing);
 
     QRectF baseRect(options.rect());
@@ -657,6 +679,7 @@ void Renderer::renderToolButtonFrame(const StyleOptions &options)
         QRectF outlineRect(baseRect.adjusted(1.5, 1.5, -1.5, -1.5));
         options.painter()->drawRoundedRect(outlineRect, radius, radius);
     }
+    options.painter()->restore();
 }
 
 void Renderer::renderToolBoxFrame(const StyleOptions &options, int tabWidth)
@@ -719,6 +742,8 @@ void Renderer::renderTabWidgetFrame(const StyleOptions &options, Corners corners
     QRectF frameRect(options.rect().adjusted(1, 1, -1, -1));
     qreal radius(frameRadius());
 
+    options.painter()->save();
+
     // set pen
     if (options.outlineColor().isValid()) {
         options.painter()->setPen(options.outlineColor());
@@ -738,6 +763,7 @@ void Renderer::renderTabWidgetFrame(const StyleOptions &options, Corners corners
     // render
     QPainterPath path(roundedPath(frameRect, corners, radius));
     options.painter()->drawPath(path);
+    options.painter()->restore();
 }
 
 void Renderer::renderSelection(const StyleOptions &options)
@@ -746,10 +772,12 @@ void Renderer::renderSelection(const StyleOptions &options)
         return;
     }
 
+    options.painter()->save();
     options.painter()->setRenderHint(QPainter::Antialiasing);
     options.painter()->setPen(Qt::NoPen);
     options.painter()->setBrush(options.color());
     options.painter()->drawRect(options.rect());
+    options.painter()->restore();
 }
 
 void Renderer::renderSeparator(const StyleOptions &options, bool vertical)
@@ -772,8 +800,6 @@ void Renderer::renderSeparator(const StyleOptions &options, bool vertical)
     }
 
     options.painter()->restore();
-
-    return;
 }
 
 void Renderer::renderCheckBoxBackground(const StyleOptions &options)
@@ -783,6 +809,7 @@ void Renderer::renderCheckBoxBackground(const StyleOptions &options)
     }
 
     // setup options.painter()
+    options.painter()->save();
     options.painter()->setRenderHint(QPainter::Antialiasing, true);
 
     // copy options.rect() and radius
@@ -792,6 +819,7 @@ void Renderer::renderCheckBoxBackground(const StyleOptions &options)
     options.painter()->setPen(options.outlineColor());
     options.painter()->setBrush(options.color());
     options.painter()->drawRect(frameRect);
+    options.painter()->restore();
 }
 
 void Renderer::renderCheckBox(const StyleOptions &options, const QColor &tickColor, qreal animation)
@@ -884,6 +912,7 @@ void Renderer::renderRadioButtonBackground(const StyleOptions &options)
     }
 
     // setup options.painter()
+    options.painter()->save();
     options.painter()->setRenderHint(QPainter::Antialiasing, true);
 
     // copy options.rect()
@@ -896,6 +925,7 @@ void Renderer::renderRadioButtonBackground(const StyleOptions &options)
     options.painter()->setPen(options.outlineColor());
     options.painter()->setBrush(options.color());
     options.painter()->drawEllipse(frameRect);
+    options.painter()->restore();
 }
 
 void Renderer::renderRadioButton(const StyleOptions &options, const QColor &tickColor, qreal animation)
@@ -905,6 +935,7 @@ void Renderer::renderRadioButton(const StyleOptions &options, const QColor &tick
     }
 
     // setup options.painter()
+    options.painter()->save();
     options.painter()->setRenderHint(QPainter::Antialiasing, true);
 
     // copy options.rect()
@@ -986,6 +1017,8 @@ void Renderer::renderRadioButton(const StyleOptions &options, const QColor &tick
 
         options.painter()->drawEllipse(markerRect);
     }
+
+    options.painter()->restore();
 }
 
 void Renderer::renderSliderGroove(const StyleOptions &options)
@@ -995,6 +1028,7 @@ void Renderer::renderSliderGroove(const StyleOptions &options)
     }
 
     // setup options.painter()
+    options.painter()->save();
     options.painter()->setRenderHint(QPainter::Antialiasing, true);
 
     QRectF baseRect(options.rect());
@@ -1007,7 +1041,7 @@ void Renderer::renderSliderGroove(const StyleOptions &options)
         options.painter()->drawRoundedRect(baseRect, radius, radius);
     }
 
-    return;
+    options.painter()->restore();
 }
 
 void Renderer::renderSliderHandle(const StyleOptions &options, Side ticks, qreal angle)
@@ -1017,6 +1051,7 @@ void Renderer::renderSliderHandle(const StyleOptions &options, Side ticks, qreal
     }
 
     // setup options.painter()
+    options.painter()->save();
     options.painter()->setRenderHint(QPainter::Antialiasing, true);
 
     // copy options.rect()
@@ -1103,6 +1138,7 @@ void Renderer::renderSliderHandle(const StyleOptions &options, Side ticks, qreal
     rotate.rotate(angle);
     rotate.translate(-frameRect.center().x(), -frameRect.center().y());
     options.painter()->drawPolygon(circle.toFillPolygon(rotate));
+    options.painter()->restore();
 }
 
 void Renderer::renderDialGroove(const StyleOptions &options)
@@ -1112,6 +1148,7 @@ void Renderer::renderDialGroove(const StyleOptions &options)
     }
 
     // setup options.painter()
+    options.painter()->save();
     options.painter()->setRenderHint(QPainter::Antialiasing, true);
 
     QRectF baseRect(options.rect());
@@ -1160,7 +1197,7 @@ void Renderer::renderDialContents(const StyleOptions &options, qreal first, qrea
         }
     }
 
-    return;
+    options.painter()->restore();
 }
 
 void Renderer::renderProgressBarGroove(const StyleOptions &options)
@@ -1170,6 +1207,7 @@ void Renderer::renderProgressBarGroove(const StyleOptions &options)
     }
 
     // setup options.painter()
+    options.painter()->save();
     options.painter()->setRenderHint(QPainter::Antialiasing, true);
     options.painter()->setRenderHint(QPainter::SmoothPixmapTransform, true);
 
@@ -1183,7 +1221,7 @@ void Renderer::renderProgressBarGroove(const StyleOptions &options)
         options.painter()->drawRoundedRect(baseRect.translated(0.5, 0.5), radius, radius);
     }
 
-    return;
+    options.painter()->restore();
 }
 
 void Renderer::renderProgressBarContents(const StyleOptions &options)
@@ -1193,13 +1231,14 @@ void Renderer::renderProgressBarContents(const StyleOptions &options)
 
 void Renderer::renderProgressBarBusyContents(const StyleOptions &options, bool horizontal, bool reverse, int progress)
 {
-    Q_UNUSED(reverse);
+    Q_UNUSED(reverse)
 
     if (!options.painter()) {
         return;
     }
 
     // setup options.painter()
+    options.painter()->save();
     options.painter()->setRenderHint(QPainter::Antialiasing, true);
 
     QRectF baseRect(options.rect());
@@ -1216,8 +1255,7 @@ void Renderer::renderProgressBarBusyContents(const StyleOptions &options, bool h
     options.painter()->setBrush(options.color());
     options.painter()->setPen(options.outlineColor());
     options.painter()->drawRoundedRect(contentRect.translated(0.5, 0.5), radius, radius);
-
-    return;
+    options.painter()->restore();
 }
 
 void Renderer::renderScrollBarGroove(const StyleOptions &options)
@@ -1232,6 +1270,7 @@ void Renderer::renderScrollBarHandle(const StyleOptions &options)
     }
 
     // setup options.painter()
+    options.painter()->save();
     options.painter()->setRenderHint(QPainter::Antialiasing, true);
 
     QRectF baseRect(options.rect());
@@ -1245,7 +1284,7 @@ void Renderer::renderScrollBarHandle(const StyleOptions &options)
         options.painter()->drawRoundedRect(baseRect, radius, radius);
     }
 
-    return;
+    options.painter()->restore();
 }
 
 void Renderer::renderToolBarHandle(const StyleOptions &options)
@@ -1260,6 +1299,7 @@ void Renderer::renderTabBarTab(const StyleOptions &options, const QColor &backgr
     }
 
     // setup options.painter()
+    options.painter()->save();
     options.painter()->setRenderHint(QPainter::Antialiasing, false);
 
     QRectF frameRect(options.rect());
@@ -1295,6 +1335,8 @@ void Renderer::renderTabBarTab(const StyleOptions &options, const QColor &backgr
         options.painter()->drawLine(frameRect.left(), frameRect.top() + adjustment, frameRect.left(), frameRect.bottom() - adjustment);
         break;
     }
+
+    options.painter()->restore();
 }
 
 void Renderer::renderArrow(const StyleOptions &options, ArrowOrientation arrowOrientation)
@@ -1334,8 +1376,6 @@ void Renderer::renderArrow(const StyleOptions &options, ArrowOrientation arrowOr
     options.painter()->drawPolygon(arrow);
 
     options.painter()->restore();
-
-    return;
 }
 
 void Renderer::renderSign(const StyleOptions &options, bool orientation)
@@ -1349,11 +1389,13 @@ void Renderer::renderSign(const StyleOptions &options, bool orientation)
 
     QRect r = options.rect().adjusted(1, 2, 0, 0);
 
+    options.painter()->save();
     options.painter()->setPen(pen);
     options.painter()->drawLine(r.center() - QPointF(5, 0), r.center() + QPointF(5, 0));
     if (orientation) {
         options.painter()->drawLine(r.center() - QPointF(0, 5), r.center() + QPointF(0, 5));
     }
+    options.painter()->restore();
 }
 
 void Renderer::renderDecorationButton(const StyleOptions &options, ButtonType buttonType)
@@ -1406,7 +1448,6 @@ void Renderer::renderDecorationButton(const StyleOptions &options, ButtonType bu
     }
 
     options.painter()->restore();
-    return;
 }
 
 } // namespace Adwaita
