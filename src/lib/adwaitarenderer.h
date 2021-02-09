@@ -53,6 +53,8 @@ public:
 
     static void renderFlatButtonFrame(const StyleOptions &options);
 
+    static void renderFlatRoundedButtonFrame(const StyleOptions &options);
+
     static void renderToolButtonFrame(const StyleOptions &options);
 
     static void renderToolBoxFrame(const StyleOptions &options, int tabWidth);

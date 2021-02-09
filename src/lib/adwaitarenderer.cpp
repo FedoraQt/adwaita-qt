@@ -273,6 +273,73 @@ void Renderer::renderFlatFrame(const StyleOptions &options)
     //options.painter()->drawRoundedRect( frameRect, radius, radius );
 }
 
+
+void Renderer::renderFlatRoundedButtonFrame(const StyleOptions &options)
+{
+    if (!options.painter()) {
+        return;
+    }
+
+    // setup options.painter()
+    options.painter()->setRenderHint(QPainter::Antialiasing, true);
+
+    // copy options.rect()
+    QRectF frameRect(options.rect());
+    frameRect.adjust(1, 1, -1, -1);
+    qreal radius(frameRadius());
+
+    if (options.outlineColor().isValid()) {
+        options.painter()->setPen(QPen(options.outlineColor(), 1.0));
+
+        frameRect.adjust(0.5, 0.5, -0.5, -0.5);
+        radius = qMax(radius - 1, qreal(0.0));
+    } else {
+        options.painter()->setPen(Qt::NoPen);
+    }
+
+    // content
+    if (options.color().isValid()) {
+        QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
+        if (options.sunken()) {
+            // Pressed button in normal and dark mode is not a gradient, just an image consting from same $color
+            gradient.setColorAt(0, options.color());
+            gradient.setColorAt(1, options.color());
+        } else if (options.mouseOver()) {
+            if (options.colorVariant() == AdwaitaDark) {
+                QColor baseColor = Colors::lighten(options.color(), 0.01);
+                // Hovered button in dark mode is a gradient from $color to Colors::lighten(bg_color, 0.01)
+                gradient.setColorAt(0, Colors::lighten(baseColor, 0.01)); // FIXME not coroptions.rect() according to adwaita's _drawing.scss file, but looks more close than before
+                gradient.setColorAt(1, Colors::lighten(baseColor, 0.01));
+            } else {
+                QColor baseColor = options.color();
+                // Hovered button in normal mode is a gradient from $color to Colors::lighten(bg_color, 0.01)
+                gradient.setColorAt(0, options.color());
+                gradient.setColorAt(1, Colors::lighten(baseColor, 0.01));
+            }
+        } else {
+            if (options.colorVariant() == AdwaitaDark) {
+                QColor baseColor = Colors::lighten(options.color(), 0.01);
+                // Normal button in dark mode is a gradient from $color to bg_color
+                gradient.setColorAt(0, options.color());
+                gradient.setColorAt(1, baseColor);
+            } else {
+                QColor baseColor = Colors::lighten(options.color(), 0.04);
+                // Normal button in normal mode is a gradient from $color to bg_color
+                gradient.setColorAt(0, options.color());
+                gradient.setColorAt(1, baseColor);
+            }
+        }
+        options.painter()->setBrush(gradient);
+    } else if (!options.active()) {
+        options.painter()->setBrush(options.color());
+    } else {
+        options.painter()->setBrush(Qt::NoBrush);
+    }
+
+    // render
+    options.painter()->drawEllipse(frameRect);
+}
+
 void Renderer::renderSidePanelFrame(const StyleOptions &options, Side side)
 {
     if (!options.painter()) {
