@@ -5216,21 +5216,21 @@ bool Style::drawProgressBarControl(const QStyleOption *option, QPainter *painter
     QStyleOptionProgressBar progressBarOption = *progressBarOptionTmp;
 
     // render groove
-    progressBarOption.rect = subElementRect(SE_ProgressBarGroove, &progressBarOption, widget);
+    progressBarOption.rect = subElementRect(SE_ProgressBarGroove, progressBarOptionTmp, widget);
     drawControl(CE_ProgressBarGroove, &progressBarOption, painter, widget);
 
-    const QObject *styleObject(widget ? widget : progressBarOption.styleObject);
+    const QObject *styleObject(widget ? widget : progressBarOptionTmp->styleObject);
 
     // enable busy animations
     // need to check both widget and passed styleObject, used for QML
     if (styleObject && _animations->busyIndicatorEngine().enabled()) {
 
         // register QML object if defined
-        if (!widget && progressBarOption.styleObject) {
-            _animations->busyIndicatorEngine().registerWidget(progressBarOption.styleObject);
+        if (!widget && progressBarOptionTmp->styleObject) {
+            _animations->busyIndicatorEngine().registerWidget(progressBarOptionTmp->styleObject);
         }
 
-        _animations->busyIndicatorEngine().setAnimated(styleObject, progressBarOption.maximum == 0 && progressBarOption.minimum == 0);
+        _animations->busyIndicatorEngine().setAnimated(styleObject, progressBarOptionTmp->maximum == 0 && progressBarOptionTmp->minimum == 0);
     }
 
     // check if animated and pass to option
@@ -5239,14 +5239,14 @@ bool Style::drawProgressBarControl(const QStyleOption *option, QPainter *painter
     }
 
     // render contents
-    progressBarOption.rect = subElementRect(SE_ProgressBarContents, &progressBarOption, widget);
+    progressBarOption.rect = subElementRect(SE_ProgressBarContents, progressBarOptionTmp, widget);
     drawControl(CE_ProgressBarContents, &progressBarOption, painter, widget);
 
     // render text
-    bool textVisible(progressBarOption.textVisible);
-    bool busy(progressBarOption.minimum == 0 && progressBarOption.maximum == 0);
+    bool textVisible(progressBarOptionTmp->textVisible);
+    bool busy(progressBarOptionTmp->minimum == 0 && progressBarOptionTmp->maximum == 0);
     if (textVisible && !busy) {
-        progressBarOption.rect = subElementRect(SE_ProgressBarLabel, &progressBarOption, widget);
+        progressBarOption.rect = subElementRect(SE_ProgressBarLabel, progressBarOptionTmp, widget);
         drawControl(CE_ProgressBarLabel, &progressBarOption, painter, widget);
     }
 
