@@ -1435,8 +1435,8 @@ void Renderer::renderDecorationButton(const StyleOptions &options, ButtonType bu
     }
     case ButtonMinimize: {
         options.painter()->drawPolyline(QPolygonF()
-                              << QPointF(4, 14)
-                              << QPointF(14, 14));
+                              << QPointF(5, 13)
+                              << QPointF(13, 13));
         break;
     }
     case ButtonRestore: {
