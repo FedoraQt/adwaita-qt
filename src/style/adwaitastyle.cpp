@@ -3541,6 +3541,8 @@ bool Style::drawIndicatorArrowPrimitive(ArrowOrientation orientation, const QSty
     StyleOptions styleOptions(palette);
     styleOptions.setMouseOver(mouseOver);
     styleOptions.setHasFocus(hasFocus);
+    styleOptions.setRect(rect);
+    styleOptions.setPainter(painter);
 
     // color
     QColor color;
