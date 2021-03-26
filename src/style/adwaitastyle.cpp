@@ -3761,9 +3761,10 @@ bool Style::drawPanelButtonToolPrimitive(const QStyleOption *option, QPainter *p
             rect = visualRect(option, rect);
         }
 
-        styleOptions.setColor(background);
         styleOptions.setActive(windowActive);
-
+        styleOptions.setColor(background);
+        styleOptions.setOutlineColor(outline);
+        styleOptions.setRect(rect);
         // render
         Adwaita::Renderer::renderButtonFrame(styleOptions);
     } else {
