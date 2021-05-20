@@ -2008,11 +2008,12 @@ QRect Style::tabWidgetTabBarRect(const QStyleOption *option, const QWidget *widg
     // horizontal positioning
     bool verticalTabs(isVerticalTab(tabOption->shape));
     if (verticalTabs) {
-        tabBarRect.setTop(option->rect.top() + 1);
-        tabBarRect.setBottom(option->rect.bottom() - 1);
-        //tabBarRect.setHeight( qMin( tabBarRect.height(), rect.height() - 2 ) );
-        //if( tabBarAlignment == Qt::AlignCenter ) tabBarRect.moveTop( rect.top() + ( rect.height() - tabBarRect.height() )/2 );
-        //else tabBarRect.moveTop( rect.top()+1 );
+        tabBarRect.setHeight(qMin(tabBarRect.height(), rect.height() - 2));
+        if (tabBarAlignment == Qt::AlignCenter) {
+            tabBarRect.moveTop(rect.top() + (rect.height() - tabBarRect.height()) / 2);
+        } else {
+            tabBarRect.moveTop(rect.top() + 1);
+        }
     } else {
         // account for corner rects
         // need to re-run visualRect to remove right-to-left handling, since it is re-added on tabBarRect at the end
@@ -2022,8 +2023,13 @@ QRect Style::tabWidgetTabBarRect(const QStyleOption *option, const QWidget *widg
         rect.setLeft(leftButtonRect.width());
         rect.setRight(rightButtonRect.left() - 1);
 
-        tabBarRect.moveLeft(rect.left() + 1);
-        tabBarRect.setWidth(rect.width() - 2);
+        tabBarRect.setWidth(qMin(tabBarRect.width(), rect.width() - 2));
+
+        if (tabBarAlignment == Qt::AlignCenter) {
+            tabBarRect.moveLeft(rect.left() + (rect.width() - tabBarRect.width()) / 2);
+        } else {
+            tabBarRect.moveLeft(rect.left() + 1);
+        }
 
         tabBarRect = visualRect(option, tabBarRect);
     }
