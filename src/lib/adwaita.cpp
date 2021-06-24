@@ -30,10 +30,15 @@ public:
     explicit StyleOptionsPrivate(const QPalette &palette)
         : m_palette(palette)
     { }
+     StyleOptionsPrivate(const QPalette &palette, ColorVariant variant)
+        : m_palette(palette)
+        , m_colorVariant(variant)
+    { }
     StyleOptionsPrivate(QPainter *painter, const QRect &rect)
         : m_painter(painter)
         , m_rect(rect)
     { }
+
     virtual ~StyleOptionsPrivate()
     { }
 
@@ -62,11 +67,15 @@ StyleOptions::StyleOptions(const QPalette &palette)
 {
 }
 
+StyleOptions::StyleOptions(const QPalette &palette, ColorVariant variant)
+    : d_ptr(new StyleOptionsPrivate(palette, variant))
+{
+}
+
 StyleOptions::StyleOptions(QPainter *painter, const QRect &rect)
     : d_ptr(new StyleOptionsPrivate(painter, rect))
 {
 }
-
 
 StyleOptions::~StyleOptions()
 {

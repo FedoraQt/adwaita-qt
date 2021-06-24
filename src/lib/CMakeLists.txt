@@ -1,4 +1,6 @@
 
+#add_subdirectory(stylesheet)
+
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -64,8 +66,25 @@ target_link_libraries(adwaitaqtpriv
     Qt5::Widgets
 )
 
+# We need this done before we start building adwaitaqt public library
+find_program(SASSC_EXECUTABLE sassc REQUIRED)
+set(Variants "light" "dark" "hc" "hc-dark")
+foreach(VARIANT IN LISTS Variants )
+    add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/stylesheet/Adwaita-${VARIANT}.css"
+                       COMMAND "${SASSC_EXECUTABLE}"
+                               -a -M -t compact
+                               "${CMAKE_CURRENT_SOURCE_DIR}/stylesheet/Adwaita-${VARIANT}.scss"
+                               "${CMAKE_CURRENT_BINARY_DIR}/stylesheet/Adwaita-${VARIANT}.css"
+                       COMMENT "Stylesheet variant: ${VARIANT}")
+endforeach()
+
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/stylesheet/stylesheet.qrc.in" "${CMAKE_CURRENT_BINARY_DIR}/stylesheet/stylesheet.qrc")
+
+qt5_add_resources(libadwaitaqt_SRCS "${CMAKE_CURRENT_BINARY_DIR}/stylesheet/stylesheet.qrc")
+
 add_library(adwaitaqt SHARED ${libadwaitaqt_SRCS})
 add_library(AdwaitaQt ALIAS adwaitaqt)
+
 
 target_link_libraries(adwaitaqt
     PUBLIC

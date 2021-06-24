@@ -279,7 +279,7 @@ enum ArrowOrientation { ArrowNone, ArrowUp, ArrowDown, ArrowLeft, ArrowRight };
 //* button type
 enum ButtonType { ButtonClose, ButtonMaximize, ButtonMinimize, ButtonRestore };
 
-enum ColorVariant { Unknown, Adwaita, AdwaitaDark, AdwaitaHighcontrast };
+enum ColorVariant { Unknown, Adwaita, AdwaitaDark, AdwaitaHighcontrast, AdwaitaHighcontrastDark };
 
 class StyleOptionsPrivate;
 
@@ -287,6 +287,7 @@ class ADWAITAQT_EXPORT StyleOptions
 {
 public:
     explicit StyleOptions(const QPalette &palette);
+    StyleOptions(const QPalette &palette, ColorVariant variant);
     StyleOptions(QPainter *painter, const QRect &rect);
     virtual ~StyleOptions();
 

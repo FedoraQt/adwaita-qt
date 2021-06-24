@@ -66,7 +66,7 @@ class Style : public ParentStyleClass
 
 public:
     //* constructor
-    explicit Style(bool dark);
+    explicit Style(ColorVariant variant);
 
     //* destructor
     virtual ~Style(void);
@@ -547,6 +547,8 @@ private:
 
     //! styled painting for KCapacityBar
     QStyle::ControlElement CE_CapacityBar;
+
+    ColorVariant _variant { Adwaita };
 
     bool _dark { false };
 

@@ -20,6 +20,7 @@
 
 #include "adwaitastyleplugin.h"
 #include "adwaitastyle.h"
+#include "adwaita.h"
 
 #include <QApplication>
 
@@ -29,11 +30,19 @@ namespace Adwaita
 QStyle *StylePlugin::create(const QString &key)
 {
     if (key.toLower() == QStringLiteral("adwaita")) {
-        return new Style(false);
+        return new Style(Adwaita::Adwaita);
     }
 
     if (key.toLower() == QStringLiteral("adwaita-dark")) {
-        return new Style(true);
+        return new Style(Adwaita::AdwaitaDark);
+    }
+
+    if (key.toLower() == QStringLiteral("adwaita-highcontrast")) {
+        return new Style(Adwaita::AdwaitaHighcontrast);
+    }
+
+    if (key.toLower() == QStringLiteral("adwaita-highcontrast-dark")) {
+        return new Style(Adwaita::AdwaitaHighcontrastDark);
     }
 
     return nullptr;
@@ -45,7 +54,8 @@ StylePlugin::~StylePlugin()
 
 QStringList StylePlugin::keys() const
 {
-    return QStringList() << QStringLiteral("Adwaita") << QStringLiteral("Adwaita-Dark");
+    return QStringList() << QStringLiteral("Adwaita") << QStringLiteral("Adwaita-Dark")
+                         << QStringLiteral("Adwaita-HighContrast") << QStringLiteral("Adwaita-HighContrast-Dark");
 }
 
 } // namespace Adwaita

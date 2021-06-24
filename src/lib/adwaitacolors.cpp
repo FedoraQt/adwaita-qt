@@ -20,14 +20,22 @@
  *************************************************************************/
 
 #include "adwaitacolors.h"
+#include "adwaitacolors_p.h"
 #include "animations/adwaitaanimationdata.h"
 
 #include <QGuiApplication>
+#include <QFile>
+#include <QMetaEnum>
+#include <QRegularExpression>
 
 #include <QtMath>
 
+#include <QDebug>
+
 namespace Adwaita
 {
+
+Q_GLOBAL_STATIC(ColorsPrivate, colorsGlobal)
 
 //* contrast for arrow and treeline rendering
 static const qreal arrowShade = 0.15;
@@ -129,210 +137,175 @@ static bool isDarkMode()
     return false;
 }
 
-static QPalette paletteAdwaita()
+static ColorsPrivate::AdwaitaColor colorNameToEnum(const QString &name)
 {
-    QPalette palette;
+    Q_ASSERT(!name.isEmpty());
 
-    // Colors defined in GTK adwaita style in _colors.scss
-    QColor base_color = QColor("white");
-    QColor text_color = QColor("black");
-    QColor bg_color = QColor("#f6f5f4");
-    QColor fg_color = QColor("#2e3436");
-    QColor selected_bg_color = QColor("#3584e4");
-    QColor selected_fg_color = QColor("white");
-    QColor osd_text_color = QColor("white");
-    QColor osd_bg_color = QColor("black");
-    QColor shadow = Colors::transparentize(QColor("black"), 0.9);
+    QMetaObject metaObject = ColorsPrivate::staticMetaObject;
 
-    QColor backdrop_fg_color = Colors::mix(fg_color, bg_color);
-    QColor backdrop_base_color = Colors::darken(base_color, 0.01);
-    QColor backdrop_selected_fg_color = backdrop_base_color;
+    QMetaEnum metaEnum = metaObject.enumerator(metaObject.indexOfEnumerator("AdwaitaColor"));
+    ColorsPrivate::AdwaitaColor value = static_cast<ColorsPrivate::AdwaitaColor>(metaEnum.keyToValue(name.toLatin1()));
 
-    // This is the color we use as initial color for the gradient in normal state
-    // Defined in _drawing.scss button(normal)
-    QColor button_base_color = Colors::darken(bg_color, 0.04);
-
-    QColor link_color = Colors::darken(selected_bg_color, 0.1);
-    QColor link_visited_color = Colors::darken(selected_bg_color, 0.2);
-
-    palette.setColor(QPalette::All,      QPalette::Window,          bg_color);
-    palette.setColor(QPalette::All,      QPalette::WindowText,      fg_color);
-    palette.setColor(QPalette::All,      QPalette::Base,            base_color);
-    palette.setColor(QPalette::All,      QPalette::AlternateBase,   base_color);
-    palette.setColor(QPalette::All,      QPalette::ToolTipBase,     osd_bg_color);
-    palette.setColor(QPalette::All,      QPalette::ToolTipText,     osd_text_color);
-    palette.setColor(QPalette::All,      QPalette::Text,            fg_color);
-    palette.setColor(QPalette::All,      QPalette::Button,          button_base_color);
-    palette.setColor(QPalette::All,      QPalette::ButtonText,      fg_color);
-    palette.setColor(QPalette::All,      QPalette::BrightText,      text_color);
-
-    palette.setColor(QPalette::All,      QPalette::Light,           Colors::lighten(button_base_color));
-    palette.setColor(QPalette::All,      QPalette::Midlight,        Colors::mix(Colors::lighten(button_base_color), button_base_color));
-    palette.setColor(QPalette::All,      QPalette::Mid,             Colors::mix(Colors::darken(button_base_color), button_base_color));
-    palette.setColor(QPalette::All,      QPalette::Dark,            Colors::darken(button_base_color));
-    palette.setColor(QPalette::All,      QPalette::Shadow,          shadow);
-
-    palette.setColor(QPalette::All,      QPalette::Highlight,       selected_bg_color);
-    palette.setColor(QPalette::All,      QPalette::HighlightedText, selected_fg_color);
-
-    palette.setColor(QPalette::All,      QPalette::Link,            link_color);
-    palette.setColor(QPalette::All,      QPalette::LinkVisited,     link_visited_color);
-
-    QColor insensitive_fg_color = Colors::mix(fg_color, bg_color);
-    QColor insensitive_bg_color = Colors::mix(bg_color, base_color, 0.4);
-
-    palette.setColor(QPalette::Disabled, QPalette::Window,          insensitive_bg_color);
-    palette.setColor(QPalette::Disabled, QPalette::WindowText,      insensitive_fg_color);
-    palette.setColor(QPalette::Disabled, QPalette::Base,            base_color);
-    palette.setColor(QPalette::Disabled, QPalette::AlternateBase,   base_color);
-    palette.setColor(QPalette::Disabled, QPalette::Text,            insensitive_fg_color);
-    palette.setColor(QPalette::Disabled, QPalette::Button,          insensitive_bg_color);
-    palette.setColor(QPalette::Disabled, QPalette::ButtonText,      insensitive_fg_color);
-    palette.setColor(QPalette::Disabled, QPalette::BrightText,      text_color);
-
-    palette.setColor(QPalette::Disabled, QPalette::Light,           Colors::lighten(insensitive_bg_color));
-    palette.setColor(QPalette::Disabled, QPalette::Midlight,        Colors::mix(Colors::lighten(insensitive_bg_color), insensitive_bg_color));
-    palette.setColor(QPalette::Disabled, QPalette::Mid,             Colors::mix(Colors::darken(insensitive_bg_color), insensitive_bg_color));
-    palette.setColor(QPalette::Disabled, QPalette::Dark,            Colors::darken(insensitive_bg_color));
-    palette.setColor(QPalette::Disabled, QPalette::Shadow,          shadow);
-
-    palette.setColor(QPalette::Disabled, QPalette::Highlight,       selected_bg_color);
-    palette.setColor(QPalette::Disabled, QPalette::HighlightedText, selected_fg_color);
-
-    palette.setColor(QPalette::Disabled, QPalette::Link,            link_color);
-    palette.setColor(QPalette::Disabled, QPalette::LinkVisited,     link_visited_color);
-
-
-    palette.setColor(QPalette::Inactive, QPalette::Window,          bg_color);
-    palette.setColor(QPalette::Inactive, QPalette::WindowText,      backdrop_fg_color);
-    palette.setColor(QPalette::Inactive, QPalette::Base,            backdrop_base_color);
-    palette.setColor(QPalette::Inactive, QPalette::AlternateBase,   backdrop_base_color);
-    palette.setColor(QPalette::Inactive, QPalette::Text,            backdrop_fg_color);
-    palette.setColor(QPalette::Inactive, QPalette::Button,          button_base_color);
-    palette.setColor(QPalette::Inactive, QPalette::ButtonText,      backdrop_fg_color);
-    palette.setColor(QPalette::Inactive, QPalette::BrightText,      text_color);
-
-    palette.setColor(QPalette::Inactive, QPalette::Light,           Colors::lighten(insensitive_bg_color));
-    palette.setColor(QPalette::Inactive, QPalette::Midlight,        Colors::mix(Colors::lighten(insensitive_bg_color), insensitive_bg_color));
-    palette.setColor(QPalette::Inactive, QPalette::Mid,             Colors::mix(Colors::darken(insensitive_bg_color), insensitive_bg_color));
-    palette.setColor(QPalette::Inactive, QPalette::Dark,            Colors::darken(insensitive_bg_color));
-    palette.setColor(QPalette::Inactive, QPalette::Shadow,          shadow);
-
-    palette.setColor(QPalette::Inactive, QPalette::Highlight,       selected_bg_color);
-    palette.setColor(QPalette::Inactive, QPalette::HighlightedText, backdrop_selected_fg_color);
-
-    palette.setColor(QPalette::Inactive, QPalette::Link,            link_color);
-    palette.setColor(QPalette::Inactive, QPalette::LinkVisited,     link_visited_color);
-
-    return palette;
+    return (value <= ColorsPrivate::invalid_value || value > ColorsPrivate::alt_focus_border_color) ? ColorsPrivate::invalid_value : value;
 }
 
-// private
-static QPalette paletteAdwaitaDark()
+ColorsPrivate::ColorsPrivate()
 {
-    QPalette palette;
+    const QStringList variants = { QStringLiteral("light"), QStringLiteral("dark"),
+                                   QStringLiteral("hc"), QStringLiteral("hc-dark") };
+    for (const QString &variant : variants) {
+        ColorVariant colorVariant;
+        if (variant == QStringLiteral("light")) {
+            colorVariant = Adwaita;
+        } else if (variant == QStringLiteral("dark")) {
+            colorVariant = AdwaitaDark;
+        } else if (variant == QStringLiteral("hc")) {
+            colorVariant = AdwaitaHighcontrast;
+        } else {
+            colorVariant = AdwaitaHighcontrastDark;
+        }
 
-    // Colors defined in GTK adwaita style in _colors.scss
-    QColor base_color = Colors::lighten(Colors::desaturate(QColor("#241f31"), 1.0), 0.02);
-    QColor text_color = QColor("white");
-    QColor bg_color = Colors::darken(Colors::desaturate(QColor("#3d3846"), 1.0), 0.04);
-    QColor fg_color = QColor("#eeeeec");
-    QColor selected_bg_color = Colors::darken(QColor("#3584e4"), 0.2);
-    QColor selected_fg_color = QColor("white");
-    QColor osd_text_color = QColor("white");
-    QColor osd_bg_color = QColor("black");
-    QColor shadow = Colors::transparentize(QColor("black"), 0.9);
+        const QString filename = QStringLiteral(":/stylesheet/Adwaita-%1.css").arg(variant);
+        QFile file(filename);
 
-    QColor backdrop_fg_color = Colors::mix(fg_color, bg_color);
-    QColor backdrop_base_color = Colors::lighten(base_color, 0.01);
-    QColor backdrop_selected_fg_color = Colors::mix(text_color, backdrop_base_color, 0.2);
+        if (!file.open(QIODevice::ReadOnly)) {
+            continue;
+        }
 
-    // This is the color we use as initial color for the gradient in normal state
-    // Defined in _drawing.scss button(normal)
-    QColor button_base_color = Colors::darken(bg_color, 0.01);
+        QTextStream in(&file);
+        while (!in.atEnd()) {
+            const QString line = in.readLine();
+            // E.g. light_fg #2e3436;
+            const QRegularExpression reBase("^@define\\-color\\ ([a-z|_]+)\\ (#[a-z|0-9]{6}|white|black);$");
+            // E.g. borders_edge rgba(255, 255, 255, 0.8);
+            const QRegularExpression reRgba("^@define\\-color\\ ([a-z|_]+)\\ rgba\\((\\d+)[,|\\ ]+(\\d+)[,|\\ ]+(\\d+)[,|\\ ]+([\\d|\\.]+)\\);$");
+            // E.g. view_active_color alpha(currentColor,0.16);
+            const QRegularExpression reAlpha("^@define\\-color\\ ([a-z|_]+)\\ alpha\\((currentColor|black|white|#[a-z|0-9]{6})[,|\\ ]+([\\d|\\.]+)\\);$");
+            // E.g. link_color mix(#3584e4,black,0.25);
+            const QRegularExpression reMix("^@define\\-color\\ ([a-z|_]+)\\ mix\\((currentColor|black|white|#[a-z|0-9]{6})[,|\\ ]+(currentColor|black|white|#[a-z|0-9]{6})[,|\\ ]+([\\d|\\.]+)\\);$");
+            // E.g. link_visited_color mix(mix(#3584e4,black,0.25),black,0.2);
+            const QRegularExpression reMixMix("^@define\\-color\\ ([a-z|_]+)\\ mix\\(mix\\((currentColor|black|white|#[a-z|0-9]{6})[,|\\ ]+(currentColor|black|white|#[a-z|0-9]{6})[,|\\ ]+([\\d|\\.]+)\\)[,|\\ ]+(currentColor|black|white|#[a-z|0-9]{6})[,|\\ ]+([\\d|\\.]+)\\);$");
 
-    QColor link_color = Colors::lighten(selected_bg_color, 0.2);
-    QColor link_visited_color = Colors::lighten(selected_bg_color, 0.1);
+            const QRegularExpressionMatch reBaseMatch = reBase.match(line);
+            const QRegularExpressionMatch reRgbaMatch = reRgba.match(line);
+            const QRegularExpressionMatch reAlphaMatch = reAlpha.match(line);
+            const QRegularExpressionMatch reMixMatch = reMix.match(line);
+            const QRegularExpressionMatch reMixMixMatch = reMixMix.match(line);
 
-    palette.setColor(QPalette::All,      QPalette::Window,          bg_color);
-    palette.setColor(QPalette::All,      QPalette::WindowText,      fg_color);
-    palette.setColor(QPalette::All,      QPalette::Base,            base_color);
-    palette.setColor(QPalette::All,      QPalette::AlternateBase,   base_color);
-    palette.setColor(QPalette::All,      QPalette::ToolTipBase,     osd_bg_color);
-    palette.setColor(QPalette::All,      QPalette::ToolTipText,     osd_text_color);
-    palette.setColor(QPalette::All,      QPalette::Text,            fg_color);
-    palette.setColor(QPalette::All,      QPalette::Button,          button_base_color);
-    palette.setColor(QPalette::All,      QPalette::ButtonText,      fg_color);
-    palette.setColor(QPalette::All,      QPalette::BrightText,      text_color);
+            if (reBaseMatch.hasMatch()) {
+                // qWarning() << reBaseMatch.captured(0);
+                const AdwaitaColor color = colorNameToEnum(reBaseMatch.captured(1));
+                auto map = m_colors.value(color);
 
-    palette.setColor(QPalette::All,      QPalette::Light,           Colors::lighten(button_base_color));
-    palette.setColor(QPalette::All,      QPalette::Midlight,        Colors::mix(Colors::lighten(button_base_color), button_base_color));
-    palette.setColor(QPalette::All,      QPalette::Mid,             Colors::mix(Colors::darken(button_base_color), button_base_color));
-    palette.setColor(QPalette::All,      QPalette::Dark,            Colors::darken(button_base_color));
-    palette.setColor(QPalette::All,      QPalette::Shadow,          shadow);
+                // Process captured color
+                const QColor capturedColor(reBaseMatch.captured(2));
+                auto func = [capturedColor](const QColor &unusedParam) {
+                    Q_UNUSED(unusedParam)
+                    return capturedColor;
+                };
+                map.insert(colorVariant, func);
 
-    palette.setColor(QPalette::All,      QPalette::Highlight,       selected_bg_color);
-    palette.setColor(QPalette::All,      QPalette::HighlightedText, selected_fg_color);
+                m_colors.insert(color, map);
+            } else if (reRgbaMatch.hasMatch()) {
+                // qWarning() << reRgbaMatch.captured(0);
+                const AdwaitaColor color = colorNameToEnum(reRgbaMatch.captured(1));
+                auto map = m_colors.value(color);
 
-    palette.setColor(QPalette::All,      QPalette::Link,            link_color);
-    palette.setColor(QPalette::All,      QPalette::LinkVisited,     link_visited_color);
+                // Process captured color
+                const int r = reRgbaMatch.captured(2).toInt();
+                const int g = reRgbaMatch.captured(3).toInt();
+                const int b = reRgbaMatch.captured(4).toInt();
+                const double a = reRgbaMatch.captured(5).toDouble();
+                const QColor capturedColor(r, g, b, a);
+                auto func = [capturedColor](const QColor &unusedParam) {
+                    Q_UNUSED(unusedParam)
+                    return capturedColor;
+                };
+                map.insert(colorVariant, func);
 
+                m_colors.insert(color, map);
+            } else if (reAlphaMatch.hasMatch()) {
+                // qWarning() << reAlphaMatch.captured(0);
+                const AdwaitaColor color = colorNameToEnum(reAlphaMatch.captured(1));
+                auto map = m_colors.value(color);
 
-    QColor insensitive_fg_color = Colors::mix(fg_color, bg_color);
-    QColor insensitive_bg_color = Colors::mix(bg_color, base_color, 0.4);
+                // Process captured color
+                const QString colorToAlpha = reAlphaMatch.captured(2);
+                const qreal alphaValue = reAlphaMatch.captured(3).toDouble();
 
-    palette.setColor(QPalette::Disabled, QPalette::Window,          insensitive_bg_color);
-    palette.setColor(QPalette::Disabled, QPalette::WindowText,      insensitive_fg_color);
-    palette.setColor(QPalette::Disabled, QPalette::Base,            base_color);
-    palette.setColor(QPalette::Disabled, QPalette::AlternateBase,   base_color);
-    palette.setColor(QPalette::Disabled, QPalette::Text,            insensitive_fg_color);
-    palette.setColor(QPalette::Disabled, QPalette::Button,          insensitive_bg_color);
-    palette.setColor(QPalette::Disabled, QPalette::ButtonText,      insensitive_fg_color);
-    palette.setColor(QPalette::Disabled, QPalette::BrightText,      text_color);
+                std::function<QColor (const QColor&)> func;
 
-    palette.setColor(QPalette::Disabled, QPalette::Light,           Colors::lighten(insensitive_bg_color));
-    palette.setColor(QPalette::Disabled, QPalette::Midlight,        Colors::mix(Colors::lighten(insensitive_bg_color), insensitive_bg_color));
-    palette.setColor(QPalette::Disabled, QPalette::Mid,             Colors::mix(Colors::darken(insensitive_bg_color), insensitive_bg_color));
-    palette.setColor(QPalette::Disabled, QPalette::Dark,            Colors::darken(insensitive_bg_color));
-    palette.setColor(QPalette::Disabled, QPalette::Shadow,          shadow);
+                if (colorToAlpha == QStringLiteral("currentColor")) {
+                    func = std::bind(Colors::alphaColor, std::placeholders::_1, alphaValue);
+                } else {
+                    func = [colorToAlpha, alphaValue](const QColor &unusedParam) {
+                        Q_UNUSED(unusedParam)
+                        if (colorToAlpha == QStringLiteral("black"))
+                            return Colors::alphaColor(Qt::black, alphaValue);
+                        if (colorToAlpha == QStringLiteral("white"))
+                            return Colors::alphaColor(Qt::white, alphaValue);
+                        return Colors::alphaColor(QColor(colorToAlpha), alphaValue);
+                    };
+                }
+                map.insert(colorVariant, func);
 
-    palette.setColor(QPalette::Disabled, QPalette::Highlight,       selected_bg_color);
-    palette.setColor(QPalette::Disabled, QPalette::HighlightedText, selected_fg_color);
+                m_colors.insert(color, map);
+            } else if (reMixMatch.hasMatch()) {
+                // qWarning() << reMixMatch.captured(0);
+                const AdwaitaColor color = colorNameToEnum(reMixMatch.captured(1));
+                auto map = m_colors.value(color);
 
-    palette.setColor(QPalette::Disabled, QPalette::Link,            link_color);
-    palette.setColor(QPalette::Disabled, QPalette::LinkVisited,     link_visited_color);
+                // Process captured color
+                const QString firstColorToMixName = reAlphaMatch.captured(2);
+                const QString secondColorToMixName = reAlphaMatch.captured(3);
+                const qreal mixFactor = reAlphaMatch.captured(4).toDouble();
 
+                std::function<QColor (const QColor&)> func;
 
-    palette.setColor(QPalette::Inactive, QPalette::Window,          bg_color);
-    palette.setColor(QPalette::Inactive, QPalette::WindowText,      backdrop_fg_color);
-    palette.setColor(QPalette::Inactive, QPalette::Base,            backdrop_base_color);
-    palette.setColor(QPalette::Inactive, QPalette::AlternateBase,   backdrop_base_color);
-    palette.setColor(QPalette::Inactive, QPalette::Text,            backdrop_fg_color);
-    palette.setColor(QPalette::Inactive, QPalette::Button,          button_base_color);
-    palette.setColor(QPalette::Inactive, QPalette::ButtonText,      backdrop_fg_color);
-    palette.setColor(QPalette::Inactive, QPalette::BrightText,      text_color);
+                const QColor firstColorToMix = firstColorToMixName == QStringLiteral("black") ? Qt::black :
+                                               firstColorToMixName == QStringLiteral("white") ? Qt::white :
+                                               QColor(firstColorToMixName);
+                const QColor secondColorToMix = firstColorToMixName == QStringLiteral("black") ? Qt::black :
+                                                firstColorToMixName == QStringLiteral("white") ? Qt::white :
+                                                QColor(firstColorToMixName);
+                if (firstColorToMixName == QStringLiteral("currentColor")) {
+                    func = std::bind(Colors::mix, std::placeholders::_1, secondColorToMix, mixFactor);
+                } else if (secondColorToMixName == QStringLiteral("currentColor")) {
+                    func = std::bind(Colors::mix, firstColorToMix, std::placeholders::_1, mixFactor);
+                } else {
+                    func = [firstColorToMix, secondColorToMix, mixFactor] (const QColor &unusedParam) {
+                        Q_UNUSED(unusedParam)
+                        return Colors::mix(firstColorToMix, secondColorToMix, mixFactor);
+                    };
+                }
+                map.insert(colorVariant, func);
 
-    palette.setColor(QPalette::Inactive, QPalette::Light,           Colors::lighten(insensitive_bg_color));
-    palette.setColor(QPalette::Inactive, QPalette::Midlight,        Colors::mix(Colors::lighten(insensitive_bg_color), insensitive_bg_color));
-    palette.setColor(QPalette::Inactive, QPalette::Mid,             Colors::mix(Colors::darken(insensitive_bg_color), insensitive_bg_color));
-    palette.setColor(QPalette::Inactive, QPalette::Dark,            Colors::darken(insensitive_bg_color));
-    palette.setColor(QPalette::Inactive, QPalette::Shadow,          shadow);
+                m_colors.insert(color, map);
+            } else if (reMixMixMatch.hasMatch()) {
+                // qWarning() << reMixMixMatch.captured(0);
+                const AdwaitaColor color = colorNameToEnum(reMixMixMatch.captured(1));
+                auto map = m_colors.value(color);
 
-    palette.setColor(QPalette::Inactive, QPalette::Highlight,       selected_bg_color);
-    palette.setColor(QPalette::Inactive, QPalette::HighlightedText, backdrop_selected_fg_color);
+                // Process captured color
 
-    palette.setColor(QPalette::Inactive, QPalette::Link,            link_color);
-    palette.setColor(QPalette::Inactive, QPalette::LinkVisited,     link_visited_color);
-
-    return palette;
+                m_colors.insert(color, map);
+            } else {
+                qWarning() << "Line: " << line << " cannot be processed.";
+            }
+        }
+    }
 }
 
-// private
-static QPalette paletteAdwaitaHighContrast()
+ColorsPrivate::~ColorsPrivate()
 {
-    QPalette palette;
+}
 
-    return palette;
+QColor ColorsPrivate::adwaitaColor(AdwaitaColor color, ColorVariant variant, const QColor &currentColor)
+{
+    if (!m_colors.value(color).contains(variant)) {
+        return currentColor;
+    }
+    return m_colors.value(color).value(variant)(currentColor);
 }
 
 QPalette Colors::disabledPalette(const QPalette &source, qreal ratio)
@@ -349,16 +322,76 @@ QPalette Colors::disabledPalette(const QPalette &source, qreal ratio)
 
 QPalette Colors::palette(ColorVariant variant)
 {
-    if (variant == ColorVariant::Unknown) {
-        return isDarkMode() ? paletteAdwaitaDark() : paletteAdwaita();
-    } else if (variant == ColorVariant::Adwaita) {
-        return paletteAdwaita();
-    } else if (variant == ColorVariant::AdwaitaDark) {
-        return paletteAdwaitaDark();
-    } else {
-        // TODO
-        return paletteAdwaitaHighContrast();
-    }
+    QPalette palette;
+
+    palette.setColor(QPalette::All,      QPalette::Window,          colorsGlobal->adwaitaColor(ColorsPrivate::bg_color, variant));
+    palette.setColor(QPalette::All,      QPalette::WindowText,      colorsGlobal->adwaitaColor(ColorsPrivate::fg_color, variant));
+    palette.setColor(QPalette::All,      QPalette::Base,            colorsGlobal->adwaitaColor(ColorsPrivate::base_color, variant));
+    palette.setColor(QPalette::All,      QPalette::AlternateBase,   colorsGlobal->adwaitaColor(ColorsPrivate::base_color, variant));
+    palette.setColor(QPalette::All,      QPalette::ToolTipBase,     colorsGlobal->adwaitaColor(ColorsPrivate::osd_bg_color, variant));
+    palette.setColor(QPalette::All,      QPalette::ToolTipText,     colorsGlobal->adwaitaColor(ColorsPrivate::osd_text_color, variant));
+    palette.setColor(QPalette::All,      QPalette::Text,            colorsGlobal->adwaitaColor(ColorsPrivate::fg_color, variant));
+    palette.setColor(QPalette::All,      QPalette::Button,          colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant));
+    palette.setColor(QPalette::All,      QPalette::ButtonText,      colorsGlobal->adwaitaColor(ColorsPrivate::fg_color, variant));
+    palette.setColor(QPalette::All,      QPalette::BrightText,      colorsGlobal->adwaitaColor(ColorsPrivate::text_color, variant));
+
+    palette.setColor(QPalette::All,      QPalette::Light,           Colors::lighten(colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)));
+    palette.setColor(QPalette::All,      QPalette::Midlight,        Colors::mix(Colors::lighten(colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)), colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)));
+    palette.setColor(QPalette::All,      QPalette::Mid,             Colors::mix(Colors::darken(colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)), colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)));
+    palette.setColor(QPalette::All,      QPalette::Dark,            Colors::darken(colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)));
+    palette.setColor(QPalette::All,      QPalette::Shadow,          colorsGlobal->adwaitaColor(ColorsPrivate::shadow_color, variant));
+
+    palette.setColor(QPalette::All,      QPalette::Highlight,       colorsGlobal->adwaitaColor(ColorsPrivate::accent_color, variant));
+    palette.setColor(QPalette::All,      QPalette::HighlightedText, colorsGlobal->adwaitaColor(ColorsPrivate::accent_text, variant));
+
+    palette.setColor(QPalette::All,      QPalette::Link,            colorsGlobal->adwaitaColor(ColorsPrivate::link_color, variant));
+    palette.setColor(QPalette::All,      QPalette::LinkVisited,     colorsGlobal->adwaitaColor(ColorsPrivate::link_visited_color, variant));
+
+    palette.setColor(QPalette::Disabled, QPalette::Window,          colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_bg_color, variant));
+    palette.setColor(QPalette::Disabled, QPalette::WindowText,      colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_fg_color, variant));
+    palette.setColor(QPalette::Disabled, QPalette::Base,            colorsGlobal->adwaitaColor(ColorsPrivate::base_color, variant));
+    palette.setColor(QPalette::Disabled, QPalette::AlternateBase,   colorsGlobal->adwaitaColor(ColorsPrivate::base_color, variant));
+    palette.setColor(QPalette::Disabled, QPalette::Text,            colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_fg_color, variant));
+    palette.setColor(QPalette::Disabled, QPalette::Button,          colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_bg_color, variant));
+    palette.setColor(QPalette::Disabled, QPalette::ButtonText,      colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_fg_color, variant));
+    palette.setColor(QPalette::Disabled, QPalette::BrightText,      colorsGlobal->adwaitaColor(ColorsPrivate::text_color, variant));
+
+    palette.setColor(QPalette::Disabled, QPalette::Light,           Colors::lighten(colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_bg_color, variant)));
+    palette.setColor(QPalette::Disabled, QPalette::Midlight,        Colors::mix(Colors::lighten(colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_bg_color, variant)), colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_bg_color, variant)));
+    palette.setColor(QPalette::Disabled, QPalette::Mid,             Colors::mix(Colors::darken(colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_bg_color, variant)), colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_bg_color, variant)));
+    palette.setColor(QPalette::Disabled, QPalette::Dark,            Colors::darken(colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_bg_color, variant)));
+    palette.setColor(QPalette::Disabled, QPalette::Shadow,          colorsGlobal->adwaitaColor(ColorsPrivate::shadow_color, variant));
+
+    palette.setColor(QPalette::Disabled, QPalette::Highlight,       colorsGlobal->adwaitaColor(ColorsPrivate::accent_color, variant));
+    palette.setColor(QPalette::Disabled, QPalette::HighlightedText, colorsGlobal->adwaitaColor(ColorsPrivate::accent_text, variant));
+
+    palette.setColor(QPalette::Disabled, QPalette::Link,            colorsGlobal->adwaitaColor(ColorsPrivate::link_color, variant));
+    palette.setColor(QPalette::Disabled, QPalette::LinkVisited,     colorsGlobal->adwaitaColor(ColorsPrivate::link_visited_color, variant));
+
+    palette.setColor(QPalette::Inactive, QPalette::Window,          colorsGlobal->adwaitaColor(ColorsPrivate::bg_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::WindowText,      colorsGlobal->adwaitaColor(ColorsPrivate::fg_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::Base,            colorsGlobal->adwaitaColor(ColorsPrivate::base_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::AlternateBase,   colorsGlobal->adwaitaColor(ColorsPrivate::base_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::ToolTipBase,     colorsGlobal->adwaitaColor(ColorsPrivate::osd_bg_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::ToolTipText,     colorsGlobal->adwaitaColor(ColorsPrivate::osd_text_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::Text,            colorsGlobal->adwaitaColor(ColorsPrivate::fg_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::Button,          colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::ButtonText,      colorsGlobal->adwaitaColor(ColorsPrivate::fg_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::BrightText,      colorsGlobal->adwaitaColor(ColorsPrivate::text_color, variant));
+
+    palette.setColor(QPalette::Inactive, QPalette::Light,           Colors::lighten(colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)));
+    palette.setColor(QPalette::Inactive, QPalette::Midlight,        Colors::mix(Colors::lighten(colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)), colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)));
+    palette.setColor(QPalette::Inactive, QPalette::Mid,             Colors::mix(Colors::darken(colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)), colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)));
+    palette.setColor(QPalette::Inactive, QPalette::Dark,            Colors::darken(colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)));
+    palette.setColor(QPalette::Inactive, QPalette::Shadow,          colorsGlobal->adwaitaColor(ColorsPrivate::shadow_color, variant));
+
+    palette.setColor(QPalette::Inactive, QPalette::Highlight,       colorsGlobal->adwaitaColor(ColorsPrivate::accent_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::HighlightedText, colorsGlobal->adwaitaColor(ColorsPrivate::accent_text, variant));
+
+    palette.setColor(QPalette::Inactive, QPalette::Link,            colorsGlobal->adwaitaColor(ColorsPrivate::link_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::LinkVisited,     colorsGlobal->adwaitaColor(ColorsPrivate::link_visited_color, variant));
+
+    return palette;
 }
 
 QColor Colors::hoverColor(const StyleOptions &options)

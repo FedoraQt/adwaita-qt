@@ -1,0 +1,90 @@
+$variant: 'dark';
+$contrast: 'normal';
+
+@import 'palette';
+@import 'functions';
+@import 'colors';
+
+@define-color light_fg #{$light_fg};
+@define-color dark_fg #{$dark_fg};
+@define-color light_bg #{$light_bg};
+@define-color dark_bg #{$dark_bg};
+
+@define-color accent_color #{$accent_color};
+@define-color accent_text #{$accent_text};
+@define-color destructive_color #{$destructive_color};
+@define-color destructive_text #{$destructive_text};
+
+@define-color success_color #{$success_color};
+@define-color warning_color #{$warning_color};
+@define-color error_color #{$error_color};
+
+@define-color base_color #{$base_color};
+@define-color text_color #{$text_color};
+@define-color bg_color #{$bg_color};
+@define-color fg_color #{$fg_color};
+
+@define-color accent_standalone_color #{$accent_standalone_color};
+@define-color destructive_standalone_color #{$destructive_standalone_color};
+
+@define-color borders_color #{$borders_color};
+@define-color alt_borders_color #{$alt_borders_color};
+@define-color borders_edge #{$borders_edge};
+@define-color link_color #{$link_color};
+@define-color link_visited_color #{$link_visited_color};
+@define-color dark_fill #{$dark_fill};
+@define-color headerbar_bg_color #{$headerbar_bg_color};
+@define-color menu_color #{$menu_color};
+
+@define-color view_hover_color #{$view_hover_color};
+@define-color view_active_color #{$view_active_color};
+@define-color view_selected_color #{$view_selected_color};
+@define-color view_selected_hover_color #{$view_selected_hover_color};
+@define-color view_selected_active_color #{$view_selected_active_color};
+
+@define-color trough_color #{$trough_color};
+@define-color trough_hover_color #{$trough_hover_color};
+@define-color trough_active_color #{$trough_active_color};
+
+@define-color button_color #{$button_color};
+@define-color button_hover_color #{$button_hover_color};
+@define-color button_active_color #{$button_active_color};
+@define-color button_checked_color #{$button_checked_color};
+@define-color button_checked_hover_color #{$button_checked_hover_color};
+@define-color button_checked_active_color #{$button_checked_active_color};
+
+@define-color fill_color #{$fill_color};
+@define-color fill_text_color #{$fill_text_color};
+@define-color fill_hover_color #{$fill_hover_color};
+@define-color fill_active_color #{$fill_active_color};
+
+@define-color slider_color #{$slider_color};
+@define-color slider_hover_color #{$slider_hover_color};
+
+@define-color scrollbar_bg_color #{$scrollbar_bg_color};
+@define-color scrollbar_slider_color #{$scrollbar_slider_color};
+@define-color scrollbar_slider_hover_color #{$scrollbar_slider_hover_color};
+@define-color scrollbar_slider_active_color #{$scrollbar_slider_active_color};
+
+@define-color osd_fg_color #{$osd_fg_color};
+@define-color osd_text_color #{$osd_text_color};
+@define-color osd_bg_color #{$osd_bg_color};
+@define-color osd_insensitive_bg_color #{$osd_insensitive_bg_color};
+@define-color osd_insensitive_fg_color #{$osd_insensitive_fg_color};
+@define-color osd_borders_color #{$osd_borders_color};
+
+@define-color sidebar_bg_color #{$sidebar_bg_color};
+
+@define-color tooltip_borders_color #{$tooltip_borders_color};
+@define-color shadow_color #{$shadow_color};
+
+@define-color drop_target_color #{$drop_target_color};
+
+//insensitive state derived colors
+@define-color insensitive_fg_color #{$insensitive_fg_color};
+@define-color insensitive_bg_color #{$insensitive_bg_color};
+@define-color insensitive_borders_color #{$insensitive_borders_color};
+
+//special cased widget colors
+@define-color focus_border_color #{$focus_border_color};
+@define-color alt_focus_border_color #{$alt_focus_border_color};
