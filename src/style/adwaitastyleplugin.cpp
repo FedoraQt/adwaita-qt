@@ -37,11 +37,13 @@ QStyle *StylePlugin::create(const QString &key)
         return new Style(Adwaita::AdwaitaDark);
     }
 
-    if (key.toLower() == QStringLiteral("adwaita-highcontrast")) {
+    if (key.toLower() == QStringLiteral("adwaita-highcontrast") ||
+        key.toLower() == QStringLiteral("highcontrast")) {
         return new Style(Adwaita::AdwaitaHighcontrast);
     }
 
-    if (key.toLower() == QStringLiteral("adwaita-highcontrast-dark")) {
+    if (key.toLower() == QStringLiteral("adwaita-highcontrast-dark") ||
+        key.toLower() == QStringLiteral("highcontrastinverse")) {
         return new Style(Adwaita::AdwaitaHighcontrastDark);
     }
 
