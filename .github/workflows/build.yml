@@ -14,7 +14,7 @@ env:
 
 jobs:
   Linux:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
@@ -54,11 +54,6 @@ jobs:
       with:
         fetch-depth: 1
         
-    - name: Install dependencies
-      shell: bash
-      run: |
-        choco install sass
-
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
       with:

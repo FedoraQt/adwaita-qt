@@ -1,8 +1,8 @@
 <RCC>
     <qresource prefix="/stylesheet">
-        <file alias="Adwaita-light.css">@CMAKE_CURRENT_BINARY_DIR@/stylesheet/Adwaita-light.css</file>
-        <file alias="Adwaita-dark.css">@CMAKE_CURRENT_BINARY_DIR@/stylesheet/Adwaita-dark.css</file>
-        <file alias="Adwaita-hc.css">@CMAKE_CURRENT_BINARY_DIR@/stylesheet/Adwaita-hc.css</file>
-        <file alias="Adwaita-hc-dark.css">@CMAKE_CURRENT_BINARY_DIR@/stylesheet/Adwaita-hc-dark.css</file>
+        <file alias="Adwaita-light.css">@STYLESHEET_PATH@/Adwaita-light.css</file>
+        <file alias="Adwaita-dark.css">@STYLESHEET_PATH@/Adwaita-dark.css</file>
+        <file alias="Adwaita-hc.css">@STYLESHEET_PATH@/Adwaita-hc.css</file>
+        <file alias="Adwaita-hc-dark.css">@STYLESHEET_PATH@/Adwaita-hc-dark.css</file>
     </qresource>
 </RCC>

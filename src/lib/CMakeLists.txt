@@ -65,16 +65,21 @@ target_link_libraries(adwaitaqtpriv
 )
 
 # We need this done before we start building adwaitaqt public library
-find_program(SASSC_EXECUTABLE sassc REQUIRED)
-set(Variants "light" "dark" "hc" "hc-dark")
-foreach(VARIANT IN LISTS Variants )
-    add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/stylesheet/Adwaita-${VARIANT}.css"
-                       COMMAND "${SASSC_EXECUTABLE}"
-                               -a -M -t compact
-                               "${CMAKE_CURRENT_SOURCE_DIR}/stylesheet/Adwaita-${VARIANT}.scss"
-                               "${CMAKE_CURRENT_BINARY_DIR}/stylesheet/Adwaita-${VARIANT}.css"
-                       COMMENT "Stylesheet variant: ${VARIANT}")
-endforeach()
+find_program(SASSC_EXECUTABLE sassc)
+if (SASSC_EXECUTABLE)
+    set(Variants "light" "dark" "hc" "hc-dark")
+    foreach(VARIANT IN LISTS Variants)
+        add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/stylesheet/Adwaita-${VARIANT}.css"
+                           COMMAND "${SASSC_EXECUTABLE}"
+                                  -a -M -t compact
+                                  "${CMAKE_CURRENT_SOURCE_DIR}/stylesheet/Adwaita-${VARIANT}.scss"
+                                  "${CMAKE_CURRENT_BINARY_DIR}/stylesheet/Adwaita-${VARIANT}.css"
+                           COMMENT "Stylesheet variant: ${VARIANT}")
+    endforeach()
+    set(STYLESHEET_PATH "${CMAKE_CURRENT_BINARY_DIR}/stylesheet")
+else()
+    set(STYLESHEET_PATH "${CMAKE_CURRENT_SOURCE_DIR}/stylesheet/processed")
+endif()
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/stylesheet/stylesheet.qrc.in" "${CMAKE_CURRENT_BINARY_DIR}/stylesheet/stylesheet.qrc")
 
