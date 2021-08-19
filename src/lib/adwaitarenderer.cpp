@@ -451,37 +451,7 @@ void Renderer::renderButtonFrame(const StyleOptions &options)
 
     // content
     if (options.color().isValid() && options.active()) {
-        QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
-        if (options.sunken()) {
-            // Pressed button in normal and dark mode is not a gradient, just an image consting from same $color
-            gradient.setColorAt(0, options.color());
-            gradient.setColorAt(1, options.color());
-        } else if (options.mouseOver()) {
-            if (options.colorVariant() == AdwaitaDark) {
-                QColor baseColor = Colors::lighten(options.color(), 0.01);
-                // Hovered button in dark mode is a gradient from $color to Colors::lighten(bg_color, 0.01)
-                gradient.setColorAt(0, Colors::lighten(baseColor, 0.01)); // FIXME not coroptions.rect() according to adwaita's _drawing.scss file, but looks more close than before
-                gradient.setColorAt(1, Colors::lighten(baseColor, 0.01));
-            } else {
-                QColor baseColor = options.color();
-                // Hovered button in normal mode is a gradient from $color to Colors::lighten(bg_color, 0.01)
-                gradient.setColorAt(0, options.color());
-                gradient.setColorAt(1, Colors::lighten(baseColor, 0.01));
-            }
-        } else {
-            if (options.colorVariant() == AdwaitaDark) {
-                QColor baseColor = Colors::lighten(options.color(), 0.01);
-                // Normal button in dark mode is a gradient from $color to bg_color
-                gradient.setColorAt(0, options.color());
-                gradient.setColorAt(1, baseColor);
-            } else {
-                QColor baseColor = Colors::lighten(options.color(), 0.04);
-                // Normal button in normal mode is a gradient from $color to bg_color
-                gradient.setColorAt(0, options.color());
-                gradient.setColorAt(1, baseColor);
-            }
-        }
-        options.painter()->setBrush(gradient);
+        options.painter()->setBrush(Colors::buttonBackgroundGradient(options));
     } else if (!options.active()) {
         options.painter()->setBrush(options.color());
     } else {

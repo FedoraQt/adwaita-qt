@@ -1,7 +1,7 @@
 /*************************************************************************
  * Copyright (C) 2014 by Hugo Pereira Da Costa <hugo.pereira@free.fr>    *
  * Copyright (C) 2014-2018 Martin Bříza <m@rtinbriza.cz>                 *
- * Copyright (C) 2019-2020 Jan Grulich <jgrulich@redhat.com>             *
+ * Copyright (C) 2019-2021 Jan Grulich <jgrulich@redhat.com>             *
  *                                                                       *
  * This program is free software; you can redistribute it and/or modify  *
  * it under the terms of the GNU General Public License as published by  *
@@ -148,6 +148,16 @@ public:
        * color variant
      */
     static QColor buttonBackgroundColor(const StyleOptions &options);
+    /* Relevant options:
+       * palette
+       * mouse over
+       * has focus
+       * sunken
+       * opacity
+       * animation mode
+       * color variant
+     */
+    static QLinearGradient buttonBackgroundGradient(const StyleOptions &options);
     /* Relevant options:
        * palette
        * mouse over

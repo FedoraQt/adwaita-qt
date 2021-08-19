@@ -1,70 +1,37 @@
 $variant: 'dark';
-$contrast: 'high';
 
-@import 'palette';
-@import 'functions';
 @import 'colors';
-
-@define-color light_fg #{$light_fg};
-@define-color dark_fg #{$dark_fg};
-@define-color light_bg #{$light_bg};
-@define-color dark_bg #{$dark_bg};
-
-@define-color accent_color #{$accent_color};
-@define-color accent_text #{$accent_text};
-@define-color destructive_color #{$destructive_color};
-@define-color destructive_text #{$destructive_text};
-
-@define-color success_color #{$success_color};
-@define-color warning_color #{$warning_color};
-@define-color error_color #{$error_color};
+@import 'colors-hc';
+@import 'drawing';
 
 @define-color base_color #{$base_color};
 @define-color text_color #{$text_color};
 @define-color bg_color #{$bg_color};
 @define-color fg_color #{$fg_color};
 
-@define-color accent_standalone_color #{$accent_standalone_color};
-@define-color destructive_standalone_color #{$destructive_standalone_color};
-
+@define-color selected_fg_color #{$selected_fg_color};
+@define-color selected_bg_color #{$selected_bg_color};
+@define-color selected_borders_color #{$selected_borders_color};
 @define-color borders_color #{$borders_color};
 @define-color alt_borders_color #{$alt_borders_color};
 @define-color borders_edge #{$borders_edge};
 @define-color link_color #{$link_color};
 @define-color link_visited_color #{$link_visited_color};
+@define-color top_hilight #{$top_hilight};
 @define-color dark_fill #{$dark_fill};
 @define-color headerbar_bg_color #{$headerbar_bg_color};
 @define-color menu_color #{$menu_color};
-
-@define-color view_hover_color #{$view_hover_color};
-@define-color view_active_color #{$view_active_color};
-@define-color view_selected_color #{$view_selected_color};
-@define-color view_selected_hover_color #{$view_selected_hover_color};
-@define-color view_selected_active_color #{$view_selected_active_color};
-
-@define-color trough_color #{$trough_color};
-@define-color trough_hover_color #{$trough_hover_color};
-@define-color trough_active_color #{$trough_active_color};
-
-@define-color button_color #{$button_color};
-@define-color button_hover_color #{$button_hover_color};
-@define-color button_active_color #{$button_active_color};
-@define-color button_checked_color #{$button_checked_color};
-@define-color button_checked_hover_color #{$button_checked_hover_color};
-@define-color button_checked_active_color #{$button_checked_active_color};
-
-@define-color fill_color #{$fill_color};
-@define-color fill_text_color #{$fill_text_color};
-@define-color fill_hover_color #{$fill_hover_color};
-@define-color fill_active_color #{$fill_active_color};
-
-@define-color slider_color #{$slider_color};
-@define-color slider_hover_color #{$slider_hover_color};
+@define-color menu_selected_color #{$menu_selected_color};
 
 @define-color scrollbar_bg_color #{$scrollbar_bg_color};
 @define-color scrollbar_slider_color #{$scrollbar_slider_color};
 @define-color scrollbar_slider_hover_color #{$scrollbar_slider_hover_color};
 @define-color scrollbar_slider_active_color #{$scrollbar_slider_active_color};
+
+@define-color warning_color #{$warning_color};
+@define-color error_color #{$error_color};
+@define-color success_color #{$success_color};
+@define-color destructive_color #{$destructive_color};
 
 @define-color osd_fg_color #{$osd_fg_color};
 @define-color osd_text_color #{$osd_text_color};
@@ -85,6 +52,43 @@ $contrast: 'high';
 @define-color insensitive_bg_color #{$insensitive_bg_color};
 @define-color insensitive_borders_color #{$insensitive_borders_color};
 
+//colors for the backdrop state, derived from the main colors.
+@define-color backdrop_base_color #{$backdrop_base_color};
+@define-color backdrop_text_color #{$backdrop_text_color};
+@define-color backdrop_bg_color #{$backdrop_bg_color};
+@define-color backdrop_fg_color #{$backdrop_fg_color};
+@define-color backdrop_insensitive_color #{$backdrop_insensitive_color};
+@define-color backdrop_selected_fg_color #{$backdrop_selected_fg_color};
+@define-color backdrop_borders_color #{$backdrop_borders_color};
+@define-color backdrop_dark_fill #{$backdrop_dark_fill};
+
 //special cased widget colors
+@define-color suggested_bg_color #{$suggested_bg_color};
+@define-color suggested_border_color #{$suggested_border_color};
+@define-color progress_bg_color #{$progress_bg_color};
+@define-color progress_border_color #{$progress_border_color};
+@define-color checkradio_bg_color #{$checkradio_bg_color};
+@define-color checkradio_fg_color #{$checkradio_fg_color};
+@define-color checkradio_borders_color #{$checkradio_borders_color};
+@define-color switch_bg_color #{$switch_bg_color};
+@define-color switch_borders_color #{$switch_borders_color};
 @define-color focus_border_color #{$focus_border_color};
 @define-color alt_focus_border_color #{$alt_focus_border_color};
+@define-color dim_label_opacity #{$dim_label_opacity};
+
+%button,
+button {
+  @at-root %button_basic, & {
+    @include button(normal);
+    &:hover { @include button(hover); }
+    &:checked { @include button(active); }
+    &:checked:hover { @include button(checked-hover); }
+    &:checked:active { @include button(checked-active); }
+    &:backdrop { @include button(backdrop); }
+    &:backdrop:active { @include button(backdrop-active); }
+    &:backdrop:insensitive { @include button(backdrop-insensitive); }
+    &:backdrop:insensitive:active { @include button(backdrop-insensitive-active); }
+    &:disabled { @include button(insensitive); }
+    &:disabled:active { @include button(insensitive-active); }
+  }
+}

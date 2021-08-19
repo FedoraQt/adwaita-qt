@@ -1,7 +1,7 @@
 /*************************************************************************
  * Copyright (C) 2014 by Hugo Pereira Da Costa <hugo.pereira@free.fr>    *
  * Copyright (C) 2014-2018 Martin Bříza <m@rtinbriza.cz>                 *
- * Copyright (C) 2019-2020 Jan Grulich <jgrulich@redhat.com>             *
+ * Copyright (C) 2019-2021 Jan Grulich <jgrulich@redhat.com>             *
  *                                                                       *
  * This program is free software; you can redistribute it and/or modify  *
  * it under the terms of the GNU General Public License as published by  *
@@ -29,8 +29,6 @@
 #include <QRegularExpression>
 
 #include <QtMath>
-
-#include <QDebug>
 
 namespace Adwaita
 {
@@ -146,7 +144,63 @@ static ColorsPrivate::AdwaitaColor colorNameToEnum(const QString &name)
     QMetaEnum metaEnum = metaObject.enumerator(metaObject.indexOfEnumerator("AdwaitaColor"));
     ColorsPrivate::AdwaitaColor value = static_cast<ColorsPrivate::AdwaitaColor>(metaEnum.keyToValue(name.toLatin1()));
 
-    return (value <= ColorsPrivate::invalid_value || value > ColorsPrivate::alt_focus_border_color) ? ColorsPrivate::invalid_value : value;
+    return (value <= ColorsPrivate::invalid_color || value > ColorsPrivate::alt_focus_border_color) ? ColorsPrivate::invalid_color : value;
+}
+
+static ColorsPrivate::AdwaitaButtonColor buttonColorNameToEnum(const QString &name)
+{
+    Q_ASSERT(!name.isEmpty());
+
+    QMetaObject metaObject = ColorsPrivate::staticMetaObject;
+
+    QMetaEnum metaEnum = metaObject.enumerator(metaObject.indexOfEnumerator("AdwaitaButtonColor"));
+    ColorsPrivate::AdwaitaButtonColor value = static_cast<ColorsPrivate::AdwaitaButtonColor>(metaEnum.keyToValue(name.toLatin1()));
+
+    return (value <= ColorsPrivate::invalid_button_color || value > ColorsPrivate::button_disabled_active_text_color) ? ColorsPrivate::invalid_button_color : value;
+}
+
+static QColor colorFromText(const QString &name)
+{
+    if (name == QStringLiteral("white")) {
+        return Qt::white;
+    } else if (name == QStringLiteral("black")) {
+        return Qt::black;
+    }
+
+    return QColor(name);
+}
+
+static QString buttonColorSuffixFromOptions(const StyleOptions &options)
+{
+    bool isDisabled = options.palette().currentColorGroup() == QPalette::Disabled;
+    bool isInactive = options.palette().currentColorGroup() == QPalette::Inactive;
+    QString result;
+
+    // Checked button
+    if (options.sunken()) {
+        result += QStringLiteral("_checked");
+    } else if (isInactive && isDisabled) {
+        result += QStringLiteral("_backdrop_insensitive");
+    } else if (isInactive) {
+        result += QStringLiteral("_backdrop");
+    } else if (isDisabled) {
+        result += QStringLiteral("_disabled");
+    }
+
+    if (options.animationMode() == AnimationPressed) {
+        // button_active_color doesn't exist
+        if (result.isEmpty()) {
+            result += QStringLiteral("_checked");
+        } else {
+            result += QStringLiteral("_active");
+        }
+    } else if (options.animationMode() == AnimationHover) {
+         result += QStringLiteral("_hover");
+    } else if (options.mouseOver()) {
+         result += QStringLiteral("_hover");
+    }
+
+    return result;
 }
 
 ColorsPrivate::ColorsPrivate()
@@ -175,22 +229,21 @@ ColorsPrivate::ColorsPrivate()
         QTextStream in(&file);
         while (!in.atEnd()) {
             const QString line = in.readLine();
+
+            if (line.isEmpty()) {
+                continue;
+            }
+
             // E.g. light_fg #2e3436;
             const QRegularExpression reBase("^@define\\-color\\ ([a-z|_]+)\\ (#[a-z|0-9]{6}|white|black);$");
             // E.g. borders_edge rgba(255, 255, 255, 0.8);
             const QRegularExpression reRgba("^@define\\-color\\ ([a-z|_]+)\\ rgba\\((\\d+)[,|\\ ]+(\\d+)[,|\\ ]+(\\d+)[,|\\ ]+([\\d|\\.]+)\\);$");
-            // E.g. view_active_color alpha(currentColor,0.16);
-            const QRegularExpression reAlpha("^@define\\-color\\ ([a-z|_]+)\\ alpha\\((currentColor|black|white|#[a-z|0-9]{6})[,|\\ ]+([\\d|\\.]+)\\);$");
-            // E.g. link_color mix(#3584e4,black,0.25);
-            const QRegularExpression reMix("^@define\\-color\\ ([a-z|_]+)\\ mix\\((currentColor|black|white|#[a-z|0-9]{6})[,|\\ ]+(currentColor|black|white|#[a-z|0-9]{6})[,|\\ ]+([\\d|\\.]+)\\);$");
-            // E.g. link_visited_color mix(mix(#3584e4,black,0.25),black,0.2);
-            const QRegularExpression reMixMix("^@define\\-color\\ ([a-z|_]+)\\ mix\\(mix\\((currentColor|black|white|#[a-z|0-9]{6})[,|\\ ]+(currentColor|black|white|#[a-z|0-9]{6})[,|\\ ]+([\\d|\\.]+)\\)[,|\\ ]+(currentColor|black|white|#[a-z|0-9]{6})[,|\\ ]+([\\d|\\.]+)\\);$");
+            // E.g. button:hover { color: #2e3436; border-color: #cdc7c2; background-image: linear-gradient(to top, #d6d1cd, #e8e6e3 1px); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07); }
+            const QRegularExpression reButtonColor("^(button[:|a-z]*)\\ \\{\\ color:\\ (#[a-z|0-9]{6}|white|black);\\ (outline-color: (.*);\\ )*border-color: (#[a-z|0-9]{6}|white|black);\\ background-image: (linear-gradient|image)\\((.[^\\)]*)\\);\\ (box-shadow:\\ .*;\\ )*\\}");
 
             const QRegularExpressionMatch reBaseMatch = reBase.match(line);
             const QRegularExpressionMatch reRgbaMatch = reRgba.match(line);
-            const QRegularExpressionMatch reAlphaMatch = reAlpha.match(line);
-            const QRegularExpressionMatch reMixMatch = reMix.match(line);
-            const QRegularExpressionMatch reMixMixMatch = reMixMix.match(line);
+            const QRegularExpressionMatch reButtonColorMatch = reButtonColor.match(line);
 
             if (reBaseMatch.hasMatch()) {
                 // qWarning() << reBaseMatch.captured(0);
@@ -198,13 +251,8 @@ ColorsPrivate::ColorsPrivate()
                 auto map = m_colors.value(color);
 
                 // Process captured color
-                const QColor capturedColor(reBaseMatch.captured(2));
-                auto func = [capturedColor](const QColor &unusedParam) {
-                    Q_UNUSED(unusedParam)
-                    return capturedColor;
-                };
-                map.insert(colorVariant, func);
-
+                const QColor capturedColor = colorFromText(reBaseMatch.captured(2));
+                map.insert(colorVariant, capturedColor);
                 m_colors.insert(color, map);
             } else if (reRgbaMatch.hasMatch()) {
                 // qWarning() << reRgbaMatch.captured(0);
@@ -216,79 +264,78 @@ ColorsPrivate::ColorsPrivate()
                 const int g = reRgbaMatch.captured(3).toInt();
                 const int b = reRgbaMatch.captured(4).toInt();
                 const double a = reRgbaMatch.captured(5).toDouble();
-                const QColor capturedColor(r, g, b, a);
-                auto func = [capturedColor](const QColor &unusedParam) {
-                    Q_UNUSED(unusedParam)
-                    return capturedColor;
-                };
-                map.insert(colorVariant, func);
+                const QColor capturedColor(r, g, b, 255 * a);
+                map.insert(colorVariant, capturedColor);
 
                 m_colors.insert(color, map);
-            } else if (reAlphaMatch.hasMatch()) {
-                // qWarning() << reAlphaMatch.captured(0);
-                const AdwaitaColor color = colorNameToEnum(reAlphaMatch.captured(1));
-                auto map = m_colors.value(color);
+            } else if (reButtonColorMatch.hasMatch()) {
+                // qWarning() << reBaseMatch.captured(0);
 
-                // Process captured color
-                const QString colorToAlpha = reAlphaMatch.captured(2);
-                const qreal alphaValue = reAlphaMatch.captured(3).toDouble();
+                const QString buttonColorName = reButtonColorMatch.captured(1).replace(QLatin1Char(':'), QLatin1Char('_'));
 
-                std::function<QColor (const QColor&)> func;
+                // Outline color
+                if (!reButtonColorMatch.captured(3).isEmpty()) {
+                    const QString outlineColor = reButtonColorMatch.captured(4);
+                    const QRegularExpression reOutlineColor("^rgba\\((\\d+)[,|\\ ]+(\\d+)[,|\\ ]+(\\d+)[,|\\ ]+([\\d|\\.]+)\\)$");
+                    const QRegularExpressionMatch outlineColorMatch = reOutlineColor.match(outlineColor);
+                    auto outlineColorMap = m_buttonColors.value(button_outline_color);
 
-                if (colorToAlpha == QStringLiteral("currentColor")) {
-                    func = std::bind(Colors::alphaColor, std::placeholders::_1, alphaValue);
-                } else {
-                    func = [colorToAlpha, alphaValue](const QColor &unusedParam) {
-                        Q_UNUSED(unusedParam)
-                        if (colorToAlpha == QStringLiteral("black"))
-                            return Colors::alphaColor(Qt::black, alphaValue);
-                        if (colorToAlpha == QStringLiteral("white"))
-                            return Colors::alphaColor(Qt::white, alphaValue);
-                        return Colors::alphaColor(QColor(colorToAlpha), alphaValue);
-                    };
+                    const QColor capturedOutlineColor(outlineColorMatch.captured(1).toInt(),
+                                                      outlineColorMatch.captured(2).toInt(),
+                                                      outlineColorMatch.captured(3).toInt(),
+                                                      255 * outlineColorMatch.captured(4).toDouble());
+                    outlineColorMap.insert(colorVariant, capturedOutlineColor);
+                    m_buttonColors.insert(button_outline_color, outlineColorMap);
                 }
-                map.insert(colorVariant, func);
 
-                m_colors.insert(color, map);
-            } else if (reMixMatch.hasMatch()) {
-                // qWarning() << reMixMatch.captured(0);
-                const AdwaitaColor color = colorNameToEnum(reMixMatch.captured(1));
-                auto map = m_colors.value(color);
+                // Border color
+                const AdwaitaButtonColor borderColor = buttonColorNameToEnum(buttonColorName + QStringLiteral("_border_color"));
+                auto borderColorMap = m_buttonColors.value(borderColor);
 
-                // Process captured color
-                const QString firstColorToMixName = reAlphaMatch.captured(2);
-                const QString secondColorToMixName = reAlphaMatch.captured(3);
-                const qreal mixFactor = reAlphaMatch.captured(4).toDouble();
+                const QColor capturedBorderColor = colorFromText(reButtonColorMatch.captured(5));
+                borderColorMap.insert(colorVariant, capturedBorderColor);
+                m_buttonColors.insert(borderColor, borderColorMap);
 
-                std::function<QColor (const QColor&)> func;
+                // Text color
+                const AdwaitaButtonColor textColor = buttonColorNameToEnum(buttonColorName + QStringLiteral("_text_color"));
+                auto textColorMap = m_buttonColors.value(textColor);
 
-                const QColor firstColorToMix = firstColorToMixName == QStringLiteral("black") ? Qt::black :
-                                               firstColorToMixName == QStringLiteral("white") ? Qt::white :
-                                               QColor(firstColorToMixName);
-                const QColor secondColorToMix = firstColorToMixName == QStringLiteral("black") ? Qt::black :
-                                                firstColorToMixName == QStringLiteral("white") ? Qt::white :
-                                                QColor(firstColorToMixName);
-                if (firstColorToMixName == QStringLiteral("currentColor")) {
-                    func = std::bind(Colors::mix, std::placeholders::_1, secondColorToMix, mixFactor);
-                } else if (secondColorToMixName == QStringLiteral("currentColor")) {
-                    func = std::bind(Colors::mix, firstColorToMix, std::placeholders::_1, mixFactor);
+                const QColor capturedTextColor = colorFromText(reButtonColorMatch.captured(2));
+                textColorMap.insert(colorVariant, capturedTextColor);
+                m_buttonColors.insert(textColor, textColorMap);
+
+                //  Background color
+                const QString backgroundType = reButtonColorMatch.captured(6);
+                if (backgroundType == QStringLiteral("image")) {
+                    const AdwaitaButtonColor bgColor = buttonColorNameToEnum(buttonColorName + QStringLiteral("_color"));
+                    auto bgColormap = m_buttonColors.value(bgColor);
+
+                    const QColor capturedBgColor(colorFromText(reButtonColorMatch.captured(7)));
+                    bgColormap.insert(colorVariant, capturedBgColor);
+                    m_buttonColors.insert(bgColor, bgColormap);
+                } else if (backgroundType == QStringLiteral("linear-gradient")) {
+                    const QString capturedGradient = reButtonColorMatch.captured(7);
+                    // E.g. "to top, #2b2b2b 20%, #2d2d2d 90%"
+                    const QRegularExpression reLinerGradient(".[^#]*(#[a-z|0-9]{6}|white|black).[^#]*(#[a-z|0-9]{6}|white|black).*");
+                    const QRegularExpressionMatch linearGradientMatch = reLinerGradient.match(capturedGradient);
+
+                    const AdwaitaButtonColor gradientStart = buttonColorNameToEnum(buttonColorName + QStringLiteral("_gradient_start"));
+                    const AdwaitaButtonColor gradientStop = buttonColorNameToEnum(buttonColorName + QStringLiteral("_gradient_stop"));
+
+                    auto gradientStartMap = m_buttonColors.value(gradientStart);
+                    auto gradientStopMap = m_buttonColors.value(gradientStop);
+
+                    const QColor gradientStartColor = colorFromText(linearGradientMatch.captured(1));
+                    const QColor gradientStopColor = colorFromText(linearGradientMatch.captured(2));
+
+                    gradientStartMap.insert(colorVariant, gradientStartColor);
+                    gradientStopMap.insert(colorVariant, gradientStopColor);
+
+                    m_buttonColors.insert(gradientStart, gradientStartMap);
+                    m_buttonColors.insert(gradientStop, gradientStopMap);
                 } else {
-                    func = [firstColorToMix, secondColorToMix, mixFactor] (const QColor &unusedParam) {
-                        Q_UNUSED(unusedParam)
-                        return Colors::mix(firstColorToMix, secondColorToMix, mixFactor);
-                    };
+                    qWarning() << "Unable to process " << buttonColorName << " background color.";
                 }
-                map.insert(colorVariant, func);
-
-                m_colors.insert(color, map);
-            } else if (reMixMixMatch.hasMatch()) {
-                // qWarning() << reMixMixMatch.captured(0);
-                const AdwaitaColor color = colorNameToEnum(reMixMixMatch.captured(1));
-                auto map = m_colors.value(color);
-
-                // Process captured color
-
-                m_colors.insert(color, map);
             } else {
                 qWarning() << "Line: " << line << " cannot be processed.";
             }
@@ -300,12 +347,23 @@ ColorsPrivate::~ColorsPrivate()
 {
 }
 
-QColor ColorsPrivate::adwaitaColor(AdwaitaColor color, ColorVariant variant, const QColor &currentColor)
+QColor ColorsPrivate::adwaitaColor(AdwaitaColor color, ColorVariant variant)
 {
-    if (!m_colors.value(color).contains(variant)) {
-        return currentColor;
+    return m_colors.value(color).value(variant);
+}
+
+QColor ColorsPrivate::adwaitaButtonColor(AdwaitaButtonColor color, ColorVariant variant)
+{
+    QColor returnValue = m_buttonColors.value(color).value(variant);
+    if (!returnValue.isValid()) {
+        if (color == button_color) {
+            return m_buttonColors.value(button_gradient_start).value(variant);
+        } else if (color == button_hover_color) {
+            return m_buttonColors.value(button_hover_gradient_start).value(variant);
+        }
     }
-    return m_colors.value(color).value(variant)(currentColor);
+
+    return returnValue;
 }
 
 QPalette Colors::disabledPalette(const QPalette &source, qreal ratio)
@@ -324,6 +382,9 @@ QPalette Colors::palette(ColorVariant variant)
 {
     QPalette palette;
 
+    QColor buttonColor = colorsGlobal->adwaitaButtonColor(ColorsPrivate::button_color, variant);
+    QColor disabledButtonColor = colorsGlobal->adwaitaButtonColor(ColorsPrivate::button_backdrop_color, variant);
+
     palette.setColor(QPalette::All,      QPalette::Window,          colorsGlobal->adwaitaColor(ColorsPrivate::bg_color, variant));
     palette.setColor(QPalette::All,      QPalette::WindowText,      colorsGlobal->adwaitaColor(ColorsPrivate::fg_color, variant));
     palette.setColor(QPalette::All,      QPalette::Base,            colorsGlobal->adwaitaColor(ColorsPrivate::base_color, variant));
@@ -331,18 +392,18 @@ QPalette Colors::palette(ColorVariant variant)
     palette.setColor(QPalette::All,      QPalette::ToolTipBase,     colorsGlobal->adwaitaColor(ColorsPrivate::osd_bg_color, variant));
     palette.setColor(QPalette::All,      QPalette::ToolTipText,     colorsGlobal->adwaitaColor(ColorsPrivate::osd_text_color, variant));
     palette.setColor(QPalette::All,      QPalette::Text,            colorsGlobal->adwaitaColor(ColorsPrivate::fg_color, variant));
-    palette.setColor(QPalette::All,      QPalette::Button,          colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant));
+    palette.setColor(QPalette::All,      QPalette::Button,          buttonColor);
     palette.setColor(QPalette::All,      QPalette::ButtonText,      colorsGlobal->adwaitaColor(ColorsPrivate::fg_color, variant));
     palette.setColor(QPalette::All,      QPalette::BrightText,      colorsGlobal->adwaitaColor(ColorsPrivate::text_color, variant));
 
-    palette.setColor(QPalette::All,      QPalette::Light,           Colors::lighten(colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)));
-    palette.setColor(QPalette::All,      QPalette::Midlight,        Colors::mix(Colors::lighten(colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)), colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)));
-    palette.setColor(QPalette::All,      QPalette::Mid,             Colors::mix(Colors::darken(colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)), colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)));
-    palette.setColor(QPalette::All,      QPalette::Dark,            Colors::darken(colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)));
+    palette.setColor(QPalette::All,      QPalette::Light,           Colors::lighten(buttonColor));
+    palette.setColor(QPalette::All,      QPalette::Midlight,        Colors::mix(Colors::lighten(buttonColor), buttonColor));
+    palette.setColor(QPalette::All,      QPalette::Mid,             Colors::mix(Colors::darken(buttonColor), buttonColor));
+    palette.setColor(QPalette::All,      QPalette::Dark,            Colors::darken(buttonColor));
     palette.setColor(QPalette::All,      QPalette::Shadow,          colorsGlobal->adwaitaColor(ColorsPrivate::shadow_color, variant));
 
-    palette.setColor(QPalette::All,      QPalette::Highlight,       colorsGlobal->adwaitaColor(ColorsPrivate::accent_color, variant));
-    palette.setColor(QPalette::All,      QPalette::HighlightedText, colorsGlobal->adwaitaColor(ColorsPrivate::accent_text, variant));
+    palette.setColor(QPalette::All,      QPalette::Highlight,       colorsGlobal->adwaitaColor(ColorsPrivate::selected_bg_color, variant));
+    palette.setColor(QPalette::All,      QPalette::HighlightedText, colorsGlobal->adwaitaColor(ColorsPrivate::selected_fg_color, variant));
 
     palette.setColor(QPalette::All,      QPalette::Link,            colorsGlobal->adwaitaColor(ColorsPrivate::link_color, variant));
     palette.setColor(QPalette::All,      QPalette::LinkVisited,     colorsGlobal->adwaitaColor(ColorsPrivate::link_visited_color, variant));
@@ -356,37 +417,37 @@ QPalette Colors::palette(ColorVariant variant)
     palette.setColor(QPalette::Disabled, QPalette::ButtonText,      colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_fg_color, variant));
     palette.setColor(QPalette::Disabled, QPalette::BrightText,      colorsGlobal->adwaitaColor(ColorsPrivate::text_color, variant));
 
-    palette.setColor(QPalette::Disabled, QPalette::Light,           Colors::lighten(colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_bg_color, variant)));
-    palette.setColor(QPalette::Disabled, QPalette::Midlight,        Colors::mix(Colors::lighten(colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_bg_color, variant)), colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_bg_color, variant)));
-    palette.setColor(QPalette::Disabled, QPalette::Mid,             Colors::mix(Colors::darken(colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_bg_color, variant)), colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_bg_color, variant)));
-    palette.setColor(QPalette::Disabled, QPalette::Dark,            Colors::darken(colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_bg_color, variant)));
+    palette.setColor(QPalette::Disabled, QPalette::Light,           Colors::lighten(buttonColor));
+    palette.setColor(QPalette::Disabled, QPalette::Midlight,        Colors::mix(Colors::lighten(buttonColor), buttonColor));
+    palette.setColor(QPalette::Disabled, QPalette::Mid,             Colors::mix(Colors::darken(buttonColor), buttonColor));
+    palette.setColor(QPalette::Disabled, QPalette::Dark,            Colors::darken(buttonColor));
     palette.setColor(QPalette::Disabled, QPalette::Shadow,          colorsGlobal->adwaitaColor(ColorsPrivate::shadow_color, variant));
 
-    palette.setColor(QPalette::Disabled, QPalette::Highlight,       colorsGlobal->adwaitaColor(ColorsPrivate::accent_color, variant));
-    palette.setColor(QPalette::Disabled, QPalette::HighlightedText, colorsGlobal->adwaitaColor(ColorsPrivate::accent_text, variant));
+    palette.setColor(QPalette::Disabled, QPalette::Highlight,       colorsGlobal->adwaitaColor(ColorsPrivate::selected_bg_color, variant));
+    palette.setColor(QPalette::Disabled, QPalette::HighlightedText, colorsGlobal->adwaitaColor(ColorsPrivate::selected_fg_color, variant));
 
     palette.setColor(QPalette::Disabled, QPalette::Link,            colorsGlobal->adwaitaColor(ColorsPrivate::link_color, variant));
     palette.setColor(QPalette::Disabled, QPalette::LinkVisited,     colorsGlobal->adwaitaColor(ColorsPrivate::link_visited_color, variant));
 
-    palette.setColor(QPalette::Inactive, QPalette::Window,          colorsGlobal->adwaitaColor(ColorsPrivate::bg_color, variant));
-    palette.setColor(QPalette::Inactive, QPalette::WindowText,      colorsGlobal->adwaitaColor(ColorsPrivate::fg_color, variant));
-    palette.setColor(QPalette::Inactive, QPalette::Base,            colorsGlobal->adwaitaColor(ColorsPrivate::base_color, variant));
-    palette.setColor(QPalette::Inactive, QPalette::AlternateBase,   colorsGlobal->adwaitaColor(ColorsPrivate::base_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::Window,          colorsGlobal->adwaitaColor(ColorsPrivate::backdrop_bg_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::WindowText,      colorsGlobal->adwaitaColor(ColorsPrivate::backdrop_fg_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::Base,            colorsGlobal->adwaitaColor(ColorsPrivate::backdrop_base_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::AlternateBase,   colorsGlobal->adwaitaColor(ColorsPrivate::backdrop_base_color, variant));
     palette.setColor(QPalette::Inactive, QPalette::ToolTipBase,     colorsGlobal->adwaitaColor(ColorsPrivate::osd_bg_color, variant));
     palette.setColor(QPalette::Inactive, QPalette::ToolTipText,     colorsGlobal->adwaitaColor(ColorsPrivate::osd_text_color, variant));
-    palette.setColor(QPalette::Inactive, QPalette::Text,            colorsGlobal->adwaitaColor(ColorsPrivate::fg_color, variant));
-    palette.setColor(QPalette::Inactive, QPalette::Button,          colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant));
-    palette.setColor(QPalette::Inactive, QPalette::ButtonText,      colorsGlobal->adwaitaColor(ColorsPrivate::fg_color, variant));
-    palette.setColor(QPalette::Inactive, QPalette::BrightText,      colorsGlobal->adwaitaColor(ColorsPrivate::text_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::Text,            colorsGlobal->adwaitaColor(ColorsPrivate::backdrop_fg_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::Button,          disabledButtonColor);
+    palette.setColor(QPalette::Inactive, QPalette::ButtonText,      colorsGlobal->adwaitaColor(ColorsPrivate::backdrop_fg_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::BrightText,      colorsGlobal->adwaitaColor(ColorsPrivate::backdrop_text_color, variant));
 
-    palette.setColor(QPalette::Inactive, QPalette::Light,           Colors::lighten(colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)));
-    palette.setColor(QPalette::Inactive, QPalette::Midlight,        Colors::mix(Colors::lighten(colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)), colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)));
-    palette.setColor(QPalette::Inactive, QPalette::Mid,             Colors::mix(Colors::darken(colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)), colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)));
-    palette.setColor(QPalette::Inactive, QPalette::Dark,            Colors::darken(colorsGlobal->adwaitaColor(ColorsPrivate::button_color, variant)));
+    palette.setColor(QPalette::Inactive, QPalette::Light,           Colors::lighten(buttonColor));
+    palette.setColor(QPalette::Inactive, QPalette::Midlight,        Colors::mix(Colors::lighten(buttonColor), buttonColor));
+    palette.setColor(QPalette::Inactive, QPalette::Mid,             Colors::mix(Colors::darken(buttonColor), buttonColor));
+    palette.setColor(QPalette::Inactive, QPalette::Dark,            Colors::darken(buttonColor));
     palette.setColor(QPalette::Inactive, QPalette::Shadow,          colorsGlobal->adwaitaColor(ColorsPrivate::shadow_color, variant));
 
-    palette.setColor(QPalette::Inactive, QPalette::Highlight,       colorsGlobal->adwaitaColor(ColorsPrivate::accent_color, variant));
-    palette.setColor(QPalette::Inactive, QPalette::HighlightedText, colorsGlobal->adwaitaColor(ColorsPrivate::accent_text, variant));
+    palette.setColor(QPalette::Inactive, QPalette::Highlight,       colorsGlobal->adwaitaColor(ColorsPrivate::selected_bg_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::HighlightedText, colorsGlobal->adwaitaColor(ColorsPrivate::selected_fg_color, variant));
 
     palette.setColor(QPalette::Inactive, QPalette::Link,            colorsGlobal->adwaitaColor(ColorsPrivate::link_color, variant));
     palette.setColor(QPalette::Inactive, QPalette::LinkVisited,     colorsGlobal->adwaitaColor(ColorsPrivate::link_visited_color, variant));
@@ -448,11 +509,8 @@ QColor Colors::buttonOutlineColor(const StyleOptions &options)
         variant = isDarkMode() ? ColorVariant::AdwaitaDark : ColorVariant::Adwaita;
     }
 
-    if (variant == ColorVariant::AdwaitaDark) {
-        return darken(options.palette().color(QPalette::Window), 0.1);
-    } else {
-        return darken(options.palette().color(QPalette::Window), 0.18);
-    }
+    const QString colorName = QStringLiteral("button") + buttonColorSuffixFromOptions(options) + QStringLiteral("_border_color");
+    return colorsGlobal->adwaitaButtonColor(buttonColorNameToEnum(colorName), variant);
 }
 
 QColor Colors::indicatorOutlineColor(const StyleOptions &options)
@@ -540,8 +598,6 @@ QColor Colors::sliderOutlineColor(const StyleOptions &options)
 QColor Colors::buttonBackgroundColor(const StyleOptions &options)
 {
     bool isDisabled = options.palette().currentColorGroup() == QPalette::Disabled;
-    QColor buttonBackground(options.palette().color(QPalette::Button));
-    QColor background(options.palette().color(QPalette::Window));
 
     ColorVariant variant = options.colorVariant();
 
@@ -549,52 +605,43 @@ QColor Colors::buttonBackgroundColor(const StyleOptions &options)
         variant = isDarkMode() ? ColorVariant::AdwaitaDark : ColorVariant::Adwaita;
     }
 
-    const bool darkMode = variant == ColorVariant::AdwaitaDark;
-    const QPalette &palette = options.palette();
-
     if (isDisabled && (options.animationMode() == AnimationPressed || options.sunken())) {
-        // Defined in drawing.css - insensitive-active button
-        // if($variant == 'light', Colors::darken(Colors::mix($c, $base_color, 85%), 8%), Colors::darken(Colors::mix($c, $base_color, 85%), 6%));
-        // FIXME: doesn't seem to be correct color
-        return darkMode ? Colors::darken(Colors::mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.15), 0.06) :
-               Colors::darken(Colors::mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.15), 0.08);
+        return colorsGlobal->adwaitaButtonColor(ColorsPrivate::button_disabled_active_color, variant);
     }
 
     if (options.animationMode() == AnimationPressed) {
-        if (darkMode) {
-            // Active button for dark mode is Colors::darken(bg_color, 0.09)
-            return Colors::mix(Colors::darken(background, 0.01), Colors::darken(background, 0.09), options.opacity());
-        } else {
-            // Active button for normal mode is Colors::darken(bg_color, 0.14)
-            return Colors::mix(buttonBackground, Colors::darken(background, 0.14), options.opacity());
-        }
-    } else if (options.sunken()) {
-        if (darkMode) {
-            // Active button for dark mode is Colors::darken(bg_color, 0.09)
-            return Colors::darken(background, 0.09);
-        } else {
-            // Active button for normal mode is Colors::darken(bg_color, 0.14)
-            return Colors::darken(background, 0.14);
-        }
+        const ColorsPrivate::AdwaitaButtonColor buttonColor = options.sunken() ? ColorsPrivate::button_checked_hover_color : ColorsPrivate::button_hover_color;
+        const ColorsPrivate::AdwaitaButtonColor buttonHoverColor = options.sunken() ? ColorsPrivate::button_checked_active_color : ColorsPrivate::button_checked_color;
+        return Colors::mix(colorsGlobal->adwaitaButtonColor(buttonColor, variant),
+                           colorsGlobal->adwaitaButtonColor(buttonHoverColor, variant), options.opacity());
     } else if (options.animationMode() == AnimationHover) {
-        if (darkMode) {
-            // Hovered button for dark mode is Colors::darken(bg_color, 0.01)
-            return Colors::mix(buttonBackground, Colors::darken(background, 0.01), options.opacity());
-        } else {
-            // Hovered button for normal mode is bg_color
-            return Colors::mix(buttonBackground, background, options.opacity());
-        }
-    } else if (options.mouseOver()) {
-        if (darkMode) {
-            // Hovered button for dark mode is Colors::darken(bg_color, 0.01)
-            return Colors::darken(background, 0.01);
-        } else {
-            // Hovered button for normal mode is bg_color
-            return background;
-        }
+        const ColorsPrivate::AdwaitaButtonColor buttonColor = options.sunken() ? ColorsPrivate::button_checked_color : ColorsPrivate::button_color;
+        const ColorsPrivate::AdwaitaButtonColor buttonHoverColor = options.sunken() ? ColorsPrivate::button_checked_hover_color : ColorsPrivate::button_hover_color;
+        return Colors::mix(colorsGlobal->adwaitaButtonColor(buttonColor, variant),
+                           colorsGlobal->adwaitaButtonColor(buttonHoverColor, variant), options.opacity());
     }
 
-    return buttonBackground;
+    const QString colorName = QStringLiteral("button") + buttonColorSuffixFromOptions(options) + QStringLiteral("_color");
+    return colorsGlobal->adwaitaButtonColor(buttonColorNameToEnum(colorName), variant);
+}
+
+QLinearGradient Colors::buttonBackgroundGradient(const StyleOptions &options)
+{
+    ColorVariant variant = options.colorVariant();
+
+    if (variant == ColorVariant::Unknown) {
+        variant = isDarkMode() ? ColorVariant::AdwaitaDark : ColorVariant::Adwaita;
+    }
+
+    const QString gradientName = QStringLiteral("button") + buttonColorSuffixFromOptions(options) + QStringLiteral("_gradient_stop");
+    QColor gradientStartColor = buttonBackgroundColor(options);
+    QColor gradientStopColor = colorsGlobal->adwaitaButtonColor(buttonColorNameToEnum(gradientName), variant);
+
+    QLinearGradient gradient(options.rect().bottomLeft(), options.rect().topLeft());
+    gradient.setColorAt(0, gradientStartColor);
+    gradient.setColorAt(1, gradientStopColor.isValid() ? gradientStopColor : gradientStartColor);
+
+    return gradient;
 }
 
 QColor Colors::checkBoxIndicatorColor(const StyleOptions &options)
