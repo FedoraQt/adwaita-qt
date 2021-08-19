@@ -34,6 +34,8 @@
 namespace Adwaita
 {
 
+static bool isDarkMode();
+
 //*@name convenience typedef
 //@{
 

@@ -24,12 +24,9 @@
 #include "adwaitadebug.h"
 #include "animations/adwaitaanimationdata.h"
 
-#include <QGuiApplication>
 #include <QFile>
 #include <QMetaEnum>
 #include <QRegularExpression>
-
-#include <QtMath>
 
 Q_LOGGING_CATEGORY(ADWAITA, "adwaita.colors")
 
@@ -124,18 +121,6 @@ QColor Colors::transparentize(const QColor &color, qreal amount)
     }
 
     return QColor::fromHslF(h, s, l, alpha);
-}
-
-static bool isDarkMode()
-{
-    const QColor textColor = QGuiApplication::palette().color(QPalette::Text);
-    if (qSqrt(((textColor.red() * textColor.red()) * 0.299) +
-              ((textColor.green() * textColor.green()) * 0.587) +
-              ((textColor.blue() * textColor.blue()) * 0.114)) > 128) {
-        return true;
-    }
-
-    return false;
 }
 
 static ColorsPrivate::AdwaitaColor colorNameToEnum(const QString &name)
@@ -465,7 +450,7 @@ QColor Colors::hoverColor(const StyleOptions &options)
 
 QColor Colors::focusColor(const StyleOptions &options)
 {
-    return options.palette().highlight().color();
+    return colorsGlobal->adwaitaColor(ColorsPrivate::focus_border_color, options.colorVariant());
 }
 
 QColor Colors::negativeText(const StyleOptions &options)
@@ -506,31 +491,19 @@ QColor Colors::arrowOutlineColor(const StyleOptions &options)
 
 QColor Colors::buttonOutlineColor(const StyleOptions &options)
 {
-    ColorVariant variant = options.colorVariant();
-
-    if (variant == ColorVariant::Unknown) {
-        variant = isDarkMode() ? ColorVariant::AdwaitaDark : ColorVariant::Adwaita;
-    }
-
     const QString colorName = QStringLiteral("button") + buttonColorSuffixFromOptions(options) + QStringLiteral("_border_color");
-    return colorsGlobal->adwaitaButtonColor(buttonColorNameToEnum(colorName), variant);
+    return colorsGlobal->adwaitaButtonColor(buttonColorNameToEnum(colorName), options.colorVariant());
 }
 
 QColor Colors::indicatorOutlineColor(const StyleOptions &options)
 {
     bool isDisabled = options.palette().currentColorGroup() == QPalette::Disabled;
     if (options.inMenu() || options.checkboxState() == CheckBoxState::CheckOff) {
-        ColorVariant variant = options.colorVariant();
-
-        if (variant == ColorVariant::Unknown) {
-            variant = isDarkMode() ? ColorVariant::AdwaitaDark : ColorVariant::Adwaita;
-        }
-
         if (isDisabled) {
             return buttonOutlineColor(options);
         }
 
-        if (variant == ColorVariant::AdwaitaDark) {
+        if (options.colorVariant() == ColorVariant::AdwaitaDark) {
             return darken(options.palette().color(QPalette::Window), 0.18);
         } else {
             return darken(options.palette().color(QPalette::Window), 0.24);
@@ -602,43 +575,31 @@ QColor Colors::buttonBackgroundColor(const StyleOptions &options)
 {
     bool isDisabled = options.palette().currentColorGroup() == QPalette::Disabled;
 
-    ColorVariant variant = options.colorVariant();
-
-    if (variant == ColorVariant::Unknown) {
-        variant = isDarkMode() ? ColorVariant::AdwaitaDark : ColorVariant::Adwaita;
-    }
-
     if (isDisabled && (options.animationMode() == AnimationPressed || options.sunken())) {
-        return colorsGlobal->adwaitaButtonColor(ColorsPrivate::button_disabled_active_color, variant);
+        return colorsGlobal->adwaitaButtonColor(ColorsPrivate::button_disabled_active_color, options.colorVariant());
     }
 
     if (options.animationMode() == AnimationPressed) {
         const ColorsPrivate::AdwaitaButtonColor buttonColor = options.sunken() ? ColorsPrivate::button_checked_hover_color : ColorsPrivate::button_hover_color;
         const ColorsPrivate::AdwaitaButtonColor buttonHoverColor = options.sunken() ? ColorsPrivate::button_checked_active_color : ColorsPrivate::button_checked_color;
-        return Colors::mix(colorsGlobal->adwaitaButtonColor(buttonColor, variant),
-                           colorsGlobal->adwaitaButtonColor(buttonHoverColor, variant), options.opacity());
+        return Colors::mix(colorsGlobal->adwaitaButtonColor(buttonColor, options.colorVariant()),
+                           colorsGlobal->adwaitaButtonColor(buttonHoverColor, options.colorVariant()), options.opacity());
     } else if (options.animationMode() == AnimationHover) {
         const ColorsPrivate::AdwaitaButtonColor buttonColor = options.sunken() ? ColorsPrivate::button_checked_color : ColorsPrivate::button_color;
         const ColorsPrivate::AdwaitaButtonColor buttonHoverColor = options.sunken() ? ColorsPrivate::button_checked_hover_color : ColorsPrivate::button_hover_color;
-        return Colors::mix(colorsGlobal->adwaitaButtonColor(buttonColor, variant),
-                           colorsGlobal->adwaitaButtonColor(buttonHoverColor, variant), options.opacity());
+        return Colors::mix(colorsGlobal->adwaitaButtonColor(buttonColor, options.colorVariant()),
+                           colorsGlobal->adwaitaButtonColor(buttonHoverColor, options.colorVariant()), options.opacity());
     }
 
     const QString colorName = QStringLiteral("button") + buttonColorSuffixFromOptions(options) + QStringLiteral("_color");
-    return colorsGlobal->adwaitaButtonColor(buttonColorNameToEnum(colorName), variant);
+    return colorsGlobal->adwaitaButtonColor(buttonColorNameToEnum(colorName), options.colorVariant());
 }
 
 QLinearGradient Colors::buttonBackgroundGradient(const StyleOptions &options)
 {
-    ColorVariant variant = options.colorVariant();
-
-    if (variant == ColorVariant::Unknown) {
-        variant = isDarkMode() ? ColorVariant::AdwaitaDark : ColorVariant::Adwaita;
-    }
-
     const QString gradientName = QStringLiteral("button") + buttonColorSuffixFromOptions(options) + QStringLiteral("_gradient_stop");
     QColor gradientStartColor = buttonBackgroundColor(options);
-    QColor gradientStopColor = colorsGlobal->adwaitaButtonColor(buttonColorNameToEnum(gradientName), variant);
+    QColor gradientStopColor = colorsGlobal->adwaitaButtonColor(buttonColorNameToEnum(gradientName), options.colorVariant());
 
     QLinearGradient gradient(options.rect().bottomLeft(), options.rect().topLeft());
     gradient.setColorAt(0, gradientStartColor);
@@ -676,14 +637,9 @@ QColor Colors::headerTextColor(const StyleOptions &options)
 
 QColor Colors::indicatorBackgroundColor(const StyleOptions &options)
 {
-    ColorVariant variant = options.colorVariant();
-
-    if (variant == ColorVariant::Unknown) {
-        variant = isDarkMode() ? ColorVariant::AdwaitaDark : ColorVariant::Adwaita;
-    }
 
     const QPalette &palette = options.palette();
-    const bool darkMode = variant == ColorVariant::AdwaitaDark;
+    const bool darkMode = options.colorVariant() == ColorVariant::AdwaitaDark;
 
     bool isDisabled = palette.currentColorGroup() == QPalette::Disabled;
     QColor background(palette.color(QPalette::Window));
@@ -749,19 +705,13 @@ QColor Colors::frameBackgroundColor(const StyleOptions &options)
 
 QColor Colors::scrollBarHandleColor(const StyleOptions &options)
 {
-    ColorVariant variant = options.colorVariant();
-
-    if (variant == ColorVariant::Unknown) {
-        variant = isDarkMode() ? ColorVariant::AdwaitaDark : ColorVariant::Adwaita;
-    }
-
     QColor fgColor = options.palette().color(QPalette::Text);
     QColor bgColor = options.palette().color(QPalette::Window);
     QColor selectedBgColor = options.palette().color(QPalette::Highlight);
 
     QColor color(Colors::mix(fgColor, bgColor, 0.4));
     QColor hoverColor(Colors::mix(fgColor, bgColor, 0.2));
-    QColor activeColor(variant == ColorVariant::AdwaitaDark ? Colors::lighten(selectedBgColor, 0.1) : Colors::darken(selectedBgColor, 0.1));
+    QColor activeColor(options.colorVariant() == ColorVariant::AdwaitaDark ? Colors::lighten(selectedBgColor, 0.1) : Colors::darken(selectedBgColor, 0.1));
 
     // hover takes precedence over focus
     if (options.animationMode() == AnimationPressed) {
