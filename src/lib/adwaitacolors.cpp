@@ -21,6 +21,7 @@
 
 #include "adwaitacolors.h"
 #include "adwaitacolors_p.h"
+#include "adwaitadebug.h"
 #include "animations/adwaitaanimationdata.h"
 
 #include <QGuiApplication>
@@ -29,6 +30,8 @@
 #include <QRegularExpression>
 
 #include <QtMath>
+
+Q_LOGGING_CATEGORY(ADWAITA, "adwaita.colors")
 
 namespace Adwaita
 {
@@ -334,10 +337,10 @@ ColorsPrivate::ColorsPrivate()
                     m_buttonColors.insert(gradientStart, gradientStartMap);
                     m_buttonColors.insert(gradientStop, gradientStopMap);
                 } else {
-                    qWarning() << "Unable to process " << buttonColorName << " background color.";
+                        qCDebug(ADWAITA) << "Unable to process " << buttonColorName << " background color.";
                 }
             } else {
-                qWarning() << "Line: " << line << " cannot be processed.";
+                qCDebug(ADWAITA) << "Line: " << line << " cannot be processed.";
             }
         }
     }
