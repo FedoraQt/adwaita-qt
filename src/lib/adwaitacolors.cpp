@@ -135,16 +135,16 @@ static ColorsPrivate::AdwaitaColor colorNameToEnum(const QString &name)
     return (value <= ColorsPrivate::invalid_color || value > ColorsPrivate::alt_focus_border_color) ? ColorsPrivate::invalid_color : value;
 }
 
-static ColorsPrivate::AdwaitaButtonColor buttonColorNameToEnum(const QString &name)
+static ColorsPrivate::AdwaitaWidgetColor widgetColorNameToEnum(const QString &name)
 {
     Q_ASSERT(!name.isEmpty());
 
     QMetaObject metaObject = ColorsPrivate::staticMetaObject;
 
-    QMetaEnum metaEnum = metaObject.enumerator(metaObject.indexOfEnumerator("AdwaitaButtonColor"));
-    ColorsPrivate::AdwaitaButtonColor value = static_cast<ColorsPrivate::AdwaitaButtonColor>(metaEnum.keyToValue(name.toLatin1()));
+    QMetaEnum metaEnum = metaObject.enumerator(metaObject.indexOfEnumerator("AdwaitaWidgetColor"));
+    ColorsPrivate::AdwaitaWidgetColor value = static_cast<ColorsPrivate::AdwaitaWidgetColor>(metaEnum.keyToValue(name.toLatin1()));
 
-    return (value <= ColorsPrivate::invalid_button_color || value > ColorsPrivate::button_disabled_active_text_color) ? ColorsPrivate::invalid_button_color : value;
+    return (value <= ColorsPrivate::invalid_widget_color || value > ColorsPrivate::checkradio_checked_disabled_color) ? ColorsPrivate::invalid_widget_color : value;
 }
 
 static QColor colorFromText(const QString &name)
@@ -153,6 +153,25 @@ static QColor colorFromText(const QString &name)
         return Qt::white;
     } else if (name == QStringLiteral("black")) {
         return Qt::black;
+    } else if (name.startsWith(QStringLiteral("rgba"))) {
+        const QRegularExpression reRgba("^rgba\\((\\d+)[,|\\ ]+(\\d+)[,|\\ ]+(\\d+)[,|\\ ]+([\\d|\\.]+)\\)$");
+        const QRegularExpressionMatch reMatch = reRgba.match(name);
+
+        if (reMatch.hasMatch()) {
+            // Process captured color
+            const int r = reMatch.captured(1).toInt();
+            const int g = reMatch.captured(2).toInt();
+            const int b = reMatch.captured(3).toInt();
+            const double a = reMatch.captured(4).toDouble();
+            return QColor(r, g, b, 255 * a);
+        }
+    } else if (name.startsWith(QStringLiteral("image"))) {
+        const QRegularExpression reRgba("^image\\((.*)\\)$");
+        const QRegularExpressionMatch reMatch = reRgba.match(name);
+
+        if (reMatch.hasMatch()) {
+            return colorFromText(reMatch.captured(1));
+        }
     }
 
     return QColor(name);
@@ -216,119 +235,92 @@ ColorsPrivate::ColorsPrivate()
 
         QTextStream in(&file);
         while (!in.atEnd()) {
-            const QString line = in.readLine();
+            QString line = in.readLine();
 
             if (line.isEmpty()) {
                 continue;
             }
 
-            // E.g. light_fg #2e3436;
-            const QRegularExpression reBase("^@define\\-color\\ ([a-z|_]+)\\ (#[a-z|0-9]{6}|white|black);$");
-            // E.g. borders_edge rgba(255, 255, 255, 0.8);
-            const QRegularExpression reRgba("^@define\\-color\\ ([a-z|_]+)\\ rgba\\((\\d+)[,|\\ ]+(\\d+)[,|\\ ]+(\\d+)[,|\\ ]+([\\d|\\.]+)\\);$");
-            // E.g. button:hover { color: #2e3436; border-color: #cdc7c2; background-image: linear-gradient(to top, #d6d1cd, #e8e6e3 1px); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07); }
-            const QRegularExpression reButtonColor("^(button[:|a-z]*)\\ \\{\\ color:\\ (#[a-z|0-9]{6}|white|black);\\ (outline-color: (.*);\\ )*border-color: (#[a-z|0-9]{6}|white|black);\\ background-image: (linear-gradient|image)\\((.[^\\)]*)\\);\\ (box-shadow:\\ .*;\\ )*\\}");
+            if (line.startsWith(QStringLiteral("@define-color"))) {
+                // @define-color color_name #ffffff;
+                // @define-color color_name rgba(255, 255, 255, 0.1);
+                const QRegularExpression reBase("^@define\\-color\\ ([a-z|_]+)\\ (.*);$");
+                const QRegularExpressionMatch reMatch = reBase.match(line);
 
-            const QRegularExpressionMatch reBaseMatch = reBase.match(line);
-            const QRegularExpressionMatch reRgbaMatch = reRgba.match(line);
-            const QRegularExpressionMatch reButtonColorMatch = reButtonColor.match(line);
+                const AdwaitaColor colorEnum = colorNameToEnum(reMatch.captured(1));
+                const QColor color = colorFromText(reMatch.captured(2));
 
-            if (reBaseMatch.hasMatch()) {
-                // qWarning() << reBaseMatch.captured(0);
-                const AdwaitaColor color = colorNameToEnum(reBaseMatch.captured(1));
-                auto map = m_colors.value(color);
-
-                // Process captured color
-                const QColor capturedColor = colorFromText(reBaseMatch.captured(2));
-                map.insert(colorVariant, capturedColor);
-                m_colors.insert(color, map);
-            } else if (reRgbaMatch.hasMatch()) {
-                // qWarning() << reRgbaMatch.captured(0);
-                const AdwaitaColor color = colorNameToEnum(reRgbaMatch.captured(1));
-                auto map = m_colors.value(color);
-
-                // Process captured color
-                const int r = reRgbaMatch.captured(2).toInt();
-                const int g = reRgbaMatch.captured(3).toInt();
-                const int b = reRgbaMatch.captured(4).toInt();
-                const double a = reRgbaMatch.captured(5).toDouble();
-                const QColor capturedColor(r, g, b, 255 * a);
-                map.insert(colorVariant, capturedColor);
-
-                m_colors.insert(color, map);
-            } else if (reButtonColorMatch.hasMatch()) {
-                // qWarning() << reBaseMatch.captured(0);
-
-                const QString buttonColorName = reButtonColorMatch.captured(1).replace(QLatin1Char(':'), QLatin1Char('_'));
-
-                // Outline color
-                if (!reButtonColorMatch.captured(3).isEmpty()) {
-                    const QString outlineColor = reButtonColorMatch.captured(4);
-                    const QRegularExpression reOutlineColor("^rgba\\((\\d+)[,|\\ ]+(\\d+)[,|\\ ]+(\\d+)[,|\\ ]+([\\d|\\.]+)\\)$");
-                    const QRegularExpressionMatch outlineColorMatch = reOutlineColor.match(outlineColor);
-                    auto outlineColorMap = m_buttonColors.value(button_outline_color);
-
-                    const QColor capturedOutlineColor(outlineColorMatch.captured(1).toInt(),
-                                                      outlineColorMatch.captured(2).toInt(),
-                                                      outlineColorMatch.captured(3).toInt(),
-                                                      255 * outlineColorMatch.captured(4).toDouble());
-                    outlineColorMap.insert(colorVariant, capturedOutlineColor);
-                    m_buttonColors.insert(button_outline_color, outlineColorMap);
-                }
-
-                // Border color
-                const AdwaitaButtonColor borderColor = buttonColorNameToEnum(buttonColorName + QStringLiteral("_border_color"));
-                auto borderColorMap = m_buttonColors.value(borderColor);
-
-                const QColor capturedBorderColor = colorFromText(reButtonColorMatch.captured(5));
-                borderColorMap.insert(colorVariant, capturedBorderColor);
-                m_buttonColors.insert(borderColor, borderColorMap);
-
-                // Text color
-                const AdwaitaButtonColor textColor = buttonColorNameToEnum(buttonColorName + QStringLiteral("_text_color"));
-                auto textColorMap = m_buttonColors.value(textColor);
-
-                const QColor capturedTextColor = colorFromText(reButtonColorMatch.captured(2));
-                textColorMap.insert(colorVariant, capturedTextColor);
-                m_buttonColors.insert(textColor, textColorMap);
-
-                //  Background color
-                const QString backgroundType = reButtonColorMatch.captured(6);
-                if (backgroundType == QStringLiteral("image")) {
-                    const AdwaitaButtonColor bgColor = buttonColorNameToEnum(buttonColorName + QStringLiteral("_color"));
-                    auto bgColormap = m_buttonColors.value(bgColor);
-
-                    const QColor capturedBgColor(colorFromText(reButtonColorMatch.captured(7)));
-                    bgColormap.insert(colorVariant, capturedBgColor);
-                    m_buttonColors.insert(bgColor, bgColormap);
-                } else if (backgroundType == QStringLiteral("linear-gradient")) {
-                    const QString capturedGradient = reButtonColorMatch.captured(7);
-                    // E.g. "to top, #2b2b2b 20%, #2d2d2d 90%"
-                    const QRegularExpression reLinerGradient(".[^#]*(#[a-z|0-9]{6}|white|black).[^#]*(#[a-z|0-9]{6}|white|black).*");
-                    const QRegularExpressionMatch linearGradientMatch = reLinerGradient.match(capturedGradient);
-
-                    const AdwaitaButtonColor gradientStart = buttonColorNameToEnum(buttonColorName + QStringLiteral("_gradient_start"));
-                    const AdwaitaButtonColor gradientStop = buttonColorNameToEnum(buttonColorName + QStringLiteral("_gradient_stop"));
-
-                    auto gradientStartMap = m_buttonColors.value(gradientStart);
-                    auto gradientStopMap = m_buttonColors.value(gradientStop);
-
-                    const QColor gradientStartColor = colorFromText(linearGradientMatch.captured(1));
-                    const QColor gradientStopColor = colorFromText(linearGradientMatch.captured(2));
-
-                    gradientStartMap.insert(colorVariant, gradientStartColor);
-                    gradientStopMap.insert(colorVariant, gradientStopColor);
-
-                    m_buttonColors.insert(gradientStart, gradientStartMap);
-                    m_buttonColors.insert(gradientStop, gradientStopMap);
-                } else {
-                        qCDebug(ADWAITA) << "Unable to process " << buttonColorName << " background color.";
-                }
+                auto map = m_colors.value(colorEnum);
+                map.insert(colorVariant, color);
+                m_colors.insert(colorEnum, map);
             } else {
-                qCDebug(ADWAITA) << "Line: " << line << " cannot be processed.";
+                const QRegularExpression re("^(.*)\\ \\{(.*);\\ \\}");
+                const QRegularExpressionMatch reMatch = re.match(line);
+
+                const QString widgetColorName = reMatch.captured(1).replace(QLatin1Char(':'), QLatin1Char('_'));
+                const QStringList properties = reMatch.captured(2).split(QLatin1Char(';'));
+
+                for (const QString &property : properties) {
+                    const QRegularExpression reBase("^(.*):\\ (.*)");
+                    const QRegularExpressionMatch reMatch = reBase.match(property.trimmed());
+
+                    if (reMatch.hasMatch()) {
+                        const QString propertyName = reMatch.captured(1);
+                        const QString propertyValue = reMatch.captured(2);
+
+                        QString colorType;
+                        if (propertyName == QStringLiteral("background-image") ||
+                            propertyName == QStringLiteral("border-color") ||
+                            propertyName == QStringLiteral("color")) {
+                            const QString fullButtonColorName = QStringLiteral("%1_%2").arg(widgetColorName).arg(propertyName).replace(QLatin1Char('-'), QLatin1Char('_'));
+
+                            // Special case with special treatment
+                            if (propertyValue.startsWith(QStringLiteral("linear-gradient"))) {
+                                // linear-gradient(to bottom, #5d9de9 10%, #478fe6 90%)
+                                // linear-gradient(to top, #f6f5f4 2px, #fbfafa)
+                                const QRegularExpression reBase("^linear-gradient\\((.[^,]*),\\ (#[a-z|0-9]{6}|white|black).*,\\ (#[a-z|0-9]{6}|white|black).*\\)$");
+                                const QRegularExpressionMatch reMatch = reBase.match(propertyValue);
+
+                                if (reMatch.hasMatch()) {
+                                    const QColor firstColor = colorFromText(reMatch.captured(2));
+                                    const QColor secondColor = colorFromText(reMatch.captured(3));
+                                    const bool fromBottom = reMatch.captured(1) == QStringLiteral("to top");
+
+                                    const QString gradientStart = QStringLiteral("%1_%2").arg(widgetColorName).arg(QStringLiteral("gradient_start"));
+                                    const QString gradientStop = QStringLiteral("%1_%2").arg(widgetColorName).arg(QStringLiteral("gradient_stop"));
+
+                                    const AdwaitaWidgetColor gradientStartEnum = widgetColorNameToEnum(gradientStart);
+                                    const AdwaitaWidgetColor gradientStopEnum = widgetColorNameToEnum(gradientStop);
+
+                                    auto gradientStartMap = m_widgetColors.value(gradientStartEnum);
+                                    auto gradientStopMap = m_widgetColors.value(gradientStopEnum);
+
+                                    gradientStartMap.insert(colorVariant, fromBottom ? firstColor : secondColor);
+                                    gradientStopMap.insert(colorVariant, fromBottom ? secondColor : firstColor);
+
+                                    m_widgetColors.insert(gradientStartEnum, gradientStartMap);
+                                    m_widgetColors.insert(gradientStopEnum, gradientStopMap);
+                                 } else {
+                                    // qCDebug(ADWAITA) << "Unhandled property value" << propertyValue << " for " << propertyName << " in " << buttonColorName;
+                                 }
+                            } else {
+                                const AdwaitaWidgetColor colorEnum = widgetColorNameToEnum(fullButtonColorName);
+                                const QColor color = colorFromText(propertyValue);
+
+                                auto map = m_widgetColors.value(colorEnum);
+                                map.insert(colorVariant, color);
+                                m_widgetColors.insert(colorEnum, map);
+                            }
+
+                        } else {
+                            // qCDebug(ADWAITA) << "Unhandled property " << propertyName << " in " << buttonColorName;
+                        }
+                    }
+                }
             }
         }
     }
+
 }
 
 ColorsPrivate::~ColorsPrivate()
@@ -340,14 +332,25 @@ QColor ColorsPrivate::adwaitaColor(AdwaitaColor color, ColorVariant variant)
     return m_colors.value(color).value(variant);
 }
 
-QColor ColorsPrivate::adwaitaButtonColor(AdwaitaButtonColor color, ColorVariant variant)
+QColor ColorsPrivate::adwaitaWidgetColor(AdwaitaWidgetColor color, ColorVariant variant)
 {
-    QColor returnValue = m_buttonColors.value(color).value(variant);
+    if (color == invalid_widget_color) {
+        return QColor();
+    }
+
+    QColor returnValue = m_widgetColors.value(color).value(variant);
+
     if (!returnValue.isValid()) {
-        if (color == button_color) {
-            return m_buttonColors.value(button_gradient_start).value(variant);
-        } else if (color == button_hover_color) {
-            return m_buttonColors.value(button_hover_gradient_start).value(variant);
+        if (color == button_background_image) {
+            return m_widgetColors.value(button_gradient_start).value(variant);
+        } else if (color == button_hover_background_image) {
+            return m_widgetColors.value(button_hover_gradient_start).value(variant);
+        } else if (color == checkradio_background_image) {
+            return m_widgetColors.value(checkradio_gradient_start).value(variant);
+        } else if (color == checkradio_checked_background_image) {
+            return m_widgetColors.value(checkradio_checked_gradient_start).value(variant);
+        } else if (color == checkradio_checked_hover_background_image) {
+            return m_widgetColors.value(checkradio_checked_hover_gradient_start).value(variant);
         }
     }
 
@@ -370,8 +373,8 @@ QPalette Colors::palette(ColorVariant variant)
 {
     QPalette palette;
 
-    QColor buttonColor = colorsGlobal->adwaitaButtonColor(ColorsPrivate::button_color, variant);
-    QColor disabledButtonColor = colorsGlobal->adwaitaButtonColor(ColorsPrivate::button_backdrop_color, variant);
+    QColor buttonColor = colorsGlobal->adwaitaWidgetColor(ColorsPrivate::button_background_image, variant);
+    QColor disabledButtonColor = colorsGlobal->adwaitaWidgetColor(ColorsPrivate::button_backdrop_background_image, variant);
 
     palette.setColor(QPalette::All,      QPalette::Window,          colorsGlobal->adwaitaColor(ColorsPrivate::bg_color, variant));
     palette.setColor(QPalette::All,      QPalette::WindowText,      colorsGlobal->adwaitaColor(ColorsPrivate::fg_color, variant));
@@ -492,7 +495,7 @@ QColor Colors::arrowOutlineColor(const StyleOptions &options)
 QColor Colors::buttonOutlineColor(const StyleOptions &options)
 {
     const QString colorName = QStringLiteral("button") + buttonColorSuffixFromOptions(options) + QStringLiteral("_border_color");
-    return colorsGlobal->adwaitaButtonColor(buttonColorNameToEnum(colorName), options.colorVariant());
+    return colorsGlobal->adwaitaWidgetColor(widgetColorNameToEnum(colorName), options.colorVariant());
 }
 
 QColor Colors::indicatorOutlineColor(const StyleOptions &options)
@@ -576,30 +579,30 @@ QColor Colors::buttonBackgroundColor(const StyleOptions &options)
     bool isDisabled = options.palette().currentColorGroup() == QPalette::Disabled;
 
     if (isDisabled && (options.animationMode() == AnimationPressed || options.sunken())) {
-        return colorsGlobal->adwaitaButtonColor(ColorsPrivate::button_disabled_active_color, options.colorVariant());
+        return colorsGlobal->adwaitaWidgetColor(ColorsPrivate::button_disabled_active_background_image, options.colorVariant());
     }
 
     if (options.animationMode() == AnimationPressed) {
-        const ColorsPrivate::AdwaitaButtonColor buttonColor = options.sunken() ? ColorsPrivate::button_checked_hover_color : ColorsPrivate::button_hover_color;
-        const ColorsPrivate::AdwaitaButtonColor buttonHoverColor = options.sunken() ? ColorsPrivate::button_checked_active_color : ColorsPrivate::button_checked_color;
-        return Colors::mix(colorsGlobal->adwaitaButtonColor(buttonColor, options.colorVariant()),
-                           colorsGlobal->adwaitaButtonColor(buttonHoverColor, options.colorVariant()), options.opacity());
+        const ColorsPrivate::AdwaitaWidgetColor buttonColor = options.sunken() ? ColorsPrivate::button_checked_hover_background_image : ColorsPrivate::button_hover_background_image;
+        const ColorsPrivate::AdwaitaWidgetColor buttonHoverColor = options.sunken() ? ColorsPrivate::button_checked_active_background_image : ColorsPrivate::button_checked_background_image;
+        return Colors::mix(colorsGlobal->adwaitaWidgetColor(buttonColor, options.colorVariant()),
+                           colorsGlobal->adwaitaWidgetColor(buttonHoverColor, options.colorVariant()), options.opacity());
     } else if (options.animationMode() == AnimationHover) {
-        const ColorsPrivate::AdwaitaButtonColor buttonColor = options.sunken() ? ColorsPrivate::button_checked_color : ColorsPrivate::button_color;
-        const ColorsPrivate::AdwaitaButtonColor buttonHoverColor = options.sunken() ? ColorsPrivate::button_checked_hover_color : ColorsPrivate::button_hover_color;
-        return Colors::mix(colorsGlobal->adwaitaButtonColor(buttonColor, options.colorVariant()),
-                           colorsGlobal->adwaitaButtonColor(buttonHoverColor, options.colorVariant()), options.opacity());
+        const ColorsPrivate::AdwaitaWidgetColor buttonColor = options.sunken() ? ColorsPrivate::button_checked_background_image : ColorsPrivate::button_background_image;
+        const ColorsPrivate::AdwaitaWidgetColor buttonHoverColor = options.sunken() ? ColorsPrivate::button_checked_hover_background_image : ColorsPrivate::button_hover_background_image;
+        return Colors::mix(colorsGlobal->adwaitaWidgetColor(buttonColor, options.colorVariant()),
+                           colorsGlobal->adwaitaWidgetColor(buttonHoverColor, options.colorVariant()), options.opacity());
     }
 
-    const QString colorName = QStringLiteral("button") + buttonColorSuffixFromOptions(options) + QStringLiteral("_color");
-    return colorsGlobal->adwaitaButtonColor(buttonColorNameToEnum(colorName), options.colorVariant());
+    const QString colorName = QStringLiteral("button") + buttonColorSuffixFromOptions(options) + QStringLiteral("_background_image");
+    return colorsGlobal->adwaitaWidgetColor(widgetColorNameToEnum(colorName), options.colorVariant());
 }
 
 QLinearGradient Colors::buttonBackgroundGradient(const StyleOptions &options)
 {
     const QString gradientName = QStringLiteral("button") + buttonColorSuffixFromOptions(options) + QStringLiteral("_gradient_stop");
     QColor gradientStartColor = buttonBackgroundColor(options);
-    QColor gradientStopColor = colorsGlobal->adwaitaButtonColor(buttonColorNameToEnum(gradientName), options.colorVariant());
+    QColor gradientStopColor = colorsGlobal->adwaitaWidgetColor(widgetColorNameToEnum(gradientName), options.colorVariant());
 
     QLinearGradient gradient(options.rect().bottomLeft(), options.rect().topLeft());
     gradient.setColorAt(0, gradientStartColor);

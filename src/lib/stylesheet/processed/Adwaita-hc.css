@@ -77,3 +77,19 @@ button:backdrop:insensitive:active { color: #d4cfca; border-color: #d5d0cc; back
 button:disabled { color: #929495; border-color: #9e958b; background-image: image(#fefefd); }
 
 button:disabled:active { color: #929495; border-color: #9e958b; background-image: image(#ebebeb); box-shadow: none; }
+
+checkradio { background-clip: padding-box; background-image: linear-gradient(to bottom, white 20%, white 90%); border-color: #6e645a; box-shadow: 0 1px rgba(0, 0, 0, 0.05); color: #ffffff; }
+
+checkradio:hover { background-image: image(#f2f2f2); }
+
+checkradio:active { box-shadow: inset 0 1px rgba(0, 0, 0, 0.2); background-image: image(#d9d9d9); }
+
+checkradio:disabled { box-shadow: none; color: rgba(255, 255, 255, 0.7); }
+
+checkradio:checked { background-clip: border-box; background-image: linear-gradient(to bottom, #4b92e7 20%, #3584e4 90%); border-color: #1b6acb; box-shadow: 0 1px rgba(0, 0, 0, 0.05); color: #ffffff; }
+
+checkradio:checked:hover { background-image: linear-gradient(to bottom, #5d9de9 10%, #478fe6 90%); }
+
+checkradio:checked:active { box-shadow: inset 0 1px rgba(0, 0, 0, 0.2); background-image: image(#1f76e1); }
+
+checkradio:checked:disabled { box-shadow: none; color: rgba(255, 255, 255, 0.7); }

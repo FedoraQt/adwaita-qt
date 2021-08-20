@@ -96,58 +96,105 @@ public:
     Q_ENUM(AdwaitaColor);
 
     // FIXME: Better support for gradients, currently they are used in button_color and button_hover_color
-    enum AdwaitaButtonColor {
-        invalid_button_color = 0,
+    enum AdwaitaWidgetColor {
+        invalid_widget_color = 0,
+        button_background_image,
+        button_border_color,
         button_color,
         button_gradient_start,
         button_gradient_stop,
-        button_border_color,
-        button_text_color,
-        button_outline_color,
+
+        button_hover_background_image,
+        button_hover_border_color,
         button_hover_color,
         button_hover_gradient_start,
         button_hover_gradient_stop,
-        button_hover_border_color,
-        button_hover_text_color,
-        button_checked_color,
+
+        button_checked_background_image,
         button_checked_border_color,
-        button_checked_text_color,
-        button_checked_hover_color,
+        button_checked_color,
+
+        button_checked_hover_background_image,
         button_checked_hover_border_color,
-        button_checked_hover_text_color,
-        button_checked_active_color,
+        button_checked_hover_color,
+
+        button_checked_active_background_image,
         button_checked_active_border_color,
-        button_checked_active_text_color,
-        button_backdrop_color,
+        button_checked_active_color,
+
+        button_backdrop_background_image,
         button_backdrop_border_color,
-        button_backdrop_text_color,
-        button_backdrop_active_color,
+        button_backdrop_color,
+
+        button_backdrop_active_background_image,
         button_backdrop_active_border_color,
-        button_backdrop_active_text_color,
-        button_backdrop_insensitive_color,
+        button_backdrop_active_color,
+
+        button_backdrop_insensitive_background_image,
         button_backdrop_insensitive_border_color,
-        button_backdrop_insensitive_text_color,
-        button_backdrop_insensitive_active_color,
+        button_backdrop_insensitive_color,
+
+        button_backdrop_insensitive_active_background_image,
         button_backdrop_insensitive_active_border_color,
-        button_backdrop_insensitive_active_text_color,
-        button_disabled_color,
+        button_backdrop_insensitive_active_color,
+
+        button_disabled_background_image,
         button_disabled_border_color,
-        button_disabled_text_color,
-        button_disabled_active_color,
+        button_disabled_color,
+
+        button_disabled_active_background_image,
         button_disabled_active_border_color,
-        button_disabled_active_text_color
+        button_disabled_active_color,
+
+        checkradio_background_image,
+        checkradio_border_color,
+        checkradio_color,
+        checkradio_gradient_start,
+        checkradio_gradient_stop,
+
+        checkradio_hover_background_image,
+        checkradio_hover_border_color,
+        checkradio_hover_color,
+
+        checkradio_active_background_image,
+        checkradio_active_border_color,
+        checkradio_active_color,
+
+        checkradio_disabled_background_image,
+        checkradio_disabled_border_color,
+        checkradio_disabled_color,
+
+        checkradio_checked_background_image,
+        checkradio_checked_border_color,
+        checkradio_checked_color,
+        checkradio_checked_gradient_start,
+        checkradio_checked_gradient_stop,
+
+        checkradio_checked_hover_background_image,
+        checkradio_checked_hover_border_color,
+        checkradio_checked_hover_color,
+        checkradio_checked_hover_gradient_start,
+        checkradio_checked_hover_gradient_stop,
+
+        checkradio_checked_active_background_image,
+        checkradio_checked_active_border_color,
+        checkradio_checked_active_color,
+
+        checkradio_checked_disabled_background_image,
+        checkradio_checked_disabled_border_color,
+        checkradio_checked_disabled_color
     };
-    Q_ENUM(AdwaitaButtonColor);
+    Q_ENUM(AdwaitaWidgetColor);
 
     ColorsPrivate();
     virtual ~ColorsPrivate();
 
     QColor adwaitaColor(AdwaitaColor color, ColorVariant variant);
-    QColor adwaitaButtonColor(AdwaitaButtonColor color, ColorVariant variant);
+    QColor adwaitaWidgetColor(AdwaitaWidgetColor color, ColorVariant variant);
 
 private:
     QMap<AdwaitaColor, QMap<ColorVariant, QColor> > m_colors;
-    QMap<AdwaitaButtonColor, QMap<ColorVariant, QColor> > m_buttonColors;
+    QMap<AdwaitaWidgetColor, QMap<ColorVariant, QColor> > m_widgetColors;
 };
 
 } // namespace Adwaita
