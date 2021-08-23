@@ -155,6 +155,8 @@ public:
         checkradio_hover_background_image,
         checkradio_hover_border_color,
         checkradio_hover_color,
+        checkradio_hover_gradient_start,
+        checkradio_hover_gradient_stop,
 
         checkradio_active_background_image,
         checkradio_active_border_color,

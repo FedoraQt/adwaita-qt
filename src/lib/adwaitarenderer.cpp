@@ -491,63 +491,16 @@ void Renderer::renderCheckBoxFrame(const StyleOptions &options)
 
         frameRect.adjust(0.5, 0.5, -0.5, -0.5);
         radius = qMax(radius - 1, qreal(0.0));
-    } else
-        options.painter()->setPen(Qt::NoPen);
-
-    if (options.inMenu() || options.checkboxState() == CheckOff) {
-        // content
-        if (options.color().isValid() && options.active()) {
-            QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
-            if (options.sunken()) {
-                // Pressed-alt button in dark mode is not a gradient, just an image consting from same $color
-                if (options.colorVariant() == AdwaitaDark) {
-                    gradient.setColorAt(0, options.color());
-                    gradient.setColorAt(1, options.color());
-                } else {
-                    // Pressed-alt button in normal mode is not a gradient, just an image consting from same $color
-                    gradient.setColorAt(0, options.color());
-                    gradient.setColorAt(1, options.color());
-                }
-            } else if (options.mouseOver()) {
-                if (options.colorVariant() == AdwaitaDark) {
-                    QColor baseColor = options.color();
-                    // Hovered-alt button in dark mode is a gradient from $color to Colors::darken(bg_color, 0.04)
-                    gradient.setColorAt(0, Colors::darken(baseColor, 0.04));
-                    gradient.setColorAt(1, options.color());
-                } else {
-                    QColor baseColor = Colors::darken(options.color(), 0.09);
-                    // Hovered-alt button in normal mode is a gradient from $color to Colors::lighten(bg_color, 0.04)
-                    gradient.setColorAt(0, options.color());                      // FIXME:
-                    gradient.setColorAt(1, Colors::lighten(baseColor, 0.04));   // should be vice-versa, but this way it seems to be more accurate
-                }
-            } else {
-                if (options.colorVariant() == AdwaitaDark) {
-                    QColor baseColor = Colors::lighten(options.color(), 0.03);
-                    // Normal-alt button in dark mode is a gradient from $color to Colors::darken(bg_color, 0.06)
-                    gradient.setColorAt(0, Colors::darken(baseColor, 0.06));
-                    gradient.setColorAt(1, options.color());
-                } else {
-                    QColor baseColor = Colors::darken(options.color(), 0.05);
-                    // Normal-alt button in normal mode is a gradient from $color to bg_color
-                    gradient.setColorAt(0, baseColor);
-                    gradient.setColorAt(1, options.color());
-                }
-            }
-            options.painter()->setBrush(gradient);
-        } else if (!options.active()) {
-            options.painter()->setBrush(options.color());
-        } else {
-            options.painter()->setBrush(Qt::NoBrush);
-        }
     } else {
-        if (options.color().isValid()) {
-            QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
-            gradient.setColorAt(0, options.color());
-            gradient.setColorAt(1, Colors::lighten(options.color(), 0.04));
-            options.painter()->setBrush(gradient);
-        } else {
-            options.painter()->setBrush(Qt::NoBrush);
-        }
+        options.painter()->setPen(Qt::NoPen);
+    }
+
+    if (options.color().isValid() && options.active()) {
+        options.painter()->setBrush(Colors::indicatorBackgroundGradient(options));
+    } else if (!options.active()) {
+        options.painter()->setBrush(options.color());
+    } else {
+        options.painter()->setBrush(Qt::NoBrush);
     }
 
     // render
@@ -912,64 +865,17 @@ void Renderer::renderRadioButton(const StyleOptions &options, const QColor &tick
     QRectF frameRect(options.rect());
     frameRect.adjust(2, 2, -2, -2);
 
-    if (options.inMenu() || options.radioButtonState() == RadioOff) {
-        if (options.color().isValid() && options.active()) {
-            QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
-            if (options.sunken()) {
-                // Pressed-alt button in normal and dark mode is not a gradient, just an image consting from same $background
-                gradient.setColorAt(0, options.color());
-                gradient.setColorAt(1, options.color());
-            } else if (options.mouseOver()) {
-                if (options.colorVariant() == AdwaitaDark) {
-                    QColor baseColor = options.color();
-                    // Hovered-alt button in dark mode is a gradient from $background to Colors::darken(bg_background, 0.04)
-                    gradient.setColorAt(0, Colors::darken(baseColor, 0.04));
-                    gradient.setColorAt(1, options.color());
-                } else {
-                    QColor baseColor = Colors::darken(options.color(), 0.09);
-                    // Hovered-alt button in normal mode is a gradient from $background to Colors::lighten(bg_background, 0.04)
-                    gradient.setColorAt(0, options.color());                 // FIXME:
-                    gradient.setColorAt(1, Colors::lighten(baseColor, 0.04));   // should be vice-versa, but this way it seems to be more accurate
-                }
-            } else {
-                if (options.colorVariant() == AdwaitaDark) {
-                    QColor baseColor = Colors::lighten(options.color(), 0.03);
-                    // Normal-alt button in dark mode is a gradient from $background to Colors::darken(bg_background, 0.06)
-                    gradient.setColorAt(0, Colors::darken(baseColor, 0.06));
-                    gradient.setColorAt(1, options.color());
-                } else {
-                    QColor baseColor = Colors::darken(options.color(), 0.05);
-                    // Normal-alt button in normal mode is a gradient from $background to bg_background
-                    gradient.setColorAt(0, baseColor);
-                    gradient.setColorAt(1, options.color());
-                }
-            }
-            options.painter()->setBrush(gradient);
-        } else if (!options.active()) {
-            options.painter()->setBrush(options.color());
-        } else {
-            options.painter()->setBrush(Qt::NoBrush);
-        }
-
-        options.painter()->setPen(QPen(options.outlineColor(), 1));
-
-        QRectF contentRect(frameRect.adjusted(0.5, 0.5, -0.5, -0.5));
-        options.painter()->drawEllipse(contentRect);
+    if (options.color().isValid() && options.active()) {
+        options.painter()->setBrush(Colors::indicatorBackgroundGradient(options));
+    } else if (!options.active()) {
+        options.painter()->setBrush(options.color());
     } else {
-        if (options.color().isValid()) {
-            QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
-            gradient.setColorAt(0, options.color());
-            gradient.setColorAt(1, Colors::lighten(options.color(), 0.04));
-            options.painter()->setBrush(gradient);
-        } else {
-            options.painter()->setBrush(Qt::NoBrush);
-        }
-
-        options.painter()->setPen(QPen(options.outlineColor(), 1));
-
-        QRectF contentRect(frameRect.adjusted(0.5, 0.5, -0.5, -0.5));
-        options.painter()->drawEllipse(contentRect);
+        options.painter()->setBrush(Qt::NoBrush);
     }
+
+    options.painter()->setPen(QPen(options.outlineColor(), 1));
+    QRectF contentRect(frameRect.adjusted(0.5, 0.5, -0.5, -0.5));
+    options.painter()->drawEllipse(contentRect);
 
     // mark
     if (options.radioButtonState() == RadioOn) {
@@ -1041,25 +947,7 @@ void Renderer::renderSliderHandle(const StyleOptions &options, Side ticks, qreal
 
     // set brush
     if (options.color().isValid() && options.active()) {
-        QLinearGradient gradient(frameRect.bottomLeft(), frameRect.topLeft());
-        if (options.sunken()) {
-            // Pressed-alt button in normal and dark mode is not a gradient, just an image consting from same $background
-            gradient.setColorAt(0, options.color());
-            gradient.setColorAt(1, options.color());
-        } else {
-            if (options.colorVariant() == AdwaitaDark) {
-                QColor baseColor = Colors::lighten(options.color(), 0.03);
-                // Normal-alt button in dark mode is a gradient from $color to Colors::darken(bg_background, 0.06)
-                gradient.setColorAt(0, Colors::darken(baseColor, 0.06));
-                gradient.setColorAt(1, options.color());
-            } else {
-                QColor baseColor = Colors::darken(options.color(), 0.05);
-                // Normal-alt button in normal mode is a gradient from $color to bg_background
-                gradient.setColorAt(0, baseColor);
-                gradient.setColorAt(1, options.color());
-            }
-        }
-        options.painter()->setBrush(gradient);
+        options.painter()->setBrush(Colors::buttonBackgroundGradient(options));
     }  else if (!options.active()) {
         options.painter()->setBrush(options.color());
     } else {
@@ -1186,10 +1074,13 @@ void Renderer::renderProgressBarGroove(const StyleOptions &options)
 
     // content
     if (options.color().isValid()) {
-        options.painter()->setPen(options.outlineColor());
         options.painter()->setBrush(options.color());
-        options.painter()->drawRoundedRect(baseRect.translated(0.5, 0.5), radius, radius);
+
     }
+    if (options.outlineColor().isValid()) {
+        options.painter()->setPen(options.outlineColor());
+    }
+    options.painter()->drawRoundedRect(baseRect.translated(0.5, 0.5), radius, radius);
 
     options.painter()->restore();
 }

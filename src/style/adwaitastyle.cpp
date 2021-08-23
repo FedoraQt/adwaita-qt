@@ -4024,9 +4024,6 @@ bool Style::drawIndicatorCheckBoxPrimitive(const QStyleOption *option, QPainter 
     styleOptions.setCheckboxState(checkBoxState);
     styleOptions.setPainter(painter);
     styleOptions.setRect(rect);
-    styleOptions.setOutlineColor(Colors::indicatorOutlineColor(styleOptions));
-
-    const QColor &background(Colors::indicatorBackgroundColor(styleOptions));
 
     // detect checkboxes in lists
     bool isSelectedItem(this->isSelectedItem(widget, rect.center()));
@@ -4040,7 +4037,6 @@ bool Style::drawIndicatorCheckBoxPrimitive(const QStyleOption *option, QPainter 
         }
     }
     qreal animation(_animations->widgetStateEngine().opacity(widget, AnimationPressed));
-
 
     QColor tickColor;
     if (isSelectedItem) {
@@ -4061,11 +4057,11 @@ bool Style::drawIndicatorCheckBoxPrimitive(const QStyleOption *option, QPainter 
 
         tickColor = Colors::checkBoxIndicatorColor(styleOptions);
     }
-
     // render
-    styleOptions.setColor(background);
     styleOptions.setActive(enabled && windowActive);
+    styleOptions.setColor(Colors::indicatorBackgroundColor(styleOptions));
     styleOptions.setCheckboxState(checkBoxState);
+    styleOptions.setOutlineColor(Colors::indicatorOutlineColor(styleOptions));
 
     Adwaita::Renderer::renderCheckBox(styleOptions, tickColor, animation);
     return true;
@@ -4094,11 +4090,8 @@ bool Style::drawIndicatorRadioButtonPrimitive(const QStyleOption *option, QPaint
     styleOptions.setOpacity(AnimationData::OpacityInvalid);
     styleOptions.setAnimationMode(AnimationNone);
     styleOptions.setCheckboxState(checked ? CheckOn : CheckOff);
-    styleOptions.setOutlineColor(Colors::indicatorOutlineColor(styleOptions));
     styleOptions.setPainter(painter);
     styleOptions.setRect(rect);
-
-    const QColor &background(Colors::indicatorBackgroundColor(styleOptions));
 
     // radio button state
     RadioButtonState radioButtonState(state & State_On ? RadioOn : RadioOff);
@@ -4139,8 +4132,9 @@ bool Style::drawIndicatorRadioButtonPrimitive(const QStyleOption *option, QPaint
 
     // render
     styleOptions.setActive(enabled && windowActive);
-    styleOptions.setColor(background);
+    styleOptions.setColor(Colors::indicatorBackgroundColor(styleOptions));
     styleOptions.setInMenu(false);
+    styleOptions.setOutlineColor(Colors::indicatorOutlineColor(styleOptions));
     styleOptions.setRadioButtonState(radioButtonState);
 
     Adwaita::Renderer::renderRadioButton(styleOptions, tickColor, animation);
@@ -5290,7 +5284,7 @@ bool Style::drawProgressBarContentsControl(const QStyleOption *option, QPainter 
         StyleOptions styleOptions(painter, rect);
         styleOptions.setColor(color);
         styleOptions.setColorVariant(_variant);
-        styleOptions.setOutlineColor(_dark ? Colors::darken(color, 0.3) : Colors::darken(color, 0.15));
+        styleOptions.setOutlineColor(color);
 
         Adwaita::Renderer::renderProgressBarBusyContents(styleOptions, horizontal, reverse, progress);
     } else {
@@ -5318,7 +5312,7 @@ bool Style::drawProgressBarContentsControl(const QStyleOption *option, QPainter 
         StyleOptions styleOptions(painter, rect);
         styleOptions.setColor(palette.color(QPalette::Highlight));
         styleOptions.setColorVariant(_variant);
-        styleOptions.setOutlineColor(_dark ? Colors::darken(palette.color(QPalette::Highlight), 0.3) : Colors::darken(palette.color(QPalette::Highlight), 0.15));
+        styleOptions.setOutlineColor(palette.color(QPalette::Highlight));
         Adwaita::Renderer::renderProgressBarContents(styleOptions);
         painter->setClipRegion(oldClipRegion);
     }
@@ -5339,8 +5333,8 @@ bool Style::drawProgressBarGrooveControl(const QStyleOption *option, QPainter *p
     styleOptions.setAnimationMode(AnimationNone);
     styleOptions.setPainter(painter);
     styleOptions.setRect(option->rect);
-    styleOptions.setColor(palette.currentColorGroup() ? palette.color(QPalette::Window) : Colors::mix(Colors::buttonOutlineColor(styleOptions), palette.color(QPalette::Window)));
-    styleOptions.setOutlineColor(Colors::buttonOutlineColor(styleOptions));
+    styleOptions.setColor(Colors::mix(Colors::buttonOutlineColor(styleOptions), palette.color(QPalette::Window)));
+    styleOptions.setOutlineColor(Colors::mix(Colors::buttonOutlineColor(styleOptions), palette.color(QPalette::Window)));
 
     Adwaita::Renderer::renderProgressBarGroove(styleOptions);
     return true;
@@ -6819,7 +6813,7 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
 
         // base color
         QColor outline(Colors::buttonOutlineColor(styleOptions));
-        QColor grooveColor(palette.currentColorGroup() ? palette.color(QPalette::Window) : Colors::mix(outline, palette.color(QPalette::Window)));
+        QColor grooveColor(Colors::mix(outline, palette.color(QPalette::Window)));
         QColor highlightColor(palette.color(QPalette::Highlight));
         QColor highlightOutline(_dark ? Colors::darken(highlightColor, 0.3) : Colors::darken(highlightColor, 0.15));
 
@@ -6843,20 +6837,20 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
                 if (upsideDown) {
                     styleOptions.setRect(leftRect);
                     styleOptions.setColor(grooveColor);
-                    styleOptions.setOutlineColor(outline);
+                    styleOptions.setOutlineColor(grooveColor);
                     Adwaita::Renderer::renderProgressBarGroove(styleOptions);
                     styleOptions.setRect(rightRect);
                     styleOptions.setColor(highlightColor);
-                    styleOptions.setOutlineColor(highlightOutline);
+                    styleOptions.setOutlineColor(highlightColor);
                     Adwaita::Renderer::renderProgressBarContents(styleOptions);
                 } else {
                     styleOptions.setRect(leftRect);
                     styleOptions.setColor(highlightColor);
-                    styleOptions.setOutlineColor(highlightOutline);
+                    styleOptions.setOutlineColor(highlightColor);
                     Adwaita::Renderer::renderProgressBarContents(styleOptions);
                     styleOptions.setRect(rightRect);
                     styleOptions.setColor(grooveColor);
-                    styleOptions.setOutlineColor(outline);
+                    styleOptions.setOutlineColor(grooveColor);
                     Adwaita::Renderer::renderProgressBarGroove(styleOptions);
                 }
             } else {
@@ -6868,20 +6862,20 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
                 if (upsideDown) {
                     styleOptions.setRect(topRect);
                     styleOptions.setColor(grooveColor);
-                    styleOptions.setOutlineColor(outline);
+                    styleOptions.setOutlineColor(grooveColor);
                     Adwaita::Renderer::renderProgressBarGroove(styleOptions);
                     styleOptions.setRect(bottomRect);
                     styleOptions.setColor(highlightColor);
-                    styleOptions.setOutlineColor(highlightOutline);
+                    styleOptions.setOutlineColor(highlightColor);
                     Adwaita::Renderer::renderProgressBarContents(styleOptions);
                 } else {
                     styleOptions.setRect(topRect);
                     styleOptions.setColor(highlightColor);
-                    styleOptions.setOutlineColor(highlightOutline);
+                    styleOptions.setOutlineColor(highlightColor);
                     Adwaita::Renderer::renderProgressBarContents(styleOptions);
                     styleOptions.setRect(bottomRect);
                     styleOptions.setColor(grooveColor);
-                    styleOptions.setOutlineColor(outline);
+                    styleOptions.setOutlineColor(grooveColor);
                     Adwaita::Renderer::renderProgressBarGroove(styleOptions);
                 }
             }
@@ -6907,15 +6901,14 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
         StyleOptions styleOptions(palette, _variant);
         styleOptions.setMouseOver(mouseOver);
         styleOptions.setOpacity(opacity);
-        styleOptions.setCheckboxState(CheckOff);
-        styleOptions.setInMenu(true);
+        styleOptions.setAnimationMode(mode);
 
         // define colors
-        QColor background(Colors::indicatorBackgroundColor(styleOptions));
+        QColor background(Colors::buttonBackgroundColor(styleOptions));
 
         styleOptions.setMouseOver(handleActive && mouseOver);
 
-        QColor outline(Colors::indicatorOutlineColor(styleOptions));
+        QColor outline(Colors::buttonOutlineColor(styleOptions));
         QColor shadow(Colors::shadowColor(styleOptions));
 
         styleOptions.setPainter(painter);

@@ -147,6 +147,18 @@ static ColorsPrivate::AdwaitaWidgetColor widgetColorNameToEnum(const QString &na
     return (value <= ColorsPrivate::invalid_widget_color || value > ColorsPrivate::checkradio_checked_disabled_color) ? ColorsPrivate::invalid_widget_color : value;
 }
 
+static QString enumToWidgetColorName(ColorsPrivate::AdwaitaWidgetColor color)
+{
+    Q_ASSERT(color != ColorsPrivate::invalid_widget_color);
+
+    QMetaObject metaObject = ColorsPrivate::staticMetaObject;
+
+    QMetaEnum metaEnum = metaObject.enumerator(metaObject.indexOfEnumerator("AdwaitaWidgetColor"));
+    const QString value = metaEnum.valueToKey(color);
+
+    return value;
+}
+
 static QColor colorFromText(const QString &name)
 {
     if (name == QStringLiteral("white")) {
@@ -201,10 +213,33 @@ static QString buttonColorSuffixFromOptions(const StyleOptions &options)
         } else {
             result += QStringLiteral("_active");
         }
-    } else if (options.animationMode() == AnimationHover) {
+    } else if (options.animationMode() == AnimationHover || options.mouseOver()) {
          result += QStringLiteral("_hover");
-    } else if (options.mouseOver()) {
-         result += QStringLiteral("_hover");
+    }
+
+    return result;
+}
+
+static QString checkRadioColorSuffixFromOptions(const StyleOptions &options)
+{
+    bool isDisabled = options.palette().currentColorGroup() == QPalette::Disabled;
+    bool isInactive = options.palette().currentColorGroup() == QPalette::Inactive;
+    QString result;
+
+    // Checked button
+    if (options.checkboxState() != CheckOff || options.radioButtonState() != RadioOff) {
+        result += QStringLiteral("_checked");
+    }
+
+    if (isDisabled) {
+        result += QStringLiteral("_disabled");
+        return result;
+    }
+
+    if (options.animationMode() == AnimationPressed || options.sunken()) {
+        result += QStringLiteral("_active");
+    } else if (options.animationMode() == AnimationHover || options.mouseOver()) {
+        result += QStringLiteral("_hover");
     }
 
     return result;
@@ -301,7 +336,7 @@ ColorsPrivate::ColorsPrivate()
                                     m_widgetColors.insert(gradientStartEnum, gradientStartMap);
                                     m_widgetColors.insert(gradientStopEnum, gradientStopMap);
                                  } else {
-                                    // qCDebug(ADWAITA) << "Unhandled property value" << propertyValue << " for " << propertyName << " in " << buttonColorName;
+                                    // qCDebug(ADWAITA) << "Unhandled property value" << propertyValue << " for " << propertyName << " in " << fullButtonColorName;
                                  }
                             } else {
                                 const AdwaitaWidgetColor colorEnum = widgetColorNameToEnum(fullButtonColorName);
@@ -313,14 +348,13 @@ ColorsPrivate::ColorsPrivate()
                             }
 
                         } else {
-                            // qCDebug(ADWAITA) << "Unhandled property " << propertyName << " in " << buttonColorName;
+                            // qCDebug(ADWAITA) << "Unhandled property " << propertyName << " in " << line;
                         }
                     }
                 }
             }
         }
     }
-
 }
 
 ColorsPrivate::~ColorsPrivate()
@@ -341,16 +375,42 @@ QColor ColorsPrivate::adwaitaWidgetColor(AdwaitaWidgetColor color, ColorVariant 
     QColor returnValue = m_widgetColors.value(color).value(variant);
 
     if (!returnValue.isValid()) {
-        if (color == button_background_image) {
-            return m_widgetColors.value(button_gradient_start).value(variant);
-        } else if (color == button_hover_background_image) {
-            return m_widgetColors.value(button_hover_gradient_start).value(variant);
-        } else if (color == checkradio_background_image) {
-            return m_widgetColors.value(checkradio_gradient_start).value(variant);
-        } else if (color == checkradio_checked_background_image) {
-            return m_widgetColors.value(checkradio_checked_gradient_start).value(variant);
-        } else if (color == checkradio_checked_hover_background_image) {
-            return m_widgetColors.value(checkradio_checked_hover_gradient_start).value(variant);
+        QString colorName = enumToWidgetColorName(color);
+
+        if (colorName.isEmpty()) {
+            return QColor();
+        }
+
+        // We can only fallback to gradient in case of background_image or base color of any kind
+        if (!colorName.endsWith(QStringLiteral("background_image")) && !colorName.endsWith(QStringLiteral("color"))) {
+            return QColor();
+        }
+
+        // Requested color might use gradient
+        QString gradientColorName = colorName;
+        AdwaitaWidgetColor gradientColor = widgetColorNameToEnum(gradientColorName.replace(QStringLiteral("background_image"), QStringLiteral("gradient_start")));
+        if (gradientColor != invalid_widget_color) {
+            returnValue = m_widgetColors.value(gradientColor).value(variant);
+
+            if (returnValue.isValid()) {
+                return returnValue;
+            }
+        }
+
+        // Derived state doesn't override all colors
+        // E.g checkradio_checked_hover_color → checkradio_checked_color
+        QString baseColorName = colorName;
+        baseColorName.replace(QStringLiteral("_active"), QString()).replace(QStringLiteral("_hover"), QString()).replace(QStringLiteral("_disabled"), QString());
+
+        // There is no base color we can try
+        if (colorName == baseColorName) {
+            return QColor();
+        }
+
+        AdwaitaWidgetColor baseColor = widgetColorNameToEnum(baseColorName);
+        if (baseColor != invalid_widget_color) {
+            // Recursive call to also cover gradient in case the base color uses one
+            return adwaitaWidgetColor(baseColor, variant);
         }
     }
 
@@ -501,18 +561,19 @@ QColor Colors::buttonOutlineColor(const StyleOptions &options)
 QColor Colors::indicatorOutlineColor(const StyleOptions &options)
 {
     bool isDisabled = options.palette().currentColorGroup() == QPalette::Disabled;
-    if (options.inMenu() || options.checkboxState() == CheckBoxState::CheckOff) {
+    if (options.inMenu()) {
         if (isDisabled) {
             return buttonOutlineColor(options);
         }
 
-        if (options.colorVariant() == ColorVariant::AdwaitaDark) {
+        if (options.colorVariant() == ColorVariant::AdwaitaDark || options.colorVariant() == AdwaitaHighcontrastDark) {
             return darken(options.palette().color(QPalette::Window), 0.18);
         } else {
             return darken(options.palette().color(QPalette::Window), 0.24);
         }
     } else {
-        return options.palette().color(QPalette::Highlight);
+        const QString colorName = QStringLiteral("checkradio") + checkRadioColorSuffixFromOptions(options) + QStringLiteral("_border_color");
+        return colorsGlobal->adwaitaWidgetColor(widgetColorNameToEnum(colorName), options.colorVariant());
     }
 }
 
@@ -640,65 +701,37 @@ QColor Colors::headerTextColor(const StyleOptions &options)
 
 QColor Colors::indicatorBackgroundColor(const StyleOptions &options)
 {
-
-    const QPalette &palette = options.palette();
-    const bool darkMode = options.colorVariant() == ColorVariant::AdwaitaDark;
-
-    bool isDisabled = palette.currentColorGroup() == QPalette::Disabled;
-    QColor background(palette.color(QPalette::Window));
-    // Normal-alt button for dark mode is Colors::darken(bg_color, 0.03)
-    // Normal-alt button for normal mode is Colors::lighten(bg_color, 0.05)
-    QColor indicatorColor(darkMode ? Colors::darken(background, 0.03) : Colors::lighten(background, 0.05));
-
-    if (options.inMenu() || options.checkboxState() == CheckOff) {
-        if (isDisabled) {
-            // Defined in drawing.css - insensitive button
-            // $insensitive_bg_color: Colors::mix($bg_color, $base_color, 60%);
-            return Colors::mix(palette.color(QPalette::Active, QPalette::Window), palette.color(QPalette::Active, QPalette::Base), 0.6);
-        }
-
-        if (options.animationMode() == AnimationPressed) {
-            if (darkMode) {
-                // Active button for dark mode is Colors::darken(bg_color, 0.09)
-                return Colors::mix(background, Colors::darken(background, 0.09), options.opacity());
-            } else {
-                // Active button for normal mode is Colors::darken(bg_color, 0.14)
-                return Colors::mix(Colors::lighten(background, 0.0), Colors::darken(background, 0.14), options.opacity());
-            }
-        } else if (options.sunken()) {
-            if (darkMode) {
-                // Active button for dark mode is Colors::darken(bg_color, 0.09)
-                return Colors::darken(background, 0.09);
-            } else {
-                // Active button for normal mode is Colors::darken(bg_color, 0.14)
-                return Colors::darken(background, 0.14);
-            }
-        } else if (options.animationMode() == AnimationHover) {
-            if (darkMode) {
-                // Hovered-alt button for dark mode is bg_color
-                return Colors::mix(indicatorColor, background, options.opacity());
-            } else {
-                // Hovered-alt button for normal mode is Colors::lighten(bg_color, 0.09)
-                return Colors::mix(indicatorColor, Colors::lighten(background, 0.09), options.opacity());
-            }
-        } else if (options.mouseOver()) {
-            if (darkMode) {
-                // Hovered-alt button for dark mode is bg_color
-                return background;
-            } else {
-                // Hovered-alt button for normal mode is Colors::lighten(bg_color, 0.09)
-                return Colors::lighten(background, 0.09);
-            }
-        }
-    } else {
-        if (darkMode) {
-            return Colors::lighten(palette.color(QPalette::Highlight));
-        } else {
-            return palette.color(QPalette::Highlight);
-        }
+    if (options.inMenu()) {
+        return Qt::transparent;
     }
 
-    return indicatorColor;
+    if (options.animationMode() == AnimationPressed) {
+        const ColorsPrivate::AdwaitaWidgetColor checkradioColor = options.checkboxState() == CheckOff && options.radioButtonState() == RadioOff ? ColorsPrivate::checkradio_hover_background_image : ColorsPrivate::checkradio_checked_hover_background_image;
+        const ColorsPrivate::AdwaitaWidgetColor checkradioHoverColor = options.checkboxState() == CheckOff && options.radioButtonState() == RadioOff ? ColorsPrivate::checkradio_checked_background_image : ColorsPrivate::checkradio_checked_active_background_image;
+        return Colors::mix(colorsGlobal->adwaitaWidgetColor(checkradioColor, options.colorVariant()),
+                           colorsGlobal->adwaitaWidgetColor(checkradioHoverColor, options.colorVariant()), options.opacity());
+    } else if (options.animationMode() == AnimationHover) {
+        const ColorsPrivate::AdwaitaWidgetColor checkradioColor = options.checkboxState() == CheckOff && options.radioButtonState() == RadioOff ? ColorsPrivate::checkradio_background_image : ColorsPrivate::checkradio_checked_background_image;
+        const ColorsPrivate::AdwaitaWidgetColor checkradioHoverColor = options.checkboxState() == CheckOff && options.radioButtonState() == RadioOff ? ColorsPrivate::checkradio_hover_background_image : ColorsPrivate::checkradio_checked_hover_background_image;
+        return Colors::mix(colorsGlobal->adwaitaWidgetColor(checkradioColor, options.colorVariant()),
+                           colorsGlobal->adwaitaWidgetColor(checkradioHoverColor, options.colorVariant()), options.opacity());
+    }
+
+    const QString colorName = QStringLiteral("checkradio") + checkRadioColorSuffixFromOptions(options) + QStringLiteral("_background_image");
+    return colorsGlobal->adwaitaWidgetColor(widgetColorNameToEnum(colorName), options.colorVariant());
+}
+
+QLinearGradient Colors::indicatorBackgroundGradient(const StyleOptions &options)
+{
+    const QString gradientName = QStringLiteral("checkradio") + checkRadioColorSuffixFromOptions(options) + QStringLiteral("_gradient_stop");
+    QColor gradientStartColor = indicatorBackgroundColor(options);
+    QColor gradientStopColor = colorsGlobal->adwaitaWidgetColor(widgetColorNameToEnum(gradientName), options.colorVariant());
+
+    QLinearGradient gradient(options.rect().bottomLeft(), options.rect().topLeft());
+    gradient.setColorAt(0, gradientStartColor);
+    gradient.setColorAt(1, gradientStopColor.isValid() && !options.inMenu() ? gradientStopColor : gradientStartColor);
+
+    return gradient;
 }
 
 QColor Colors::frameBackgroundColor(const StyleOptions &options)

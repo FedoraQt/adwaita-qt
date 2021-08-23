@@ -186,6 +186,18 @@ public:
     static QColor indicatorBackgroundColor(const StyleOptions &options);
     /* Relevant options:
        * palette
+       * mouse over
+       * has focus
+       * sunken
+       * opacity
+       * animation mode
+       * checkbox state
+       * color variant
+       * in menu
+     */
+    static QLinearGradient indicatorBackgroundGradient(const StyleOptions &options);
+    /* Relevant options:
+       * palette
      */
     static QColor frameBackgroundColor(const StyleOptions &options);
     /* Relevant options:
