@@ -225,7 +225,6 @@ static QString buttonColorSuffixFromOptions(const StyleOptions &options)
 static QString checkRadioColorSuffixFromOptions(const StyleOptions &options)
 {
     bool isDisabled = options.palette().currentColorGroup() == QPalette::Disabled;
-    bool isInactive = options.palette().currentColorGroup() == QPalette::Inactive;
     QString result;
 
     // Checked button
@@ -376,6 +375,14 @@ QColor ColorsPrivate::adwaitaWidgetColor(AdwaitaWidgetColor color, ColorVariant 
 
     QColor returnValue = m_widgetColors.value(color).value(variant);
 
+    // EXPLANATION:
+    // We try to search for a widget color, which may or may not exist and there are two
+    // options we can fallback to:
+    // 1) We search for a widget_state_background_image, in that case we might want to check
+    //    whether the requested color doesn't exist as a gradient.
+    // 2) We request a color for derived state, e.g. checkradio_checked_hover_color which may
+    //    not exist as this state overrides something else while using "color" from the base
+    //    state, in this case checkradio_checked_color.
     if (!returnValue.isValid()) {
         QString colorName = enumToWidgetColorName(color);
 
@@ -383,12 +390,12 @@ QColor ColorsPrivate::adwaitaWidgetColor(AdwaitaWidgetColor color, ColorVariant 
             return QColor();
         }
 
-        // We can only fallback to gradient in case of background_image or base color of any kind
+        // We can only fallback to gradient in case of background_image or to a base color of any kind
         if (!colorName.endsWith(QStringLiteral("background_image")) && !colorName.endsWith(QStringLiteral("color"))) {
             return QColor();
         }
 
-        // Requested color might use gradient
+        // Check if requested color is in form of gradient
         QString gradientColorName = colorName;
         AdwaitaWidgetColor gradientColor = widgetColorNameToEnum(gradientColorName.replace(QStringLiteral("background_image"), QStringLiteral("gradient_start")));
         if (gradientColor != invalid_widget_color) {
@@ -399,7 +406,7 @@ QColor ColorsPrivate::adwaitaWidgetColor(AdwaitaWidgetColor color, ColorVariant 
             }
         }
 
-        // Derived state doesn't override all colors
+        // Check whether we can obtain requested color from base state
         // E.g checkradio_checked_hover_color → checkradio_checked_color
         QString baseColorName = colorName;
         baseColorName.replace(QStringLiteral("_active"), QString()).replace(QStringLiteral("_hover"), QString()).replace(QStringLiteral("_disabled"), QString());
