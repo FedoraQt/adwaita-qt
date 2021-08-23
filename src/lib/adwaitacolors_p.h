@@ -193,6 +193,7 @@ public:
 
     QColor adwaitaColor(AdwaitaColor color, ColorVariant variant);
     QColor adwaitaWidgetColor(AdwaitaWidgetColor color, ColorVariant variant);
+    static bool isDarkMode();
 
 private:
     QMap<AdwaitaColor, QMap<ColorVariant, QColor> > m_colors;

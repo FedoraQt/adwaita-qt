@@ -19,25 +19,11 @@
  *************************************************************************/
 
 #include "adwaita.h"
+#include "adwaitacolors_p.h"
 #include "animations/adwaitaanimations.h"
-
-#include <QGuiApplication>
-#include <QtMath>
 
 namespace Adwaita
 {
-
-bool isDarkMode()
-{
-    const QColor textColor = QGuiApplication::palette().color(QPalette::Text);
-    if (qSqrt(((textColor.red() * textColor.red()) * 0.299) +
-              ((textColor.green() * textColor.green()) * 0.587) +
-              ((textColor.blue() * textColor.blue()) * 0.114)) > 128) {
-        return true;
-    }
-
-    return false;
-}
 
 class StyleOptionsPrivate
 {
@@ -178,7 +164,7 @@ ColorVariant StyleOptions::colorVariant() const
     Q_D(const StyleOptions);
 
     if (d->m_colorVariant == ColorVariant::Unknown) {
-        return isDarkMode() ? ColorVariant::AdwaitaDark : ColorVariant::Adwaita;
+        return ColorsPrivate::isDarkMode() ? ColorVariant::AdwaitaDark : ColorVariant::Adwaita;
     }
 
     return d->m_colorVariant;

@@ -62,6 +62,10 @@ public:
     /* Relevant options:
        * palette
      */
+    static QColor selectedMenuColor(const StyleOptions &options);
+    /* Relevant options:
+       * palette
+     */
     static QColor shadowColor(const StyleOptions &options);
     /* Relevant options:
        * palette

@@ -5016,7 +5016,7 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
     // render hover and focus
     if (useStrongFocus && (selected || sunken)) {
         StyleOptions styleOptions(painter, rect);
-        styleOptions.setColor(Colors::focusColor(StyleOptions(palette, _variant)));
+        styleOptions.setColor(Colors::selectedMenuColor(StyleOptions(palette, _variant)));
         styleOptions.setColorVariant(_variant);
         styleOptions.setOutlineColor(Qt::transparent);
         Adwaita::Renderer::renderFocusRect(styleOptions);
@@ -5197,13 +5197,13 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
             QPalette copy(palette);
             copy.setColor(QPalette::Active, QPalette::WindowText, Colors::transparentize(copy.color(QPalette::Active, QPalette::WindowText), 0.55));
             copy.setColor(QPalette::Active, QPalette::HighlightedText, Colors::transparentize(copy.color(QPalette::Active, QPalette::HighlightedText), 0.55));
-            drawItemText(painter, textRect, textFlags, copy, enabled, accelerator, role);
+            drawItemText(painter, textRect, textFlags, copy, enabled, accelerator, QPalette::WindowText);
         }
 
         // render text
         int textFlags(Qt::AlignVCenter | (reverseLayout ? Qt::AlignRight : Qt::AlignLeft) | _mnemonics->textFlags());
         textRect = option->fontMetrics.boundingRect(textRect, textFlags, text);
-        drawItemText(painter, textRect, textFlags, palette, enabled, text, role);
+        drawItemText(painter, textRect, textFlags, palette, enabled, text, QPalette::WindowText);
     }
 
     return true;

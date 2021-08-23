@@ -24,9 +24,11 @@
 #include "adwaitadebug.h"
 #include "animations/adwaitaanimationdata.h"
 
+#include <QGuiApplication>
 #include <QFile>
 #include <QMetaEnum>
 #include <QRegularExpression>
+#include <QtMath>
 
 Q_LOGGING_CATEGORY(ADWAITA, "adwaita.colors")
 
@@ -417,6 +419,18 @@ QColor ColorsPrivate::adwaitaWidgetColor(AdwaitaWidgetColor color, ColorVariant 
     return returnValue;
 }
 
+bool ColorsPrivate::isDarkMode()
+{
+    const QColor textColor = QGuiApplication::palette().color(QPalette::Text);
+    if (qSqrt(((textColor.red() * textColor.red()) * 0.299) +
+              ((textColor.green() * textColor.green()) * 0.587) +
+              ((textColor.blue() * textColor.blue()) * 0.114)) > 128) {
+        return true;
+    }
+
+    return false;
+}
+
 QPalette Colors::disabledPalette(const QPalette &source, qreal ratio)
 {
     QPalette copy(source);
@@ -431,6 +445,10 @@ QPalette Colors::disabledPalette(const QPalette &source, qreal ratio)
 
 QPalette Colors::palette(ColorVariant variant)
 {
+    if (variant == ColorVariant::Unknown) {
+        variant = ColorsPrivate::isDarkMode() ? ColorVariant::AdwaitaDark : ColorVariant::Adwaita;
+    }
+
     QPalette palette;
 
     QColor buttonColor = colorsGlobal->adwaitaWidgetColor(ColorsPrivate::button_background_image, variant);
@@ -521,6 +539,11 @@ QColor Colors::negativeText(const StyleOptions &options)
     Q_UNUSED(options)
 
     return Qt::red;
+}
+
+QColor Colors::selectedMenuColor(const StyleOptions &options)
+{
+    return colorsGlobal->adwaitaColor(ColorsPrivate::menu_selected_color, options.colorVariant());
 }
 
 QColor Colors::shadowColor(const StyleOptions &options)
