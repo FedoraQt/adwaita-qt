@@ -728,7 +728,6 @@ void Renderer::renderCheckBox(const StyleOptions &options, const QColor &tickCol
     // copy options.rect() and radius
     QRectF frameRect(options.rect());
     frameRect.adjust(2, 2, -2, -2);
-    qreal radius(frameRadius());
 
     // content
     {

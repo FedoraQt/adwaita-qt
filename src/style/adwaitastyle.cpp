@@ -2910,8 +2910,6 @@ QSize Style::toolButtonSizeFromContents(const QStyleOption *option, const QSize 
     QSize size = contentsSize;
 
     // get relevant state flags
-    const State &state(option->state);
-    bool autoRaise(state & State_AutoRaise);
     bool hasPopupMenu(toolButtonOption->features & QStyleOptionToolButton::MenuButtonPopup);
     const bool hasInlineIndicator(toolButtonOption->features & QStyleOptionToolButton::HasMenu
                                   && toolButtonOption->features & QStyleOptionToolButton::PopupDelay
@@ -3330,7 +3328,6 @@ bool Style::drawFrameFocusRectPrimitive(const QStyleOption *option, QPainter *pa
         return true;
     }
 
-    const State &state(option->state);
     QRectF rect(QRectF(option->rect).adjusted(0, 0, -1, -1));
     const QPalette &palette(option->palette);
 
@@ -3583,7 +3580,6 @@ bool Style::drawIndicatorArrowPrimitive(ArrowOrientation orientation, const QSty
             _animations->toolButtonEngine().updateState(widget, AnimationHover, arrowHover);
 
             bool animated(_animations->toolButtonEngine().isAnimated(widget, AnimationHover));
-            qreal opacity(_animations->toolButtonEngine().opacity(widget, AnimationHover));
 
             // Style ooptions
             styleOptions.setAnimationMode(animated ? AnimationHover : AnimationNone);
@@ -3724,7 +3720,6 @@ bool Style::drawPanelButtonCommandPrimitive(const QStyleOption *option, QPainter
 bool Style::drawPanelButtonToolPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
     // copy palette and rect
-    const QPalette &palette(option->palette);
     QRect rect(option->rect);
 
     // store relevant flags
@@ -3934,16 +3929,12 @@ bool Style::drawPanelItemViewItemPrimitive(const QStyleOption *option, QPainter 
         return false;
     }
 
-    // try cast widget
-    const QAbstractItemView *abstractItemView = qobject_cast<const QAbstractItemView *>(widget);
-
     // store palette and rect
     const QPalette &palette(option->palette);
     QRect rect(option->rect);
 
     // store flags
     const State &state(option->state);
-    bool mouseOver((state & State_Active) && (state & State_MouseOver) && (!abstractItemView || abstractItemView->selectionMode() != QAbstractItemView::NoSelection));
     bool selected(state & State_Selected);
     bool enabled(state & State_Enabled);
     bool windowActive(state & State_Active);
@@ -4166,16 +4157,12 @@ bool Style::drawIndicatorButtonDropDownPrimitive(const QStyleOption *option, QPa
     }
 
     // store palette and rect
-    const QPalette &palette(option->palette);
     const QRect &rect(option->rect);
 
     // update animation state
     // mouse over takes precedence over focus
     _animations->widgetStateEngine().updateState(widget, AnimationPressed, sunken);
     _animations->widgetStateEngine().updateState(widget, AnimationHover, mouseOver);
-
-    AnimationMode mode(_animations->widgetStateEngine().buttonAnimationMode(widget));
-    qreal opacity(_animations->widgetStateEngine().buttonOpacity(widget));
 
     // Style options
     StyleOptions styleOptions(option->palette, _variant);
@@ -4320,7 +4307,6 @@ bool Style::drawIndicatorToolBarHandlePrimitive(const QStyleOption *option, QPai
 
     // store rect and palette
     QRect rect(option->rect);
-    const QPalette &palette(option->palette);
 
     // store state
     const State &state(option->state);
@@ -4374,7 +4360,6 @@ bool Style::drawIndicatorToolBarSeparatorPrimitive(const QStyleOption *option, Q
 
     // store rect and palette
     const QRect &rect(option->rect);
-    const QPalette &palette(option->palette);
 
     // store state
     const State &state(option->state);
@@ -4783,14 +4768,6 @@ bool Style::drawCheckBoxLabelControl(const QStyleOption *option, QPainter *paint
     if (!buttonOption->text.isEmpty()) {
         textRect = option->fontMetrics.boundingRect(textRect, textFlags, buttonOption->text);
         drawItemText(painter, textRect, textFlags, palette, enabled, buttonOption->text, QPalette::Text);
-
-        // check focus state
-        bool hasFocus(enabled && (state & State_HasFocus));
-
-        // update animation state
-        _animations->widgetStateEngine().updateState(widget, AnimationFocus, hasFocus);
-        bool isFocusAnimated(_animations->widgetStateEngine().isAnimated(widget, AnimationFocus));
-        qreal opacity(_animations->widgetStateEngine().opacity(widget, AnimationFocus));
     }
 
     return true;
@@ -4807,14 +4784,6 @@ bool Style::drawComboBoxLabelControl(const QStyleOption *option, QPainter *paint
     if (comboBoxOption->editable) {
         return false;
     }
-
-    // need to alter palette for focused buttons
-    const State &state(option->state);
-    bool enabled(state & State_Enabled);
-    bool sunken(state & (State_On | State_Sunken));
-    bool mouseOver((state & State_Active) && enabled && (option->state & State_MouseOver));
-    bool hasFocus(enabled && !mouseOver && (option->state & State_HasFocus));
-    bool flat(!comboBoxOption->frame);
 
     QPalette::ColorRole textRole = QPalette::ButtonText;
 
@@ -4927,7 +4896,6 @@ bool Style::drawMenuBarItemControl(const QStyleOption *option, QPainter *painter
     // store state
     const State &state(option->state);
     bool enabled(state & State_Enabled);
-    bool selected(enabled && (state & State_Selected));
     bool sunken(enabled && (state & State_Sunken));
     bool useStrongFocus(Adwaita::Config::MenuItemDrawStrongFocus);
 
@@ -5185,9 +5153,6 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
         // set font
         painter->setFont(menuItemOption->font);
 
-        // color role
-        const QPalette::ColorRole role = (useStrongFocus && (selected || sunken)) ? QPalette::HighlightedText : QPalette::WindowText;
-
         // locate accelerator and render
         int tabPosition(text.indexOf(QLatin1Char('\t')));
         if (tabPosition >= 0) {
@@ -5386,7 +5351,6 @@ bool Style::drawScrollBarSliderControl(const QStyleOption *option, QPainter *pai
 
     // copy rect and palette
     const QRect &rect(horizontal ? option->rect.adjusted(-1, 4, 0, -4) : option->rect.adjusted(4, -1, -4, 0));
-    const QPalette &palette(option->palette);
 
     // define handle rect
     QRect handleRect;
@@ -5400,7 +5364,6 @@ bool Style::drawScrollBarSliderControl(const QStyleOption *option, QPainter *pai
     bool hasFocus(enabled && parent && parent->hasFocus());
 
     // enable animation state
-    bool handleActive(sliderOption->activeSubControls & SC_ScrollBarSlider);
     _animations->scrollBarEngine().updateState(widget, AnimationFocus, hasFocus);
     _animations->scrollBarEngine().updateState(widget, AnimationPressed, sunken);
     _animations->scrollBarEngine().updateState(widget, AnimationHover, mouseOver);
@@ -5708,7 +5671,6 @@ bool Style::drawHeaderSectionControl(const QStyleOption *option, QPainter *paint
     const State &state(option->state);
     bool enabled(state & State_Enabled);
     bool mouseOver((state & State_Active) && enabled && (state & State_MouseOver));
-    bool sunken(enabled && (state & (State_On | State_Sunken)));
 
     const QStyleOptionHeader *headerOption(qstyleoption_cast<const QStyleOptionHeader *>(option));
     if (!headerOption) {
@@ -5722,8 +5684,6 @@ bool Style::drawHeaderSectionControl(const QStyleOption *option, QPainter *paint
 
     // update animation state
     _animations->headerViewEngine().updateState(widget, rect.topLeft(), mouseOver);
-    bool animated(enabled && _animations->headerViewEngine().isAnimated(widget, rect.topLeft()));
-    qreal opacity(_animations->headerViewEngine().opacity(widget, rect.topLeft()));
 
     QBrush color = palette.base();
 
@@ -5919,7 +5879,6 @@ bool Style::drawTabBarTabLabelControl(const QStyleOption *option, QPainter *pain
 
     // store rect and palette
     const QRect &rect(option->rect);
-    const QPalette &palette(option->palette);
 
     // check focus
     const State &state(option->state);
@@ -5930,7 +5889,6 @@ bool Style::drawTabBarTabLabelControl(const QStyleOption *option, QPainter *pain
     // update mouse over animation state
     _animations->tabBarEngine().updateState(widget, rect.topLeft(), AnimationFocus, hasFocus);
     bool animated(enabled && selected && _animations->tabBarEngine().isAnimated(widget, rect.topLeft(), AnimationFocus));
-    qreal opacity(_animations->tabBarEngine().opacity(widget, rect.topLeft(), AnimationFocus));
 
     if (!(hasFocus || animated))
         return true;
@@ -6003,8 +5961,6 @@ bool Style::drawTabBarTabShapeControl(const QStyleOption *option, QPainter *pain
 
     // update mouse over animation state
     _animations->tabBarEngine().updateState(widget, rect.topLeft(), AnimationHover, mouseOver);
-    bool animated(enabled && !selected && _animations->tabBarEngine().isAnimated(widget, rect.topLeft(), AnimationHover));
-    qreal opacity(_animations->tabBarEngine().opacity(widget, rect.topLeft(), AnimationHover));
 
     // lock state
     if (selected && widget && isDragged) {
@@ -6016,7 +5972,6 @@ bool Style::drawTabBarTabShapeControl(const QStyleOption *option, QPainter *pain
     // tab position
     const QStyleOptionTab::TabPosition &position = tabOption->position;
     bool isSingle(position == QStyleOptionTab::OnlyOneTab);
-    bool isQtQuickControl(this->isQtQuickControl(option, widget));
     bool isFirst(isSingle || position == QStyleOptionTab::Beginning);
     bool isLast(isSingle || position == QStyleOptionTab::End);
     bool isLeftOfSelected(!isLocked && tabOption->selectedPosition == QStyleOptionTab::NextIsSelected);
@@ -6034,10 +5989,6 @@ bool Style::drawTabBarTabShapeControl(const QStyleOption *option, QPainter *pain
         qSwap(isFirst, isLast);
         qSwap(isLeftOfSelected, isRightOfSelected);
     }
-
-    // overlap
-    // for QtQuickControls, ovelap is already accounted of in the option. Unlike in the qwidget case
-    int overlap(isQtQuickControl ? 0 : Metrics::TabBar_TabOverlap);
 
     // adjust rect and define corners based on tabbar orientation
     Corners corners;
@@ -6340,7 +6291,6 @@ bool Style::drawToolButtonComplexControl(const QStyleOptionComplex *option, QPai
     const State &state(option->state);
     bool enabled(state & State_Enabled);
     bool mouseOver((state & State_Active) && enabled && (option->state & State_MouseOver));
-    bool hasFocus(enabled && (option->state & State_HasFocus));
     bool sunken(state & (State_On | State_Sunken));
     bool flat(state & State_AutoRaise);
 
@@ -6640,10 +6590,6 @@ bool Style::drawComboBoxComplexControl(const QStyleOptionComplex *option, QPaint
 
     // arrow
     if (option->subControls & SC_ComboBoxArrow) {
-        // detect empty comboboxes
-        const QComboBox *comboBox = qobject_cast<const QComboBox *>(widget);
-        bool empty(comboBox && !comboBox->count());
-
         // Style options
         styleOptions.setColorRole(QPalette::ButtonText);
 
@@ -6889,7 +6835,6 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
 
         // handle state
         bool handleActive(sliderOption->activeSubControls & SC_SliderHandle);
-        bool sunken(state & (State_On | State_Sunken));
 
         // animation state
         _animations->widgetStateEngine().updateState(widget, AnimationHover, handleActive && mouseOver);
@@ -7263,7 +7208,6 @@ void Style::renderSpinBoxArrow(const SubControl &subControl, const QStyleOptionS
     bool subControlSunken(enabled && (sunken) && (option->activeSubControls & subControl));
     _animations->spinBoxEngine().updateState(widget, subControl, subControlHover, subControlSunken);
 
-    bool animated(enabled && _animations->spinBoxEngine().isAnimated(widget, subControl));
     qreal opacity(_animations->spinBoxEngine().opacity(widget, subControl));
     qreal pressedOpacity(_animations->spinBoxEngine().pressed(widget, subControl));
 
