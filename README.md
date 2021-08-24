@@ -3,9 +3,18 @@ adwaita-qt
 
 A native style to bend Qt5 applications to look like they belong into GNOME Shell.
 
+This style provides all four variants of GTK Adwaita theme:
+
+* Adwaita
 ![Widget Factory](data/screenshots/widgets-adwaita.png)
+
+* Adwaita-dark
 ![Widget Factory](data/screenshots/widgets-adwaita-dark.png)
+
+* HighContrast
 ![Widget Factory](data/screenshots/widgets-highcontrast.png)
+
+* HighContrastInverse
 ![Widget Factory](data/screenshots/widgets-highcontrastinverse.png)
 
 ## How to compile
