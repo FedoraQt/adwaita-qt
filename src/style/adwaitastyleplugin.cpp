@@ -42,9 +42,9 @@ QStyle *StylePlugin::create(const QString &key)
         return new Style(Adwaita::AdwaitaHighcontrast);
     }
 
-    if (key.toLower() == QStringLiteral("adwaita-highcontrast-dark") ||
+    if (key.toLower() == QStringLiteral("adwaita-highcontrastinverse") ||
         key.toLower() == QStringLiteral("highcontrastinverse")) {
-        return new Style(Adwaita::AdwaitaHighcontrastDark);
+        return new Style(Adwaita::AdwaitaHighcontrastInverse);
     }
 
     return nullptr;

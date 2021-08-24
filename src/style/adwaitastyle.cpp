@@ -232,7 +232,7 @@ Style::Style(ColorVariant variant)
     , _widgetExplorer(new WidgetExplorer(this))
     , _tabBarData(new AdwaitaPrivate::TabBarData(this))
     , _variant(variant)
-    , _dark(variant == AdwaitaDark || variant == AdwaitaHighcontrastDark)
+    , _dark(variant == AdwaitaDark || variant == AdwaitaHighcontrastInverse)
 {
     // use DBus connection to update on adwaita configuration change
     QDBusConnection dbus = QDBusConnection::sessionBus();

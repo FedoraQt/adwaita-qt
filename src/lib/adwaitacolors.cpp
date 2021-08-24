@@ -235,7 +235,7 @@ ColorsPrivate::ColorsPrivate()
         } else if (variant == QStringLiteral("hc")) {
             colorVariant = AdwaitaHighcontrast;
         } else {
-            colorVariant = AdwaitaHighcontrastDark;
+            colorVariant = AdwaitaHighcontrastInverse;
         }
 
         const QString filename = QStringLiteral(":/stylesheet/Adwaita-%1.css").arg(variant);
@@ -553,7 +553,7 @@ QColor Colors::indicatorOutlineColor(const StyleOptions &options)
             return buttonOutlineColor(options);
         }
 
-        if (options.colorVariant() == ColorVariant::AdwaitaDark || options.colorVariant() == AdwaitaHighcontrastDark) {
+        if (options.colorVariant() == ColorVariant::AdwaitaDark || options.colorVariant() == AdwaitaHighcontrastInverse) {
             return darken(options.palette().color(QPalette::Window), 0.18);
         } else {
             return darken(options.palette().color(QPalette::Window), 0.24);
@@ -734,7 +734,7 @@ QColor Colors::scrollBarHandleColor(const StyleOptions &options)
 
     QColor color(Colors::mix(fgColor, bgColor, 0.4));
     QColor hoverColor(Colors::mix(fgColor, bgColor, 0.2));
-    QColor activeColor(options.colorVariant() == ColorVariant::AdwaitaDark ? Colors::lighten(selectedBgColor, 0.1) : Colors::darken(selectedBgColor, 0.1));
+    QColor activeColor(options.colorVariant() == ColorVariant::AdwaitaDark || options.colorVariant() == ColorVariant::AdwaitaHighcontrastInverse ? Colors::lighten(selectedBgColor, 0.1) : Colors::darken(selectedBgColor, 0.1));
 
     // hover takes precedence over focus
     if (options.animationMode() == AnimationPressed) {
