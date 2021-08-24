@@ -3,9 +3,10 @@ adwaita-qt
 
 A native style to bend Qt5 applications to look like they belong into GNOME Shell.
 
-![Widget Factory](data/screenshots/widgets.png)
-
-![KCalc](data/screenshots/kcalc.png)
+![Widget Factory](data/screenshots/widgets-adwaita.png)
+![Widget Factory](data/screenshots/widgets-adwaita-dark.png)
+![Widget Factory](data/screenshots/widgets-highcontrast.png)
+![Widget Factory](data/screenshots/widgets-highcontrastinverse.png)
 
 ## How to compile
 
