@@ -1,6 +1,6 @@
 project(Adwaita)
 
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.17)
 
 set(ADWAITAQT_VERSION_MAJOR 1)
 set(ADWAITAQT_VERSION "1.4.50")
