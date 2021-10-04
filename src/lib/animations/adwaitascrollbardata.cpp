@@ -94,6 +94,8 @@ const Animation::Pointer &ScrollBarData::animation(QStyle::SubControl subcontrol
         return subLineAnimation();
     case QStyle::SC_ScrollBarGroove:
         return grooveAnimation();
+    default:
+        return animation();
     }
 
     return animation();
@@ -111,6 +113,8 @@ qreal ScrollBarData::opacity(QStyle::SubControl subcontrol) const
         return subLineOpacity();
     case QStyle::SC_ScrollBarGroove:
         return grooveOpacity();
+    default:
+        return 0;
     }
 
     return 0;

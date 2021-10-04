@@ -40,33 +40,3 @@ if (NOT QT_PLUGINS_DIR)
 endif()
 
 add_subdirectory(src)
-
-# Tests need to be build from the root directory
-# We now only test whether we can find and build against Adwaita library
-if (BUILD_TESTING)
-    enable_testing()
-
-    find_package(Qt5 ${QT_MIN_VERSION} NO_MODULE REQUIRED Test)
-
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(ADWAITAQT adwaita-qt>=${ADWAITAQT_VERSION})
-
-    if (NOT ADWAITAQT_FOUND)
-        message(FATAL_ERROR "Unable to find Adwaita-qt using PkgConfig")
-    endif()
-
-    find_package(AdwaitaQt ${ADWAITAQT_VERSION} REQUIRED)
-
-    set(test_SRCS
-        tests/test.cpp
-    )
-
-    add_executable(test-pkgconfig ${test_SRCS})
-    target_link_libraries(test-pkgconfig Qt5::Test ${ADWAITAQT_LIBRARIES})
-
-    add_executable(test-cmake ${test_SRCS})
-    target_link_libraries(test-cmake Qt5::Test AdwaitaQt)
-
-    add_test(NAME TestPkgConfig COMMAND test-pkgconfig)
-    add_test(NAME TestCmake COMMAND test-cmake)
-endif()
