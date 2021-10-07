@@ -304,7 +304,12 @@ bool WindowManager::mousePressEvent(QObject *object, QEvent *event)
     }
 
     // retrieve widget's child at event position
+#if QT_VERSION >= 0x060000
+    QPoint position(mouseEvent->position().toPoint());
+#else
     QPoint position(mouseEvent->pos());
+#endif
+
     QWidget *child = widget->childAt(position);
     if (!canDrag(widget, child, position)) {
         return false;
@@ -313,7 +318,11 @@ bool WindowManager::mousePressEvent(QObject *object, QEvent *event)
     // save target and drag point
     _target = widget;
     _dragPoint = position;
+#if QT_VERSION >= 0x060000
+    _globalDragPoint = mouseEvent->globalPosition().toPoint();
+#else
     _globalDragPoint = mouseEvent->globalPos();
+#endif
     _dragAboutToStart = true;
 
     // send a move event to the current child with same position
@@ -346,7 +355,11 @@ bool WindowManager::mouseMoveEvent(QObject *object, QEvent *event)
     QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
     if (!_dragInProgress) {
         if (_dragAboutToStart) {
+#if QT_VERSION >= 0x060000
+            if (mouseEvent->position().toPoint() == _dragPoint) {
+#else
             if (mouseEvent->pos() == _dragPoint) {
+#endif
                 // start timer,
                 _dragAboutToStart = false;
                 if (_dragTimer.isActive()) {
@@ -357,7 +370,11 @@ bool WindowManager::mouseMoveEvent(QObject *object, QEvent *event)
                 resetDrag();
             }
         } else {
+#if QT_VERSION >= 0x060000
+            if (QPoint(mouseEvent->globalPosition().toPoint() - _globalDragPoint).manhattanLength() >= _dragDistance) {
+#else
             if (QPoint(mouseEvent->globalPos() - _globalDragPoint).manhattanLength() >= _dragDistance) {
+#endif
                 _dragTimer.start(0, this);
             }
         }
@@ -367,7 +384,11 @@ bool WindowManager::mouseMoveEvent(QObject *object, QEvent *event)
         // use QWidget::move for the grabbing
         /* this works only if the sending object and the target are identical */
         QWidget *window(_target.data()->window());
+#if QT_VERSION >= 0x060000
+        window->move(window->pos() + mouseEvent->position().toPoint() - _dragPoint);
+#else
         window->move(window->pos() + mouseEvent->pos() - _dragPoint);
+#endif
         return true;
     } else {
         return false;

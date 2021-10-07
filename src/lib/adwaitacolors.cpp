@@ -24,6 +24,7 @@
 #include "adwaitadebug.h"
 #include "animations/adwaitaanimationdata.h"
 
+#include <QtGlobal>
 #include <QGuiApplication>
 #include <QFile>
 #include <QMetaEnum>
@@ -50,10 +51,18 @@ QColor Colors::alphaColor(QColor color, qreal alpha)
 
 QColor Colors::darken(const QColor &color, qreal amount)
 {
+#if QT_VERSION >= 0x060000
+    float h, s, l, a;
+    color.getHslF(&h, &s, &l, &a);
+
+    float lightness = l - amount;
+#else
     qreal h, s, l, a;
     color.getHslF(&h, &s, &l, &a);
 
     qreal lightness = l - amount;
+#endif
+
     if (lightness < 0) {
         lightness = 0;
     }
@@ -63,10 +72,17 @@ QColor Colors::darken(const QColor &color, qreal amount)
 
 QColor Colors::desaturate(const QColor &color, qreal amount)
 {
+#if QT_VERSION >= 0x060000
+    float h, s, l, a;
+    color.getHslF(&h, &s, &l, &a);
+
+    float saturation = s - amount;
+#else
     qreal h, s, l, a;
     color.getHslF(&h, &s, &l, &a);
 
     qreal saturation = s - amount;
+#endif
     if (saturation < 0) {
         saturation = 0;
     }
@@ -75,10 +91,18 @@ QColor Colors::desaturate(const QColor &color, qreal amount)
 
 QColor Colors::lighten(const QColor &color, qreal amount)
 {
+#if QT_VERSION >= 0x060000
+    float h, s, l, a;
+    color.getHslF(&h, &s, &l, &a);
+
+    float lightness = l + amount;
+#else
     qreal h, s, l, a;
     color.getHslF(&h, &s, &l, &a);
 
     qreal lightness = l + amount;
+#endif
+
     if (lightness > 1) {
         lightness = 1;
     }
@@ -114,10 +138,18 @@ QColor Colors::mix(const QColor &c1, const QColor &c2, qreal bias)
 
 QColor Colors::transparentize(const QColor &color, qreal amount)
 {
+#if QT_VERSION >= 0x060000
+    float h, s, l, a;
+    color.getHslF(&h, &s, &l, &a);
+
+    float alpha = a - amount;
+#else
     qreal h, s, l, a;
     color.getHslF(&h, &s, &l, &a);
 
     qreal alpha = a - amount;
+#endif
+
     if (alpha < 0) {
         alpha = 0;
     }
@@ -399,7 +431,7 @@ QPalette Colors::disabledPalette(const QPalette &source, qreal ratio)
 {
     QPalette copy(source);
 
-    const QList<QPalette::ColorRole> roles = { QPalette::Background, QPalette::Highlight, QPalette::WindowText, QPalette::ButtonText, QPalette::Text, QPalette::Button };
+    const QList<QPalette::ColorRole> roles = {QPalette::Window, QPalette::Highlight, QPalette::WindowText, QPalette::ButtonText, QPalette::Text, QPalette::Button};
     foreach (const QPalette::ColorRole &role, roles) {
         copy.setColor(role, Colors::mix(source.color(QPalette::Active, role), source.color(QPalette::Disabled, role), 1.0 - ratio));
     }

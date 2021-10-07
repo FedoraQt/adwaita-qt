@@ -25,6 +25,7 @@
 #include "ui_widgetfactory.h"
 
 #include <QAction>
+#include <QActionGroup>
 #include <QLineEdit>
 #include <QMenu>
 #include <QMenuBar>

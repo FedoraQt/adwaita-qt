@@ -210,8 +210,13 @@ bool SplitterProxy::event(QEvent *event)
             // map event position to current splitter and post.
             QMouseEvent copy(
                 mouseEvent->type(),
+#if QT_VERSION >= 0x060000
+                _splitter.data()->mapFromGlobal(mouseEvent->globalPosition().toPoint()),
+                mouseEvent->globalPosition().toPoint(),
+#else
                 _splitter.data()->mapFromGlobal(mouseEvent->globalPos()),
                 mouseEvent->globalPos(),
+#endif
                 mouseEvent->button(),
                 mouseEvent->buttons(), mouseEvent->modifiers());
 

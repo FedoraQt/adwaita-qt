@@ -5,7 +5,7 @@ include_directories(
 )
 
 configure_file(config-adwaita.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-adwaita.h )
-configure_file(adwaita-qt.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/adwaita-qt.pc @ONLY)
+configure_file(adwaita-qt.pc.cmake "${CMAKE_CURRENT_BINARY_DIR}/adwaita-qt${ADWAITAQT_SUFFIX}.pc" @ONLY)
 
 set(libadwaitaqt_priv_SRCS
     # Animations
@@ -56,12 +56,12 @@ set(libadwaitaqt_HEADERS
     adwaitaqt_export.h
 )
 
-add_library(adwaitaqtpriv SHARED ${libadwaitaqt_priv_SRCS})
-target_link_libraries(adwaitaqtpriv
-    Qt5::Core
-    Qt5::DBus
-    Qt5::Gui
-    Qt5::Widgets
+add_library("adwaitaqt${ADWAITAQT_SUFFIX}priv" SHARED ${libadwaitaqt_priv_SRCS})
+target_link_libraries("adwaitaqt${ADWAITAQT_SUFFIX}priv"
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::DBus
+    Qt${QT_VERSION_MAJOR}::Gui
+    Qt${QT_VERSION_MAJOR}::Widgets
 )
 
 # We need this done before we start building adwaitaqt public library
@@ -83,43 +83,50 @@ endif()
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/stylesheet/stylesheet.qrc.in" "${CMAKE_CURRENT_BINARY_DIR}/stylesheet/stylesheet.qrc")
 
-qt5_add_resources(libadwaitaqt_SRCS "${CMAKE_CURRENT_BINARY_DIR}/stylesheet/stylesheet.qrc")
+if (USE_QT6)
+    qt6_add_resources(libadwaitaqt_SRCS "${CMAKE_CURRENT_BINARY_DIR}/stylesheet/stylesheet.qrc")
+else()
+    qt5_add_resources(libadwaitaqt_SRCS "${CMAKE_CURRENT_BINARY_DIR}/stylesheet/stylesheet.qrc")
+endif()
 
-add_library(adwaitaqt SHARED ${libadwaitaqt_SRCS})
-add_library(AdwaitaQt ALIAS adwaitaqt)
+add_library("adwaitaqt${ADWAITAQT_SUFFIX}" SHARED ${libadwaitaqt_SRCS})
+add_library("AdwaitaQt${ADWAITAQT_SUFFIX}" ALIAS "adwaitaqt${ADWAITAQT_SUFFIX}")
 
-
-target_link_libraries(adwaitaqt
+target_link_libraries("adwaitaqt${ADWAITAQT_SUFFIX}"
     PUBLIC
-    Qt5::Core
-    Qt5::Gui
-    Qt5::Widgets
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Gui
+    Qt${QT_VERSION_MAJOR}::Widgets
     PRIVATE
-    adwaitaqtpriv
+    "adwaitaqt${ADWAITAQT_SUFFIX}priv"
 )
 
-set_target_properties(adwaitaqtpriv PROPERTIES VERSION ${ADWAITAQT_VERSION} SOVERSION 1)
+set_target_properties("adwaitaqt${ADWAITAQT_SUFFIX}priv" PROPERTIES VERSION ${ADWAITAQT_VERSION} SOVERSION 1)
 if(MINGW AND BUILD_SHARED_LIBS)
-    get_target_property(ADWAITA_QT_SOVERSION adwaitaqtpriv SOVERSION)
-    set_target_properties(adwaitaqtpriv PROPERTIES SUFFIX "-${ADWAITA_QT_SOVERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    get_target_property(ADWAITA_QT_SOVERSION "adwaitaqt${ADWAITAQT_SUFFIX}priv" SOVERSION)
+    set_target_properties("adwaitaqt${ADWAITAQT_SUFFIX}priv" PROPERTIES SUFFIX "-${ADWAITA_QT_SOVERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}")
 endif()
 
-set_target_properties(adwaitaqt PROPERTIES VERSION ${ADWAITAQT_VERSION} SOVERSION 1)
+set_target_properties("adwaitaqt${ADWAITAQT_SUFFIX}" PROPERTIES VERSION ${ADWAITAQT_VERSION} SOVERSION 1)
 if(MINGW AND BUILD_SHARED_LIBS)
-    get_target_property(ADWAITA_QT_SOVERSION adwaitaqt SOVERSION)
-    set_target_properties(adwaitaqt PROPERTIES SUFFIX "-${ADWAITA_QT_SOVERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    get_target_property(ADWAITA_QT_SOVERSION "adwaitaqt${ADWAITAQT_SUFFIX}" SOVERSION)
+    set_target_properties("adwaitaqt${ADWAITAQT_SUFFIX}" PROPERTIES SUFFIX "-${ADWAITA_QT_SOVERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}")
 endif()
 
-target_include_directories(adwaitaqt PUBLIC ${Qt5Core_INCLUDE_DIRS} ${Qt5Gui_INCLUDE_DIRS} ${Qt5Widgets_INCLUDE_DIRS})
+if (USE_QT6)
+    target_include_directories("adwaitaqt${ADWAITAQT_SUFFIX}" PUBLIC ${Qt6Core_INCLUDE_DIRS} ${Qt6Gui_INCLUDE_DIRS} ${Qt6Widgets_INCLUDE_DIRS})
+else()
+    target_include_directories("adwaitaqt${ADWAITAQT_SUFFIX}" PUBLIC ${Qt5Core_INCLUDE_DIRS} ${Qt5Gui_INCLUDE_DIRS} ${Qt5Widgets_INCLUDE_DIRS})
+endif()
 
-install(TARGETS adwaitaqtpriv EXPORT AdwaitaQtTargets RUNTIME DESTINATION bin LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
-install(TARGETS adwaitaqt EXPORT AdwaitaQtTargets RUNTIME DESTINATION bin LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(TARGETS "adwaitaqt${ADWAITAQT_SUFFIX}priv" EXPORT AdwaitaQtTargets RUNTIME DESTINATION bin LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(TARGETS "adwaitaqt${ADWAITAQT_SUFFIX}" EXPORT AdwaitaQtTargets RUNTIME DESTINATION bin LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-install(FILES ${libadwaitaqt_HEADERS} DESTINATION ${CMAKE_INSTALL_FULL_INCLUDEDIR}/AdwaitaQt)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/adwaita-qt.pc DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig)
+install(FILES ${libadwaitaqt_HEADERS} DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}/AdwaitaQt${ADWAITAQT_SUFFIX}")
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/adwaita-qt${ADWAITAQT_SUFFIX}.pc" DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_FULL_LIBDIR}/cmake/AdwaitaQt")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_FULL_LIBDIR}/cmake/AdwaitaQt${ADWAITAQT_SUFFIX}")
 
 include(CMakePackageConfigHelpers)
 

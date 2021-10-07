@@ -22,7 +22,7 @@
 
 #include "adwaita.h"
 
-#include <QMap>
+#include <QHash>
 
 class QColor;
 

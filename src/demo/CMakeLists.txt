@@ -10,7 +10,11 @@ set(showcase_UI
     widgetfactory.ui
 )
 
-qt5_wrap_ui(showcase_SRCS ${showcase_UI})
+if (USE_QT6)
+    qt6_wrap_ui(showcase_SRCS ${showcase_UI})
+else()
+    qt5_wrap_ui(showcase_SRCS ${showcase_UI})
+endif()
 
 add_executable(showcase ${showcase_SRCS})
-target_link_libraries(showcase Qt5::Core Qt5::Widgets)
+target_link_libraries(showcase Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets)

@@ -21,16 +21,16 @@ set(LIBRARY_NAME "adwaita-qt")
 
 add_library(${LIBRARY_NAME} MODULE ${Adwaita_SRCS})
 target_link_libraries(${LIBRARY_NAME}
-    adwaitaqt
-    adwaitaqtpriv
-    Qt5::Core
-    Qt5::DBus
-    Qt5::Gui
-    Qt5::Widgets
+    adwaitaqt${ADWAITAQT_SUFFIX}
+    adwaitaqt${ADWAITAQT_SUFFIX}priv
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::DBus
+    Qt${QT_VERSION_MAJOR}::Gui
+    Qt${QT_VERSION_MAJOR}::Widgets
 )
 
 if (ADWAITA_HAVE_X11)
-    target_link_libraries(${LIBRARY_NAME} ${XCB_LIBRARIES} Qt5::X11Extras)
+    target_link_libraries(${LIBRARY_NAME} ${XCB_LIBRARIES} Qt${QT_VERSION_MAJOR}::X11Extras)
 endif()
 
 if (NOT APPLE AND NOT WIN32)
@@ -41,4 +41,8 @@ if (NOT APPLE AND NOT WIN32)
         PREFIX "")
 endif()
 
-install(TARGETS ${LIBRARY_NAME} DESTINATION "${QT_PLUGINS_DIR}/styles")
+if (USE_QT6)
+    install(TARGETS ${LIBRARY_NAME} DESTINATION "${QT6_INSTALL_PLUGINS}/styles")
+else()
+    install(TARGETS ${LIBRARY_NAME} DESTINATION "${QT_PLUGINS_DIR}/styles")
+endif()

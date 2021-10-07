@@ -69,7 +69,11 @@ void DialData::hoverMoveEvent(QObject *object, QEvent *event)
     QHoverEvent *hoverEvent = static_cast<QHoverEvent *>(event);
 
     // store position
+#if QT_VERSION >= 0x060000
+    _position = hoverEvent->position().toPoint();
+#else
     _position = hoverEvent->pos();
+#endif
 
     // trigger animation if position match handle rect
     updateState(_handleRect.contains(_position));
