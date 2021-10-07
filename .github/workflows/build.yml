@@ -13,40 +13,60 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  Linux:
+  Linux_Qt5:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install qt5-default libqt5gui5 libqt5x11extras5 cmake pkg-config qtbase5-dev libqt5x11extras5-dev qtbase5-private-dev libx11-dev xcb libx11-xcb-dev sassc
-        
+        sudo apt install cmake make pkg-config libx11-dev xcb libx11-xcb-dev libxkbcommon-dev sassc
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: 5.15.2
+
     - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/build 
+      run: cmake -E make_directory ${{runner.workspace}}/build
 
     - name: Configure CMake
       shell: bash
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_EXAMPLE=true
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_EXAMPLE=true -DUSE_QT6=OFF
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: make -j2
 
-    - name: Install
+  Linux_Qt6:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install cmake make pkg-config libx11-dev xcb libx11-xcb-dev libxkbcommon-dev sassc
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: 6.2.0
+
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{runner.workspace}}/build
+
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{runner.workspace}}/build
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_EXAMPLE=true -DUSE_QT6=ON
+
+    - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: sudo make install
+      run: make -j2
 
-    #- name: Test
-      #working-directory: ${{runner.workspace}}/build
-      #shell: bash
-      #run: |
-        #cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_EXAMPLE=true -DBUILD_TESTING=true
-        #make -j2
-        #make test
   Windows:
     runs-on: windows-latest
     steps:
