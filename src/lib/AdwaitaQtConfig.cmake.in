@@ -1,10 +1,10 @@
 @PACKAGE_INIT@
 
 include(CMakeFindDependencyMacro)
-find_dependency(Qt5Core @QT_MIN_VERSION@)
-find_dependency(Qt5Gui @QT_MIN_VERSION@)
-find_dependency(Qt5Widgets @QT_MIN_VERSION@)
+find_dependency(Qt@QT_VERSION_MAJOR@Core @QT_MIN_VERSION@)
+find_dependency(Qt@QT_VERSION_MAJOR@Gui @QT_MIN_VERSION@)
+find_dependency(Qt@QT_VERSION_MAJOR@Widgets @QT_MIN_VERSION@)
 
-set(ADWAITAQT_LIBRARIES adwaitaqt)
+set(ADWAITAQT_LIBRARIES adwaitaqt@ADWAITAQT_SUFFIX@)
 set(ADWAITAQT_INCLUDE_DIRS @CMAKE_INSTALL_FULL_INCLUDEDIR@)
-include("${CMAKE_CURRENT_LIST_DIR}/AdwaitaQtTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/AdwaitaQt@ADWAITAQT_SUFFIX@Targets.cmake")
