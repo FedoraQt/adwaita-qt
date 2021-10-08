@@ -1,7 +1,7 @@
 adwaita-qt
 ==========
 
-A native style to bend Qt5 applications to look like they belong into GNOME Shell.
+A native style to bend Qt5/Qt6 applications to look like they belong into GNOME Shell.
 
 This style provides all four variants of GTK Adwaita theme:
 
@@ -26,7 +26,7 @@ So for example, the whole compilation process could look like this:
 ```
 mkdir build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr ..
+cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr [-DUSE_QT6] ..
 make
 make install
 ```
