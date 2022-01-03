@@ -2778,10 +2778,12 @@ QSize Style::spinBoxSizeFromContents(const QStyleOption *option, const QSize &co
     size.rwidth() += Metrics::Button_ItemSpacing;
 
     // FIXME this shouldn't be needed but apparently some width is still missing
-    size.rwidth() += size.height() / 2;
+    // reduce to 1 / 4 sems enough, was 1 / 2
+    size.rwidth() += size.height() / 4;
 
     // set minimum size
-    size.setHeight(qMax(size.height(), int(Metrics::SpinBox_MinHeight)));
+    // size.height() appears way too much - so removed
+    size.setHeight(int(Metrics::SpinBox_MinHeight));
     size.setWidth(qMax(size.width(), int(Metrics::SpinBox_MinWidth)));
 
     return size;
@@ -6751,7 +6753,9 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
             StyleOptions styleOptions(palette, _variant);
 
             // colors
-            QColor base(Colors::separatorColor(styleOptions));
+            // QColor base(Colors::separatorColor(styleOptions));
+            // Fix black slider ticks for dark variant
+            QColor base(Colors::sliderTicksColor(styleOptions));
 
             while (current <= sliderOption->maximum) {
                 // adjust color

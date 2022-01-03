@@ -28,7 +28,8 @@
 #include <QLibrary>
 
 #if ADWAITA_HAVE_X11
-#include <X11/Xlib-xcb.h>
+//#include <X11/Xlib-xcb.h>
+#include <xcb/xcb.h>
 #endif
 
 namespace Adwaita
