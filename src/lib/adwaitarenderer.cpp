@@ -395,7 +395,7 @@ void Renderer::renderMenuFrame(const StyleOptions &options, bool roundCorners)
     options.painter()->restore();
 }
 
-void Renderer::renderButtonFrame(const StyleOptions &options)
+void Renderer::renderButtonFrame(const StyleOptions &options, bool renderBevel)
 {
     if (!options.painter()) {
         return;
@@ -430,8 +430,8 @@ void Renderer::renderButtonFrame(const StyleOptions &options)
 
     // render
     options.painter()->drawRoundedRect(frameRect, radius, radius);
-
-    if (!options.sunken() && options.active() && options.color().isValid()) {
+    // gtk4 adwaita looks flat these days, so we wont draw the extra decor by default
+    if (!options.sunken() && options.active() && options.color().isValid() && renderBevel) {
         options.painter()->setPen(options.color().lighter(140));
         options.painter()->drawLine(frameRect.topLeft() + QPoint(3, 1), frameRect.topRight() + QPoint(-3, 1));
         options.painter()->setPen(options.outlineColor().darker(114));
