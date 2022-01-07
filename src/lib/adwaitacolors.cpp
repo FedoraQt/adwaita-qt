@@ -791,14 +791,6 @@ QColor Colors::separatorColor(const StyleOptions &options)
     return buttonOutlineColor(options);
 }
 
-QColor Colors::sliderTicksColor(const StyleOptions &options)
-{
-    if (ColorsPrivate::isDarkMode())
-       return transparentize(options.palette().color(QPalette::Text), 0.5);
-
-    return  transparentize(options.palette().color(QPalette::Text), 0.2);
-}
-
 QColor Colors::toolButtonColor(const StyleOptions &options)
 {
     if (options.sunken() || (options.animationMode() != AnimationNone && options.animationMode() != AnimationHover)) {

@@ -221,11 +221,6 @@ public:
     static QColor separatorColor(const StyleOptions &options);
     /* Relevant options:
        * palette
-       * color variant
-     */
-    static QColor sliderTicksColor(const StyleOptions &options);
-    /* Relevant options:
-       * palette
        * mouse over
        * has focus
        * sunken
