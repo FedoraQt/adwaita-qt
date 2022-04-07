@@ -48,12 +48,15 @@ if (NOT APPLE AND NOT WIN32 AND NOT USE_QT6)
     )
 endif()
 
-if (NOT USE_QT6)
-    get_target_property(REAL_QMAKE_EXECUTABLE ${Qt5Core_QMAKE_EXECUTABLE} IMPORTED_LOCATION)
-    if (NOT QT_PLUGINS_DIR)
+if (NOT QT_PLUGINS_DIR)
+    if (NOT USE_QT6)
+        get_target_property(REAL_QMAKE_EXECUTABLE ${Qt5Core_QMAKE_EXECUTABLE}
+                            IMPORTED_LOCATION)
         execute_process(COMMAND "${REAL_QMAKE_EXECUTABLE}" -query QT_INSTALL_PLUGINS
                         OUTPUT_VARIABLE QT_PLUGINS_DIR
                         ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+    else()
+        set(QT_PLUGINS_DIR ${QT6_INSTALL_PLUGINS})
     endif()
 endif()
 
