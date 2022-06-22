@@ -26,7 +26,7 @@
 
 namespace Adwaita
 {
-class Q_DECL_EXPORT BusyIndicatorData : public QObject
+class ADWAITAQT_EXPORT BusyIndicatorData : public QObject
 {
     Q_OBJECT
 public:
