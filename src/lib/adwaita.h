@@ -283,7 +283,7 @@ enum ColorVariant { Unknown, Adwaita, AdwaitaDark, AdwaitaHighcontrast, AdwaitaH
 
 class StyleOptionsPrivate;
 
-class ADWAITAQT_EXPORT StyleOptions
+class ADWAITAQT_MAIN_EXPORT StyleOptions
 {
 public:
     explicit StyleOptions(const QPalette &palette);

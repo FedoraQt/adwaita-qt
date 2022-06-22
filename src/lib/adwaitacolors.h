@@ -30,7 +30,7 @@
 namespace Adwaita
 {
 
-class ADWAITAQT_EXPORT Colors
+class ADWAITAQT_MAIN_EXPORT Colors
 {
 public:
     // Color adjustments
