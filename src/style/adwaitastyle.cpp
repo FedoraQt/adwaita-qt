@@ -239,6 +239,8 @@ Style::Style(ColorVariant variant)
     _isKDE = qgetenv("XDG_CURRENT_DESKTOP").toLower() == "kde";
     _isGNOME = qgetenv("XDG_CURRENT_DESKTOP").toLower() == "gnome";
 
+    connect(qApp, &QApplication::paletteChanged, this, &Style::configurationChanged);
+
     // call the slot directly; this initial call will set up things that also
     // need to be reset when the system palette changes
     loadConfiguration();
