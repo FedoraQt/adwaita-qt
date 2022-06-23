@@ -234,18 +234,6 @@ Style::Style(ColorVariant variant)
     , _variant(variant)
     , _dark(variant == AdwaitaDark || variant == AdwaitaHighcontrastInverse)
 {
-    // use DBus connection to update on adwaita configuration change
-    QDBusConnection dbus = QDBusConnection::sessionBus();
-    dbus.connect(QString(),
-                 QStringLiteral("/AdwaitaStyle"),
-                 QStringLiteral("org.kde.Adwaita.Style"),
-                 QStringLiteral("reparseConfiguration"), this, SLOT(configurationChanged()));
-
-    dbus.connect(QString(),
-                 QStringLiteral("/AdwaitaDecoration"),
-                 QStringLiteral("org.kde.Adwaita.Style"),
-                 QStringLiteral("reparseConfiguration"), this, SLOT(configurationChanged()));
-
     // Detect if running under KDE, if so set menus, etc, to have translucent background.
     // For GNOME desktop, dont want translucent backgrounds otherwise no menu shadow is drawn.
     _isKDE = qgetenv("XDG_CURRENT_DESKTOP").toLower() == "kde";
