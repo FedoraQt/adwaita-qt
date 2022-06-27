@@ -28,7 +28,7 @@
 namespace Adwaita
 {
 
-class ADWAITAQT_EXPORT Renderer
+class ADWAITAQT_MAIN_EXPORT Renderer
 {
 public:
     static void renderDebugFrame(const StyleOptions &options);
