@@ -3,7 +3,7 @@ project(Adwaita)
 cmake_minimum_required(VERSION 3.17)
 
 set(ADWAITAQT_VERSION_MAJOR 1)
-set(ADWAITAQT_VERSION "1.4.1")
+set(ADWAITAQT_VERSION "1.4.2")
 
 option(USE_QT6 "Use Qt6 instead of Qt5" OFF)
 
