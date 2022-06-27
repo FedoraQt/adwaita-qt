@@ -30,13 +30,14 @@ else()
     find_package(QT NAMES Qt5 COMPONENTS Core DBus Gui Widgets REQUIRED)
 endif()
 
-
 find_package(Qt${QT_VERSION_MAJOR} ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
     Core
     DBus
     Gui
     Widgets
 )
+
+find_package(Qt${QT_VERSION_MAJOR}Gui ${QT_MIN_VERSION} CONFIG REQUIRED Private)
 
 if (NOT APPLE AND NOT WIN32 AND NOT USE_QT6)
     find_package(XCB 1.10 COMPONENTS XCB)

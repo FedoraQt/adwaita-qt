@@ -66,6 +66,7 @@ class Style : public ParentStyleClass
 
 public:
     //* constructor
+    Style();
     explicit Style(ColorVariant variant);
 
     //* destructor
@@ -497,6 +498,7 @@ protected:
     bool hasAlteredBackground(const QWidget *widget) const;
 
 private:
+    ColorVariant colorVariantFromPlatformTheme() const;
 
     //*@name scrollbar button types (for addLine and subLine )
     //@{
@@ -549,6 +551,7 @@ private:
     QStyle::ControlElement CE_CapacityBar;
 
     ColorVariant _variant { Adwaita };
+    bool _isVariantPlatformThemeBased { false };
 
     bool _dark { false };
 
