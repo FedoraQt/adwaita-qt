@@ -257,8 +257,6 @@ Style::Style(ColorVariant variant)
     _isKDE = qgetenv("XDG_CURRENT_DESKTOP").toLower() == "kde";
     _isGNOME = qgetenv("XDG_CURRENT_DESKTOP").toLower() == "gnome";
 
-    connect(qApp, &QApplication::paletteChanged, this, &Style::configurationChanged);
-
     // call the slot directly; this initial call will set up things that also
     // need to be reset when the system palette changes
     loadConfiguration();
@@ -381,7 +379,7 @@ void Style::polish(QWidget *widget)
                 QLineEdit *lineEdit = comboBox->lineEdit();
                 if (lineEdit && !comboBox->isEnabled()) {
                     QPalette pal = lineEdit->palette();
-                    pal.setColor(QPalette::Base, comboBox->palette().color(QPalette::Window));
+                    pal.setColor(QPalette::Base, Colors::palette(_variant).color(QPalette::Window));
                     lineEdit->setPalette(pal);
                     lineEdit->setAutoFillBackground(true);
                 }
@@ -402,7 +400,7 @@ void Style::polish(QWidget *widget)
     } else if (QSpinBox *spinBox = qobject_cast<QSpinBox *>(widget)) {
         if (!spinBox->isEnabled()) {
             QPalette pal = spinBox->palette();
-            pal.setColor(QPalette::Base, spinBox->palette().color(QPalette::Window));
+            pal.setColor(QPalette::Base, Colors::palette(_variant).color(QPalette::Window));
             spinBox->setPalette(pal);
             spinBox->setAutoFillBackground(true);
         }
@@ -1288,8 +1286,12 @@ bool Style::eventFilter(QObject *object, QEvent *event)
         return eventFilterComboBoxContainer(widget, event);
     }
 
+    if (QEvent::PaletteChange == event->type()) {
+        configurationChanged();
+    }
+
     if ((!widget->parent() || !qobject_cast<QWidget *>(widget->parent()) || qobject_cast<QDialog *>(widget) || qobject_cast<QMainWindow *>(widget))
-            && (QEvent::Show == event->type() || QEvent::StyleChange == event->type())) {
+            && (event->type() == QEvent::Show || event->type() == QEvent::StyleChange)) {
         if (_isVariantPlatformThemeBased) {
             _variant = colorVariantFromPlatformTheme();
             _dark = _variant == AdwaitaDark || _variant == AdwaitaHighcontrastInverse;
