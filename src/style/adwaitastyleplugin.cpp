@@ -29,6 +29,11 @@ namespace Adwaita
 
 QStyle *StylePlugin::create(const QString &key)
 {
+    if (key.toLower() == QStringLiteral("adwaita-auto")) {
+        // Let this be autodetected
+        return new Style();
+    }
+
     if (key.toLower() == QStringLiteral("adwaita")) {
         return new Style(Adwaita::Adwaita);
     }
@@ -56,8 +61,9 @@ StylePlugin::~StylePlugin()
 
 QStringList StylePlugin::keys() const
 {
-    return QStringList() << QStringLiteral("Adwaita") << QStringLiteral("Adwaita-Dark")
-                         << QStringLiteral("Adwaita-HighContrast") << QStringLiteral("Adwaita-HighContrast-Dark");
+    return QStringList() << QStringLiteral("Adwaita") << QStringLiteral("Adwaita-Dark") << QStringLiteral("Adwaita-Light")
+                         << QStringLiteral("Adwaita-HighContrast") << QStringLiteral("Adwaita-HighContrastInverse")
+                         << QStringLiteral("Adwaita-Auto");
 }
 
 } // namespace Adwaita

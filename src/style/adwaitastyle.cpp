@@ -61,6 +61,14 @@
 #include <QToolButton>
 #include <QWidgetAction>
 
+// Private includes
+#include <QtGui/private/qguiapplication_p.h>
+#include <qpa/qplatformintegration.h>
+#include <qpa/qplatformtheme.h>
+
+// TODO remove
+#include <QDebug>
+
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
 #endif
@@ -219,6 +227,16 @@ void tabLayout(const QStyleOptionTab *opt, const QWidget *widget, QRect *textRec
 
 namespace Adwaita
 {
+//______________________________________________________________
+Style::Style()
+    : Style(Adwaita)
+{
+    _isVariantPlatformThemeBased = true;
+
+    // Override variant based on platform theme
+    _variant = colorVariantFromPlatformTheme();
+    _dark = _variant == AdwaitaDark || _variant ==AdwaitaHighcontrastInverse;
+}
 
 //______________________________________________________________
 Style::Style(ColorVariant variant)
@@ -234,22 +252,12 @@ Style::Style(ColorVariant variant)
     , _variant(variant)
     , _dark(variant == AdwaitaDark || variant == AdwaitaHighcontrastInverse)
 {
-    // use DBus connection to update on adwaita configuration change
-    QDBusConnection dbus = QDBusConnection::sessionBus();
-    dbus.connect(QString(),
-                 QStringLiteral("/AdwaitaStyle"),
-                 QStringLiteral("org.kde.Adwaita.Style"),
-                 QStringLiteral("reparseConfiguration"), this, SLOT(configurationChanged()));
-
-    dbus.connect(QString(),
-                 QStringLiteral("/AdwaitaDecoration"),
-                 QStringLiteral("org.kde.Adwaita.Style"),
-                 QStringLiteral("reparseConfiguration"), this, SLOT(configurationChanged()));
-
     // Detect if running under KDE, if so set menus, etc, to have translucent background.
     // For GNOME desktop, dont want translucent backgrounds otherwise no menu shadow is drawn.
     _isKDE = qgetenv("XDG_CURRENT_DESKTOP").toLower() == "kde";
     _isGNOME = qgetenv("XDG_CURRENT_DESKTOP").toLower() == "gnome";
+
+    connect(qApp, &QApplication::paletteChanged, this, &Style::configurationChanged);
 
     // call the slot directly; this initial call will set up things that also
     // need to be reset when the system palette changes
@@ -1282,7 +1290,11 @@ bool Style::eventFilter(QObject *object, QEvent *event)
 
     if ((!widget->parent() || !qobject_cast<QWidget *>(widget->parent()) || qobject_cast<QDialog *>(widget) || qobject_cast<QMainWindow *>(widget))
             && (QEvent::Show == event->type() || QEvent::StyleChange == event->type())) {
-        _helper->setVariant(widget, _dark ? "dark" : "light");
+        if (_isVariantPlatformThemeBased) {
+            _variant = colorVariantFromPlatformTheme();
+            _dark = _variant == AdwaitaDark || _variant == AdwaitaHighcontrastInverse;
+            configurationChanged();
+        }
     }
 
     // fallback
@@ -7777,6 +7789,27 @@ bool Style::hasAlteredBackground(const QWidget *widget) const
     }
     const_cast<QWidget *>(widget)->setProperty(PropertyNames::alteredBackground, hasAlteredBackground);
     return hasAlteredBackground;
+}
+
+ColorVariant Style::colorVariantFromPlatformTheme() const
+{
+    const QPlatformTheme *pt = QGuiApplicationPrivate::platform_theme;
+    if (pt) {
+        const QStringList styleNames = pt->themeHint(QPlatformTheme::StyleNames).toStringList();
+        for (const QString &style : styleNames) {
+            if (style.toLower() == QStringLiteral("adwaita")) {
+                return Adwaita;
+            } else if (style.toLower() == QStringLiteral("adwaita-dark")) {
+                return AdwaitaDark;
+            } else if (style.toLower() == QStringLiteral("highcontrast")) {
+                return AdwaitaHighcontrast;
+            } else if (style.toLower() == QStringLiteral("highcontrastinverse")) {
+                return AdwaitaHighcontrastInverse;
+            }
+        }
+    }
+
+    return Adwaita;
 }
 
 }
