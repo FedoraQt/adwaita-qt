@@ -4933,6 +4933,7 @@ bool Style::drawMenuBarItemControl(const QStyleOption *option, QPainter *painter
         StyleOptions styleOptions(painter, QRect(rect.left(), rect.bottom() - 2, rect.width(), 3));
         styleOptions.setColorVariant(_variant);
         styleOptions.setOutlineColor(Colors::focusColor(StyleOptions(palette, _variant)));
+        styleOptions.setColor(palette.color(QPalette::Highlight));
         Adwaita::Renderer::renderFocusRect(styleOptions);
     }
 
