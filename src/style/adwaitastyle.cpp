@@ -4961,8 +4961,11 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
     }
 
     // copy rect and palette
-    const QRect &rect(option->rect);
+    QRect rect(option->rect);
     const QPalette &palette(option->palette);
+
+    // leave room for the menu border
+    rect.adjust(1, 0, -1, 0);
 
     // deal with separators
     if (menuItemOption->menuItemType == QStyleOptionMenuItem::Separator) {
