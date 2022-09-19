@@ -4933,6 +4933,7 @@ bool Style::drawMenuBarItemControl(const QStyleOption *option, QPainter *painter
         StyleOptions styleOptions(painter, QRect(rect.left(), rect.bottom() - 2, rect.width(), 3));
         styleOptions.setColorVariant(_variant);
         styleOptions.setOutlineColor(Colors::focusColor(StyleOptions(palette, _variant)));
+        styleOptions.setColor(palette.color(QPalette::Highlight));
         Adwaita::Renderer::renderFocusRect(styleOptions);
     }
 
@@ -4960,8 +4961,11 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
     }
 
     // copy rect and palette
-    const QRect &rect(option->rect);
+    QRect rect(option->rect);
     const QPalette &palette(option->palette);
+
+    // leave room for the menu border
+    rect.adjust(1, 0, -1, 0);
 
     // deal with separators
     if (menuItemOption->menuItemType == QStyleOptionMenuItem::Separator) {
@@ -5122,6 +5126,8 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
         painter->drawPixmap(iconRect, icon);
     }
 
+    const QColor acceleratorColor = Colors::transparentize(palette.color(QPalette::Active, QPalette::WindowText), 0.55);
+
     // arrow
     QRect arrowRect(contentsRect.right() - Metrics::MenuButton_IndicatorWidth + 1, contentsRect.top() + (contentsRect.height() - Metrics::MenuButton_IndicatorWidth) / 2, Metrics::MenuButton_IndicatorWidth, Metrics::MenuButton_IndicatorWidth);
 
@@ -5132,22 +5138,9 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
         // arrow orientation
         ArrowOrientation orientation(reverseLayout ? ArrowLeft : ArrowRight);
 
-        // color
-        QColor arrowColor;
-        if (useStrongFocus && (selected || sunken)) {
-            arrowColor = palette.color(QPalette::HighlightedText);
-        } else if (sunken) {
-            arrowColor = Colors::focusColor(StyleOptions(palette, _variant));
-        } else if (selected) {
-            arrowColor = Colors::hoverColor(StyleOptions(palette, _variant));
-        } else {
-            styleOptions.setColorRole(QPalette::WindowText);
-            arrowColor = Colors::arrowOutlineColor(styleOptions);
-        }
-
         styleOptions.setPainter(painter);
         styleOptions.setRect(arrowRect);
-        styleOptions.setColor(arrowColor);
+        styleOptions.setColor(acceleratorColor);
         styleOptions.setColorVariant(_variant);
 
         // render
@@ -5176,7 +5169,7 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
             QString accelerator(text.mid(tabPosition + 1));
             text = text.left(tabPosition);
             QPalette copy(palette);
-            copy.setColor(QPalette::Active, QPalette::WindowText, Colors::transparentize(copy.color(QPalette::Active, QPalette::WindowText), 0.55));
+            copy.setColor(QPalette::Active, QPalette::WindowText, acceleratorColor);
             copy.setColor(QPalette::Active, QPalette::HighlightedText, Colors::transparentize(copy.color(QPalette::Active, QPalette::HighlightedText), 0.55));
             drawItemText(painter, textRect, textFlags, copy, enabled, accelerator, QPalette::WindowText);
         }
