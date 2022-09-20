@@ -456,6 +456,7 @@ QPalette Colors::palette(ColorVariant variant)
     palette.setColor(QPalette::All,      QPalette::AlternateBase,   colorsGlobal->adwaitaColor(ColorsPrivate::base_color, variant));
     palette.setColor(QPalette::All,      QPalette::ToolTipBase,     colorsGlobal->adwaitaColor(ColorsPrivate::osd_bg_color, variant));
     palette.setColor(QPalette::All,      QPalette::ToolTipText,     colorsGlobal->adwaitaColor(ColorsPrivate::osd_text_color, variant));
+    palette.setColor(QPalette::All,      QPalette::PlaceholderText, colorsGlobal->adwaitaColor(ColorsPrivate::fg_color, variant));
     palette.setColor(QPalette::All,      QPalette::Text,            colorsGlobal->adwaitaColor(ColorsPrivate::fg_color, variant));
     palette.setColor(QPalette::All,      QPalette::Button,          buttonColor);
     palette.setColor(QPalette::All,      QPalette::ButtonText,      colorsGlobal->adwaitaColor(ColorsPrivate::fg_color, variant));
@@ -477,6 +478,7 @@ QPalette Colors::palette(ColorVariant variant)
     palette.setColor(QPalette::Disabled, QPalette::WindowText,      colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_fg_color, variant));
     palette.setColor(QPalette::Disabled, QPalette::Base,            colorsGlobal->adwaitaColor(ColorsPrivate::base_color, variant));
     palette.setColor(QPalette::Disabled, QPalette::AlternateBase,   colorsGlobal->adwaitaColor(ColorsPrivate::base_color, variant));
+    palette.setColor(QPalette::Disabled, QPalette::PlaceholderText, colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_fg_color, variant));
     palette.setColor(QPalette::Disabled, QPalette::Text,            colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_fg_color, variant));
     palette.setColor(QPalette::Disabled, QPalette::Button,          colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_bg_color, variant));
     palette.setColor(QPalette::Disabled, QPalette::ButtonText,      colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_fg_color, variant));
@@ -500,6 +502,7 @@ QPalette Colors::palette(ColorVariant variant)
     palette.setColor(QPalette::Inactive, QPalette::AlternateBase,   colorsGlobal->adwaitaColor(ColorsPrivate::backdrop_base_color, variant));
     palette.setColor(QPalette::Inactive, QPalette::ToolTipBase,     colorsGlobal->adwaitaColor(ColorsPrivate::osd_bg_color, variant));
     palette.setColor(QPalette::Inactive, QPalette::ToolTipText,     colorsGlobal->adwaitaColor(ColorsPrivate::osd_text_color, variant));
+    palette.setColor(QPalette::Inactive, QPalette::PlaceholderText, colorsGlobal->adwaitaColor(ColorsPrivate::backdrop_fg_color, variant));
     palette.setColor(QPalette::Inactive, QPalette::Text,            colorsGlobal->adwaitaColor(ColorsPrivate::backdrop_fg_color, variant));
     palette.setColor(QPalette::Inactive, QPalette::Button,          disabledButtonColor);
     palette.setColor(QPalette::Inactive, QPalette::ButtonText,      colorsGlobal->adwaitaColor(ColorsPrivate::backdrop_fg_color, variant));
