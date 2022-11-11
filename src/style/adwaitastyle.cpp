@@ -393,11 +393,11 @@ void Style::polish(QWidget *widget)
     if (QPointer<QAbstractItemView> view = qobject_cast<QAbstractItemView *>(widget)) {
         QPalette pal = view->palette();
         // TODO keep synced with the standard palette
-        const QColor activeTextColor = _dark ? QColor("#eeeeec") : QColor("#2e3436");
-        const QColor inactiveTextColor = _dark ? Colors::mix(QColor("#eeeeec"), Colors::darken(Colors::desaturate(QColor("#3d3846"), 1.0), 0.04)) :
-                                         Colors::mix(QColor("#2e3436"), QColor("#f6f5f4"));
+        const QString activeTextColor = (_dark ? QColor("#eeeeec") : QColor("#2e3436")).name(QColor::HexArgb);
+        const QString inactiveTextColor = (_dark ? Colors::mix(QColor("#eeeeec"), Colors::darken(Colors::desaturate(QColor("#3d3846"), 1.0), 0.04)) :
+                                         Colors::mix(QColor("#2e3436"), QColor("#f6f5f4"))).name(QColor::HexArgb);
         // No custom text color used, we can do our HACK
-        if (inactiveTextColor == pal.color(QPalette::Inactive, QPalette::Text) && activeTextColor == pal.color(QPalette::Active, QPalette::Text)) {
+        if (inactiveTextColor == pal.color(QPalette::Inactive, QPalette::Text).name(QColor::HexArgb) && activeTextColor == pal.color(QPalette::Active, QPalette::Text).name(QColor::HexArgb)) {
             pal.setColor(QPalette::Inactive, QPalette::Text, pal.color(QPalette::Active, QPalette::Text));
             view->setPalette(pal);
         }
