@@ -2645,27 +2645,38 @@ QRect Style::sliderSubControlRect(const QStyleOptionComplex *option, SubControl 
         return ParentStyleClass::subControlRect(CC_Slider, option, subControl, widget);
     }
 
+    // direction
+    bool horizontal(sliderOption->orientation == Qt::Horizontal);
+
+    // get base class rect
+    QRect rect(ParentStyleClass::subControlRect(CC_Slider, option, subControl, widget));
+
+    // centering
     switch (subControl) {
     case SC_SliderGroove: {
-        // direction
-        bool horizontal(sliderOption->orientation == Qt::Horizontal);
-
-        // get base class rect
-        QRect grooveRect(ParentStyleClass::subControlRect(CC_Slider, option, subControl, widget));
-        grooveRect = insideMargin(grooveRect, pixelMetric(PM_DefaultFrameWidth, option, widget));
-
-        // centering
+        rect = insideMargin(rect, pixelMetric(PM_DefaultFrameWidth, option, widget));
         if (horizontal) {
-            grooveRect = centerRect(grooveRect, grooveRect.width(), Metrics::Slider_GrooveThickness);
+            rect = centerRect(sliderOption->rect, rect.width(), Metrics::Slider_GrooveThickness);
         } else {
-            grooveRect = centerRect(grooveRect, Metrics::Slider_GrooveThickness, grooveRect.height());
+            rect = centerRect(sliderOption->rect, Metrics::Slider_GrooveThickness, rect.height());
         }
-        return grooveRect;
+        break;
+    }
+
+    case SC_SliderHandle: {
+        if (horizontal) {
+            rect.moveTop(sliderOption->rect.center().y() - rect.height() / 2);
+        } else {
+            rect.moveLeft(sliderOption->rect.center().x() - rect.width() / 2);
+        }
+        break;
     }
 
     default:
-        return ParentStyleClass::subControlRect(CC_Slider, option, subControl, widget);
+        break;
     }
+
+    return rect;
 }
 
 //______________________________________________________________
