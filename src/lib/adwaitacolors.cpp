@@ -112,7 +112,8 @@ QColor Colors::lighten(const QColor &color, qreal amount)
 QColor Colors::mix(const QColor &c1, const QColor &c2, qreal bias)
 {
     auto mixQreal = [](qreal a, qreal b, qreal bias) {
-        return a + (b - a) * bias;
+        /* libsass-compilant blending */
+        return bias * b + (1 - bias) * a;
     };
 
     if (bias <= 0.0) {
@@ -125,7 +126,6 @@ QColor Colors::mix(const QColor &c1, const QColor &c2, qreal bias)
 
     if (std::isnan(bias)) {
         return c1;
-
     }
 
     qreal r = mixQreal(c1.redF(), c2.redF(), bias);
