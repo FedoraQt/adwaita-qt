@@ -456,7 +456,7 @@ QPalette Colors::palette(ColorVariant variant)
     palette.setColor(QPalette::All,      QPalette::AlternateBase,   colorsGlobal->adwaitaColor(ColorsPrivate::base_color, variant));
     palette.setColor(QPalette::All,      QPalette::ToolTipBase,     colorsGlobal->adwaitaColor(ColorsPrivate::osd_bg_color, variant));
     palette.setColor(QPalette::All,      QPalette::ToolTipText,     colorsGlobal->adwaitaColor(ColorsPrivate::osd_text_color, variant));
-    palette.setColor(QPalette::All,      QPalette::PlaceholderText, colorsGlobal->adwaitaColor(ColorsPrivate::fg_color, variant));
+    palette.setColor(QPalette::All,      QPalette::PlaceholderText, colorsGlobal->adwaitaColor(ColorsPrivate::insensitive_fg_color, variant));
     palette.setColor(QPalette::All,      QPalette::Text,            colorsGlobal->adwaitaColor(ColorsPrivate::fg_color, variant));
     palette.setColor(QPalette::All,      QPalette::Button,          buttonColor);
     palette.setColor(QPalette::All,      QPalette::ButtonText,      colorsGlobal->adwaitaColor(ColorsPrivate::fg_color, variant));
