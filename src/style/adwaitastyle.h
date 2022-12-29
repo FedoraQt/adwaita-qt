@@ -496,6 +496,9 @@ protected:
     //* return true if passed widget is a menu title (KMenu::addTitle)
     bool hasAlteredBackground(const QWidget *widget) const;
 
+    //* return true if Active or Inactive text colors differ from Adwaita defaults
+    bool hasCustomTextColors(const QPalette &palette) const;
+
 private:
     //*@name scrollbar button types (for addLine and subLine )
     //@{
