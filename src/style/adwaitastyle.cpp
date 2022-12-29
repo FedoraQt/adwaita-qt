@@ -392,12 +392,8 @@ void Style::polish(QWidget *widget)
     // views greyed out when the application is active
     if (QPointer<QAbstractItemView> view = qobject_cast<QAbstractItemView *>(widget)) {
         QPalette pal = view->palette();
-        // TODO keep synced with the standard palette
-        const QString activeTextColor = (_dark ? QColor("#eeeeec") : QColor("#2e3436")).name(QColor::HexArgb);
-        const QString inactiveTextColor = (_dark ? Colors::mix(QColor("#eeeeec"), Colors::darken(Colors::desaturate(QColor("#3d3846"), 1.0), 0.04)) :
-                                         Colors::mix(QColor("#2e3436"), QColor("#f6f5f4"))).name(QColor::HexArgb);
         // No custom text color used, we can do our HACK
-        if (inactiveTextColor == pal.color(QPalette::Inactive, QPalette::Text).name(QColor::HexArgb) && activeTextColor == pal.color(QPalette::Active, QPalette::Text).name(QColor::HexArgb)) {
+        if (!hasCustomTextColors(pal)) {
             pal.setColor(QPalette::Inactive, QPalette::Text, pal.color(QPalette::Active, QPalette::Text));
             view->setPalette(pal);
         }
@@ -4874,14 +4870,11 @@ bool Style::drawItemViewItemControl(const QStyleOption *option, QPainter *painte
     QStyleOptionViewItem op(*vopt);
 
     if (_helper->isWindowActive(widget)) {
-        const QColor activeTextColor = _dark ? QColor("#eeeeec") : QColor("#2e3436");
-        const QColor inactiveTextColor = _dark ? Colors::mix(QColor("#eeeeec"), Colors::darken(Colors::desaturate(QColor("#3d3846"), 1.0), 0.04)) :
-                                         Colors::mix(QColor("#2e3436"), QColor("#f6f5f4"));
         // No custom text color used, we can do our HACK
-        QPalette palette = op.palette;
-        if (inactiveTextColor == palette.color(QPalette::Inactive, QPalette::Text) && activeTextColor == palette.color(QPalette::Active, QPalette::Text)) {
-            palette.setColor(QPalette::Inactive, QPalette::Text, palette.color(QPalette::Active, QPalette::Text));
-            op.palette = palette;
+        QPalette pal = op.palette;
+        if (!hasCustomTextColors(pal)) {
+            pal.setColor(QPalette::Inactive, QPalette::Text, pal.color(QPalette::Active, QPalette::Text));
+            op.palette = pal;
         }
     }
 
@@ -7772,6 +7765,19 @@ bool Style::hasAlteredBackground(const QWidget *widget) const
     }
     const_cast<QWidget *>(widget)->setProperty(PropertyNames::alteredBackground, hasAlteredBackground);
     return hasAlteredBackground;
+}
+
+//____________________________________________________________________
+bool Style::hasCustomTextColors(const QPalette &palette) const
+{
+    const QPalette adwaitaPalette = Colors::palette(_dark ?  ColorVariant::AdwaitaDark : ColorVariant::Adwaita);
+
+    const QColor activeTextColor = palette.color(QPalette::Active, QPalette::Text);
+    const QColor inactiveTextColor = palette.color(QPalette::Inactive, QPalette::Text);
+    const QColor adwaitaActiveTextColor = adwaitaPalette.color(QPalette::Active, QPalette::Text);
+    const QColor adwaitaInactiveTextColor = adwaitaPalette.color(QPalette::Inactive, QPalette::Text);
+
+    return activeTextColor != adwaitaActiveTextColor || inactiveTextColor != adwaitaInactiveTextColor;
 }
 
 }
