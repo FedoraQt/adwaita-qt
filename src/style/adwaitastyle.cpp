@@ -5768,16 +5768,20 @@ bool Style::drawHeaderLabelControl(const QStyleOption *option, QPainter *painter
         QRect rect = header->rect;
         if (!header->icon.isNull()) {
             QPixmap pixmap = header->icon.pixmap(proxy()->pixelMetric(PM_SmallIconSize), (header->state & State_Enabled) ? QIcon::Normal : QIcon::Disabled);
-            int pixw = pixmap.width();
+            int pixw = pixmap.width() / pixmap.devicePixelRatio();
 
-            QRect aligned = alignedRect(header->direction, QFlag(header->iconAlignment), pixmap.size(), rect);
+            QRect aligned = alignedRect(header->direction, QFlag(header->iconAlignment), pixmap.size() / pixmap.devicePixelRatio(), rect);
             QRect inter = aligned.intersected(rect);
-            painter->drawPixmap(inter.x(), inter.y(), pixmap, inter.x() - aligned.x(), inter.y() - aligned.y(), inter.width(), inter.height());
+            painter->drawPixmap(inter.x(), inter.y(), pixmap,
+                                inter.x() - aligned.x(), inter.y() - aligned.y(),
+                                aligned.width() * pixmap.devicePixelRatio(),
+                                aligned.height() * pixmap.devicePixelRatio());
 
+            const int margin = proxy()->pixelMetric(QStyle::PM_HeaderMargin, option, widget);
             if (header->direction == Qt::LeftToRight)
-                rect.setLeft(rect.left() + pixw + 2);
+                rect.setLeft(rect.left() + pixw + margin);
             else
-                rect.setRight(rect.right() - pixw - 2);
+                rect.setRight(rect.right() - pixw - margin);
         }
         QFont fnt = painter->font();
         fnt.setBold(true);
