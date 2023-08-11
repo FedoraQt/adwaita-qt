@@ -1,6 +1,8 @@
 adwaita-qt
 ==========
 
+# Adwaita-qt project is unmaintained a no longer actively developed.
+
 A native style to bend Qt5/Qt6 applications to look like they belong into GNOME Shell.
 
 This style provides all four variants of GTK Adwaita theme:
