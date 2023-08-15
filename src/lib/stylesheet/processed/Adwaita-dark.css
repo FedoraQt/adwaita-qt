@@ -56,7 +56,7 @@
 @define-color focus_border_color rgba(21, 83, 158, 0.7);
 @define-color alt_focus_border_color rgba(255, 255, 255, 0.3);
 @define-color dim_label_opacity 0.55;
-button { color: #eeeeec; outline-color: rgba(21, 83, 158, 0.7); border-color: #1b1b1b; background-image: linear-gradient(to top, #373737 2px, #3a3a3a); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07); }
+button { color: #eeeeec; outline-color: rgba(21, 83, 158, 0.7); border-color: #1b1b1b; background-image: image(#393939); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07); }
 
 button:hover { color: #eeeeec; border-color: #1b1b1b; background-image: linear-gradient(to top, #303030 20%, #323232 90%); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07); }
 

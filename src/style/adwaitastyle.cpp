@@ -2769,14 +2769,15 @@ QSize Style::spinBoxSizeFromContents(const QStyleOption *option, const QSize &co
     // add editor margins
     int frameWidth(pixelMetric(PM_SpinBoxFrameWidth, option, widget));
     if (!flat) {
-        size = expandSize(size, frameWidth);
+        size = expandSize(size, frameWidth, 0);
     }
 
     size.rwidth() += 2 * Metrics::SpinBox_MinHeight;
     size.rwidth() += Metrics::Button_ItemSpacing;
 
     // FIXME this shouldn't be needed but apparently some width is still missing
-    size.rwidth() += size.height() / 2;
+    // reduce to 1 / 4 sems enough, was 1 / 2
+    size.rwidth() += size.height() / 4;
 
     // set minimum size
     size.setHeight(qMax(size.height(), int(Metrics::SpinBox_MinHeight)));
@@ -3359,7 +3360,7 @@ bool Style::drawFrameFocusRectPrimitive(const QStyleOption *option, QPainter *pa
     }
 
     QColor outlineColor(Colors::mix(palette.color(QPalette::Window), palette.color(QPalette::WindowText), 0.35));
-    QPen pen(outlineColor, 1);
+    QPen pen(outlineColor, 0.5);
     pen.setStyle(Qt::CustomDashLine);
     pen.setDashPattern(QVector<qreal>() << 2 << 1);
 
@@ -6743,7 +6744,9 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
             StyleOptions styleOptions(palette, _variant);
 
             // colors
-            QColor base(Colors::separatorColor(styleOptions));
+            // QColor base(Colors::separatorColor(styleOptions));
+            // Fix black slider ticks for dark variant
+            QColor base(Colors::transparentize(palette.text().color(), 0.5));
 
             while (current <= sliderOption->maximum) {
                 // adjust color

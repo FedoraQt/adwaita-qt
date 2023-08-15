@@ -47,7 +47,7 @@ public:
 
     static void renderMenuFrame(const StyleOptions &options, bool roundCorners = true);
 
-    static void renderButtonFrame(const StyleOptions &options);
+    static void renderButtonFrame(const StyleOptions &options, bool renderBevel = false);
 
     static void renderCheckBoxFrame(const StyleOptions &options);
 
