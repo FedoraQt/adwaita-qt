@@ -36,7 +36,6 @@
 #include <QApplication>
 #include <QCheckBox>
 #include <QComboBox>
-#include <QDBusConnection>
 #include <QDial>
 #include <QDialog>
 #include <QDockWidget>
