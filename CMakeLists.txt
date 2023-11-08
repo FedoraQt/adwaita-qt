@@ -25,14 +25,13 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH})
 include(GNUInstallDirs)
 
 if (USE_QT6)
-    find_package(QT NAMES Qt6 COMPONENTS Core DBus Gui Widgets REQUIRED)
+    find_package(QT NAMES Qt6 COMPONENTS Core Gui Widgets REQUIRED)
 else()
-    find_package(QT NAMES Qt5 COMPONENTS Core DBus Gui Widgets REQUIRED)
+    find_package(QT NAMES Qt5 COMPONENTS Core Gui Widgets REQUIRED)
 endif()
 
 find_package(Qt${QT_VERSION_MAJOR} ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
     Core
-    DBus
     Gui
     Widgets
 )

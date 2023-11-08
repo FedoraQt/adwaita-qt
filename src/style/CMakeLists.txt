@@ -24,7 +24,6 @@ target_link_libraries(${LIBRARY_NAME}
     adwaitaqt${ADWAITAQT_SUFFIX}
     adwaitaqt${ADWAITAQT_SUFFIX}priv
     Qt${QT_VERSION_MAJOR}::Core
-    Qt${QT_VERSION_MAJOR}::DBus
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
 )

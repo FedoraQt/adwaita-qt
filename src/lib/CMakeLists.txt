@@ -59,7 +59,6 @@ set(libadwaitaqt_HEADERS
 add_library("adwaitaqt${ADWAITAQT_SUFFIX}priv" SHARED ${libadwaitaqt_priv_SRCS})
 target_link_libraries("adwaitaqt${ADWAITAQT_SUFFIX}priv"
     Qt${QT_VERSION_MAJOR}::Core
-    Qt${QT_VERSION_MAJOR}::DBus
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
 )
